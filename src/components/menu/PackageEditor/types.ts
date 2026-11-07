@@ -21,6 +21,8 @@ export interface TeamDef {
   logo: string | null;
   kitPattern: KitPattern | null;
   foundedYear: number | null;
+  /** Starting shape, e.g. "4-2-3-1"; left out of the JSON it plays the default 4-4-2. */
+  formation?: string | null;
 }
 
 export interface WorldMetaDef {

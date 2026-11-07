@@ -2897,7 +2897,8 @@
         "alternatePositionInvalid": "\"{{entity}}\" mencantumkan {{position}} sebagai posisi alternatif. Posisi alternatif harus posisi spesifik, berbeda dari posisi pemain itu sendiri, dan hanya dicantumkan sekali.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" memiliki kaki lemah atau posisi alternatif, tetapi {{position}} adalah kelompok umum, sehingga permainan akan menghitung ulang dari atribut pemain dan membuang yang Anda tulis. Beri pemain posisi spesifik, seperti CentralMidfielder atau Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" memiliki entri karier (baris {{row}}) tanpa nama klub.",
-        "unsupportedFormatVersion": "Paket ini dibuat dengan versi permainan yang lebih baru (format {{version}}; build ini mendukung {{supported}}). Perbarui permainan untuk membukanya."
+        "unsupportedFormatVersion": "Paket ini dibuat dengan versi permainan yang lebih baru (format {{version}}; build ini mendukung {{supported}}). Perbarui permainan untuk membukanya.",
+        "invalidFormation": "Formasi \"{{formation}}\" untuk tim {{entity}} tidak bisa ditata. Gunakan tiga atau empat baris yang berjumlah sepuluh, seperti 4-4-2 atau 4-2-3-1."
       },
       "conflict": {
         "duplicateId": "Paket \"{{packages}}\" sama-sama mendefinisikan {{entityKind}} \"{{entityId}}\" dengan konten berbeda. Paket terakhir yang menang.",

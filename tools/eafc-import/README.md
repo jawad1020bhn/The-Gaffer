@@ -59,6 +59,7 @@ Champions Cup* (top 32 European clubs) and the *European Trophy Cup* (the next
 | `team.city` | `teams.cityid` through the `CityName_<id>` localization strings |
 | `team.stadiumName` | `teamstadiumlinks` → `stadiums.name` |
 | `team.playStyle` | `defensivedepth` + `buildupplay` + the attack/defence ratings (see below) |
+| `team.formation` | `formations.formationname`, folded to three or four lines (see below) |
 | `competition.regionId` | the league country's confederation in `nations.rs` |
 | `team.reputationRange` | `teams.overallrating` |
 | `team.financeRange` | `teams.clubworth` (thousands of euros, 2–4%) |
@@ -150,18 +151,21 @@ fields but not their meaning:
   no stadium name.
 - **No badge, kit or photo.** The database holds no image assets, only ids into
   EA's own CDN.
-- **No managers, formations, tactics, shirt numbers, captains or rivals.** Not a
-  gap in this tool: the package format has no field for any of them. `staff` roles
-  are AssistantManager, Coach, Scout and Physio (`StaffRole` in `domain/staff.rs`),
-  and `SCHEMA_REFERENCE.md` is explicit that a club's manager is generated at
-  world build and "is not yours to set". `playStyle` is the only tactical field,
-  and EA's tactic data arrives as a line height and a build-up style, not as one
-  of OFM's six identities, so it is inferred. The formation beside it is engine
-  state: every generated club is 4-4-2 until its manager changes it, in a package
-  world as much as in a random one.
+- **No managers, tactic dials, shirt numbers, captains or rivals.** Not a gap in
+  this tool: the package format has no field for any of them. `staff` roles are
+  AssistantManager, Coach, Scout and Physio (`StaffRole` in `domain/staff.rs`), and
+  `SCHEMA_REFERENCE.md` is explicit that a club's manager is generated at world
+  build and "is not yours to set". `playStyle` and `formation` are the two
+  tactical fields that do exist; the nine dials behind them are derived from the
+  style at world build (`ai_tactics::blueprint_for`), and EA's own slider values
+  are not carried.
 - **Stadium capacity is drawn, not imported.** The engine picks 10,000-80,000 for
   an authored club (`build_team`), so the capacity row on a club page does not
   match the ground's real figure even where the name is real.
+- **Five-line shapes are folded.** The engine lays out three or four lines that
+  add up to ten, so EA's "4-1-2-1-2" (Real Madrid) becomes "4-3-1-2" — the two
+  adjacent lines holding the fewest players merge. Everything else passes through
+  unchanged; 19 shapes survive across the 685 clubs.
 - **Kit patterns are not inferred.** `teams.jerseytype` is 0-2 across the whole
   database and does not separate stripes from hoops (Celtic and Barcelona share a
   value); `teamkits.jerseytemplateindex` is a mesh index, not a pattern.

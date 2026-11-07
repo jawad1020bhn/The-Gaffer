@@ -326,6 +326,10 @@ pub struct TeamDef {
     /// Kit jersey pattern (Solid, Stripes, Hoops, HalfAndHalf, Diagonal).
     #[serde(default, alias = "kit_pattern")]
     pub kit_pattern: Option<String>,
+    /// Starting shape, e.g. `"4-2-3-1"` — three or four lines summing to ten, as
+    /// `player_rating::parse_formation` reads it. Omitted, the club plays 4-4-2.
+    #[serde(default)]
+    pub formation: Option<String>,
     /// Year the team was founded. If not provided, will be randomly generated.
     #[serde(default)]
     pub founded_year: Option<u32>,

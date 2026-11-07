@@ -125,6 +125,17 @@ export function validatePackage({ documents, countryCodes }) {
     if (team.stadiumName != null && typeof team.stadiumName !== "string") {
       error(where, "stadiumName must be a string");
     }
+    // `player_rating::parse_formation`: three or four lines summing to ten.
+    if (team.formation != null) {
+      const lines = String(team.formation)
+        .split("-")
+        .map((line) => Number.parseInt(line, 10));
+      const laidOut =
+        [3, 4].includes(lines.length) &&
+        lines.every((line) => Number.isInteger(line) && line > 0) &&
+        lines.reduce((sum, line) => sum + line, 0) === 10;
+      if (!laidOut) error(where, `formation ${JSON.stringify(team.formation)} cannot be laid out`);
+    }
     if (!team.country) error(where, "country is required");
     else if (countryCodes && !countryCodes.has(team.country)) error(where, `unknown country code "${team.country}"`);
     if (!isPlainObject(team.colors)) error(where, "colors.primary/secondary are required");

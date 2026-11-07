@@ -2897,7 +2897,8 @@
         "alternatePositionInvalid": "\"{{entity}}\" lists {{position}} as an alternate position. An alternate must be a specific position, different from the player's own, and listed only once.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" has a weak foot or alternate positions, but {{position}} is a general group, so the game would re-work them from the player's attributes and discard what you wrote. Give the player a specific position, such as CentralMidfielder or Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" has a career entry (row {{row}}) with no club name.",
-        "unsupportedFormatVersion": "This package was made with a newer version of the game (format {{version}}; this build supports {{supported}}). Update the game to open it."
+        "unsupportedFormatVersion": "This package was made with a newer version of the game (format {{version}}; this build supports {{supported}}). Update the game to open it.",
+        "invalidFormation": "The formation \"{{formation}}\" on team {{entity}} cannot be laid out. Use three or four lines of players that add up to ten, like 4-4-2 or 4-2-3-1."
       },
       "conflict": {
         "duplicateId": "Packages \"{{packages}}\" both define {{entityKind}} \"{{entityId}}\" with different content. The last package wins.",

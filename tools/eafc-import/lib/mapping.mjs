@@ -339,6 +339,39 @@ export function playStyle(attackRating, defenceRating, { buildUp = 2, depth = 50
 }
 
 /**
+ * A formation string the engine can lay out, from EA's own name for the club's
+ * default shape (`formations.formationname`: "4-2-3-1", "3-4-2-1", ...).
+ *
+ * `player_rating::parse_formation` accepts three or four lines that add up to ten,
+ * so a five-line EA shape such as Real Madrid's "4-1-2-1-2" has to be folded: the
+ * two adjacent lines holding the fewest players between them become one, which
+ * turns that diamond into "4-3-1-2" and leaves every other shape alone. Anything
+ * that still does not parse returns null, and the club plays the engine default.
+ */
+export function formationName(raw) {
+  const parts = String(raw ?? "")
+    .trim()
+    .split("-")
+    .map((part) => Number.parseInt(part, 10));
+  if (parts.length < 3 || parts.some((line) => !Number.isInteger(line) || line <= 0)) return null;
+  if (parts.reduce((sum, line) => sum + line, 0) !== 10) return null;
+  const folded = [...parts];
+  while (folded.length > 4) {
+    let mergeAt = 0;
+    let fewest = Infinity;
+    for (let index = 0; index < folded.length - 1; index += 1) {
+      const pair = folded[index] + folded[index + 1];
+      if (pair < fewest) {
+        fewest = pair;
+        mergeAt = index;
+      }
+    }
+    folded.splice(mergeAt, 2, fewest);
+  }
+  return folded.join("-");
+}
+
+/**
  * Country code → confederation, read from the engine's own catalog
  * (`ofm_core/src/nations.rs`), so a package cannot disagree with the game about
  * which region a country belongs to.

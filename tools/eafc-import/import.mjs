@@ -34,6 +34,7 @@ import {
   playStyle,
   positionFor,
   reputationRange,
+  formationName,
   parseNationRegions,
   seasonStartMonth,
   shortName,
@@ -521,6 +522,7 @@ async function main() {
       "playernames",
       "stadiums",
       "teamstadiumlinks",
+      "formations",
     ],
   });
   const localization = await kit.readTemplateDatabase({
@@ -537,6 +539,7 @@ async function main() {
   const teamPlayerLinks = tables(main_, "teamplayerlinks");
   const playerNames = tables(main_, "playernames");
   const stadiums = tables(main_, "stadiums");
+  const formations = tables(main_, "formations");
   const teamStadiumLinks = tables(main_, "teamstadiumlinks");
   const strings = [...tables(localization, "LanguageStrings1"), ...tables(localization, "LanguageStrings2")];
 
@@ -564,6 +567,15 @@ async function main() {
     const venue = String(stadiumById.get(link.stadiumid)?.name ?? "").trim();
     if (!venue || venue.startsWith("_")) continue;
     if (!stadiumByTeam.has(link.teamid)) stadiumByTeam.set(link.teamid, venue);
+  }
+
+  // Each club's default shape. EA keeps a formation row per team and names it the
+  // way the engine does ("4-2-3-1"); the ones it writes in five lines are folded in
+  // `formationName`.
+  const formationByTeam = new Map();
+  for (const row of formations) {
+    const shape = formationName(row.formationname);
+    if (shape && !formationByTeam.has(row.teamid)) formationByTeam.set(row.teamid, shape);
   }
 
   // `teams.cityid` is only an index; the names live in the localization tables as
@@ -718,6 +730,7 @@ async function main() {
         primary: hexColor(team.teamcolor1r, team.teamcolor1g, team.teamcolor1b, "#1f2937"),
         secondary: hexColor(team.teamcolor2r, team.teamcolor2g, team.teamcolor2b, "#ffffff"),
       },
+      formation: formationByTeam.get(teamId),
       playStyle: playStyle(team.attackrating, team.defenserating, {
         buildUp: Number(team.buildupplay),
         depth: Number(team.defensivedepth),

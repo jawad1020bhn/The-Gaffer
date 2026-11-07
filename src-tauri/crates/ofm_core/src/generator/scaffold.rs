@@ -216,6 +216,7 @@ pub fn entity_template(kind: EntityKind, name: Option<&str>) -> Value {
                 "country": "ENG",
                 "colors": { "primary": "#cc0000", "secondary": "#ffffff" },
                 "playStyle": "Balanced",
+                "formation": "4-4-2",
                 "stadiumName": format!("{display} Arena"),
                 "reputationRange": [300, 900],
                 "financeRange": [500000, 10000000],

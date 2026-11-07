@@ -45,6 +45,16 @@ fn built_world() -> Option<(WorldPackage, WorldData)> {
     Some((package, world))
 }
 
+/// The shape a built club takes the field in.
+fn formation_of<'a>(world: &'a WorldData, id: &str) -> &'a str {
+    world
+        .teams
+        .iter()
+        .find(|team| team.id == id)
+        .map(|team| team.formation.as_str())
+        .expect("the club is in the package")
+}
+
 #[test]
 fn the_package_builds_the_world_it_promises() {
     let Some((package, world)) = built_world() else {
@@ -119,6 +129,26 @@ fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
         .filter(|team| team.city == team.country)
         .count();
     assert_eq!(country_named, 0, "clubs whose city is their country");
+}
+
+#[test]
+fn clubs_play_the_shape_they_were_authored_with() {
+    let Some((_, world)) = built_world() else {
+        return;
+    };
+
+    // EA's own name for each club's default shape, folded to the four lines the
+    // engine lays out (Real Madrid's 4-1-2-1-2 becomes 4-3-1-2).
+    assert_eq!(formation_of(&world, "arsenal"), "4-2-3-1");
+    assert_eq!(formation_of(&world, "fc-barcelona"), "4-2-1-3");
+    assert_eq!(formation_of(&world, "juventus"), "3-4-2-1");
+    assert_eq!(formation_of(&world, "bayer-04-leverkusen"), "4-3-3");
+
+    // Every club names one, and they are not all the same: the package carries 19
+    // shapes, where the engine default would have left every club at 4-4-2.
+    let shapes: HashSet<&str> = world.teams.iter().map(|t| t.formation.as_str()).collect();
+    assert!(shapes.len() > 10, "only {} shapes", shapes.len());
+    assert!(shapes.contains("4-4-2"));
 }
 
 #[test]

@@ -67,6 +67,12 @@ being generated squad members. Players keep position, alternate positions, date 
 their position, alternate positions, date of birth, nationality, preferred foot,
 weak foot, contract end and (where the database has one) wage.
 
+**Every club plays its real shape.** Formations come from EA's per-club datum —
+Arsenal and Manchester City 4-2-3-1, Barcelona 4-2-1-3, Juventus 3-4-2-1,
+Leverkusen 4-3-3 — across 19 distinct shapes rather than every club in 4-4-2. EA
+writes a few in five lines (Real Madrid's 4-1-2-1-2); those are folded to the four
+the engine lays out (4-3-1-2).
+
 **Every club has its real city and, where EA licenses one, its real ground** —
 Arsenal at the Emirates, Liverpool at Anfield, the Bernabéu, Celtic Park. Each
 club also carries a play style read from EA's own tactics (line height and
@@ -89,12 +95,12 @@ scope — including the South American ones.
   their city instead.
 - **No badges, kits or photos** — the database holds no image assets, only ids
   into EA's own CDN.
-- **No managers, formations, tactics or shirt numbers.** The package format has
-  no field for them: `StaffRole` stops at assistant manager, and the game
-  generates a manager for every club at world build. Real staff cannot be
-  authored into the dugout. Likewise the only tactical field is `playStyle`;
-  formations, the nine tactic dials, captains, penalty takers and set-piece
-  takers are all engine-side.
+- **No managers or backroom staff.** `StaffRole` stops at assistant manager and
+  the game generates a manager for every club at world build, so real staff cannot
+  be authored into the dugout.
+- **No tactic dials, shirt numbers, captains or set-piece takers.** The package
+  carries `playStyle` and `formation`; the nine dials behind a style are derived
+  by the engine, and the rest have no field at all.
 - **No national teams**, because an OFM player belongs to one club and EA fields
   national sides from the same players.
 - **Market values are engine-generated** from ability and age; the database has no

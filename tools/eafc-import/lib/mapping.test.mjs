@@ -10,6 +10,7 @@ import {
   decodeEaDate,
   financeRange,
   footedness,
+  formationName,
   hexColor,
   isSpecificPosition,
   nationCode,
@@ -268,5 +269,25 @@ pub const ADDITIONAL_NATIONS: &[NationDef] = &[
     assert.equal(regions.get("ENG"), "europe");
     assert.equal(regions.get("BRA"), "south-america");
     assert.equal(regions.size, 2);
+  });
+});
+
+describe("formationName", () => {
+  it("passes through shapes the engine can lay out", () => {
+    for (const shape of ["4-4-2", "4-3-3", "4-2-3-1", "4-2-1-3", "3-4-2-1", "5-3-2", "4-5-1"]) {
+      assert.equal(formationName(shape), shape);
+    }
+  });
+
+  it("folds a five-line EA shape into four, merging the two smallest lines", () => {
+    // Real Madrid's 4-1-2-1-2 is a diamond the engine cannot lay out.
+    assert.equal(formationName("4-1-2-1-2"), "4-3-1-2");
+    assert.equal(formationName("3-2-3-1-1"), "3-2-3-2");
+  });
+
+  it("refuses shapes it cannot make sense of", () => {
+    for (const bad of ["", "4-4", "9-9-9", "4-0-6", "4-4-2-1", null, undefined]) {
+      assert.equal(formationName(bad), null);
+    }
   });
 });

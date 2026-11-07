@@ -2862,7 +2862,8 @@
         "alternatePositionInvalid": "“{{entity}}”将 {{position}} 列为备选位置。备选位置必须是具体位置，不能与球员自身位置相同，且只能列出一次。",
         "identityNeedsSpecificPosition": "“{{entity}}”设置了非惯用脚或备选位置，但 {{position}} 是一个笼统的分组，游戏会根据球员属性重新计算并丢弃你写下的内容。请为球员指定具体位置，例如 CentralMidfielder 或 Striker。",
         "careerEntryNeedsClub": "“{{entity}}”有一条生涯记录（第 {{row}} 行）没有填写俱乐部名称。",
-        "unsupportedFormatVersion": "此扩展包由更新版本的游戏创建（格式 {{version}}，本版本支持 {{supported}}）。请更新游戏后再打开。"
+        "unsupportedFormatVersion": "此扩展包由更新版本的游戏创建（格式 {{version}}，本版本支持 {{supported}}）。请更新游戏后再打开。",
+        "invalidFormation": "The formation \"{{formation}}\" on team {{entity}} cannot be laid out. Use three or four lines of players that add up to ten, like 4-4-2 or 4-2-3-1."
       },
       "competitionDef": {
         "invalidCalendar": "赛事日历无效：请检查联赛系列、级别、阶段和结束日期。",
