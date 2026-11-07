@@ -16,6 +16,9 @@ import process from "node:process";
 
 import { SPECIFIC_POSITIONS } from "./lib/mapping.mjs";
 
+/** `SelectorKind` in `competition_def.rs`. */
+const SELECTOR_KINDS = ["topByReputation", "allInCountry", "allInRegion", "championsOf"];
+
 /** `PlayStyle` in `domain/team.rs`; anything else is read as Balanced. */
 const PLAY_STYLES = ["Balanced", "Attacking", "Defensive", "Possession", "Counter", "HighPress"];
 import { ovrFromAttributes } from "./lib/rating.mjs";
@@ -255,8 +258,32 @@ export function validatePackage({ documents, countryCodes }) {
         if (!teamIds.has(teamId)) error(where, `participant "${teamId}" does not exist`);
       }
     }
-    if (hasSelector && participants.selector.excludeCompetitions) {
-      for (const excluded of participants.selector.excludeCompetitions) {
+    if (hasSelector) {
+      const selector = participants.selector;
+      // Mirrors `validate_selector` in competition_def.rs: each kind needs its own
+      // scope, and the engine rejects a selector that has not got one.
+      if (!SELECTOR_KINDS.includes(selector.kind)) {
+        error(where, `unknown selector kind "${selector.kind}"`);
+      }
+      if (selector.kind === "topByReputation") {
+        if (!selector.country) error(where, "topByReputation needs a country");
+        if (!(typeof selector.count === "number" && selector.count >= 2)) {
+          error(where, "topByReputation needs a count of at least 2");
+        }
+      }
+      if (selector.kind === "allInCountry" && !selector.country) {
+        error(where, "allInCountry needs a country");
+      }
+      if (selector.kind === "allInRegion" && !selector.region) {
+        error(where, "allInRegion needs a region");
+      }
+      if (selector.kind === "championsOf" && !selector.sourceCompetition) {
+        error(where, "championsOf needs a sourceCompetition");
+      }
+      if (selector.country && countryCodes && !countryCodes.has(selector.country)) {
+        error(where, `selector names unknown country "${selector.country}"`);
+      }
+      for (const excluded of selector.excludeCompetitions ?? []) {
         if (!competitionIds.has(excluded) && !competitions.some((c) => c.id === excluded)) {
           error(where, `selector excludes unknown competition "${excluded}"`);
         }

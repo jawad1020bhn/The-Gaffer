@@ -43,8 +43,10 @@ tiers, so promotion and relegation chain through each national pyramid.
 **4 continental competitions.** CONMEBOL Libertadores and Sudamericana keep their
 real fields from the database (which is also how Brazilian clubs get in — EA
 carries no Brazilian league). The two European cups are generated from club
-reputation: the **European Champions Cup** (top 32) and the **European Trophy
-Cup** (the next 32).
+reputation: the **European Champions Cup** (the 32 best European clubs) and the
+**European Trophy Cup** (the next 32). Their fields are written out club by club,
+because the engine's reputation selector requires a single country and a
+continent-wide cup has not got one.
 
 Squads are complete: every club has at least 18 players (the engine's floor is
 15, so no generated filler is added), the median is 27, and each player keeps

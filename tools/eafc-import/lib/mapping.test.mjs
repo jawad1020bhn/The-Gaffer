@@ -13,6 +13,7 @@ import {
   hexColor,
   isSpecificPosition,
   nationCode,
+  parseNationRegions,
   playStyle,
   playerId,
   positionFor,
@@ -238,5 +239,34 @@ describe("presentation helpers", () => {
   it("builds stable player ids", () => {
     assert.equal(playerId("Kylian", "Mbappé", 231747), "kylian-mbappe-231747");
     assert.equal(playerId("", "", 42), "player-42");
+  });
+});
+
+describe("parseNationRegions", () => {
+  it("reads the engine's catalog, first declaration winning", () => {
+    const source = `
+pub const NATION_CATALOG: &[NationDef] = &[
+    NationDef {
+        code: "ENG",
+        name: "England",
+        region_id: "europe",
+    },
+    NationDef {
+        code: "BRA",
+        name: "Brazil",
+        region_id: "south-america",
+    },
+];
+pub const ADDITIONAL_NATIONS: &[NationDef] = &[
+    NationDef {
+        code: "ENG",
+        name: "England",
+        region_id: "nowhere",
+    },
+];`;
+    const regions = parseNationRegions(source);
+    assert.equal(regions.get("ENG"), "europe");
+    assert.equal(regions.get("BRA"), "south-america");
+    assert.equal(regions.size, 2);
   });
 });

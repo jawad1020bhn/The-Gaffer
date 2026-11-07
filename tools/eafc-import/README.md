@@ -59,6 +59,7 @@ Champions Cup* (top 32 European clubs) and the *European Trophy Cup* (the next
 | `team.city` | `teams.cityid` through the `CityName_<id>` localization strings |
 | `team.stadiumName` | `teamstadiumlinks` → `stadiums.name` |
 | `team.playStyle` | `defensivedepth` + `buildupplay` + the attack/defence ratings (see below) |
+| `competition.regionId` | the league country's confederation in `nations.rs` |
 | `team.reputationRange` | `teams.overallrating` |
 | `team.financeRange` | `teams.clubworth` (thousands of euros, 2–4%) |
 | `team.foundedYear`, `playStyle` | `foundationyear`, attack vs. defence rating |
@@ -116,6 +117,10 @@ EA keeps three things behind an index rather than a name, and all three resolve:
   than shown: 136 of the 685 clubs get a real stadium name, the rest are drawn
   by the game from the city.
 - **Short names.** `TeamName_Abbr3_<teamid>` in the same localization tables.
+- **Confederations.** A competition's `regionId` is read from the engine's own
+  catalog (`ofm_core/src/nations.rs`) rather than guessed, so a league cannot
+  claim the wrong continent. The active regions of a built world come from these
+  ids, because the package writes no `defaultActiveRegions`.
 
 ### Encodings worth writing down
 

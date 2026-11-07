@@ -34,6 +34,7 @@ import {
   playStyle,
   positionFor,
   reputationRange,
+  parseNationRegions,
   seasonStartMonth,
   shortName,
   slugify,
@@ -545,6 +546,14 @@ async function main() {
   const leagueById = new Map(leagues.map((l) => [l.leagueid, l]));
   const name = (id) => (id ? namesById.get(id) ?? "" : "");
 
+  // Which confederation each country belongs to, straight from the engine's
+  // catalog, so a league's `regionId` is one the game itself knows.
+  const repoRoot = path.resolve(import.meta.dirname, "../..");
+  const nationRegions = parseNationRegions(
+    await readFile(path.join(repoRoot, "src-tauri/crates/ofm_core/src/nations.rs"), "utf8"),
+  );
+  const regionFor = (country) => nationRegions.get(country) ?? "europe";
+
   // Each club's home ground: `teamstadiumlinks` joins a team id to a stadium row.
   // EA names an unlicensed ground with a leading underscore ("_El Libertador"
   // for the Camp Nou), which reads as nonsense on a club page, so those stay
@@ -809,7 +818,7 @@ async function main() {
         name: leagueName,
         type: "ContinentalClub",
         scope: "Continental",
-        regionId: isSouthAmerica ? "south-america" : "europe",
+        regionId: regionFor(countryCode),
         priority: /libertadores|champions/i.test(leagueName) ? 0 : 1,
         format: { kind: "Knockout" },
         participants: { explicit: participants },
@@ -828,6 +837,7 @@ async function main() {
       type: "League",
       scope: "Domestic",
       countryId: countryCode,
+      regionId: regionFor(countryCode),
       priority: Math.max(0, (league.level ?? 1) - 1),
       format: { kind: "LeagueTable", legs: 2 },
       participants: { explicit: participants },
@@ -835,10 +845,19 @@ async function main() {
     });
   }
 
-  // The two European cups the EA database does not carry: participants are the
-  // strongest European clubs by generated reputation, the second one excluding
-  // the first cup's field.
-  if (competitionIds.has("european-champions-cup") === false) {
+  // The two European cups the EA database does not carry. Their fields are
+  // authored, not selected: `topByReputation` demands a single `country`, which a
+  // continent-wide cup cannot honestly give, so the strongest European clubs are
+  // named outright — ranked by the reputation this package gives them, which is
+  // the same midpoint the engine ranks authored reputations by.
+  const europeanClubs = teamEntities
+    .filter((team) => regionFor(team.country) === "europe")
+    .map((team) => ({
+      id: team.id,
+      reputation: Math.round((team.reputationRange[0] + team.reputationRange[1]) / 2),
+    }))
+    .sort((a, b) => b.reputation - a.reputation || a.id.localeCompare(b.id));
+  if (competitionIds.has("european-champions-cup") === false && europeanClubs.length >= 64) {
     pushCompetition({
       schema: "competition",
       id: "european-champions-cup",
@@ -848,29 +867,24 @@ async function main() {
       regionId: "europe",
       priority: 0,
       format: { kind: "Knockout" },
-      participants: { selector: { kind: "topByReputation", region: "europe", count: 32 } },
+      participants: { explicit: europeanClubs.slice(0, 32).map((club) => club.id) },
       seasonStartMonth: 8,
     });
   }
-  pushCompetition({
-    schema: "competition",
-    id: "european-trophy-cup",
-    name: "European Trophy Cup",
-    type: "ContinentalClub",
-    scope: "Continental",
-    regionId: "europe",
-    priority: 1,
-    format: { kind: "Knockout" },
-    participants: {
-      selector: {
-        kind: "topByReputation",
-        region: "europe",
-        count: 32,
-        excludeCompetitions: ["european-champions-cup"],
-      },
-    },
-    seasonStartMonth: 8,
-  });
+  if (competitionIds.has("european-trophy-cup") === false && europeanClubs.length >= 64) {
+    pushCompetition({
+      schema: "competition",
+      id: "european-trophy-cup",
+      name: "European Trophy Cup",
+      type: "ContinentalClub",
+      scope: "Continental",
+      regionId: "europe",
+      priority: 1,
+      format: { kind: "Knockout" },
+      participants: { explicit: europeanClubs.slice(32, 64).map((club) => club.id) },
+      seasonStartMonth: 8,
+    });
+  }
 
   // "Primera División" is both Spain's and Argentina's; the country disambiguates
   // exactly the names that collide and leaves the rest alone.

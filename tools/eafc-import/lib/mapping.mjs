@@ -338,6 +338,26 @@ export function playStyle(attackRating, defenceRating, { buildUp = 2, depth = 50
   return "Balanced";
 }
 
+/**
+ * Country code → confederation, read from the engine's own catalog
+ * (`ofm_core/src/nations.rs`), so a package cannot disagree with the game about
+ * which region a country belongs to.
+ *
+ * It matters twice: a competition's `regionId` has to be one the engine knows, and
+ * a domestic league tagged "europe" puts its region into the active set at world
+ * build. Before this, every league outside South America claimed to be European.
+ */
+export function parseNationRegions(source) {
+  const regions = new Map();
+  for (const entry of source.split("NationDef {").slice(1)) {
+    const code = /code:\s*"([A-Z]{2,3})"/.exec(entry)?.[1];
+    const region = /region_id:\s*"([a-z-]+)"/.exec(entry)?.[1];
+    // `NATION_CATALOG` and `ADDITIONAL_NATIONS` may both list a country; the first wins.
+    if (code && region && !regions.has(code)) regions.set(code, region);
+  }
+  return regions;
+}
+
 /** Month a domestic season opens, by country. Defaults to August. */
 const SEASON_START_MONTH = {
   AR: 1,
