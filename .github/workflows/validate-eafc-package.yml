@@ -1,0 +1,76 @@
+name: validate-eafc-package
+
+# The EA FC 27 package in `mods/` is generated, so nothing in the Rust test suite
+# touches it by default. This job is what actually answers "does it load?": it
+# builds the authoring CLI, validates the package with the loader's own
+# `validate_package`, packs and re-validates the archive, then builds a world from
+# it in `tests/eafc_package.rs`.
+#
+# Separate from `build-check` on purpose — that workflow owns the engine, this one
+# owns one generated mod, and a red package should not read as a red backend.
+
+on:
+  push:
+    branches: [arena/898245e7-the-gaffer-v0-4]
+    paths:
+      - "mods/**"
+      - "src-tauri/crates/ofm-cli/**"
+      - "src-tauri/crates/ofm_core/src/generator/**"
+      - "tools/eafc-import/**"
+      - ".github/workflows/validate-eafc-package.yml"
+  pull_request:
+    paths:
+      - "mods/**"
+      - "src-tauri/crates/ofm-cli/**"
+      - "src-tauri/crates/ofm_core/src/generator/**"
+      - "tools/eafc-import/**"
+      - ".github/workflows/validate-eafc-package.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-eafc-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Load the EA FC 27 package
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Rust 1.95.0
+        uses: dtolnay/rust-toolchain@1.95.0
+
+      - name: Cache the build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ./src-tauri -> target
+
+      - name: Build the authoring CLI
+        run: cargo build --locked --manifest-path src-tauri/Cargo.toml -p ofm-cli
+
+      # `validate_package`: the same call the app makes before a mod is installed.
+      - name: Validate the package directory
+        run: ./src-tauri/target/debug/ofm-cli validate mods/eafc-fc27
+
+      # The archive is what a player installs, so it gets validated on its own.
+      - name: Pack and validate the archive
+        run: |
+          ./src-tauri/target/debug/ofm-cli pack mods/eafc-fc27 --output "$RUNNER_TEMP/eafc-fc27.ofm"
+          ./src-tauri/target/debug/ofm-cli validate "$RUNNER_TEMP/eafc-fc27.ofm"
+          ls -lh "$RUNNER_TEMP/eafc-fc27.ofm"
+
+      # The load itself: `load_world_package` plus
+      # `build_world_from_package_seeded`, asserting the world that comes out.
+      - name: Build a world from the package
+        run: >
+          cargo test --locked --manifest-path src-tauri/Cargo.toml
+          -p ofm-cli --test eafc_package -- --nocapture
