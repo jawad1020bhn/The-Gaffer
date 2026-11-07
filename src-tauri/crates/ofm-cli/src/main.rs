@@ -178,6 +178,8 @@ const SCHEMA_TEAM: &str = r##"// Team entity — place inside teams/*.json in th
   },
   "playStyle": "Balanced",    // optional: "Balanced" | "Attacking" | "Defensive"
                               //   | "Possession" | "Counter" | "HighPress"
+  "formation": "4-2-3-1",     // optional: the shape the club plays — three or four lines of
+                              //   players that add up to ten ("4-4-2", "3-4-2-1"); 4-4-2 if omitted
   "stadiumName": "My Arena",  // optional
   "reputationRange": [300, 900],      // optional: [min, max] 0-1000
   "financeRange": [500000, 10000000], // optional: [min, max] budget in euros

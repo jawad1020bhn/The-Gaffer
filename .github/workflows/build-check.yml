@@ -381,8 +381,22 @@ jobs:
       # cargo would quietly update the lockfile in the runner's checkout and CI could be testing
       # a dependency set that exists nowhere else. With it, a manifest change that was not
       # accompanied by its lockfile fails here and says so.
+      # Teed so a failure names the test that broke. The step used to run cargo bare, so the
+      # only thing a run reported was exit code 101 — the failing assertion lived in the log
+      # bundle, which is served from a host not every reviewer can reach.
       - name: Run backend tests
-        run: cargo test --locked --manifest-path src-tauri/Cargo.toml --workspace
+        run: |
+          set +e
+          cargo test --locked --manifest-path src-tauri/Cargo.toml --workspace \
+            > "$RUNNER_TEMP/unit.log" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/unit.log"
+          if [ "$status" -ne 0 ]; then
+            grep -m 40 -E "^failures:|^    [A-Za-z_0-9:]+$|^test result:|panicked at|error\[E|^error: " \
+              "$RUNNER_TEMP/unit.log" |
+              while IFS= read -r line; do echo "::error::test ${line//\%/}"; done
+          fi
+          exit "$status"
 
       # One line after each cargo step: how full the disk is and what `target/` weighs. Cheap, and
       # it shows which step a future disk failure happened in. `always()` so a failed step still
