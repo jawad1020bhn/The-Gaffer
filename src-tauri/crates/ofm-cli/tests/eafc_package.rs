@@ -141,7 +141,11 @@ fn every_club_has_a_playable_squad_and_one_of_the_six_styles() {
     // Nobody plays for a club the package does not define.
     for player in &world.players {
         if let Some(club) = player.team_id.as_deref() {
-            assert!(team_ids.contains(club), "{} plays for {club}", player.full_name);
+            assert!(
+                team_ids.contains(club),
+                "{} plays for {club}",
+                player.full_name
+            );
         }
     }
 
