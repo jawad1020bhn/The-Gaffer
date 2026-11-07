@@ -51,6 +51,12 @@ Squads are complete: every club has at least 18 players (the engine's floor is
 their position, alternate positions, date of birth, nationality, preferred foot,
 weak foot, contract end and (where the database has one) wage.
 
+**Every club has its real city and, where EA licenses one, its real ground** —
+Arsenal at the Emirates, Liverpool at Anfield, the Bernabéu, Celtic Park. Each
+club also carries a play style read from EA's own tactics (line height and
+build-up): Manchester City, Barcelona and Liverpool play possession, Real Madrid
+attacking, Newcastle and Brentford counter, Crystal Palace and Wolves defensive.
+
 **Ratings match EA.** The engine ignores a package's `overall` and rates a player
 from the attributes it was given, so the attributes are calibrated to land on EA's
 overall: Messi 89, Mbappé and Haaland 91, Van Dijk 88, Yamal 90. Squads run from
@@ -62,10 +68,17 @@ scope — including the South American ones.
 
 ## Known gaps
 
-- **Cities are best-effort.** EA ships `cityid` without names, so a club's city is
-  recovered from its name or from another club sharing its `cityid`; the rest fall
-  back to the country name.
-- **No badges, kits, stadium names or photos** — the database has none.
+- **549 clubs have no stadium name.** EA ships 181 grounds for 878 clubs and
+  calls the rest by an unlicensed placeholder (`_El Libertador`); those clubs show
+  their city instead.
+- **No badges, kits or photos** — the database holds no image assets, only ids
+  into EA's own CDN.
+- **No managers, formations, tactics or shirt numbers.** The package format has
+  no field for them: `StaffRole` stops at assistant manager, and the game
+  generates a manager for every club at world build. Real staff cannot be
+  authored into the dugout. Likewise the only tactical field is `playStyle`;
+  formations, the nine tactic dials, captains, penalty takers and set-piece
+  takers are all engine-side.
 - **No national teams**, because an OFM player belongs to one club and EA fields
   national sides from the same players.
 - **Market values are engine-generated** from ability and age; the database has no

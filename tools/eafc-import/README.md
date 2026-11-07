@@ -56,7 +56,9 @@ Champions Cup* (top 32 European clubs) and the *European Trophy Cup* (the next
 | `team.name`, `team.colors` | `teams.teamname`, `teamcolor1*` / `teamcolor2*` |
 | `team.shortName` | `TeamName_Abbr3_<teamid>` in the localization database |
 | `team.country` | the club's league country, else its squad's most common nationality |
-| `team.city` | recovered from the club name / shared `cityid` (see caveats) |
+| `team.city` | `teams.cityid` through the `CityName_<id>` localization strings |
+| `team.stadiumName` | `teamstadiumlinks` → `stadiums.name` |
+| `team.playStyle` | `defensivedepth` + `buildupplay` + the attack/defence ratings (see below) |
 | `team.reputationRange` | `teams.overallrating` |
 | `team.financeRange` | `teams.clubworth` (thousands of euros, 2–4%) |
 | `team.foundedYear`, `playStyle` | `foundationyear`, attack vs. defence rating |
@@ -100,6 +102,21 @@ competitions' own `regionId`s, so the world activates exactly the regions its
 competitions need. The old `["europe"]` would have put the South American cups
 outside simulation scope.
 
+### Where the names come from
+
+EA keeps three things behind an index rather than a name, and all three resolve:
+
+- **Cities.** `teams.cityid` is joined to the localization tables, where each city
+  is `CityName_<id>` (occasionally `CityName_<id>_FullChar`). That is 997 named
+  cities and a real city for 91% of the raw team rows — and for every club this
+  package ships, since the unresolved ones are national sides and placeholders.
+- **Grounds.** `teamstadiumlinks` joins a team to a stadium row in `stadiums`,
+  which carries the name. EA names an *unlicensed* ground with a leading
+  underscore (`_El Libertador` for the Camp Nou), so those are dropped rather
+  than shown: 136 of the 685 clubs get a real stadium name, the rest are drawn
+  by the game from the city.
+- **Short names.** `TeamName_Abbr3_<teamid>` in the same localization tables.
+
 ### Encodings worth writing down
 
 These were derived from the data, because the kit's descriptor files label the
@@ -123,13 +140,21 @@ fields but not their meaning:
 
 ## Caveats
 
-- **No city names.** EA stores `teams.cityid` and the id-to-name table is not in
-  the shipped database. The importer recovers the city from the club name where
-  it can ("Manchester City", "Bayern München"), shares it across clubs with the
-  same `cityid` (which is how Arsenal and Chelsea get London), and otherwise
-  falls back to the country name. Correct, but incomplete.
-- **No stadium, badge or photo.** The database carries capacities, not stadium
-  names, and no assets at all.
+- **Unlicensed grounds stay unnamed.** EA ships 181 stadiums for 878 clubs; the
+  rest point at a placeholder name starting with `_`. Those clubs get a city and
+  no stadium name.
+- **No badge, kit or photo.** The database holds no image assets, only ids into
+  EA's own CDN.
+- **No managers, formations, tactics, shirt numbers, captains or rivals.** Not a
+  gap in this tool: the package format has no field for any of them. `staff` roles
+  are AssistantManager, Coach, Scout and Physio (`StaffRole` in `domain/staff.rs`),
+  and `SCHEMA_REFERENCE.md` is explicit that a club's manager is generated at
+  world build and "is not yours to set". `playStyle` is the only tactical field,
+  and EA's tactic data arrives as a line height and a build-up style, not as one
+  of OFM's six identities, so it is inferred.
+- **Kit patterns are not inferred.** `teams.jerseytype` is 0-2 across the whole
+  database and does not separate stripes from hoops (Celtic and Barcelona share a
+  value); `teamkits.jerseytemplateindex` is a mesh index, not a pattern.
 - **No national teams.** EA fields national sides from the same players, and an
   OFM player has one club: importing a World Cup would mean emptying clubs, so
   the 51 national teams are left out.

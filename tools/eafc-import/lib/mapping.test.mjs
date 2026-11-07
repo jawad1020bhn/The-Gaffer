@@ -208,6 +208,21 @@ describe("presentation helpers", () => {
     assert.equal(playStyle(80, 80), "Balanced");
   });
 
+  it("reads EA's line height and build-up into a play style", () => {
+    // A deep line is a low block, and only a side that scores its way out of it
+    // is called a counter-attacking one.
+    assert.equal(playStyle(70, 74, { depth: 30 }), "Defensive");
+    assert.equal(playStyle(80, 74, { depth: 30 }), "Counter");
+    // The highest line presses, unless the side is simply better going forward.
+    assert.equal(playStyle(79, 81, { depth: 90 }), "HighPress");
+    assert.equal(playStyle(87, 85, { depth: 90 }), "HighPress");
+    assert.equal(playStyle(90, 83, { depth: 90 }), "Attacking");
+    // Direct build-up at a normal line is a counter side; short build-up keeps the ball.
+    assert.equal(playStyle(78, 80, { buildUp: 3 }), "Counter");
+    assert.equal(playStyle(79, 78, { buildUp: 3 }), "Counter");
+    assert.equal(playStyle(86, 84, { buildUp: 1, depth: 65 }), "Possession");
+  });
+
   it("reads the small value fields", () => {
     assert.equal(footedness(1), "Right");
     assert.equal(footedness(2), "Left");

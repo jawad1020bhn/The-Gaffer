@@ -510,7 +510,17 @@ async function main() {
   console.log(`reading ${args.version} databases...`);
   const main_ = await kit.readTemplateDatabase({
     version: args.version,
-    tables: ["players", "teams", "leagues", "nations", "leagueteamlinks", "teamplayerlinks", "playernames"],
+    tables: [
+      "players",
+      "teams",
+      "leagues",
+      "nations",
+      "leagueteamlinks",
+      "teamplayerlinks",
+      "playernames",
+      "stadiums",
+      "teamstadiumlinks",
+    ],
   });
   const localization = await kit.readTemplateDatabase({
     version: args.version,
@@ -525,6 +535,8 @@ async function main() {
   const leagueTeamLinks = tables(main_, "leagueteamlinks");
   const teamPlayerLinks = tables(main_, "teamplayerlinks");
   const playerNames = tables(main_, "playernames");
+  const stadiums = tables(main_, "stadiums");
+  const teamStadiumLinks = tables(main_, "teamstadiumlinks");
   const strings = [...tables(localization, "LanguageStrings1"), ...tables(localization, "LanguageStrings2")];
 
   const namesById = new Map(playerNames.map((n) => [n.nameid, n.name]));
@@ -532,6 +544,28 @@ async function main() {
   const teamById = new Map(teams.map((t) => [t.teamid, t]));
   const leagueById = new Map(leagues.map((l) => [l.leagueid, l]));
   const name = (id) => (id ? namesById.get(id) ?? "" : "");
+
+  // Each club's home ground: `teamstadiumlinks` joins a team id to a stadium row.
+  // EA names an unlicensed ground with a leading underscore ("_El Libertador"
+  // for the Camp Nou), which reads as nonsense on a club page, so those stay
+  // unnamed and the UI draws just the city.
+  const stadiumById = new Map(stadiums.map((stadium) => [stadium.stadiumid, stadium]));
+  const stadiumByTeam = new Map();
+  for (const link of teamStadiumLinks) {
+    const venue = String(stadiumById.get(link.stadiumid)?.name ?? "").trim();
+    if (!venue || venue.startsWith("_")) continue;
+    if (!stadiumByTeam.has(link.teamid)) stadiumByTeam.set(link.teamid, venue);
+  }
+
+  // `teams.cityid` is only an index; the names live in the localization tables as
+  // `CityName_<id>` (some rows carry a `_FullChar` suffix).
+  const cityById = new Map();
+  for (const entry of strings) {
+    const match = /^CityName_(\d+)(?:_FullChar)?$/.exec(String(entry.stringid));
+    if (!match) continue;
+    const text = String(entry.sourcetext ?? "").trim();
+    if (text) cityById.set(Number(match[1]), text);
+  }
 
   // --- competitions -------------------------------------------------------
   const clubsByLeague = countBy(leagueTeamLinks, (l) => l.leagueid);
@@ -669,14 +703,17 @@ async function main() {
       id,
       name: clubName,
       shortName: shortName(abbreviationById.get(teamId), clubName),
-      city: cityForTeam(teamId) ?? nation?.nationname ?? country,
+      city: cityById.get(Number(team.cityid)) ?? cityForTeam(teamId) ?? nation?.nationname ?? country,
       country,
       colors: {
         primary: hexColor(team.teamcolor1r, team.teamcolor1g, team.teamcolor1b, "#1f2937"),
         secondary: hexColor(team.teamcolor2r, team.teamcolor2g, team.teamcolor2b, "#ffffff"),
       },
-      playStyle: playStyle(team.attackrating, team.defenserating),
-      stadiumName: "",
+      playStyle: playStyle(team.attackrating, team.defenserating, {
+        buildUp: Number(team.buildupplay),
+        depth: Number(team.defensivedepth),
+      }),
+      stadiumName: stadiumByTeam.get(teamId) ?? "",
       reputationRange: reputationRange(team.overallrating),
       financeRange: financeRange(team.clubworth),
       foundedYear: Number.isFinite(team.foundationyear) && team.foundationyear > 1800 ? team.foundationyear : null,

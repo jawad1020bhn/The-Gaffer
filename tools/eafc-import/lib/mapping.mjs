@@ -312,11 +312,29 @@ export function financeRange(clubWorth) {
 }
 
 /** Attribute-driven tactical tendency, so clubs do not all read "Balanced". */
-export function playStyle(attackRating, defenceRating) {
+/**
+ * The club's tactical identity, from EA's own tactic fields plus how the club is
+ * built. `PlayStyle` is the only tactical knob a package can carry — OFM derives
+ * the nine-dial blueprint from it (`ai_tactics::blueprint_for`) and picks player
+ * roles from it — and it is worth filling properly: reading attack-versus-defence
+ * alone left 94% of clubs "Balanced".
+ *
+ * - `defensivedepth` is the line height (30 deep, 50 normal, 65 high, 90 highest).
+ * - `buildupplay` is how direct the side is (1 short, 2 mixed, 3 direct).
+ *
+ * A club only gets a style when the two agree; otherwise it stays Balanced, the
+ * neutral blueprint, rather than being given an identity it does not play.
+ */
+export function playStyle(attackRating, defenceRating, { buildUp = 2, depth = 50 } = {}) {
   const attack = attackRating ?? 0;
   const defence = defenceRating ?? 0;
-  if (attack - defence >= 6) return "Attacking";
-  if (defence - attack >= 6) return "Defensive";
+  const lean = attack - defence;
+  if (depth <= 30) return lean >= 4 ? "Counter" : "Defensive";
+  if (depth >= 90) return lean >= 4 ? "Attacking" : "HighPress";
+  if (buildUp >= 3) return lean >= 4 ? "Attacking" : "Counter";
+  if (buildUp === 1) return "Possession";
+  if (lean >= 6) return "Attacking";
+  if (lean <= -6) return "Defensive";
   return "Balanced";
 }
 
