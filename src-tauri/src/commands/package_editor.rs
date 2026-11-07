@@ -1047,6 +1047,7 @@ mod tests {
                 secondary: "#ffe500".to_string(),
             },
             play_style: "Balanced".to_string(),
+            formation: None,
             stadium_name: "Old Trafford".to_string(),
             reputation_range: Some([700, 900]),
             finance_range: None,
