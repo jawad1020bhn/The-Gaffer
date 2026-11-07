@@ -13,6 +13,10 @@ this is a mod and not part of the engine.
 **In game (easiest).** New Game → world selection → **+** (Install Package) →
 pick `mods/eafc-fc27.ofm`.
 
+A 685-club world takes a while to build the first time, because the world selector
+also generates past seasons (default 12 years). Pick **None** or **6 years** there
+for the fastest first load; the history is cosmetic.
+
 **Manual.** Copy the archive into the packages directory and restart:
 
 | OS | Path |
@@ -42,10 +46,19 @@ carries no Brazilian league). The two European cups are generated from club
 reputation: the **European Champions Cup** (top 32) and the **European Trophy
 Cup** (the next 32).
 
-Squads are complete: every club has at least 18 players, the median is 27, and
-each player keeps their position, alternate positions, date of birth, nationality,
-preferred foot, weak foot, ability, potential, contract end and (where the
-database has one) wage.
+Squads are complete: every club has at least 18 players (the engine's floor is
+15, so no generated filler is added), the median is 27, and each player keeps
+their position, alternate positions, date of birth, nationality, preferred foot,
+weak foot, contract end and (where the database has one) wage.
+
+**Ratings match EA.** The engine ignores a package's `overall` and rates a player
+from the attributes it was given, so the attributes are calibrated to land on EA's
+overall: Messi 89, Mbappé and Haaland 91, Van Dijk 88, Yamal 90. Squads run from
+46 to 91.
+
+The package writes **no `defaultActiveRegions`**. The engine fills the active
+regions from the competitions themselves, so every league and cup below is in
+scope — including the South American ones.
 
 ## Known gaps
 

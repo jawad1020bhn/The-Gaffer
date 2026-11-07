@@ -14,6 +14,7 @@ import path from "node:path";
 import process from "node:process";
 
 import { SPECIFIC_POSITIONS } from "./lib/mapping.mjs";
+import { ovrFromAttributes } from "./lib/rating.mjs";
 
 const POSITIONS = new Set([
   ...SPECIFIC_POSITIONS,
@@ -183,6 +184,17 @@ export function validatePackage({ documents, countryCodes }) {
     for (const alternate of alternates) {
       if (!SPECIFIC_POSITIONS.includes(alternate)) error(where, `alternatePositions "${alternate}" is not specific`);
       if (alternate === player.position) error(where, "alternatePositions repeat the player's own position");
+    }
+    if (player.attributes != null && player.potential != null) {
+      // The loader's own rule: a package that writes attributes is rated from them,
+      // and the ceiling may not sit below the rating they imply.
+      const ability = Math.round(ovrFromAttributes(player.attributes, player.position));
+      if (player.potential < ability) {
+        error(where, `potential ${player.potential} is below the ${ability} its attributes rate`);
+      }
+      if (player.overall != null && player.overall !== ability) {
+        error(where, `overall ${player.overall} disagrees with the ${ability} its attributes rate`);
+      }
     }
     if (player.attributes != null) {
       if (!isPlainObject(player.attributes)) error(where, "attributes must be an object");

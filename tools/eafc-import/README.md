@@ -63,12 +63,42 @@ Champions Cup* (top 32 European clubs) and the *European Trophy Cup* (the next
 | `player.name`/`firstName`/`lastName` | `firstnameid`/`lastnameid`/`commonnameid` via `playernames` |
 | `player.position` | `preferredposition1` (table below) |
 | `player.alternatePositions` | `preferredposition2..7` |
-| `player.overall`/`potential` | `overallrating` / `potential` |
+| `player.overall`/`potential` | `overallrating` / `potential` (rewritten to the engine's own figure, see *Ratings*) |
 | `player.attributes` | EA's attribute set, averaged where OFM has one field for two |
 | `player.dateOfBirth` | `birthdate`, a day count (see below) |
 | `player.footedness`/`weakFoot` | `preferredfoot` (1 = right, 2 = left) / `weakfootabilitytypecode` |
 | `player.contractEnd` | `contractvaliduntil` (year) → `YYYY-06-30` |
 | `player.wage` | `wage` (weekly, sparse in the database; omitted when 0) |
+
+### Ratings
+
+A package that writes `attributes` is rated by the engine from those attributes:
+`overall` is ignored, and a package whose `potential` sits below the rating the
+attributes imply is **rejected** (`player_potential_errors` in
+`generator/package.rs`). The game then shows the engine's number everywhere, so
+the importer computes it too, in `lib/rating.mjs`: a port of
+`player_rating.rs` — the per-position attribute weights, the three key attributes
+per position, the `0.6`-per-point penalty below 45, and the 1–99 clamp.
+`lib/rating.test.mjs` re-reads the Rust and fails if any of those tables drift.
+
+Two things follow, both handled in `lib/mapping.mjs`:
+
+- **Goalkeepers get their own attribute block.** The engine rates a keeper on
+  handling, reflexes and aerial reach; reading those off outfield columns
+  (`positioning` instead of `gkpositioning`, heading instead of reach) rated every
+  keeper 30–40 points low.
+- **Attributes are shifted to match EA's overall.** EA's rating and OFM's weighted
+  score do not agree on the same numbers — imported straight, squads read four to
+  seven points light on average (Van Dijk 82 instead of 88). A uniform shift is
+  applied until the engine's rating lands on EA's, which keeps each player's shape
+  (who is quick, who cannot tackle) and restores the rating people know. Ratings
+  in this package therefore match EA's headline figures exactly.
+
+`defaultActiveRegions` is deliberately **not** written. An empty list is not
+"nothing active": `world/foundations.rs` fills the active regions from the
+competitions' own `regionId`s, so the world activates exactly the regions its
+competitions need. The old `["europe"]` would have put the South American cups
+outside simulation scope.
 
 ### Encodings worth writing down
 
@@ -117,6 +147,7 @@ fields but not their meaning:
 node --test "tools/eafc-import/lib/*.test.mjs"
 ```
 
+`lib/rating.mjs` is the engine's player rating, checked against the Rust source;
 `lib/mapping.mjs` holds the rules as pure functions (dates, positions, colours,
 country codes, ranges) and `lib/zip.mjs` writes the `.ofm` archive; both are
 covered there. `validate.mjs` checks the documented package schema — ids,

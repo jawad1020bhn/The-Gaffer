@@ -9,8 +9,5 @@
   "packageType": "database",
   "gameMinVersion": "0.3.0",
   "formatVersion": 1,
-  "baseYear": 2027,
-  "defaultActiveRegions": [
-    "europe"
-  ]
+  "baseYear": 2027
 }

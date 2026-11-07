@@ -39,6 +39,7 @@ import {
   slugify,
   weeklyWage,
 } from "./lib/mapping.mjs";
+import { attributesMatchingOverall } from "./lib/rating.mjs";
 import { createZip } from "./lib/zip.mjs";
 
 const PACKAGE_ID = "eafc-fc27";
@@ -711,6 +712,16 @@ async function main() {
     const nationality = nation ? nationCode(nation.isocountrycode, nation.nationname) : "";
     const position = positionFor(player);
     const specific = isSpecificPosition(position);
+    // With an `attributes` block the engine rates the player from the attributes and
+    // ignores `overall`, and it rejects a package whose `potential` is below the
+    // figure it computes. So the attribute block is shifted until the engine's own
+    // rating lands on EA's, and both numbers are written as that result.
+    const { attributes, overall: ability } = attributesMatchingOverall(
+      attributesFor(player),
+      position,
+      Math.round(player.overallrating),
+    );
+    const potential = Math.max(ability, Math.min(99, Math.round(player.potential) || ability));
     const entity = {
       schema: "player",
       id: buildPlayerId(firstName, lastName, player.playerid),
@@ -722,9 +733,9 @@ async function main() {
       position,
       footedness: footedness(player.preferredfoot),
       dateOfBirth: decodeEaDate(player.birthdate),
-      overall: Math.max(1, Math.min(99, Math.round(player.overallrating))),
-      potential: Math.max(1, Math.min(99, Math.round(player.potential))),
-      attributes: attributesFor(player),
+      overall: ability,
+      potential,
+      attributes,
       weakFoot: specific ? Math.max(1, Math.min(5, Math.round(player.weakfootabilitytypecode))) : undefined,
       alternatePositions: specific ? alternatePositions(player) : [],
       contractEnd: contractEnd(player.contractvaliduntil),
@@ -850,7 +861,6 @@ async function main() {
     gameMinVersion: "0.3.0",
     formatVersion: 1,
     baseYear: 2027,
-    defaultActiveRegions: ["europe"],
   };
   const write = async (file, schema, items) => {
     const rows = items.map((item) => `  ${JSON.stringify(item)}`).join(",\n");

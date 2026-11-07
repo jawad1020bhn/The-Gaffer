@@ -186,10 +186,37 @@ const mean = (...values) =>
  * The 19 OFM attributes, derived from EA's attribute set.
  *
  * `attributes` in an OFM package replaces generated ratings wholesale, so every
- * field is written. Where EA has no direct equivalent the nearest pair is
- * averaged (documented per line) rather than left to chance.
+ * field is written. Goalkeepers get their own block: the engine rates a keeper on
+ * handling, reflexes and aerial reach, and reading those from outfield columns
+ * (`gkpositioning` off `positioning`, reach off heading) under-rated every keeper
+ * by 30-40 points.
  */
 export function attributesFor(p) {
+  const leadership = clampAttribute(mean(p.composure, 40 + 10 * (p.internationalrep ?? 1)));
+  if (positionFor(p) === "Goalkeeper") {
+    return {
+      pace: clampAttribute(mean(p.acceleration, p.sprintspeed)),
+      stamina: clampAttribute(p.stamina),
+      strength: clampAttribute(p.strength),
+      agility: clampAttribute(p.agility),
+      passing: clampAttribute(mean(p.shortpassing, p.longpassing)),
+      shooting: clampAttribute(mean(p.finishing, p.shotpower)),
+      tackling: clampAttribute(mean(p.standingtackle, p.slidingtackle)),
+      dribbling: clampAttribute(p.ballcontrol),
+      defending: clampAttribute(mean(p.defensiveawareness, p.interceptions)),
+      positioning: clampAttribute(p.gkpositioning),
+      vision: clampAttribute(p.vision),
+      decisions: clampAttribute(p.reactions),
+      composure: clampAttribute(p.composure),
+      aggression: clampAttribute(p.aggression),
+      teamwork: clampAttribute(mean(p.interceptions, p.shortpassing)),
+      leadership,
+      handling: clampAttribute(p.gkhandling),
+      reflexes: clampAttribute(p.gkreflexes),
+      // Reaching a cross: EA splits it between jumping and the keeper's dive.
+      aerial: clampAttribute(mean(p.jumping, p.gkdiving)),
+    };
+  }
   return {
     pace: clampAttribute(mean(p.acceleration, p.sprintspeed)),
     stamina: clampAttribute(p.stamina),
@@ -206,7 +233,7 @@ export function attributesFor(p) {
     composure: clampAttribute(p.composure),
     aggression: clampAttribute(p.aggression),
     teamwork: clampAttribute(mean(p.interceptions, p.shortpassing)),
-    leadership: clampAttribute(mean(p.composure, 40 + 10 * (p.internationalrep ?? 1))),
+    leadership,
     handling: clampAttribute(p.gkhandling),
     reflexes: clampAttribute(p.gkreflexes),
     aerial: clampAttribute(mean(p.jumping, p.headingaccuracy)),
