@@ -89,7 +89,9 @@ fn the_package_builds_the_world_it_promises() {
 
 #[test]
 fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
-    let Some((_, world)) = built_world() else { return };
+    let Some((_, world)) = built_world() else {
+        return;
+    };
 
     let arsenal = world
         .teams
@@ -121,7 +123,9 @@ fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
 
 #[test]
 fn every_club_has_a_playable_squad_and_one_of_the_six_styles() {
-    let Some((_, world)) = built_world() else { return };
+    let Some((_, world)) = built_world() else {
+        return;
+    };
 
     let mut per_club: HashMap<&str, usize> = HashMap::new();
     for player in &world.players {
@@ -152,7 +156,9 @@ fn every_club_has_a_playable_squad_and_one_of_the_six_styles() {
 
 #[test]
 fn every_player_rates_where_the_package_says_he_does() {
-    let Some((_, world)) = built_world() else { return };
+    let Some((_, world)) = built_world() else {
+        return;
+    };
 
     // The package was calibrated so the engine's own rating lands on EA's. These
     // are the numbers a player would recognise; a shift in the mapping shows up
