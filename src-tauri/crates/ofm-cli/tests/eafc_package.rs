@@ -157,22 +157,23 @@ fn every_player_rates_where_the_package_says_he_does() {
 
     // The package was calibrated so the engine's own rating lands on EA's. These
     // are the numbers a player would recognise; a shift in the mapping shows up
-    // here first.
+    // here first. Ids rather than names: the build derives `match_name` from the
+    // surname, and a package id is unambiguous.
     let expectations = [
-        ("Lionel Messi", 89_u8),
-        ("Kylian Mbappé", 91),
-        ("Erling Haaland", 91),
-        ("Virgil van Dijk", 88),
-        ("Lamine Yamal", 90),
-        ("Jude Bellingham", 90),
+        ("lionel-messi-158023", 89_u8),
+        ("kylian-mbappe-231747", 91),
+        ("erling-haaland-239085", 91),
+        ("virgil-van-dijk-203376", 88),
+        ("lamine-yamal-nasraoui-ebana-277643", 90),
+        ("jude-bellingham-252371", 90),
     ];
-    for (name, expected) in expectations {
+    for (id, expected) in expectations {
         let player = world
             .players
             .iter()
-            .find(|player| player.match_name == name)
-            .unwrap_or_else(|| panic!("{name} is in the package"));
-        assert_eq!(player.ovr, expected, "{name}");
+            .find(|player| player.id == id)
+            .unwrap_or_else(|| panic!("{id} is in the package"));
+        assert_eq!(player.ovr, expected, "{id}");
     }
 
     for player in &world.players {
