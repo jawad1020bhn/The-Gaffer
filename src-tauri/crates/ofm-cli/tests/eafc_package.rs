@@ -58,8 +58,8 @@ fn the_package_builds_the_world_it_promises() {
     // than `SQUAD_SLOTS` (22) up to 22 with generated squad members, and EA lists
     // 37 of these clubs with fewer than 22, so the world holds slightly more
     // players than the package: 18,976 against 18,893 at the time of writing.
-    let authored: HashSet<&str> = package.players.iter().map(|def| def.id.as_str()).collect();
-    let built: HashSet<&str> = world.players.iter().map(|player| player.id.as_str()).collect();
+    let authored: HashSet<&str> = package.players.iter().map(|d| d.id.as_str()).collect();
+    let built: HashSet<&str> = world.players.iter().map(|p| p.id.as_str()).collect();
     assert_eq!(
         authored.difference(&built).count(),
         0,
@@ -109,7 +109,7 @@ fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
     assert!(unnamed.stadium_name.starts_with(&unnamed.city));
 
     // Cities are the real ones, not the country standing in for one.
-    let cities: HashSet<&str> = world.teams.iter().map(|team| team.city.as_str()).collect();
+    let cities: HashSet<&str> = world.teams.iter().map(|t| t.city.as_str()).collect();
     assert!(cities.len() > 400, "only {} distinct cities", cities.len());
     let country_named = world
         .teams
@@ -129,7 +129,7 @@ fn every_club_has_a_playable_squad_and_one_of_the_six_styles() {
             *per_club.entry(club).or_default() += 1;
         }
     }
-    let team_ids: HashSet<&str> = world.teams.iter().map(|team| team.id.as_str()).collect();
+    let team_ids: HashSet<&str> = world.teams.iter().map(|t| t.id.as_str()).collect();
     for team in &world.teams {
         let squad = per_club.get(team.id.as_str()).copied().unwrap_or(0);
         assert!(squad >= 15, "{} has only {} players", team.name, squad);
