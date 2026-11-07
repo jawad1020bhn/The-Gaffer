@@ -48,6 +48,8 @@ jobs:
 
       - name: Install Rust 1.95.0
         uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: rustfmt, clippy
 
       - name: Cache the build
         uses: Swatinem/rust-cache@v2
@@ -56,6 +58,27 @@ jobs:
 
       - name: Build the authoring CLI
         run: cargo build --locked --manifest-path src-tauri/Cargo.toml -p ofm-cli
+
+      # `build-check` lints this crate on every PR into develop, so the new test has
+      # to pass the same two checks here rather than in someone else's pull request.
+      - name: Lint the new test
+        run: |
+          set +e
+          cargo fmt --manifest-path src-tauri/Cargo.toml -p ofm-cli -- --check \
+            > "$RUNNER_TEMP/fmt.txt" 2>&1
+          fmt_status=$?
+          if [ "$fmt_status" -ne 0 ]; then
+            head -40 "$RUNNER_TEMP/fmt.txt" |
+              while IFS= read -r line; do echo "::error::fmt ${line}"; done
+          fi
+          cargo clippy --locked --manifest-path src-tauri/Cargo.toml -p ofm-cli \
+            --all-targets -- -D warnings > "$RUNNER_TEMP/clippy.txt" 2>&1
+          clippy_status=$?
+          if [ "$clippy_status" -ne 0 ]; then
+            head -40 "$RUNNER_TEMP/clippy.txt" |
+              while IFS= read -r line; do echo "::error::clippy ${line}"; done
+          fi
+          test "$fmt_status" -eq 0 -a "$clippy_status" -eq 0
 
       # `validate_package`: the same call the app makes before a mod is installed.
       #
