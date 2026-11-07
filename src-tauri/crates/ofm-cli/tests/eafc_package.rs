@@ -10,8 +10,7 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use ofm_core::generator::{
-    DefinitionSources, WorldData, WorldPackage, build_world_from_package_seeded,
-    load_world_package,
+    build_world_from_package_seeded, load_world_package, DefinitionSources, WorldData, WorldPackage,
 };
 
 /// `PlayStyle` in `domain/team.rs`; anything else is read as Balanced.
