@@ -199,3 +199,10 @@ node tools/eafc-import/validate.mjs mods/eafc-fc27.ofm    # what a player instal
 
 The archive mode matters: it is the `.ofm` that gets installed, and a stale one
 would otherwise pass unnoticed.
+
+This is a mirror of the loader, not the loader. `.github/workflows/validate-eafc-package.yml`
+is the authority: it builds `ofm-cli` on a GitHub runner and runs the real
+`validate_package` plus a Rust test that builds a world from the package. It has
+already earned its keep — it rejected the first version of the two European cups
+(`selectorMissingCountry`: the engine requires a `country` on a reputation
+selector), which this validator now checks too.

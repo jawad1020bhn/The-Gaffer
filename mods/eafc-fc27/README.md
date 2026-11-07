@@ -25,6 +25,17 @@ for the fastest first load; the history is cosmetic.
 | macOS | `~/Library/Application Support/openfootmanager/packages/` |
 | Windows | `%APPDATA%\openfootmanager\packages\` |
 
+**Verified against the engine, not just our own validator.** The
+`validate-eafc-package` workflow builds `ofm-cli` and runs the loader's own
+checks — `validate_package` on the directory and on the packed archive, then a
+Rust test (`src-tauri/crates/ofm-cli/tests/eafc_package.rs`) that loads the package
+and builds a world from it. On a machine with Rust the same two steps run as:
+
+```bash
+cargo run --manifest-path src-tauri/Cargo.toml -p ofm-cli -- validate mods/eafc-fc27
+cargo test --manifest-path src-tauri/Cargo.toml -p ofm-cli --test eafc_package
+```
+
 `eafc-fc27.ofm` is generated, not tracked. Rebuild it with:
 
 ```bash
@@ -48,8 +59,11 @@ reputation: the **European Champions Cup** (the 32 best European clubs) and the
 because the engine's reputation selector requires a single country and a
 continent-wide cup has not got one.
 
-Squads are complete: every club has at least 18 players (the engine's floor is
-15, so no generated filler is added), the median is 27, and each player keeps
+Squads are complete: every club has at least 18 players, the median is 27, and
+the engine's floor is 15. It does top a club up to 22 (its `SQUAD_SLOTS`) when a
+squad is thinner than that, and EA lists 37 of these clubs with fewer than 22 —
+so the built world holds 18,976 players against the 18,893 here, the difference
+being generated squad members. Players keep position, alternate positions, date of birth, nationality, and each player keeps
 their position, alternate positions, date of birth, nationality, preferred foot,
 weak foot, contract end and (where the database has one) wage.
 
