@@ -151,7 +151,12 @@ fields but not their meaning:
   and `SCHEMA_REFERENCE.md` is explicit that a club's manager is generated at
   world build and "is not yours to set". `playStyle` is the only tactical field,
   and EA's tactic data arrives as a line height and a build-up style, not as one
-  of OFM's six identities, so it is inferred.
+  of OFM's six identities, so it is inferred. The formation beside it is engine
+  state: every generated club is 4-4-2 until its manager changes it, in a package
+  world as much as in a random one.
+- **Stadium capacity is drawn, not imported.** The engine picks 10,000-80,000 for
+  an authored club (`build_team`), so the capacity row on a club page does not
+  match the ground's real figure even where the name is real.
 - **Kit patterns are not inferred.** `teams.jerseytype` is 0-2 across the whole
   database and does not separate stripes from hoops (Celtic and Barcelona share a
   value); `teamkits.jerseytemplateindex` is a mesh index, not a pattern.
@@ -177,4 +182,15 @@ node --test "tools/eafc-import/lib/*.test.mjs"
 country codes, ranges) and `lib/zip.mjs` writes the `.ofm` archive; both are
 covered there. `validate.mjs` checks the documented package schema — ids,
 references, enums, participant lists and the per-country priority pyramid —
-because `ofm-cli validate` needs a Rust toolchain.
+because `ofm-cli validate` needs a Rust toolchain. It also re-derives the engine's
+own rating for every player, so a `potential` the loader would reject cannot ship.
+
+Point it at the directory or straight at the archive:
+
+```bash
+node tools/eafc-import/validate.mjs mods/eafc-fc27        # the source files
+node tools/eafc-import/validate.mjs mods/eafc-fc27.ofm    # what a player installs
+```
+
+The archive mode matters: it is the `.ofm` that gets installed, and a stale one
+would otherwise pass unnoticed.

@@ -9,12 +9,17 @@
  *
  *   node tools/eafc-import/validate.mjs mods/eafc-fc27
  */
+import { readFileSync } from "node:fs";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
 import { SPECIFIC_POSITIONS } from "./lib/mapping.mjs";
+
+/** `PlayStyle` in `domain/team.rs`; anything else is read as Balanced. */
+const PLAY_STYLES = ["Balanced", "Attacking", "Defensive", "Possession", "Counter", "HighPress"];
 import { ovrFromAttributes } from "./lib/rating.mjs";
+import { readZipEntries } from "./lib/zip.mjs";
 
 const POSITIONS = new Set([
   ...SPECIFIC_POSITIONS,
@@ -109,6 +114,14 @@ export function validatePackage({ documents, countryCodes }) {
     teamIds.add(team.id);
     if (!team.name) error(where, "name is required");
     if (!team.city) error(where, "city is required");
+    // The engine reads an unknown style as Balanced, so a typo would silently
+    // flatten a club's tactics instead of failing.
+    if (team.playStyle != null && !PLAY_STYLES.includes(team.playStyle)) {
+      error(where, `unknown playStyle ${JSON.stringify(team.playStyle)}`);
+    }
+    if (team.stadiumName != null && typeof team.stadiumName !== "string") {
+      error(where, "stadiumName must be a string");
+    }
     if (!team.country) error(where, "country is required");
     else if (countryCodes && !countryCodes.has(team.country)) error(where, `unknown country code "${team.country}"`);
     if (!isPlainObject(team.colors)) error(where, "colors.primary/secondary are required");
@@ -279,21 +292,49 @@ export function validatePackage({ documents, countryCodes }) {
   return problems;
 }
 
+/**
+ * The archived package, as documents. A `.ofm` is what a player installs, so it
+ * is worth checking the archive itself rather than only the directory it was
+ * built from — a stale or half-written archive would otherwise pass unnoticed.
+ */
+function archivedDocuments(archivePath) {
+  const entries = readZipEntries(readFileSync(archivePath));
+  const documents = [];
+  const names = [];
+  for (const entry of entries) {
+    if (!entry.name.endsWith(".json")) continue;
+    names.push(entry.name);
+    documents.push(JSON.parse(entry.data.toString("utf8")));
+  }
+  return { documents, names };
+}
+
 async function main() {
-  const dir = process.argv[2];
-  if (!dir) {
-    console.error("usage: node tools/eafc-import/validate.mjs <package directory>");
+  const target = process.argv[2];
+  if (!target) {
+    console.error("usage: node tools/eafc-import/validate.mjs <package directory | .ofm archive>");
     process.exit(2);
   }
   const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
-  const files = await readPackageFiles(path.resolve(dir));
-  const documents = [];
-  for (const file of files) documents.push(JSON.parse(await readFile(file, "utf8")));
+  const resolved = path.resolve(target);
+  const fromArchive = resolved.endsWith(".ofm");
+  let documents;
+  let fileCount;
+  if (fromArchive) {
+    const archived = archivedDocuments(resolved);
+    documents = archived.documents;
+    fileCount = archived.names.length;
+  } else {
+    const files = await readPackageFiles(resolved);
+    documents = [];
+    for (const file of files) documents.push(JSON.parse(await readFile(file, "utf8")));
+    fileCount = files.length;
+  }
   const countryCodes = await loadCountryCatalog(repoRoot);
   const problems = validatePackage({ documents, countryCodes });
   const counts = collectEntities(documents);
   console.log(
-    `checked ${files.length} files: ${(counts.get("team") ?? []).length} teams, ` +
+    `checked ${fileCount} files${fromArchive ? " in the archive" : ""}: ${(counts.get("team") ?? []).length} teams, ` +
       `${(counts.get("player") ?? []).length} players, ${(counts.get("competition") ?? []).length} competitions`,
   );
   if (problems.length === 0) {
