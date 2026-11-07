@@ -2862,7 +2862,8 @@
         "alternatePositionInvalid": "\"{{entity}}\" incluye {{position}} como posición alternativa. Una alternativa debe ser una posición concreta, distinta de la del propio jugador y aparecer una sola vez.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" indica pierna mala o posiciones alternativas, pero {{position}} es un grupo general, así que el juego las recalcularía a partir de los atributos del jugador y descartaría lo que escribiste. Dale una posición concreta, como CentralMidfielder o Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" tiene una entrada de carrera (fila {{row}}) sin nombre de club.",
-        "unsupportedFormatVersion": "Este paquete se creó con una versión más reciente del juego (formato {{version}}; esta versión admite {{supported}}). Actualiza el juego para abrirlo."
+        "unsupportedFormatVersion": "Este paquete se creó con una versión más reciente del juego (formato {{version}}; esta versión admite {{supported}}). Actualiza el juego para abrirlo.",
+        "invalidFormation": "La formación \"{{formation}}\" del equipo {{entity}} no se puede alinear. Usa tres o cuatro líneas que sumen diez, como 4-4-2 o 4-2-3-1."
       },
       "competitionDef": {
         "invalidCalendar": "Calendario de competición no válido: comprueba la familia de divisiones, el nivel, la fase y la fecha de cierre.",

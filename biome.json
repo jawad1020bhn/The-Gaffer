@@ -15,6 +15,7 @@
       "!src-tauri/gen",
       "!src-tauri/crates/**/data",
       "!docs/modding/examples",
+      "!mods/**/*.json",
       "!package-lock.json",
       "!**/*.svg",
       "!**/*.generated.*",

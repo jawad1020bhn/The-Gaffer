@@ -515,6 +515,7 @@ pub fn generate_club_defs(config: &WorldGenConfig, rng: &mut impl Rng) -> Vec<Te
                     secondary: secondary.to_string(),
                 },
                 play_style: play_style.to_string(),
+                formation: None,
                 stadium_name: format!("{city} Arena"),
                 reputation_range: Some([rep_lo, rep_hi]),
                 finance_range: Some([fin_lo, fin_hi]),

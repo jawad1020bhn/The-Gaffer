@@ -737,6 +737,16 @@ fn build_team(tdef: &TeamDef, rng: &mut impl rand::Rng) -> domain::team::Team {
         secondary: tdef.colors.secondary.clone(),
     };
     team.play_style = play_style_from_str(&tdef.play_style);
+    // The shape a package asks for, checked with the same parser the tactics editor
+    // uses; anything it cannot read leaves the club at the default 4-4-2 rather
+    // than handing the lineup an unreadable formation.
+    if let Some(formation) = tdef
+        .formation
+        .as_deref()
+        .filter(|formation| crate::player_rating::parse_formation(formation).is_some())
+    {
+        team.formation = formation.to_string();
+    }
     // A club's tactics are its style expressed in the nine dials the engine
     // actually reads. Set here rather than left at the neutral default, which is
     // where every club in every save had been sitting: see `ai_tactics`.

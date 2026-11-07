@@ -2862,7 +2862,8 @@
         "alternatePositionInvalid": "„{{entity}}“ führt {{position}} als Alternativposition auf. Eine Alternative muss eine konkrete Position sein, sich von der eigenen Position des Spielers unterscheiden und nur einmal vorkommen.",
         "identityNeedsSpecificPosition": "„{{entity}}“ hat einen schwachen Fuß oder Alternativpositionen, aber {{position}} ist eine allgemeine Gruppe, daher würde das Spiel sie aus den Attributen des Spielers neu berechnen und verwerfen, was du geschrieben hast. Gib dem Spieler eine konkrete Position, etwa CentralMidfielder oder Striker.",
         "careerEntryNeedsClub": "„{{entity}}“ hat einen Karriereeintrag (Zeile {{row}}) ohne Vereinsnamen.",
-        "unsupportedFormatVersion": "Dieses Paket wurde mit einer neueren Version des Spiels erstellt (Format {{version}}; diese Version unterstützt {{supported}}). Aktualisiere das Spiel, um es zu öffnen."
+        "unsupportedFormatVersion": "Dieses Paket wurde mit einer neueren Version des Spiels erstellt (Format {{version}}; diese Version unterstützt {{supported}}). Aktualisiere das Spiel, um es zu öffnen.",
+        "invalidFormation": "Die Formation \"{{formation}}\" von Team {{entity}} ist nicht aufstellbar. Drei oder vier Reihen, die zusammen zehn ergeben, etwa 4-4-2 oder 4-2-3-1."
       },
       "competitionDef": {
         "invalidCalendar": "Ungültiger Wettbewerbskalender: Prüfe die Ligafamilie, die Spielklasse, die Phase und das Enddatum.",

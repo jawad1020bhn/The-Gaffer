@@ -2897,7 +2897,8 @@
         "alternatePositionInvalid": "„{{entity}}“ uvádí jako alternativní pozici {{position}}. Alternativa musí být konkrétní pozice, odlišná od pozice samotného hráče a uvedená jen jednou.",
         "identityNeedsSpecificPosition": "„{{entity}}“ má slabší nohu nebo alternativní pozice, ale {{position}} je obecná skupina, takže by je hra přepočítala z atributů hráče a zahodila to, co jste napsali. Zadejte hráči konkrétní pozici, například CentralMidfielder nebo Striker.",
         "careerEntryNeedsClub": "„{{entity}}“ má záznam kariéry (řádek {{row}}) bez názvu klubu.",
-        "unsupportedFormatVersion": "Tento balíček byl vytvořen v novější verzi hry (formát {{version}}; tato verze podporuje {{supported}}). Pro otevření hru aktualizujte."
+        "unsupportedFormatVersion": "Tento balíček byl vytvořen v novější verzi hry (formát {{version}}; tato verze podporuje {{supported}}). Pro otevření hru aktualizujte.",
+        "invalidFormation": "Formaci \"{{formation}}\" týmu {{entity}} nelze rozestavit. Použijte tři nebo čtyři řady s deseti hráči, například 4-4-2 nebo 4-2-3-1."
       },
       "conflict": {
         "duplicateId": "Balíčky „{{packages}}“ definují stejný objekt {{entityKind}} s ID „{{entityId}}“, ale s odlišným obsahem. Použije se poslední balíček.",

@@ -466,6 +466,8 @@ const DUPLICATE_WORLD: &str = "be.error.package.duplicateWorld";
 const INVALID_PACKAGE_ID: &str = "be.error.package.invalidPackageId";
 const WORLD_EXPORT_NOT_PACKAGE: &str = "be.error.package.worldExportNotPackage";
 const UNKNOWN_CONFEDERATION: &str = "be.error.package.unknownConfederation";
+/// A `formation` the lineup cannot lay out.
+const INVALID_FORMATION: &str = "be.error.package.invalidFormation";
 const UNKNOWN_COUNTRY: &str = "be.error.package.unknownCountry";
 // `pub(super)`: the rules for an authored player's extra fields live in their own
 // module and name a team by this same key rather than a second one.
@@ -1245,6 +1247,15 @@ pub fn validate_references(package: &WorldPackage) -> Vec<PackageError> {
     }
 
     for (index, team) in package.teams.iter().enumerate() {
+        if let Some(formation) = team.formation.as_deref()
+            && crate::player_rating::parse_formation(formation).is_none()
+        {
+            errors.push(
+                PackageError::new(INVALID_FORMATION, &package.source_at("team", index))
+                    .with("entity", &team.id)
+                    .with("formation", formation),
+            );
+        }
         if !team.country.is_empty() && !known_country(&team.country) {
             errors.push(
                 PackageError::new(UNKNOWN_COUNTRY, &package.source_at("team", index))

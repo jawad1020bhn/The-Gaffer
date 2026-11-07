@@ -157,6 +157,7 @@ export function emptyTeam(): TeamDef {
     logo: null,
     kitPattern: null,
     foundedYear: null,
+    formation: null,
   };
 }
 

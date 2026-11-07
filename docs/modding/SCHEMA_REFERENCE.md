@@ -149,6 +149,7 @@ Defines a football club.
 | `financeRange` | [integer, integer] or null | no | `null` | `[min, max]` budget in euros. The game draws a random value in this range at world generation. |
 | `logo` | string or null | no | `null` | Relative path to the team's logo image inside the package. Example: `"assets/logos/manchester-city.png"`. |
 | `kitPattern` | string or null | no | `null` | Jersey pattern used when drawing the club's kit. One of: `"Solid"`, `"Stripes"`, `"Hoops"`, `"HalfAndHalf"`, `"Diagonal"`. |
+| `formation` | string or null | no | `null` | Starting shape, e.g. `"4-2-3-1"`. Three or four lines that add up to ten; anything else is rejected. Omitted, the club plays **4-4-2**. |
 | `foundedYear` | integer or null | no | `null` | Year the team was founded. If omitted or `null`, the game draws a random year between 1880 and 1959 at world generation. Example: `2005`. |
 
 **Example:**
@@ -162,6 +163,7 @@ Defines a football club.
   "country": "ENG",
   "colors": { "primary": "#1c6bba", "secondary": "#ffffff" },
   "playStyle": "HighPress",
+  "formation": "4-2-3-1",
   "stadiumName": "Etihad Stadium",
   "reputationRange": [850, 1000],
   "financeRange": [50000000, 200000000],

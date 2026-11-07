@@ -1,0 +1,130 @@
+name: validate-eafc-package
+
+# The EA FC 27 package in `mods/` is generated, so nothing in the Rust test suite
+# touches it by default. This job is what actually answers "does it load?": it
+# builds the authoring CLI, validates the package with the loader's own
+# `validate_package`, packs and re-validates the archive, then builds a world from
+# it in `tests/eafc_package.rs`.
+#
+# Separate from `build-check` on purpose — that workflow owns the engine, this one
+# owns one generated mod, and a red package should not read as a red backend.
+
+on:
+  push:
+    branches: [arena/898245e7-the-gaffer-v0-4]
+    paths:
+      - "mods/**"
+      - "src-tauri/crates/ofm-cli/**"
+      - "src-tauri/crates/ofm_core/src/generator/**"
+      - "tools/eafc-import/**"
+      - ".github/workflows/validate-eafc-package.yml"
+  pull_request:
+    paths:
+      - "mods/**"
+      - "src-tauri/crates/ofm-cli/**"
+      - "src-tauri/crates/ofm_core/src/generator/**"
+      - "tools/eafc-import/**"
+      - ".github/workflows/validate-eafc-package.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-eafc-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Load the EA FC 27 package
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Rust 1.95.0
+        uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache the build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ./src-tauri -> target
+
+      # A compile error has to be readable without the log bundle, which is served
+      # from a host not every environment can reach.
+      - name: Build the authoring CLI
+        run: |
+          set +e
+          cargo build --locked --manifest-path src-tauri/Cargo.toml -p ofm-cli \
+            > "$RUNNER_TEMP/build.txt" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/build.txt"
+          if [ "$status" -ne 0 ]; then
+            grep -m 20 -E "^error" -A 4 "$RUNNER_TEMP/build.txt" |
+              while IFS= read -r line; do echo "::error::build ${line}"; done
+          fi
+          exit "$status"
+
+      # `build-check` lints this crate on every PR into develop, so the new test has
+      # to pass the same two checks here rather than in someone else's pull request.
+      - name: Lint the new test
+        run: |
+          set +e
+          cargo fmt --manifest-path src-tauri/Cargo.toml -p ofm-cli -- --check \
+            > "$RUNNER_TEMP/fmt.txt" 2>&1
+          fmt_status=$?
+          if [ "$fmt_status" -ne 0 ]; then
+            head -40 "$RUNNER_TEMP/fmt.txt" |
+              while IFS= read -r line; do echo "::error::fmt ${line}"; done
+          fi
+          cargo clippy --locked --manifest-path src-tauri/Cargo.toml -p ofm-cli \
+            --all-targets -- -D warnings > "$RUNNER_TEMP/clippy.txt" 2>&1
+          clippy_status=$?
+          if [ "$clippy_status" -ne 0 ]; then
+            head -40 "$RUNNER_TEMP/clippy.txt" |
+              while IFS= read -r line; do echo "::error::clippy ${line}"; done
+          fi
+          test "$fmt_status" -eq 0 -a "$clippy_status" -eq 0
+
+      # `validate_package`: the same call the app makes before a mod is installed.
+      #
+      # The output is echoed as `::error::` annotations as well as to the log, so the
+      # reason a package is rejected can be read from the check-run API without
+      # downloading the log bundle.
+      - name: Validate the package directory
+        run: |
+          set +e
+          ./src-tauri/target/debug/ofm-cli validate mods/eafc-fc27 2>&1 | tee "$RUNNER_TEMP/validate.log"
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            grep -m 15 -E "error|Error|problem" "$RUNNER_TEMP/validate.log" |
+              while IFS= read -r line; do echo "::error::${line//\%/}"; done
+          fi
+          exit "$status"
+
+      # The archive is what a player installs, so it gets validated on its own.
+      - name: Pack and validate the archive
+        run: |
+          ./src-tauri/target/debug/ofm-cli pack mods/eafc-fc27 --output "$RUNNER_TEMP/eafc-fc27.ofm"
+          ./src-tauri/target/debug/ofm-cli validate "$RUNNER_TEMP/eafc-fc27.ofm"
+          ls -lh "$RUNNER_TEMP/eafc-fc27.ofm"
+
+      # The load itself: `load_world_package` plus
+      # `build_world_from_package_seeded`, asserting the world that comes out.
+      - name: Build a world from the package
+        run: |
+          set +e
+          cargo test --locked --manifest-path src-tauri/Cargo.toml \
+            -p ofm-cli --test eafc_package -- --nocapture 2>&1 | tee "$RUNNER_TEMP/world.log"
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            grep -m 15 -E "panicked|assertion|left:|right:|error\[" "$RUNNER_TEMP/world.log" |
+              while IFS= read -r line; do echo "::error::${line//\%/}"; done
+          fi
+          exit "$status"

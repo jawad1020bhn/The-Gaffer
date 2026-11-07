@@ -218,6 +218,12 @@ export function TeamForm({
             value={editingTeam.stadiumName}
             onChange={(v) => updateField("stadiumName", v)}
           />
+          <LabeledInput
+            label={t("tactics.formation")}
+            value={editingTeam.formation ?? ""}
+            placeholder="e.g. 4-2-3-1"
+            onChange={(v) => updateField("formation", v.trim() || null)}
+          />
 
           <div className="flex gap-3">
             <div className="flex flex-col gap-1 flex-1">
