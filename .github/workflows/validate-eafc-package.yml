@@ -58,8 +58,20 @@ jobs:
         run: cargo build --locked --manifest-path src-tauri/Cargo.toml -p ofm-cli
 
       # `validate_package`: the same call the app makes before a mod is installed.
+      #
+      # The output is echoed as `::error::` annotations as well as to the log, so the
+      # reason a package is rejected can be read from the check-run API without
+      # downloading the log bundle.
       - name: Validate the package directory
-        run: ./src-tauri/target/debug/ofm-cli validate mods/eafc-fc27
+        run: |
+          set +e
+          ./src-tauri/target/debug/ofm-cli validate mods/eafc-fc27 2>&1 | tee "$RUNNER_TEMP/validate.log"
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            grep -m 15 -E "error|Error|problem" "$RUNNER_TEMP/validate.log" |
+              while IFS= read -r line; do echo "::error::${line//\%/}"; done
+          fi
+          exit "$status"
 
       # The archive is what a player installs, so it gets validated on its own.
       - name: Pack and validate the archive
@@ -71,6 +83,13 @@ jobs:
       # The load itself: `load_world_package` plus
       # `build_world_from_package_seeded`, asserting the world that comes out.
       - name: Build a world from the package
-        run: >
-          cargo test --locked --manifest-path src-tauri/Cargo.toml
-          -p ofm-cli --test eafc_package -- --nocapture
+        run: |
+          set +e
+          cargo test --locked --manifest-path src-tauri/Cargo.toml \
+            -p ofm-cli --test eafc_package -- --nocapture 2>&1 | tee "$RUNNER_TEMP/world.log"
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            grep -m 15 -E "panicked|assertion|left:|right:|error\[" "$RUNNER_TEMP/world.log" |
+              while IFS= read -r line; do echo "::error::${line//\%/}"; done
+          fi
+          exit "$status"
