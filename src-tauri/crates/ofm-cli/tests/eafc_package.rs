@@ -112,7 +112,11 @@ fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
 
     // Cities are the real ones, not the country standing in for one.
     let cities: HashSet<&str> = world.teams.iter().map(|t| t.city.as_str()).collect();
-    assert!(cities.len() > 400, "only {} distinct cities", cities.len());
+    assert!(
+        cities.len() > 400,
+        "only {} distinct cities",
+        cities.len()
+    );
     let country_named = world
         .teams
         .iter()
@@ -136,7 +140,12 @@ fn every_club_has_a_playable_squad_and_one_of_the_six_styles() {
     let team_ids: HashSet<&str> = world.teams.iter().map(|t| t.id.as_str()).collect();
     for team in &world.teams {
         let squad = per_club.get(team.id.as_str()).copied().unwrap_or(0);
-        assert!(squad >= 15, "{} has only {} players", team.name, squad);
+        assert!(
+            squad >= 15,
+            "{} has only {} players",
+            team.name,
+            squad
+        );
     }
     // Nobody plays for a club the package does not define.
     for player in &world.players {
@@ -152,7 +161,10 @@ fn every_club_has_a_playable_squad_and_one_of_the_six_styles() {
     let mut styles: HashSet<String> = HashSet::new();
     for team in &world.teams {
         let style = format!("{:?}", team.play_style);
-        assert!(PLAY_STYLES.contains(&style.as_str()), "unknown style {style}");
+        assert!(
+            PLAY_STYLES.contains(&style.as_str()),
+            "unknown style {style}"
+        );
         styles.insert(style);
     }
     assert!(styles.len() > 1, "every club plays the same style");
