@@ -53,6 +53,9 @@ test-world.json
 # trigger the file watcher and restart the app)
 /src-tauri/data/*.ofm
 /src-tauri/databases/*.ofm
+# The archives tools/eafc-import packs beside the package it generated. The
+# package directory is the source; rebuild the .ofm with the importer.
+/mods/*.ofm
 
 # Benchmark output from scripts/perf/run-matrix.sh (machine-specific measurements)
 /scripts/perf/results/

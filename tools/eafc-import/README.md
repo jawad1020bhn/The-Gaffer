@@ -1,0 +1,124 @@
+# eafc-import
+
+Turns an EA FC database into an Openfoot Manager package, so the game can be
+played with real clubs, real squads and real leagues.
+
+```bash
+git clone https://github.com/ViniMacacari/eafc-db-kit ../eafc-db-kit
+cd ../eafc-db-kit && npm install && npm run build   # the kit ships the databases
+
+cd ../the-gaffer-v0.4
+node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27
+node tools/eafc-import/validate.mjs mods/eafc-fc27
+```
+
+The run writes a package directory and a ready-to-install `mods/eafc-fc27.ofm`
+(`--no-pack` skips the archive). Node 18+ is enough; the only dependency is the
+kit checkout itself.
+
+## What comes out
+
+From the bundled **FC 27** database:
+
+| | Count |
+|---|---|
+| Clubs | 685 |
+| Players | 18,893 |
+| Competitions | 38 (34 domestic leagues, 4 continental) |
+| Countries | 46 |
+
+The FC 25 and FC 26 databases work too (`--version "FC 26"`); the encodings below
+are shared, and only the table contents differ.
+
+## What is imported
+
+**Clubs** — every club in a men's league of the database. Women's competitions,
+the placeholder leagues (`OTP Generics`, `Free Agents League`, `Youth Squad
+League`, `FIFA Twist`, `5v5 League`, …) and the classic/all-star squads are
+skipped: they are not clubs, and importing them would put a "Bayern München
+Classic" in the transfer market.
+
+**Players** — every player fielded by an imported club. A player in EA's database
+can belong to more than one team (a club and a national side); a package allows
+one club, so the first domestic-league club wins.
+
+**Competitions** — one league per domestic competition, with its real clubs,
+tier (`priority`) and season start. The database's continental rows become
+competitions of their own: CONMEBOL Libertadores and Sudamericana. Two European
+cups the database does not carry are generated from reputation: the *European
+Champions Cup* (top 32 European clubs) and the *European Trophy Cup* (the next
+32, excluding the first cup's field).
+
+### Field mapping
+
+| OFM field | EA source |
+|---|---|
+| `team.name`, `team.colors` | `teams.teamname`, `teamcolor1*` / `teamcolor2*` |
+| `team.shortName` | `TeamName_Abbr3_<teamid>` in the localization database |
+| `team.country` | the club's league country, else its squad's most common nationality |
+| `team.city` | recovered from the club name / shared `cityid` (see caveats) |
+| `team.reputationRange` | `teams.overallrating` |
+| `team.financeRange` | `teams.clubworth` (thousands of euros, 2–4%) |
+| `team.foundedYear`, `playStyle` | `foundationyear`, attack vs. defence rating |
+| `player.name`/`firstName`/`lastName` | `firstnameid`/`lastnameid`/`commonnameid` via `playernames` |
+| `player.position` | `preferredposition1` (table below) |
+| `player.alternatePositions` | `preferredposition2..7` |
+| `player.overall`/`potential` | `overallrating` / `potential` |
+| `player.attributes` | EA's attribute set, averaged where OFM has one field for two |
+| `player.dateOfBirth` | `birthdate`, a day count (see below) |
+| `player.footedness`/`weakFoot` | `preferredfoot` (1 = right, 2 = left) / `weakfootabilitytypecode` |
+| `player.contractEnd` | `contractvaliduntil` (year) → `YYYY-06-30` |
+| `player.wage` | `wage` (weekly, sparse in the database; omitted when 0) |
+
+### Encodings worth writing down
+
+These were derived from the data, because the kit's descriptor files label the
+fields but not their meaning:
+
+- **Positions.** Only twelve `preferredposition1` codes occur, resolved against
+  known players: `0` Goalkeeper, `3` RightBack, `5` CenterBack, `7` LeftBack,
+  `10` DefensiveMidfielder, `12` RightMidfielder, `14` CentralMidfielder,
+  `16` LeftMidfielder, `18` AttackingMidfielder, `23` RightWinger,
+  `25` Striker, `27` LeftWinger. (Salah and Yamal are `12` and `23`; Van Dijk is
+  `5`; Hakimi is `3`; Kylian Mbappé and Haaland are `25`.) An unknown code falls
+  back to the player's attribute profile.
+- **Dates.** `birthdate` is a day count, not a packed calendar: 146942 is
+  1985-02-05 and 147811 is 1987-06-24, 869 days apart as the players are.
+- **Home nations.** EA stores England, Scotland, Wales and Northern Ireland as
+  `GB`; OFM wants `ENG` / `SCO` / `WAL` / `NIR`. Codes EA still carries for
+  dissolved states are aliased too (`AN` → `CW`, `YU`/`CS` → `RS`, …).
+- **Long names.** Club names live in `teams.teamname`, but the 3-letter
+  abbreviation only exists as a localization string (`TeamName_Abbr3_<id>`),
+  which is also the only reliable source of short names.
+
+## Caveats
+
+- **No city names.** EA stores `teams.cityid` and the id-to-name table is not in
+  the shipped database. The importer recovers the city from the club name where
+  it can ("Manchester City", "Bayern München"), shares it across clubs with the
+  same `cityid` (which is how Arsenal and Chelsea get London), and otherwise
+  falls back to the country name. Correct, but incomplete.
+- **No stadium, badge or photo.** The database carries capacities, not stadium
+  names, and no assets at all.
+- **No national teams.** EA fields national sides from the same players, and an
+  OFM player has one club: importing a World Cup would mean emptying clubs, so
+  the 51 national teams are left out.
+- **`value` is left to the engine.** The database has no market value column;
+  the engine sizes value (and therefore wages) from ability and age, the same way
+  it does for generated players.
+- **Licensing.** The data is EA's. The kit and this tool are MIT/GPL, but the
+  *content* is not free: keep the result for personal use and do not redistribute
+  it as a product. Upstream OFM deliberately ships no licensed data
+  (`VISION.md`), which is why this lives in `mods/` and not in the engine.
+
+## Tests
+
+```bash
+node --test "tools/eafc-import/lib/*.test.mjs"
+```
+
+`lib/mapping.mjs` holds the rules as pure functions (dates, positions, colours,
+country codes, ranges) and `lib/zip.mjs` writes the `.ofm` archive; both are
+covered there. `validate.mjs` checks the documented package schema — ids,
+references, enums, participant lists and the per-country priority pyramid —
+because `ofm-cli validate` needs a Rust toolchain.
