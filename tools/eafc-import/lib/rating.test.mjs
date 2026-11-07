@@ -26,11 +26,13 @@ function rustWeightArms() {
     rustSource.indexOf("pub fn key_attributes"),
   );
   const arms = [];
-  const armPattern = /Position::([A-Za-z]+)((?:\s*\|\s*Position::[A-Za-z]+)*)\s*=>\s*weighted_average\(&\[([\s\S]*?)\]\)/g;
+  const armPattern =
+    /Position::([A-Za-z]+)((?:\s*\|\s*Position::[A-Za-z]+)*)\s*=>\s*weighted_average\(&\[([\s\S]*?)\]\)/g;
   for (const match of body.matchAll(armPattern)) {
-    const positions = [match[1], ...match[2].split("|").map((p) => p.replace("Position::", "").trim())].filter(
-      Boolean,
-    );
+    const positions = [
+      match[1],
+      ...match[2].split("|").map((p) => p.replace("Position::", "").trim()),
+    ].filter(Boolean);
     const weights = [...match[3].matchAll(/\(attrs\.(\w+),\s*(\d+)\)/g)].map(([, key, weight]) => [
       key,
       Number(weight),
@@ -49,9 +51,10 @@ function rustKeyArms() {
   const arms = [];
   const armPattern = /Position::([A-Za-z]+)((?:\s*\|\s*Position::[A-Za-z]+)*)\s*=>\s*\[([^\]]*)\]/g;
   for (const match of body.matchAll(armPattern)) {
-    const positions = [match[1], ...match[2].split("|").map((p) => p.replace("Position::", "").trim())].filter(
-      Boolean,
-    );
+    const positions = [
+      match[1],
+      ...match[2].split("|").map((p) => p.replace("Position::", "").trim()),
+    ].filter(Boolean);
     const keys = match[3]
       .split(",")
       .map((key) => key.trim())
@@ -135,12 +138,18 @@ describe("ovrFromAttributes", () => {
 
   it("scores the left side with the right side's row", () => {
     const attributes = { ...flat(70), pace: 95, tackling: 40 };
-    assert.equal(ovrFromAttributes(attributes, "LeftBack"), ovrFromAttributes(attributes, "RightBack"));
+    assert.equal(
+      ovrFromAttributes(attributes, "LeftBack"),
+      ovrFromAttributes(attributes, "RightBack"),
+    );
   });
 
   it("reads a general group as its concrete position", () => {
     const attributes = { ...flat(75), shooting: 30 };
-    assert.equal(ovrFromAttributes(attributes, "Forward"), ovrFromAttributes(attributes, "Striker"));
+    assert.equal(
+      ovrFromAttributes(attributes, "Forward"),
+      ovrFromAttributes(attributes, "Striker"),
+    );
   });
 
   it("stays inside 1-99", () => {

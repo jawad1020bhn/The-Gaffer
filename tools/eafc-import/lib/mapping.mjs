@@ -101,7 +101,9 @@ const NATIONALITY_ALIASES = Object.freeze({
  * and OFM stores them as the football codes ENG / SCO / WAL / NIR.
  */
 export function nationCode(isoCode, nationName) {
-  const iso = String(isoCode ?? "").trim().toUpperCase();
+  const iso = String(isoCode ?? "")
+    .trim()
+    .toUpperCase();
   if (iso === "GB") {
     const name = String(nationName ?? "");
     if (/england/i.test(name)) return "ENG";
@@ -243,7 +245,11 @@ export function attributesFor(p) {
 /** `#rrggbb` from EA's 0-255 colour channels. */
 export function hexColor(r, g, b, fallback = "#000000") {
   const channel = (v) =>
-    Number.isFinite(v) ? Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0") : null;
+    Number.isFinite(v)
+      ? Math.max(0, Math.min(255, Math.round(v)))
+          .toString(16)
+          .padStart(2, "0")
+      : null;
   const parts = [channel(r), channel(g), channel(b)];
   return parts.every((p) => p !== null) ? `#${parts.join("")}` : fallback;
 }

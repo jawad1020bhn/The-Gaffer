@@ -164,7 +164,8 @@ export function ovrFromAttributes(attributes, position) {
   const canonical = canonicalPosition(position);
   const weights = WEIGHTS[canonical];
   if (!weights) throw new Error(`no rating weights for position ${position}`);
-  const base = weights.reduce((sum, [key, weight]) => sum + (attributes[key] ?? 0) * weight, 0) / 100;
+  const base =
+    weights.reduce((sum, [key, weight]) => sum + (attributes[key] ?? 0) * weight, 0) / 100;
   const score = Math.min(99, Math.max(1, base - criticalPenalty(attributes, canonical)));
   return score;
 }
@@ -185,7 +186,9 @@ export function attributesMatchingOverall(attributes, position, target) {
   const clampedTarget = Math.min(99, Math.max(1, Math.round(target)));
   const keys = Object.keys(attributes);
   const shifted = (delta) =>
-    Object.fromEntries(keys.map((key) => [key, Math.min(99, Math.max(1, attributes[key] + delta))]));
+    Object.fromEntries(
+      keys.map((key) => [key, Math.min(99, Math.max(1, attributes[key] + delta))]),
+    );
 
   let best = { delta: 0, score: Math.round(ovrFromAttributes(attributes, position)) };
   for (let step = 0; step <= 99; step += 1) {

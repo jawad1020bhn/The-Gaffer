@@ -502,7 +502,9 @@ async function loadKit(kitDir) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
-    console.log(`usage: node tools/eafc-import/import.mjs --kit <eafc-db-kit> [--version "FC 27"] [--out mods/eafc-fc27]`);
+    console.log(
+      `usage: node tools/eafc-import/import.mjs --kit <eafc-db-kit> [--version "FC 27"] [--out mods/eafc-fc27]`,
+    );
     return;
   }
   const kitDir = args.kit ?? process.env.EAFCDB_KIT;
@@ -541,13 +543,15 @@ async function main() {
   const stadiums = tables(main_, "stadiums");
   const formations = tables(main_, "formations");
   const teamStadiumLinks = tables(main_, "teamstadiumlinks");
-  const strings = [...tables(localization, "LanguageStrings1"), ...tables(localization, "LanguageStrings2")];
+  const strings = [
+    ...tables(localization, "LanguageStrings1"),
+    ...tables(localization, "LanguageStrings2"),
+  ];
 
   const namesById = new Map(playerNames.map((n) => [n.nameid, n.name]));
   const nationById = new Map(nations.map((n) => [n.nationid, n]));
   const teamById = new Map(teams.map((t) => [t.teamid, t]));
-  const leagueById = new Map(leagues.map((l) => [l.leagueid, l]));
-  const name = (id) => (id ? namesById.get(id) ?? "" : "");
+  const name = (id) => (id ? (namesById.get(id) ?? "") : "");
 
   // Which confederation each country belongs to, straight from the engine's
   // catalog, so a league's `regionId` is one the game itself knows.
@@ -724,7 +728,8 @@ async function main() {
       id,
       name: clubName,
       shortName: shortName(abbreviationById.get(teamId), clubName),
-      city: cityById.get(Number(team.cityid)) ?? cityForTeam(teamId) ?? nation?.nationname ?? country,
+      city:
+        cityById.get(Number(team.cityid)) ?? cityForTeam(teamId) ?? nation?.nationname ?? country,
       country,
       colors: {
         primary: hexColor(team.teamcolor1r, team.teamcolor1g, team.teamcolor1b, "#1f2937"),
@@ -738,7 +743,10 @@ async function main() {
       stadiumName: stadiumByTeam.get(teamId) ?? "",
       reputationRange: reputationRange(team.overallrating),
       financeRange: financeRange(team.clubworth),
-      foundedYear: Number.isFinite(team.foundationyear) && team.foundationyear > 1800 ? team.foundationyear : null,
+      foundedYear:
+        Number.isFinite(team.foundationyear) && team.foundationyear > 1800
+          ? team.foundationyear
+          : null,
     });
   }
   teamEntities.sort((a, b) => a.id.localeCompare(b.id));
@@ -795,7 +803,9 @@ async function main() {
       overall: ability,
       potential,
       attributes,
-      weakFoot: specific ? Math.max(1, Math.min(5, Math.round(player.weakfootabilitytypecode))) : undefined,
+      weakFoot: specific
+        ? Math.max(1, Math.min(5, Math.round(player.weakfootabilitytypecode)))
+        : undefined,
       alternatePositions: specific ? alternatePositions(player) : [],
       contractEnd: contractEnd(player.contractvaliduntil),
       wage: weeklyWage(player.wage),
@@ -928,7 +938,10 @@ async function main() {
   };
   const write = async (file, schema, items) => {
     const rows = items.map((item) => `  ${JSON.stringify(item)}`).join(",\n");
-    await writeFile(path.join(outDir, file), `{\n "schema": "${schema}",\n "items": [\n${rows}\n ]\n}\n`);
+    await writeFile(
+      path.join(outDir, file),
+      `{\n "schema": "${schema}",\n "items": [\n${rows}\n ]\n}\n`,
+    );
   };
   await writeFile(path.join(outDir, "package.json"), `${JSON.stringify(manifest, null, 2)}\n`);
   await write("teams.json", "team", teamEntities);
@@ -947,7 +960,9 @@ async function main() {
     const archivePath = `${outDir}.ofm`;
     await writeFile(archivePath, archive);
     const { size } = await stat(archivePath);
-    console.log(`  packed       ${path.relative(process.cwd(), archivePath)} (${(size / 1e6).toFixed(1)} MB)`);
+    console.log(
+      `  packed       ${path.relative(process.cwd(), archivePath)} (${(size / 1e6).toFixed(1)} MB)`,
+    );
   }
 
   const playersPerClub = countBy(playerEntities, (p) => p.club);

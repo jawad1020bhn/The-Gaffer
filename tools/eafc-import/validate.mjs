@@ -44,14 +44,18 @@ const COMPETITION_SCOPES = new Set(["Domestic", "Regional", "Continental", "Inte
 const FORMAT_KINDS = new Set(["LeagueTable", "Knockout", "GroupAndKnockout"]);
 const PACKAGE_TYPES = new Set(["database", "patch", "assets"]);
 
-const isPlainObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+const isPlainObject = (value) =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
 const isHexColour = (value) => typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value);
 const isIsoDate = (value) => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
 const isSlug = (value) => typeof value === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
 
 /** Country codes the game ships, read from the engine's own catalog. */
 export async function loadCountryCatalog(repoRoot) {
-  const source = await readFile(path.join(repoRoot, "src-tauri/crates/ofm_core/src/nations.rs"), "utf8");
+  const source = await readFile(
+    path.join(repoRoot, "src-tauri/crates/ofm_core/src/nations.rs"),
+    "utf8",
+  );
   const codes = new Set([...source.matchAll(/"([A-Z]{2,3})"/g)].map((m) => m[1]));
   return codes;
 }
@@ -137,7 +141,8 @@ export function validatePackage({ documents, countryCodes }) {
       if (!laidOut) error(where, `formation ${JSON.stringify(team.formation)} cannot be laid out`);
     }
     if (!team.country) error(where, "country is required");
-    else if (countryCodes && !countryCodes.has(team.country)) error(where, `unknown country code "${team.country}"`);
+    else if (countryCodes && !countryCodes.has(team.country))
+      error(where, `unknown country code "${team.country}"`);
     if (!isPlainObject(team.colors)) error(where, "colors.primary/secondary are required");
     else {
       if (!isHexColour(team.colors.primary)) error(where, "colors.primary is not #rrggbb");
@@ -145,11 +150,13 @@ export function validatePackage({ documents, countryCodes }) {
     }
     if (team.reputationRange) {
       const [min, max] = team.reputationRange;
-      if (!(min >= 0 && max <= 1000 && min <= max)) error(where, "reputationRange must be [min, max] within 0-1000");
+      if (!(min >= 0 && max <= 1000 && min <= max))
+        error(where, "reputationRange must be [min, max] within 0-1000");
     }
     if (team.financeRange) {
       const [min, max] = team.financeRange;
-      if (!(min >= 0 && min <= max)) error(where, "financeRange must be [min, max] with min <= max");
+      if (!(min >= 0 && min <= max))
+        error(where, "financeRange must be [min, max] with min <= max");
     }
     if (team.foundedYear != null && !(team.foundedYear >= 1850 && team.foundedYear <= 2100)) {
       error(where, `foundedYear ${team.foundedYear} out of range`);
@@ -183,11 +190,13 @@ export function validatePackage({ documents, countryCodes }) {
     if (!player.id || !isSlug(player.id)) error(where, `id "${player.id}" is not a slug`);
     registerId("player", player.id);
     if (!player.name && !player.firstName && !player.lastName) error(where, "a name is required");
-    if (player.club && !teamIds.has(player.club)) error(where, `club "${player.club}" does not exist`);
+    if (player.club && !teamIds.has(player.club))
+      error(where, `club "${player.club}" does not exist`);
     if (player.nationality && countryCodes && !countryCodes.has(player.nationality)) {
       error(where, `unknown nationality "${player.nationality}"`);
     }
-    if (!POSITIONS.has(player.position)) error(where, `position "${player.position}" is not a known position`);
+    if (!POSITIONS.has(player.position))
+      error(where, `position "${player.position}" is not a known position`);
     if (player.footedness && !["Right", "Left", "Both"].includes(player.footedness)) {
       error(where, `footedness "${player.footedness}" is not Right/Left/Both`);
     }
@@ -207,10 +216,13 @@ export function validatePackage({ documents, countryCodes }) {
     }
     const alternates = player.alternatePositions ?? [];
     if (alternates.length && !specific) error(where, "alternatePositions need a specific position");
-    if (new Set(alternates).size !== alternates.length) error(where, "alternatePositions repeat a position");
+    if (new Set(alternates).size !== alternates.length)
+      error(where, "alternatePositions repeat a position");
     for (const alternate of alternates) {
-      if (!SPECIFIC_POSITIONS.includes(alternate)) error(where, `alternatePositions "${alternate}" is not specific`);
-      if (alternate === player.position) error(where, "alternatePositions repeat the player's own position");
+      if (!SPECIFIC_POSITIONS.includes(alternate))
+        error(where, `alternatePositions "${alternate}" is not specific`);
+      if (alternate === player.position)
+        error(where, "alternatePositions repeat the player's own position");
     }
     if (player.attributes != null && player.potential != null) {
       // The loader's own rule: a package that writes attributes is rated from them,
@@ -240,16 +252,20 @@ export function validatePackage({ documents, countryCodes }) {
   const competitionIds = new Set();
   for (const competition of competitions) {
     const where = `competition:${competition.id}`;
-    if (!competition.id || !isSlug(competition.id)) error(where, `id "${competition.id}" is not a slug`);
+    if (!competition.id || !isSlug(competition.id))
+      error(where, `id "${competition.id}" is not a slug`);
     registerId("competition", competition.id);
     competitionIds.add(competition.id);
     if (!competition.name) error(where, "name is required");
-    if (!COMPETITION_TYPES.has(competition.type)) error(where, `type "${competition.type}" is not known`);
-    if (!COMPETITION_SCOPES.has(competition.scope)) error(where, `scope "${competition.scope}" is not known`);
+    if (!COMPETITION_TYPES.has(competition.type))
+      error(where, `type "${competition.type}" is not known`);
+    if (!COMPETITION_SCOPES.has(competition.scope))
+      error(where, `scope "${competition.scope}" is not known`);
     if (!isPlainObject(competition.format) || !FORMAT_KINDS.has(competition.format?.kind)) {
       error(where, `format.kind must be one of ${[...FORMAT_KINDS].join("/")}`);
     }
-    if (competition.scope === "Domestic" && !competition.countryId) error(where, "Domestic needs countryId");
+    if (competition.scope === "Domestic" && !competition.countryId)
+      error(where, "Domestic needs countryId");
     if (["Regional", "Continental"].includes(competition.scope) && !competition.regionId) {
       error(where, `${competition.scope} needs regionId`);
     }
@@ -259,9 +275,11 @@ export function validatePackage({ documents, countryCodes }) {
     const participants = competition.participants ?? {};
     const hasExplicit = Array.isArray(participants.explicit);
     const hasSelector = isPlainObject(participants.selector);
-    if (hasExplicit === hasSelector) error(where, "participants must set exactly one of explicit or selector");
+    if (hasExplicit === hasSelector)
+      error(where, "participants must set exactly one of explicit or selector");
     if (hasExplicit) {
-      if (participants.explicit.length < 2) error(where, "explicit participants need at least 2 teams");
+      if (participants.explicit.length < 2)
+        error(where, "explicit participants need at least 2 teams");
       if (new Set(participants.explicit).size !== participants.explicit.length) {
         error(where, "explicit participants repeat a team");
       }
@@ -379,7 +397,8 @@ async function main() {
     console.log("no problems found");
     return;
   }
-  for (const problem of problems.slice(0, 40)) console.error(`  ${problem.where}: ${problem.message}`);
+  for (const problem of problems.slice(0, 40))
+    console.error(`  ${problem.where}: ${problem.message}`);
   console.error(`${problems.length} problem(s)`);
   process.exit(1);
 }
