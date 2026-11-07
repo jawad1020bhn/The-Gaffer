@@ -56,8 +56,20 @@ jobs:
         with:
           workspaces: ./src-tauri -> target
 
+      # A compile error has to be readable without the log bundle, which is served
+      # from a host not every environment can reach.
       - name: Build the authoring CLI
-        run: cargo build --locked --manifest-path src-tauri/Cargo.toml -p ofm-cli
+        run: |
+          set +e
+          cargo build --locked --manifest-path src-tauri/Cargo.toml -p ofm-cli \
+            > "$RUNNER_TEMP/build.txt" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/build.txt"
+          if [ "$status" -ne 0 ]; then
+            grep -m 20 -E "^error" -A 4 "$RUNNER_TEMP/build.txt" |
+              while IFS= read -r line; do echo "::error::build ${line}"; done
+          fi
+          exit "$status"
 
       # `build-check` lints this crate on every PR into develop, so the new test has
       # to pass the same two checks here rather than in someone else's pull request.

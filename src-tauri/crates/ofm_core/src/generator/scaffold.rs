@@ -558,6 +558,7 @@ mod tests {
                 secondary: "#ffffff".into(),
             },
             play_style: "Balanced".into(),
+            formation: Some("4-2-3-1".into()),
             stadium_name: "Sample Arena".into(),
             reputation_range: Some([300, 900]),
             finance_range: Some([500_000, 10_000_000]),
