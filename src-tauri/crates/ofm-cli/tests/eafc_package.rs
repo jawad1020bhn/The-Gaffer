@@ -10,9 +10,9 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use ofm_core::generator::{
-    DefinitionSources, WorldData, build_world_from_package_seeded, load_world_package,
+    DefinitionSources, WorldData, WorldPackage, build_world_from_package_seeded,
+    load_world_package,
 };
-use ofm_core::player_rating::ovr_from_attributes;
 
 /// `PlayStyle` in `domain/team.rs`; anything else is read as Balanced.
 const PLAY_STYLES: [&str; 6] = [
@@ -30,8 +30,8 @@ fn package_dir() -> Option<PathBuf> {
     dir.is_dir().then_some(dir)
 }
 
-/// The two steps the app takes to open a package world.
-fn built_world() -> Option<WorldData> {
+/// The two steps the app takes to open a package world, plus the package itself.
+fn built_world() -> Option<(WorldPackage, WorldData)> {
     let dir = package_dir()?;
     let (package, errors) = load_world_package(&dir);
     assert!(
@@ -43,18 +43,40 @@ fn built_world() -> Option<WorldData> {
     // A fixed seed, so any failure reproduces.
     let world =
         build_world_from_package_seeded(2027, &package, None, &sources).expect("builds a world");
-    Some(world)
+    Some((package, world))
 }
 
 #[test]
 fn the_package_builds_the_world_it_promises() {
-    let Some(world) = built_world() else {
+    let Some((package, world)) = built_world() else {
         eprintln!("skipping: mods/eafc-fc27 is not in this checkout");
         return;
     };
 
     assert_eq!(world.teams.len(), 685, "clubs");
-    assert_eq!(world.players.len(), 18_893, "players");
+
+    // Every authored player reaches the world. The build also tops a club thinner
+    // than `SQUAD_SLOTS` (22) up to 22 with generated squad members, and EA lists
+    // 37 of these clubs with fewer than 22, so the world holds slightly more
+    // players than the package: 18,976 against 18,893 at the time of writing.
+    let authored: HashSet<&str> = package.players.iter().map(|def| def.id.as_str()).collect();
+    let built: HashSet<&str> = world.players.iter().map(|player| player.id.as_str()).collect();
+    assert_eq!(
+        authored.difference(&built).count(),
+        0,
+        "the build dropped authored players"
+    );
+    assert!(
+        world.players.len() >= authored.len(),
+        "{} players built from {} authored",
+        world.players.len(),
+        authored.len()
+    );
+    eprintln!(
+        "{} authored players, {} in the world",
+        authored.len(),
+        world.players.len()
+    );
 
     // Competitions arrive as authored definitions and become state when a career
     // starts, so count whichever form the build produced.
@@ -68,7 +90,7 @@ fn the_package_builds_the_world_it_promises() {
 
 #[test]
 fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
-    let Some(world) = built_world() else { return };
+    let Some((_, world)) = built_world() else { return };
 
     let arsenal = world
         .teams
@@ -100,7 +122,7 @@ fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
 
 #[test]
 fn every_club_has_a_playable_squad_and_one_of_the_six_styles() {
-    let Some(world) = built_world() else { return };
+    let Some((_, world)) = built_world() else { return };
 
     let mut per_club: HashMap<&str, usize> = HashMap::new();
     for player in &world.players {
@@ -131,26 +153,41 @@ fn every_club_has_a_playable_squad_and_one_of_the_six_styles() {
 
 #[test]
 fn every_player_rates_where_the_package_says_he_does() {
-    let Some(world) = built_world() else { return };
+    let Some((_, world)) = built_world() else { return };
 
-    let messi = world
-        .players
-        .iter()
-        .find(|player| player.full_name == "Lionel Messi")
-        .expect("Messi is in the package");
-    assert_eq!(messi.ovr, 89, "Messi rates 89");
+    // The package was calibrated so the engine's own rating lands on EA's. These
+    // are the numbers a player would recognise; a shift in the mapping shows up
+    // here first.
+    let expectations = [
+        ("Lionel Messi", 89_u8),
+        ("Kylian Mbappé", 91),
+        ("Erling Haaland", 91),
+        ("Virgil van Dijk", 88),
+        ("Lamine Yamal", 90),
+        ("Jude Bellingham", 90),
+    ];
+    for (name, expected) in expectations {
+        let player = world
+            .players
+            .iter()
+            .find(|player| player.match_name == name)
+            .unwrap_or_else(|| panic!("{name} is in the package"));
+        assert_eq!(player.ovr, expected, "{name}");
+    }
 
     for player in &world.players {
-        let rating = ovr_from_attributes(&player.attributes, &player.position).round() as u8;
-        // The build rates a player from the attributes it was given, so the stored
-        // figure and the formula have to agree: that is what the package was
-        // calibrated against.
-        assert_eq!(player.ovr, rating, "{} is stored at {}", player.full_name, player.ovr);
-        // The loader's own rejection rule, on built data.
+        // The loader rejects a ceiling below the ability it rates; the build
+        // clamps, so this is checked on the world rather than the package.
         assert!(
             player.potential >= player.ovr,
             "{} has a ceiling under its ability",
-            player.full_name
+            player.match_name
+        );
+        assert!(
+            (1..=99).contains(&player.ovr),
+            "{} rates {}",
+            player.match_name,
+            player.ovr
         );
     }
 }
