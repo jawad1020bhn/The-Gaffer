@@ -44,7 +44,7 @@ function PhaseButtonGroup({
   const currentValue = (tacticsPhase?.[field] ?? options[0]) as string;
   return (
     <div className="flex items-center gap-2">
-      <span className="w-20 shrink-0 text-[11px] text-gray-500 dark:text-gray-400">
+      <span className="w-20 shrink-0 text-[11px] text-fg-muted">
         {t(`tactics.phaseSettings.${labelKey}`)}
       </span>
       <Select

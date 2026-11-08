@@ -368,7 +368,7 @@ export function ActiveDealWorkspace({ state }: ActiveDealWorkspaceProps) {
           }
 
           return (
-            <div className="rounded-lg bg-gray-50 p-6 text-sm text-gray-600 dark:bg-navy-900/50 dark:text-gray-300">
+            <div className="rounded-control bg-gray-50 p-6 text-body text-gray-600 dark:bg-navy-900/50 dark:text-gray-300">
               {t("transfers.dealChooserHint")}
             </div>
           );

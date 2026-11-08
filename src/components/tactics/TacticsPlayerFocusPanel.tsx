@@ -61,10 +61,10 @@ function PlayerSummary({ label, player }: { label: string; player: PlayerData })
   const overallRating = getPlayerOvr(player);
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800/70 px-4 py-4">
+    <div className="rounded-panel border border-line bg-sunken/70 px-4 py-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+          <p className="text-body font-heading font-bold uppercase tracking-labelst text-fg-muted">
             {label}
           </p>
           <p className="text-base font-heading font-bold text-gray-900 dark:text-gray-100 mt-1">
@@ -72,14 +72,14 @@ function PlayerSummary({ label, player }: { label: string; player: PlayerData })
           </p>
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             <PlayerPositionBadge position={displayPosition} long />
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              <CountryFlag code={player.nationality} className="text-xs leading-none mr-1" />
+            <span className="text-caption text-fg-muted">
+              <CountryFlag code={player.nationality} className="text-caption leading-none mr-1" />
               {t("common.age")} {calcAge(player.date_of_birth)}
             </span>
           </div>
         </div>
         <div className="text-right shrink-0">
-          <div className="text-sm font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+          <div className="text-body font-heading font-bold uppercase tracking-labelst text-fg-muted">
             {t("common.ovr")}
           </div>
           <div className="text-3xl font-heading font-bold text-primary-500 dark:text-primary-400">
@@ -103,7 +103,7 @@ function SinglePlayerAttributes({ player }: { player: PlayerData }) {
         (group) => group.labelKey !== "common.attrGroups.goalkeeper" || isGoalkeeper,
       ).map((group) => (
         <div key={group.labelKey}>
-          <h4 className="text-sm font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">
+          <h4 className="text-body font-heading font-bold uppercase tracking-labelst text-fg-muted mb-2">
             {t(group.labelKey)}
           </h4>
           <div className="space-y-2">
@@ -112,7 +112,7 @@ function SinglePlayerAttributes({ player }: { player: PlayerData }) {
               return (
                 <div key={attr} className="grid grid-cols-[minmax(0,1fr)_40px] gap-3 items-center">
                   <div>
-                    <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">
+                    <div className="text-caption text-fg-muted mb-1">
                       {t(`common.attributes.${attr}`)}
                     </div>
                     <div className="h-2 rounded-full bg-gray-100 dark:bg-navy-800 overflow-hidden">
@@ -123,7 +123,7 @@ function SinglePlayerAttributes({ player }: { player: PlayerData }) {
                     </div>
                   </div>
                   <span
-                    className={`text-sm font-heading font-bold tabular-nums ${ratingTierClass(tierOf(value), "text")}`}
+                    className={`text-body font-heading font-bold tabular-nums ${ratingTierClass(tierOf(value), "text")}`}
                   >
                     {value}
                   </span>
@@ -161,10 +161,8 @@ function CompareAttributes({
         <PlayerSummary label={t("tactics.selectedPlayer")} player={selectedPlayer} />
         <PlayerSummary label={t("tactics.comparePlayer")} player={comparePlayer} />
       </div>
-      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          {t("tactics.compareSelectionHint")}
-        </p>
+      <div className="flex flex-col gap-3 rounded-panel border border-line bg-sunken/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-body text-fg-muted">{t("tactics.compareSelectionHint")}</p>
         <Button type="button" size="sm" onClick={onConfirmSwap} disabled={!canConfirmSwap}>
           {t("tactics.confirmSwap")}
         </Button>
@@ -173,7 +171,7 @@ function CompareAttributes({
         (group) => group.labelKey !== "common.attrGroups.goalkeeper" || showGoalkeeperAttrs,
       ).map((group) => (
         <div key={group.labelKey}>
-          <h4 className="text-[10px] font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">
+          <h4 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted mb-2">
             {t(group.labelKey)}
           </h4>
           <div className="space-y-2">
@@ -188,36 +186,36 @@ function CompareAttributes({
                   className="grid grid-cols-[minmax(0,1fr)_90px_minmax(0,1fr)] gap-2 items-center"
                 >
                   <div
-                    className={`rounded-lg px-2 py-2 ${leftWins ? "bg-primary-500/10 ring-1 ring-primary-500/20" : "bg-gray-50 dark:bg-navy-800/70"}`}
+                    className={`rounded-control px-2 py-2 ${leftWins ? "bg-primary-500/10 ring-1 ring-primary-500/20" : "bg-sunken/70"}`}
                   >
-                    <div className="flex items-center justify-between gap-2 text-xs mb-1">
+                    <div className="flex items-center justify-between gap-2 text-caption mb-1">
                       <span
                         className={`font-heading font-bold ${ratingTierClass(tierOf(left), "text")}`}
                       >
                         {left}
                       </span>
                     </div>
-                    <div className="h-2 rounded-full bg-white dark:bg-navy-700 overflow-hidden">
+                    <div className="h-2 rounded-full bg-panel overflow-hidden">
                       <div
                         className={`h-full rounded-full ${ratingTierClass(tierOf(left), "bar")}`}
                         style={{ width: `${left}%` }}
                       />
                     </div>
                   </div>
-                  <div className="text-center text-[10px] font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <div className="text-center text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t(`common.attributes.${attr}`)}
                   </div>
                   <div
-                    className={`rounded-lg px-2 py-2 ${rightWins ? "bg-primary-500/10 ring-1 ring-primary-500/20" : "bg-gray-50 dark:bg-navy-800/70"}`}
+                    className={`rounded-control px-2 py-2 ${rightWins ? "bg-primary-500/10 ring-1 ring-primary-500/20" : "bg-sunken/70"}`}
                   >
-                    <div className="flex items-center justify-between gap-2 text-xs mb-1">
+                    <div className="flex items-center justify-between gap-2 text-caption mb-1">
                       <span
                         className={`font-heading font-bold ${ratingTierClass(tierOf(right), "text")}`}
                       >
                         {right}
                       </span>
                     </div>
-                    <div className="h-2 rounded-full bg-white dark:bg-navy-700 overflow-hidden">
+                    <div className="h-2 rounded-full bg-panel overflow-hidden">
                       <div
                         className={`h-full rounded-full ${ratingTierClass(tierOf(right), "bar")}`}
                         style={{ width: `${right}%` }}
@@ -251,7 +249,7 @@ export default function TacticsPlayerFocusPanel({
         <div className="flex items-center justify-between">
           <h3
             id={TACTICS_INSPECTOR_TITLE_ID}
-            className="text-sm font-heading font-bold text-white uppercase tracking-wide flex items-center gap-2"
+            className="text-body font-heading font-bold text-white uppercase tracking-label flex items-center gap-2"
           >
             <Eye className="w-4 h-4 text-accent-400" />
             {t("tactics.inspector")}
@@ -261,7 +259,7 @@ export default function TacticsPlayerFocusPanel({
               type="button"
               onClick={onClose}
               aria-label={t("common.close")}
-              className="rounded-lg p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="rounded-control p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               <X className="h-4 w-4" />
             </button>
@@ -280,24 +278,20 @@ export default function TacticsPlayerFocusPanel({
           ) : (
             <div className="space-y-4">
               <PlayerSummary label={t("tactics.selectedPlayer")} player={selectedPlayer} />
-              <div className="rounded-xl border border-dashed border-gray-200 dark:border-navy-600 px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+              <div className="rounded-panel border border-dashed border-line px-4 py-3 text-body text-fg-muted">
                 {t("tactics.selectSecondPlayer")}
               </div>
               <SinglePlayerAttributes player={selectedPlayer} />
             </div>
           )
         ) : (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center dark:border-navy-600 dark:bg-navy-800/70">
+          <div className="rounded-panel border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center dark:border-navy-600 dark:bg-navy-800/70">
             <GitCompareArrows className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-navy-600" />
-            <p className="text-sm font-heading font-bold uppercase tracking-[0.18em] text-gray-700 dark:text-gray-200">
+            <p className="text-body font-heading font-bold uppercase tracking-[0.18em] text-fg">
               {t("tactics.inspectorEmptyTitle")}
             </p>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {t("tactics.selectPitchPlayer")}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              {t("tactics.selectAnotherToSwap")}
-            </p>
+            <p className="mt-2 text-body text-fg-muted">{t("tactics.selectPitchPlayer")}</p>
+            <p className="text-caption text-fg-muted mt-2">{t("tactics.selectAnotherToSwap")}</p>
           </div>
         )}
       </div>

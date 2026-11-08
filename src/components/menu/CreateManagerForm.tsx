@@ -1,6 +1,6 @@
-import { Suspense, lazy, useId } from "react";
+import { Suspense, lazy } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, DatePicker, Select } from "../ui";
+import { Button, Select } from "../ui";
 import { AlertCircle, ChevronRight, X } from "lucide-react";
 import ManagerProfileList from "./ManagerProfileList";
 import type { ManagerProfile } from "./types";
@@ -10,7 +10,6 @@ const CreateManagerNationalityField = lazy(() => import("./CreateManagerNational
 export interface CreateManagerFormData {
   firstName: string;
   lastName: string;
-  dob: string;
   startYear: string;
   startPhase: CareerStartPhase;
   nationality: string;
@@ -23,7 +22,6 @@ type CreateManagerField = keyof CreateManagerFormData;
 interface CreateManagerFormProps {
   formData: CreateManagerFormData;
   formErrors: Partial<Record<CreateManagerField, string>>;
-  dobError: string | null;
   profiles: ManagerProfile[];
   selectedProfileId?: string;
   onChange: (field: CreateManagerField, value: string) => void;
@@ -39,11 +37,15 @@ function NationalityFieldFallback({ error }: { error?: string }) {
 
   return (
     <div id="create-manager-field-nationality">
-      <label className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+      <label
+        htmlFor="create-manager-nationality-trigger"
+        className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+      >
         {t("createManager.countryOfOrigin")}
       </label>
       <div className="relative">
         <button
+          id="create-manager-nationality-trigger"
           type="button"
           disabled
           className={`w-full rounded-lg border bg-gray-50 p-3 text-left transition-all dark:bg-navy-900 ${
@@ -71,7 +73,6 @@ function NationalityFieldFallback({ error }: { error?: string }) {
 export default function CreateManagerForm({
   formData,
   formErrors,
-  dobError,
   profiles,
   selectedProfileId,
   onChange,
@@ -82,7 +83,6 @@ export default function CreateManagerForm({
   onSubmit,
 }: CreateManagerFormProps) {
   const { t, i18n } = useTranslation();
-  const dobLabelId = useId();
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -119,10 +119,14 @@ export default function CreateManagerForm({
 
       <div className="flex gap-3">
         <div className="flex-1" id="create-manager-field-firstName">
-          <label className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <label
+            htmlFor="create-manager-first-name"
+            className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+          >
             {t("createManager.firstName")}
           </label>
           <input
+            id="create-manager-first-name"
             maxLength={30}
             className={`w-full rounded-lg border bg-gray-50 p-3 text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:ring-2 dark:bg-navy-900 dark:text-white dark:placeholder:text-gray-500 ${
               formErrors.firstName
@@ -145,10 +149,14 @@ export default function CreateManagerForm({
         </div>
 
         <div className="flex-1" id="create-manager-field-lastName">
-          <label className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <label
+            htmlFor="create-manager-last-name"
+            className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+          >
             {t("createManager.lastName")}
           </label>
           <input
+            id="create-manager-last-name"
             maxLength={30}
             className={`w-full rounded-lg border bg-gray-50 p-3 text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:ring-2 dark:bg-navy-900 dark:text-white dark:placeholder:text-gray-500 ${
               formErrors.lastName
@@ -169,30 +177,6 @@ export default function CreateManagerForm({
             </p>
           ) : null}
         </div>
-      </div>
-
-      <div id="create-manager-field-dob">
-        <label
-          id={dobLabelId}
-          className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
-        >
-          {t("createManager.dob")}
-        </label>
-        <DatePicker
-          labelledBy={dobLabelId}
-          value={formData.dob}
-          onChange={(value) => {
-            onChange("dob", value);
-            onClearError("dob");
-          }}
-          error={Boolean(dobError)}
-        />
-        {dobError ? (
-          <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
-            <AlertCircle className="h-3 w-3 shrink-0" />
-            {dobError}
-          </p>
-        ) : null}
       </div>
 
       <div className="flex gap-3">
@@ -229,7 +213,10 @@ export default function CreateManagerForm({
         </div>
 
         <div className="flex-1" id="create-manager-field-startPhase">
-          <label className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <label
+            htmlFor="create-manager-start-phase"
+            className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+          >
             {t("createManager.startPhase")}
           </label>
           <Select

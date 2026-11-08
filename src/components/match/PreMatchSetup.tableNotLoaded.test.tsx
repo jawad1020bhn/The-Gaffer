@@ -23,9 +23,7 @@ vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
 }));
-vi.mock("../../context/ThemeContext", () => ({
-  useTheme: () => ({ isDark: false, toggleTheme: vi.fn() }),
-}));
+vi.mock("../../context/ThemeContext", () => ({}));
 
 const engineDefender = {
   id: "h-rb",

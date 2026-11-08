@@ -74,7 +74,7 @@ pub async fn start_new_game(
     app_handle: tauri::AppHandle,
     first_name: String,
     last_name: String,
-    dob: String,
+    dob: Option<String>,
     nationality: String,
     startup_options: Option<RawStartupOptions>,
     world_source: Option<String>,
@@ -95,7 +95,7 @@ pub async fn start_new_game(
         NewGameRequest {
             first_name,
             last_name,
-            dob,
+            dob: dob.unwrap_or_default(),
             nationality,
             startup_options,
             world_source,
@@ -152,9 +152,17 @@ pub(crate) fn start_new_game_internal(
         return Err("be.error.createManager.nationalityRequired".to_string());
     }
 
-    // Validate DOB against the selected career start date.
-    let birth_date = chrono::NaiveDate::parse_from_str(&dob, "%Y-%m-%d")
-        .map_err(|_| "be.error.createManager.invalidDobFormat".to_string())?;
+    // The create-manager form no longer asks for a birth date. An explicit one (older clients,
+    // tests, MCP) is still validated; an omitted one is derived from the career opening date below.
+    let dob = dob.trim().to_string();
+    let requested_birth_date = if dob.is_empty() {
+        None
+    } else {
+        Some(
+            chrono::NaiveDate::parse_from_str(&dob, "%Y-%m-%d")
+                .map_err(|_| "be.error.createManager.invalidDobFormat".to_string())?,
+        )
+    };
 
     let startup_options = normalize_startup_options(startup_options)?;
     let (mut world, package_lockfile, authored_reputations) =
@@ -193,7 +201,16 @@ pub(crate) fn start_new_game_internal(
     let clock = game_clock_for_world(&startup_options, &world.metadata)?;
     let is_non_random = package_ids.as_deref().is_some_and(|ids| !ids.is_empty())
         || matches!(world_source.as_deref(), Some(source) if source != "random");
-    check_manager_age(birth_date, &clock)?;
+    let dob = match requested_birth_date {
+        Some(birth_date) => {
+            check_manager_age(birth_date, &clock)?;
+            dob
+        }
+        None => {
+            let birth_date = clock.current_date.date_naive() - chrono::Duration::days(45 * 365);
+            birth_date.format("%Y-%m-%d").to_string()
+        }
+    };
 
     let manager = Manager::new(
         "mgr_user".to_string(),

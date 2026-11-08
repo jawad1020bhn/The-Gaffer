@@ -40,7 +40,7 @@ export function TransfersMarketFilters({ state }: TransfersMarketFiltersProps) {
         showInBudget={view === "players" && myTeam !== null}
         trailing={<ViewSwitch value={listView} onChange={setListView} />}
       />
-      <p className="text-xs text-gray-500 dark:text-gray-300 font-heading uppercase tracking-wider mb-4">
+      <p className="text-caption text-gray-500 dark:text-gray-300 font-heading uppercase tracking-label mb-4">
         <Filter className="w-3.5 h-3.5 inline mr-1 -mt-0.5" />
         {t("common.nResults", { count: marketTotal })}
       </p>

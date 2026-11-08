@@ -19,13 +19,11 @@ describe("CreateManagerForm close control", () => {
         formData={{
           firstName: "",
           lastName: "",
-          dob: "",
           startYear: "2026",
           startPhase: "seasonStart",
           nationality: "",
         }}
         formErrors={{}}
-        dobError={null}
         profiles={[]}
         onChange={vi.fn()}
         onClearError={vi.fn()}
@@ -39,5 +37,7 @@ describe("CreateManagerForm close control", () => {
     expect(screen.getByRole("button", { name: "common.close" })).toHaveClass(
       "focus-visible:ring-focus",
     );
+    expect(document.getElementById("create-manager-field-dob")).toBeNull();
+    expect(screen.queryByText("createManager.dob")).not.toBeInTheDocument();
   });
 });

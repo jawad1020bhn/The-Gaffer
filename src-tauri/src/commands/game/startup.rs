@@ -960,6 +960,28 @@ mod tests {
         assert!(state.get_game(|_| ()).is_some());
     }
 
+    /// Given a new-game request with no birth date, as the current wizard sends it
+    /// When `start_new_game_internal` starts a career
+    /// Then it derives a playable manager age from the world's opening clock and installs the game.
+    #[test]
+    fn start_new_game_internal_defaults_dob_when_the_form_omits_it() {
+        let (dir, world_file, environment) = snapshot_world_on_disk("sng-default-dob");
+        let state = ofm_core::state::StateManager::new();
+
+        let started = crate::commands::game::start_new_game_internal(
+            &state,
+            request_for_world("", &world_file),
+            &environment,
+        );
+        std::fs::remove_dir_all(&dir).ok();
+
+        let game = started.unwrap();
+        let dob = game.manager.date_of_birth.clone();
+        assert!(!dob.is_empty());
+        assert!(domain::age::age_on(game.clock.current_date.date_naive(), &dob) >= 30);
+        assert!(state.get_game(|_| ()).is_some());
+    }
+
     /// Given an empty list of package ids and a world file, with no packages directory at all
     /// When `start_new_game_internal` starts a career
     /// Then the empty list means "no packages": it reads the world file instead of failing on the

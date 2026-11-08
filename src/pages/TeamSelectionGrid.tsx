@@ -57,21 +57,19 @@ export default function TeamSelectionGrid({
           value={clubSearch}
           onChange={(event) => onClubSearchChange(event.target.value)}
           placeholder={t("teamSelect.searchClubs")}
-          className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200"
+          className="min-w-0 flex-1 rounded-control border border-line bg-sunken px-3 py-2 text-body text-fg placeholder:text-fg-subtle"
         />
-        <span className="shrink-0 text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+        <span className="shrink-0 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
           {t("teamSelect.clubCount", { n: filteredTeamsCount })}
         </span>
       </div>
       {filteredTeamsCount === 0 ? (
-        <p className="py-10 text-center text-sm text-gray-500 dark:text-gray-400">
-          {t("teamSelect.noClubsMatch")}
-        </p>
+        <p className="py-10 text-center text-body text-fg-muted">{t("teamSelect.noClubsMatch")}</p>
       ) : (
         <div className="max-h-[640px] space-y-5 overflow-y-auto pr-1">
           {teamGroups.map((group) => (
             <div key={group.id}>
-              <p className="mb-2 text-xs font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+              <p className="mb-2 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {group.name}
               </p>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -86,7 +84,7 @@ export default function TeamSelectionGrid({
                       key={team.id}
                       type="button"
                       onClick={() => onSelectTeam(team.id)}
-                      className={`rounded-xl text-left transition-all duration-200 ${
+                      className={`rounded-panel text-left transition-all duration-200 ${
                         isSelected
                           ? "scale-[1.01] ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-navy-900"
                           : "hover:scale-[1.01]"
@@ -104,23 +102,23 @@ export default function TeamSelectionGrid({
                             <div className="flex items-center gap-3">
                               <TeamLogo
                                 team={team}
-                                className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg font-heading text-lg font-bold ${
+                                className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-control font-heading text-lead font-bold ${
                                   isSelected
                                     ? "bg-white/20 text-white"
                                     : "bg-white/10 text-gray-300"
                                 }`}
                               />
                               <div>
-                                <h3 className="font-heading text-sm font-bold uppercase tracking-wide text-white">
+                                <h3 className="font-heading text-body font-bold uppercase tracking-label text-white">
                                   {team.name}
                                 </h3>
                                 <TeamLocation
                                   city={team.city}
                                   countryCode={team.country}
                                   locale={i18n.language}
-                                  className="mt-0.5 text-xs text-gray-300"
+                                  className="mt-0.5 text-caption text-gray-300"
                                   iconClassName="w-3 h-3"
-                                  flagClassName="text-xs leading-none"
+                                  flagClassName="text-caption leading-none"
                                 />
                               </div>
                             </div>
@@ -145,7 +143,7 @@ export default function TeamSelectionGrid({
                               icon={<Users className="h-3.5 w-3.5" />}
                               label={t("teamSelect.squad")}
                               value={
-                                <span className="font-heading font-bold text-gray-800 dark:text-gray-200">
+                                <span className="font-heading font-bold text-fg">
                                   {playerCount}
                                 </span>
                               }
@@ -154,7 +152,7 @@ export default function TeamSelectionGrid({
                               icon={<Landmark className="h-3.5 w-3.5" />}
                               label={t("teamSelect.finances")}
                               value={
-                                <span className="font-heading font-bold text-gray-800 dark:text-gray-200">
+                                <span className="font-heading font-bold text-fg">
                                   {formatVal(team.finance)}
                                 </span>
                               }
@@ -163,7 +161,7 @@ export default function TeamSelectionGrid({
                               icon={<Star className="h-3.5 w-3.5" />}
                               label={t("teamSelect.avgOvr")}
                               value={
-                                <span className="font-heading text-lg font-bold text-primary-500">
+                                <span className="font-heading text-lead font-bold text-primary-500">
                                   {visibleRatingText(avgOvr)}
                                 </span>
                               }
@@ -186,7 +184,7 @@ export default function TeamSelectionGrid({
 function InfoStat({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+      <span className="flex items-center gap-1 text-caption text-fg-subtle">
         {icon} {label}
       </span>
       {value}

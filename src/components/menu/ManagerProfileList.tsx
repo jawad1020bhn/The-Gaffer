@@ -51,7 +51,7 @@ export default function ManagerProfileList({
                   {profile.first_name} {profile.last_name}
                 </span>
                 <span className="text-xs text-gray-400 dark:text-gray-500 ml-2 shrink-0">
-                  {profile.nationality} &middot; {profile.date_of_birth}
+                  {profile.nationality}
                 </span>
               </div>
               <div

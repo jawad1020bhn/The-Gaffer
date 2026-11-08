@@ -114,7 +114,7 @@ export default function TournamentsAwardsGrid({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {!seasonComplete && (
-        <div className="md:col-span-2 lg:col-span-3 rounded-xl border border-amber-300/50 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
+        <div className="md:col-span-2 lg:col-span-3 rounded-panel border border-amber-300/50 bg-amber-50 px-4 py-3 text-body text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
           {t("tournaments.awards.currentLeaders")}
         </div>
       )}
@@ -138,13 +138,11 @@ export default function TournamentsAwardsGrid({
       ) : awardsLoadState === "error" ? (
         <div className="col-span-full text-center py-12">
           <Award className="w-12 h-12 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
-          <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">
-            {t("tournaments.awards.loadFailed")}
-          </p>
+          <p className="text-body text-fg-subtle mb-4">{t("tournaments.awards.loadFailed")}</p>
           <button
             type="button"
             onClick={retryAwards}
-            className="px-4 py-2 rounded-lg font-heading font-bold text-sm uppercase tracking-wider bg-primary-500 text-white hover:bg-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+            className="px-4 py-2 rounded-control font-heading font-bold text-body uppercase tracking-label bg-primary-500 text-white hover:bg-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
           >
             {t("common.retry")}
           </button>
@@ -152,9 +150,7 @@ export default function TournamentsAwardsGrid({
       ) : (
         <div className="col-span-full text-center py-12">
           <Award className="w-12 h-12 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
-          <p className="text-sm text-gray-400 dark:text-gray-500">
-            {t("tournaments.loadingAwards")}
-          </p>
+          <p className="text-body text-fg-subtle">{t("tournaments.loadingAwards")}</p>
         </div>
       )}
     </div>

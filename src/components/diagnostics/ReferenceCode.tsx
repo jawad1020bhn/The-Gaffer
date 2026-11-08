@@ -28,8 +28,8 @@ export function ReferenceCode({ code, size = "md" }: ReferenceCodeProps) {
   return (
     <span className="inline-flex items-center gap-2">
       <code
-        className={`select-all font-mono tracking-widest text-gray-900 dark:text-gray-100 ${
-          size === "lg" ? "text-xl" : "text-sm"
+        className={`select-all font-mono tracking-labelst text-gray-900 dark:text-gray-100 ${
+          size === "lg" ? "text-title" : "text-body"
         }`}
       >
         {code}
@@ -41,12 +41,12 @@ export function ReferenceCode({ code, size = "md" }: ReferenceCodeProps) {
         }}
         aria-label={t("reportBug.copyCodeFor", { code })}
         title={t("reportBug.copyCodeFor", { code })}
-        className="p-1 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+        className="p-1 rounded-md text-fg-muted hover:bg-gray-100 dark:hover:bg-navy-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
       >
         <Copy className="w-4 h-4" aria-hidden="true" />
       </button>
       {/* Always rendered, so the announcement is a change to a live region that already exists. */}
-      <span role="status" className="text-xs text-primary-700 dark:text-primary-400">
+      <span role="status" className="text-caption text-primary-700 dark:text-primary-400">
         {copied ? t("reportBug.codeCopied") : ""}
       </span>
     </span>

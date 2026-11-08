@@ -3,6 +3,22 @@
     "name": "OpenFoot Manager",
     "publisher": "Sturdy Robot"
   },
+  "gameNav": {
+    "career": "Kariyer",
+    "team": "Takım",
+    "transfers": "Transferler",
+    "competitions": "Müsabakalar",
+    "office": "Ofis",
+    "main": "Ana oyun bölümleri",
+    "context": "Bölüm sayfaları",
+    "careerStatus": "Kariyer durumu",
+    "commands": "Kariyer komutları",
+    "noClub": "Kulüp yok",
+    "noFixture": "Yaklaşan maç yok",
+    "unknownBudget": "Bütçe kullanılamıyor",
+    "date": "Tarih",
+    "transferBudget": "Transfer bütçesi"
+  },
   "menu": {
     "newGame": "Yeni Oyun",
     "loadGame": "Oyunu Yükle",
@@ -21,12 +37,9 @@
     "loadGameFailed": "Kayıt yüklenemedi: {{error}}",
     "invalidWorldDb": "Geçersiz dünya veritabanı dosyası: {{error}}",
     "failedStartGame": "Oyun başlatılamadı: {{error}}",
-    "openDiscord": "Discord topluluğunu aç",
-    "openGithub": "GitHub deposunu aç",
     "mainMenu": "Ana Menü",
     "worldEditor": "Dünya Editörü",
-    "startupOptionsRejected": "Bu kariyer ayarları kullanılamadı. Dünya ekranına dönüp başlangıç yılını, başlangıç aşamasını ve ne kadar geçmiş oluşturulacağını kontrol et.",
-    "reportBug": "Hata bildir"
+    "startupOptionsRejected": "Bu kariyer ayarları kullanılamadı. Dünya ekranına dönüp başlangıç yılını, başlangıç aşamasını ve ne kadar geçmiş oluşturulacağını kontrol et."
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -41,7 +54,6 @@
     "title": "Menajer Oluştur",
     "firstName": "Ad",
     "lastName": "Soyad",
-    "dob": "Doğum Tarihi",
     "startYear": "Başlangıç Yılı",
     "startPhase": "Başlangıç Aşaması",
     "phaseSeasonStart": "Sezon Başı",
@@ -1899,6 +1911,9 @@
     },
     "uiScale": "Arayüz Ölçeği",
     "uiScaleDesc": "Okunabilirlik için yazı ve aralık boyutlarını ayarla",
+    "uiDensity": "Yoğunluk",
+    "uiDensityDesc": "Satırların ve panellerin ne kadar yer kapladığı.",
+    "uiDensityOptions": { "comfortable": "Rahat", "compact": "Sıkışık" },
     "sidebarWidth": "Kenar çubuğu genişliği",
     "sidebarWidthDesc": "Açık kenar çubuğunun genişliği. “Geniş” her menü adını tek satırda gösterir.",
     "sidebarWidthOptions": {

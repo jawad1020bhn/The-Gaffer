@@ -30,7 +30,7 @@ export default function HomePlayerMomentumCard({
           <button
             type="button"
             onClick={() => onNavigate?.("Squad")}
-            className="text-primary-500 dark:text-primary-400 text-xs font-heading font-bold uppercase tracking-wider hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
           >
             {t("dashboard.squad")}
           </button>
@@ -44,7 +44,7 @@ export default function HomePlayerMomentumCard({
             <div>
               <div className="flex items-center gap-1.5 mb-2">
                 <TrendingUp className="w-3.5 h-3.5 text-green-500" />
-                <span className="text-[10px] font-heading font-bold uppercase tracking-widest text-green-500">
+                <span className="text-caption font-heading font-bold uppercase tracking-labelst text-green-500">
                   {t("home.inForm")}
                 </span>
               </div>
@@ -52,19 +52,19 @@ export default function HomePlayerMomentumCard({
                 {hotPlayers.map((player) => (
                   <div
                     key={player.id}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-green-500/5 dark:bg-green-500/10"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-control bg-green-500/5 dark:bg-green-500/10"
                   >
                     <PlayerAvatar
                       player={player}
-                      className="h-7 w-7 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-[10px] font-heading font-bold text-gray-500 dark:text-gray-300"
+                      className="h-7 w-7 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-caption font-heading font-bold text-gray-500 dark:text-gray-300"
                     />
-                    <span className="text-xs font-medium text-gray-800 dark:text-gray-200 flex-1 truncate">
+                    <span className="text-caption font-medium text-fg flex-1 truncate">
                       {player.full_name}
                     </span>
                     <Badge variant="success" size="sm">
                       {translatePositionAbbreviation(t, naturalPositionOf(player))}
                     </Badge>
-                    <span className="text-xs font-heading font-bold text-green-500 tabular-nums w-8 text-right">
+                    <span className="text-caption font-heading font-bold text-green-500 tabular-nums w-8 text-right">
                       {player.morale}
                     </span>
                   </div>
@@ -76,7 +76,7 @@ export default function HomePlayerMomentumCard({
             <div>
               <div className="flex items-center gap-1.5 mb-2">
                 <TrendingDown className="w-3.5 h-3.5 text-red-500" />
-                <span className="text-[10px] font-heading font-bold uppercase tracking-widest text-red-500">
+                <span className="text-caption font-heading font-bold uppercase tracking-labelst text-red-500">
                   {t("home.lowMorale")}
                 </span>
               </div>
@@ -84,19 +84,19 @@ export default function HomePlayerMomentumCard({
                 {coldPlayers.map((player) => (
                   <div
                     key={player.id}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-red-500/5 dark:bg-red-500/10"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-control bg-red-500/5 dark:bg-red-500/10"
                   >
                     <PlayerAvatar
                       player={player}
-                      className="h-7 w-7 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-[10px] font-heading font-bold text-gray-500 dark:text-gray-300"
+                      className="h-7 w-7 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-caption font-heading font-bold text-gray-500 dark:text-gray-300"
                     />
-                    <span className="text-xs font-medium text-gray-800 dark:text-gray-200 flex-1 truncate">
+                    <span className="text-caption font-medium text-fg flex-1 truncate">
                       {player.full_name}
                     </span>
                     <Badge variant="danger" size="sm">
                       {translatePositionAbbreviation(t, naturalPositionOf(player))}
                     </Badge>
-                    <span className="text-xs font-heading font-bold text-red-500 tabular-nums w-8 text-right">
+                    <span className="text-caption font-heading font-bold text-red-500 tabular-nums w-8 text-right">
                       {player.morale}
                     </span>
                   </div>

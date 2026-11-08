@@ -98,7 +98,7 @@ export default function TacticsTab({
   });
 
   if (!team) {
-    return <p className="text-gray-500 dark:text-gray-400">{t("common.noTeam")}</p>;
+    return <p className="text-fg-muted">{t("common.noTeam")}</p>;
   }
 
   return (

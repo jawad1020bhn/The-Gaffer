@@ -3,6 +3,22 @@
     "name": "OpenFoot Manager",
     "publisher": "Sturdy Robot"
   },
+  "gameNav": {
+    "career": "Carreira",
+    "team": "Equipa",
+    "transfers": "Transferências",
+    "competitions": "Competições",
+    "office": "Escritório",
+    "main": "Secções principais do jogo",
+    "context": "Páginas da secção",
+    "careerStatus": "Estado da carreira",
+    "commands": "Comandos da carreira",
+    "noClub": "Sem clube",
+    "noFixture": "Sem próximo jogo",
+    "unknownBudget": "Orçamento indisponível",
+    "date": "Data",
+    "transferBudget": "Orçamento de transferências"
+  },
   "menu": {
     "newGame": "Novo Jogo",
     "loadGame": "Carregar Jogo",
@@ -21,12 +37,9 @@
     "loadGameFailed": "Não foi possível carregar a gravação: {{error}}",
     "invalidWorldDb": "Ficheiro de base de dados de mundo inválido: {{error}}",
     "failedStartGame": "Falha ao iniciar o jogo: {{error}}",
-    "openDiscord": "Abrir comunidade Discord",
-    "openGithub": "Abrir repositório GitHub",
     "mainMenu": "Menu principal",
     "worldEditor": "Editor de Mundo",
-    "startupOptionsRejected": "Não foi possível usar essas definições de carreira. Volta ao ecrã do mundo e verifica o ano de início, a fase de início e quanto histórico anterior gerar.",
-    "reportBug": "Reportar um erro"
+    "startupOptionsRejected": "Não foi possível usar essas definições de carreira. Volta ao ecrã do mundo e verifica o ano de início, a fase de início e quanto histórico anterior gerar."
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -41,7 +54,6 @@
     "title": "Criar Treinador",
     "firstName": "Nome",
     "lastName": "Sobrenome",
-    "dob": "Data de Nascimento",
     "startYear": "Ano de início",
     "startPhase": "Fase de início",
     "phaseSeasonStart": "Início da época",
@@ -1899,6 +1911,9 @@
     },
     "uiScale": "Escala da UI",
     "uiScaleDesc": "Ajustar tamanho da fonte e espaçamento para legibilidade",
+    "uiDensity": "Densidade",
+    "uiDensityDesc": "Quanto espaço as linhas e os painéis usam.",
+    "uiDensityOptions": { "comfortable": "Confortável", "compact": "Compacta" },
     "sidebarWidth": "Largura da barra lateral",
     "sidebarWidthDesc": "A largura da barra lateral aberta. «Larga» mostra cada nome do menu numa linha.",
     "sidebarWidthOptions": {

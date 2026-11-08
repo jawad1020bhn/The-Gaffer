@@ -82,13 +82,11 @@ export default function ScoutingYouthRecruitmentCard({
         {title ?? t("scouting.youthRecruitment")}
       </CardHeader>
       <CardBody className="flex flex-col gap-4">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {hint ?? t("scouting.youthRecruitmentHint")}
-        </p>
+        <p className="text-body text-fg-muted">{hint ?? t("scouting.youthRecruitmentHint")}</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <span className="text-caption font-heading uppercase tracking-label text-fg-muted">
               {t("scouting.youthSearchScoutLabel")}
             </span>
             <Select
@@ -107,7 +105,7 @@ export default function ScoutingYouthRecruitmentCard({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <span className="text-caption font-heading uppercase tracking-label text-fg-muted">
               {t("scouting.youthSearchRegionLabel")}
             </span>
             <Select
@@ -122,7 +120,7 @@ export default function ScoutingYouthRecruitmentCard({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <span className="text-caption font-heading uppercase tracking-label text-fg-muted">
               {t("scouting.youthSearchObjectiveLabel")}
             </span>
             <Select
@@ -138,7 +136,7 @@ export default function ScoutingYouthRecruitmentCard({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <span className="text-caption font-heading uppercase tracking-label text-fg-muted">
               {t("scouting.youthTargetLabel")}
             </span>
             <Select
@@ -161,19 +159,15 @@ export default function ScoutingYouthRecruitmentCard({
             {t("scouting.activeYouthSearches", { count: youthAssignments.length })}
           </Badge>
           {availableScoutCount === 0 ? (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {t("scouting.noScoutsFree")}
-            </span>
+            <span className="text-caption text-fg-muted">{t("scouting.noScoutsFree")}</span>
           ) : null}
-          {errorMessage ? <span className="text-xs text-red-500">{errorMessage}</span> : null}
+          {errorMessage ? <span className="text-caption text-red-500">{errorMessage}</span> : null}
         </div>
 
         {youthAssignments.length === 0 ? (
-          <div className="flex items-center gap-3 rounded-xl border border-dashed border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800/40 px-4 py-4">
+          <div className="flex items-center gap-3 rounded-panel border border-dashed border-line bg-sunken/40 px-4 py-4">
             <GraduationCap className="w-5 h-5 text-primary-500 shrink-0" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {t("scouting.noYouthSearches")}
-            </p>
+            <p className="text-body text-fg-muted">{t("scouting.noYouthSearches")}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -189,14 +183,14 @@ export default function ScoutingYouthRecruitmentCard({
               return (
                 <div
                   key={assignment.id}
-                  className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800/60 px-4 py-3"
+                  className="rounded-panel border border-line bg-sunken/60 px-4 py-3"
                 >
                   <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="min-w-0">
-                      <p className="font-heading font-bold text-sm text-gray-800 dark:text-gray-100">
+                      <p className="font-heading font-bold text-body text-fg">
                         {t("scouting.youthProspectSearch")}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      <p className="text-caption text-fg-muted mt-0.5">
                         {t("scouting.scoutLabel", {
                           name: scout.display_name,
                         })}
@@ -218,7 +212,7 @@ export default function ScoutingYouthRecruitmentCard({
 
                     <div className="flex items-center gap-1.5 text-accent-500 shrink-0">
                       <Clock className="w-3.5 h-3.5" />
-                      <span className="text-xs font-heading font-bold">
+                      <span className="text-caption font-heading font-bold">
                         {t("scouting.daysLeft", { days: assignment.days_remaining })}
                       </span>
                     </div>

@@ -25,8 +25,8 @@ export default function TournamentsGroupTable({ group, teams }: TournamentsGroup
 
   return (
     <div data-testid={`tournaments-group-${group.id}`}>
-      <div className="px-4 py-2 border-b border-gray-100 dark:border-navy-600 bg-gray-50 dark:bg-navy-800">
-        <h5 className="font-heading font-bold text-xs uppercase tracking-wider text-gray-600 dark:text-gray-300">
+      <div className="px-4 py-2 border-b border-gray-100 dark:border-navy-600 bg-sunken">
+        <h5 className="font-heading font-bold text-caption uppercase tracking-label text-fg-muted">
           {t("tournaments.group", { name: group.name })}
         </h5>
       </div>
@@ -52,14 +52,14 @@ export default function TournamentsGroupTable({ group, teams }: TournamentsGroup
               <tr
                 key={entry.team_id}
                 onClick={clickable ? () => onSelectTeam(entry.team_id) : undefined}
-                className={`${clickable ? "cursor-pointer" : ""} transition-colors ${isUser ? "bg-primary-50 dark:bg-primary-500/10" : "hover:bg-gray-50 dark:hover:bg-navy-700/50"}`}
+                className={`${clickable ? "cursor-pointer" : ""} transition-colors ${isUser ? "bg-primary-50 dark:bg-primary-500/10" : "hover:bg-hover/50"}`}
                 data-testid={`tournaments-group-standing-${entry.team_id}`}
               >
-                <td className="py-1.5 px-3 font-heading font-bold text-xs text-gray-400 dark:text-gray-500 w-6">
+                <td className="py-1.5 px-3 font-heading font-bold text-caption text-fg-subtle w-6">
                   {idx + 1}
                 </td>
                 <td
-                  className={`py-1.5 px-3 font-semibold text-sm ${isUser ? "text-primary-600 dark:text-primary-400" : "text-gray-800 dark:text-gray-200"}`}
+                  className={`py-1.5 px-3 font-semibold text-body ${isUser ? "text-primary-600 dark:text-primary-400" : "text-fg"}`}
                 >
                   {clickable ? (
                     <button
@@ -77,10 +77,10 @@ export default function TournamentsGroupTable({ group, teams }: TournamentsGroup
                     resolveTeamName(entry.team_id)
                   )}
                 </td>
-                <td className="py-1.5 px-3 text-center text-xs text-gray-600 dark:text-gray-400 tabular-nums">
+                <td className="py-1.5 px-3 text-center text-caption text-fg-muted tabular-nums">
                   {entry.played}
                 </td>
-                <td className="py-1.5 px-3 text-center font-heading font-bold text-sm text-gray-800 dark:text-gray-100 tabular-nums">
+                <td className="py-1.5 px-3 text-center font-heading font-bold text-body text-fg tabular-nums">
                   {entry.points}
                 </td>
               </tr>

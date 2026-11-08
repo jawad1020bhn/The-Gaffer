@@ -160,7 +160,7 @@ function getPitchMarkerClassName(options: {
   const isHovered = hoveredSlot === slot.index;
 
   const base =
-    "absolute z-20 flex w-[6rem] -translate-x-1/2 -translate-y-1/2 cursor-grab flex-col items-center gap-0.5 rounded-2xl px-1 py-1 text-center transition-all active:cursor-grabbing";
+    "absolute z-20 flex w-[6rem] -translate-x-1/2 -translate-y-1/2 cursor-grab flex-col items-center gap-0.5 rounded-panel px-1 py-1 text-center transition-all active:cursor-grabbing";
 
   if (isDragged) {
     return `${base} opacity-60`;
@@ -306,11 +306,11 @@ export default function TacticsPitch({
     <Card className="overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-t-xl border-b border-gray-100 bg-linear-to-r from-navy-700 to-navy-800 px-5 py-4 dark:border-navy-600">
         <div>
-          <h3 className="flex items-center gap-2 text-sm font-heading font-bold uppercase tracking-wide text-white">
+          <h3 className="flex items-center gap-2 text-body font-heading font-bold uppercase tracking-label text-white">
             <Star className="h-4 w-4 fill-current text-accent-400" />
             {t("preMatch.startingXI")} - {formation}
           </h3>
-          <p className="mt-0.5 text-xs text-gray-400">{t("tactics.pitchInteractionHint")}</p>
+          <p className="mt-0.5 text-caption text-gray-400">{t("tactics.pitchInteractionHint")}</p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {outOfPositionCount === null ? null : (
@@ -318,23 +318,23 @@ export default function TacticsPitch({
               {outOfPositionCount} {t("squad.outOfPosition")}
             </Badge>
           )}
-          <span className="rounded-full bg-success-500/15 px-2.5 py-1 text-[10px] font-heading font-bold uppercase tracking-widest text-success-300">
+          <span className="rounded-full bg-success-500/15 px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-labelst text-success-300">
             {t("tactics.naturalFit")}
           </span>
-          <span className="rounded-full bg-accent-500/15 px-2.5 py-1 text-[10px] font-heading font-bold uppercase tracking-widest text-accent-300">
+          <span className="rounded-full bg-accent-500/15 px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-labelst text-accent-300">
             {t("tactics.adaptedFit")}
           </span>
-          <span className="rounded-full bg-red-500/15 px-2.5 py-1 text-[10px] font-heading font-bold uppercase tracking-widest text-red-300">
+          <span className="rounded-full bg-red-500/15 px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-labelst text-red-300">
             {t("squad.outOfPosition")}
           </span>
-          <span className="rounded-full bg-white/8 px-2.5 py-1 text-[10px] font-heading font-bold uppercase tracking-widest text-white/70">
+          <span className="rounded-full bg-white/8 px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-labelst text-white/70">
             {t("tactics.tableInteractionHint")}
           </span>
           {selectedPlayer ? (
             <button
               type="button"
               onClick={onClearSelection}
-              className="text-xs font-heading font-bold uppercase tracking-wider text-accent-400 hover:text-accent-300"
+              className="text-caption font-heading font-bold uppercase tracking-label text-accent-400 hover:text-accent-300"
             >
               {t("common.clear")}
             </button>
@@ -578,7 +578,7 @@ export default function TacticsPitch({
                     })()
                   ) : (
                     <div className="absolute z-20 flex w-[4.5rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-white/28 bg-black/12 text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-white/70">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-white/28 bg-black/12 text-caption font-heading font-bold uppercase tracking-[0.18em] text-white/70">
                         {translatePositionAbbreviation(t, slot.position)}
                       </div>
                       <div className="mt-1 max-w-full text-[9px] font-heading font-bold uppercase tracking-[0.16em] text-white/45">

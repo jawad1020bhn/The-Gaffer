@@ -158,7 +158,7 @@ export function FormationPitch({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-gradient-to-b from-primary-500 to-primary-700 ${className ?? ""}`}
+      className={`relative overflow-hidden rounded-panel bg-gradient-to-b from-primary-500 to-primary-700 ${className ?? ""}`}
     >
       {/* Decorative: this is the pitch markings, and everything a screen reader needs is in the
           player tokens rendered on top of it. A <title> here would announce "football pitch"
@@ -310,7 +310,7 @@ export function FormationPitch({
               aria-describedby={renderToken ? descriptionId : undefined}
               onFocus={() => focusToken(p.id)}
               onBlur={blurToken}
-              className={`${sharedClass} rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/70 ${isQueuedOff ? "opacity-50" : ""}`}
+              className={`${sharedClass} rounded-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/70 ${isQueuedOff ? "opacity-50" : ""}`}
               style={sharedStyle}
               onClick={() => {
                 if (!isQueuedOff) onPlayerClick(p.id);

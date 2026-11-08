@@ -29,7 +29,7 @@ export function CheckboxRow({
 }: CheckboxRowProps) {
   const descriptionId = `${id}-desc`;
   return (
-    <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-navy-700 border border-gray-200 dark:border-navy-600">
+    <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-control bg-gray-50 dark:bg-navy-700 border border-line">
       <Checkbox
         id={id}
         checked={checked}
@@ -40,13 +40,13 @@ export function CheckboxRow({
       <div className="flex-1 min-w-0">
         <label
           htmlFor={id}
-          className={`block text-[13px] font-medium text-gray-800 dark:text-gray-200 ${
+          className={`block text-[13px] font-medium text-fg ${
             disabled ? "cursor-not-allowed" : "cursor-pointer"
           }`}
         >
           {label}
         </label>
-        <p id={descriptionId} className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5">
+        <p id={descriptionId} className="text-[11px] text-fg-muted mt-0.5">
           {description}
         </p>
       </div>

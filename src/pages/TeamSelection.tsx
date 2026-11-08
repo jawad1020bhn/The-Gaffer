@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore } from "../store/gameStore";
 import { buildRegionLabel } from "../lib/teamRegions";
-import { Badge, Card, CardBody, ThemeToggle } from "../components/ui";
+import { Badge, Card, CardBody } from "../components/ui";
 import { ArrowLeft, ChevronRight, Loader2 } from "lucide-react";
 import TeamSelectionScopePanel from "./TeamSelectionScopePanel";
 import TeamSelectionGrid from "./TeamSelectionGrid";
@@ -54,33 +54,31 @@ export default function TeamSelection() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 transition-colors duration-300 dark:bg-navy-900">
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 shadow-sm dark:border-navy-700 dark:bg-navy-800">
+    <div className="min-h-screen bg-page">
+      <header className="flex items-center justify-between border-b border-line bg-panel px-6 py-4 shadow-sm">
         <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-navy-700 dark:hover:text-gray-200"
+            aria-label={t("common.back")}
+            className="rounded-control p-2 text-fg-muted transition-colors hover:bg-hover hover:text-fg"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="font-heading text-xl font-bold uppercase tracking-wide text-gray-800 dark:text-gray-100">
+            <h1 className="font-heading text-title font-bold uppercase tracking-label text-fg">
               {t("teamSelect.title")}
             </h1>
-            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-              {t("teamSelect.subtitle")}
-            </p>
+            <p className="mt-0.5 text-caption text-fg-muted">{t("teamSelect.subtitle")}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <ThemeToggle />
           {selectedTeam && (
             <button
               type="button"
               onClick={handleConfirm}
               disabled={isConfirming}
-              className={`flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-2.5 font-heading text-sm font-bold uppercase tracking-wider text-white shadow-md transition-all hover:from-primary-600 hover:to-primary-700 hover:shadow-lg hover:shadow-primary-500/20 ${
+              className={`flex items-center gap-2 rounded-control bg-selected px-6 py-2.5 font-heading text-body font-bold uppercase tracking-label text-on-brand transition-colors hover:bg-selected/90 ${
                 isConfirming ? "cursor-wait opacity-70" : ""
               }`}
             >
@@ -103,9 +101,7 @@ export default function TeamSelection() {
         {scopeMessage && (
           <Card accent="accent">
             <CardBody className="py-3">
-              <p className="text-sm text-gray-700 dark:text-gray-200">
-                {t(scopeMessage.key, scopeMessage.values)}
-              </p>
+              <p className="text-body text-fg">{t(scopeMessage.key, scopeMessage.values)}</p>
             </CardBody>
           </Card>
         )}
@@ -154,7 +150,7 @@ export default function TeamSelection() {
 
         <Card>
           <CardBody className="flex flex-wrap items-center justify-between gap-3 py-3">
-            <div className="text-sm text-gray-600 dark:text-gray-300">
+            <div className="text-body text-fg-muted">
               {t("teamSelect.scopeSummary", {
                 regionsCount: activeRegionIds.length,
                 competitionsCount: enabledCompetitionIds.length,

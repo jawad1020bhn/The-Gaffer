@@ -48,14 +48,14 @@ export default function TransferCentreWorldTab({
       <Card accent="primary">
         <CardBody className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs font-heading font-bold uppercase tracking-[0.25em] text-primary-500">
+            <p className="text-caption font-heading font-bold uppercase tracking-[0.25em] text-primary-500">
               {t("transferCentreWorld.title")}
             </p>
-            <h2 className="text-2xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+            <h2 className="text-title font-heading font-bold uppercase tracking-label text-gray-900 dark:text-gray-100">
               {t("transferCentreWorld.subtitle")}
             </h2>
           </div>
-          <div className="flex flex-wrap gap-2 text-xs">
+          <div className="flex flex-wrap gap-2 text-caption">
             <Badge variant="primary" size="md">
               {t("transferCentreWorld.rumourTag")}
             </Badge>
@@ -116,16 +116,14 @@ function TransferRumoursSection({
       </CardHeader>
       <CardBody className="space-y-4">
         {rumours.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t("transferCentreWorld.noRumours")}
-          </p>
+          <p className="text-body text-fg-muted">{t("transferCentreWorld.noRumours")}</p>
         ) : (
           rumours.map((rumour) => {
             const player = playersById.get(rumour.player_id);
             return (
               <div
                 key={rumour.id}
-                className="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-navy-600 dark:bg-navy-800/70"
+                className="rounded-panel border border-gray-100 bg-gray-50 p-4 dark:border-navy-600 dark:bg-navy-800/70"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -135,11 +133,11 @@ function TransferRumoursSection({
                         player: rumour.player_name,
                       })}
                       onClick={() => onSelectPlayer?.(rumour.player_id)}
-                      className="text-left text-xl font-heading font-bold uppercase tracking-wide text-primary-500 transition-colors hover:text-primary-400"
+                      className="text-left text-title font-heading font-bold uppercase tracking-label text-primary-500 transition-colors hover:text-primary-400"
                     >
                       {rumour.player_name}
                     </button>
-                    <div className="mt-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="mt-2 flex items-center gap-2 text-body text-fg-muted">
                       <span className="font-heading font-bold uppercase tracking-[0.2em]">
                         {t("transferCentreWorld.currentClub")}
                       </span>
@@ -152,12 +150,12 @@ function TransferRumoursSection({
                       </button>
                     </div>
                   </div>
-                  <div className="rounded-xl bg-primary-100 p-3 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+                  <div className="rounded-panel bg-primary-100 p-3 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
                     <TrendingUp className="h-6 w-6" />
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div className="mt-4 grid grid-cols-2 gap-3 text-body">
                   <StatTile
                     icon={<CalendarDays className="h-4 w-4" />}
                     label={t("transferCentreWorld.reportedOn")}
@@ -200,9 +198,7 @@ function CompletedDealsSection({
       </CardHeader>
       <CardBody className="space-y-4">
         {deals.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t("transferCentreWorld.noCompletedDeals")}
-          </p>
+          <p className="text-body text-fg-muted">{t("transferCentreWorld.noCompletedDeals")}</p>
         ) : (
           deals.map((deal) => {
             const player = playersById.get(deal.player_id);
@@ -213,7 +209,7 @@ function CompletedDealsSection({
             return (
               <div
                 key={`${deal.player_id}-${deal.date}`}
-                className="rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-navy-600 dark:bg-navy-800/70"
+                className="rounded-panel border border-gray-100 bg-gray-50 p-4 dark:border-navy-600 dark:bg-navy-800/70"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -223,11 +219,11 @@ function CompletedDealsSection({
                         player: playerName,
                       })}
                       onClick={() => onSelectPlayer?.(deal.player_id)}
-                      className="text-left text-xl font-heading font-bold uppercase tracking-wide text-accent-500 transition-colors hover:text-accent-400"
+                      className="text-left text-title font-heading font-bold uppercase tracking-label text-accent-500 transition-colors hover:text-accent-400"
                     >
                       {playerName}
                     </button>
-                    <div className="mt-2 grid gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="mt-2 grid gap-2 text-body text-fg-muted">
                       <TeamLine
                         label={t("transferCentreWorld.sourceClub")}
                         teamId={deal.from_team_id}
@@ -242,12 +238,12 @@ function CompletedDealsSection({
                       />
                     </div>
                   </div>
-                  <div className="rounded-xl bg-accent-100 p-3 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300">
+                  <div className="rounded-panel bg-accent-100 p-3 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300">
                     <ArrowLeftRight className="h-6 w-6" />
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div className="mt-4 grid grid-cols-2 gap-3 text-body">
                   <StatTile
                     icon={<CalendarDays className="h-4 w-4" />}
                     label={t("transferCentreWorld.agreedOn")}
@@ -298,14 +294,14 @@ interface StatTileProps {
 
 function StatTile({ icon, label, value }: StatTileProps) {
   return (
-    <div className="rounded-lg bg-white p-3 dark:bg-navy-700/70">
-      <div className="mb-2 flex items-center gap-2 text-gray-400 dark:text-gray-500">
+    <div className="rounded-control bg-white p-3 dark:bg-navy-700/70">
+      <div className="mb-2 flex items-center gap-2 text-fg-subtle">
         {icon}
         <span className="text-[11px] font-heading font-bold uppercase tracking-[0.18em]">
           {label}
         </span>
       </div>
-      <p className="text-lg font-heading font-bold text-gray-800 dark:text-gray-100">{value}</p>
+      <p className="text-lead font-heading font-bold text-fg">{value}</p>
     </div>
   );
 }

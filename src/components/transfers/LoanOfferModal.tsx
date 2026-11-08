@@ -87,7 +87,7 @@ export function LoanOfferForm({
     <>
       <h3
         id="loan-offer-modal-title"
-        className="text-sm font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3"
+        className="text-body font-heading font-bold uppercase tracking-label text-fg-muted mb-3"
       >
         {t(titleKey)}
       </h3>
@@ -95,10 +95,8 @@ export function LoanOfferForm({
         <div className="flex items-center gap-3 mb-4">
           <PlayerPositionBadge position={naturalPositionOf(loanTarget)} />
           <div>
-            <p className="font-semibold text-sm text-gray-800 dark:text-gray-200">
-              {loanTarget.full_name}
-            </p>
-            <p className="text-xs text-gray-400">
+            <p className="font-semibold text-body text-fg">{loanTarget.full_name}</p>
+            <p className="text-caption text-gray-400">
               {getTeamName(teams, loanTarget.team_id)} •{" "}
               {t("transfers.playerValue", {
                 value: formatVal(loanTarget.market_value),
@@ -111,11 +109,11 @@ export function LoanOfferForm({
       {noticeTitle ? (
         <div
           role="status"
-          className="mb-4 flex gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100"
+          className="mb-4 flex gap-2 rounded-control border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100"
         >
           <CalendarClock className="mt-0.5 h-4 w-4 shrink-0" />
-          <div className="text-xs">
-            <p className="font-heading font-bold uppercase tracking-wider">{noticeTitle}</p>
+          <div className="text-caption">
+            <p className="font-heading font-bold uppercase tracking-label">{noticeTitle}</p>
             {noticeDetail ? <p className="mt-1">{noticeDetail}</p> : null}
           </div>
         </div>
@@ -123,7 +121,7 @@ export function LoanOfferForm({
 
       <label
         htmlFor="loan-period"
-        className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1.5"
+        className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1 flex items-center gap-1.5"
       >
         <CalendarDays className="w-3.5 h-3.5" />
         {t("transfers.loanPeriod")}
@@ -132,7 +130,7 @@ export function LoanOfferForm({
         id="loan-period"
         value={periodId}
         onChange={(event) => onPeriodChange(event.target.value as LoanPeriodOptionId)}
-        className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-navy-700 border border-gray-200 dark:border-navy-600 text-sm text-gray-800 dark:text-gray-200 mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+        className="w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
       >
         {periodId ? null : (
           <option value="" disabled>
@@ -152,20 +150,20 @@ export function LoanOfferForm({
       </select>
 
       {selectedEndDate ? (
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+        <p className="text-caption text-fg-muted mb-3">
           {t("transfers.loanEndsOn", {
             endDate: formatDate(selectedEndDate, i18n.language),
           })}
         </p>
       ) : (
-        <p role="alert" className="text-xs text-red-600 dark:text-red-300 mb-3">
+        <p role="alert" className="text-caption text-red-600 dark:text-red-300 mb-3">
           {t("transfers.noLoanPeriodAvailable")}
         </p>
       )}
 
       <div
         id="loan-wage-contribution-label"
-        className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1.5"
+        className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-2 flex items-center gap-1.5"
       >
         <Percent className="w-3.5 h-3.5" />
         {t("transfers.loanWageContribution")}
@@ -199,15 +197,15 @@ export function LoanOfferForm({
                 Number.isFinite(nextValue) ? Math.max(0, Math.min(100, nextValue)) : 0,
               );
             }}
-            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 pr-7 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:border-navy-600 dark:bg-navy-700 dark:text-gray-200"
+            className="w-full rounded-control border border-gray-200 bg-gray-50 px-3 py-2 pr-7 text-body text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:border-navy-600 dark:bg-navy-700 dark:text-gray-200"
           />
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-caption text-gray-400">
             %
           </span>
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+      <p className="text-caption text-fg-muted mb-3">
         {t("transfers.loanWageSummary", {
           percent: wageContributionPct,
           // Covering none of his wage costs nothing whatever it is, so 0% tells nothing hidden.
@@ -222,7 +220,7 @@ export function LoanOfferForm({
         })}
       </p>
 
-      <label className="flex items-start gap-2 rounded-lg border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700/60 p-3 mb-3 cursor-pointer">
+      <label className="flex items-start gap-2 rounded-control border border-line bg-gray-50 dark:bg-navy-700/60 p-3 mb-3 cursor-pointer">
         <input
           type="checkbox"
           checked={buyOptionEnabled}
@@ -230,10 +228,10 @@ export function LoanOfferForm({
           className="mt-0.5 h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
         />
         <span>
-          <span className="block text-xs font-heading font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">
+          <span className="block text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
             {t("transfers.loanToBuyOption")}
           </span>
-          <span className="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+          <span className="block text-caption text-fg-muted mt-0.5">
             {t("transfers.loanToBuyOptionDesc")}
           </span>
         </span>
@@ -241,7 +239,7 @@ export function LoanOfferForm({
 
       <label
         htmlFor="loan-buy-option-fee"
-        className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1.5"
+        className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1 flex items-center gap-1.5"
       >
         <BadgeEuro className="w-3.5 h-3.5" />
         {t("transfers.buyOptionFee")}
@@ -254,11 +252,11 @@ export function LoanOfferForm({
         value={buyOptionFee}
         disabled={!buyOptionEnabled}
         onChange={(event) => onBuyOptionFeeChange(event.target.value)}
-        className="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-navy-700 border border-gray-200 dark:border-navy-600 text-sm text-gray-800 dark:text-gray-200 mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50"
+        className="w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50"
       />
 
       {buyOptionEnabled && Number(buyOptionFee) > 0 ? (
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+        <p className="text-caption text-fg-muted mb-3">
           {t("transfers.loanBuyOptionSummary", {
             fee: formatExactMoney(Number(buyOptionFee)),
           })}
@@ -267,7 +265,7 @@ export function LoanOfferForm({
 
       {result ? (
         <div
-          className={`text-xs font-heading font-bold uppercase tracking-wider mb-3 ${result === "accepted" ? "text-green-500" : result === "counter_offer" ? "text-amber-500" : "text-red-600 dark:text-red-300"}`}
+          className={`text-caption font-heading font-bold uppercase tracking-label mb-3 ${result === "accepted" ? "text-green-500" : result === "counter_offer" ? "text-amber-500" : "text-red-600 dark:text-red-300"}`}
         >
           {result === "accepted"
             ? (acceptedMessage ?? t(acceptedLabelKey))
@@ -280,8 +278,8 @@ export function LoanOfferForm({
       ) : null}
 
       {suggestedTerms ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200 mb-3">
-          <p className="font-heading font-bold uppercase tracking-wider">
+        <div className="rounded-control border border-amber-200 bg-amber-50 px-3 py-2 text-caption text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200 mb-3">
+          <p className="font-heading font-bold uppercase tracking-label">
             {t("transfers.loanCounterSuggestedTerms", {
               percent: suggestedTerms.wageContributionPct,
               endDate: formatDate(suggestedTerms.endDate, i18n.language),
@@ -298,7 +296,7 @@ export function LoanOfferForm({
       ) : null}
 
       {error && !result ? (
-        <p role="alert" className="text-xs text-red-600 dark:text-red-300 mb-3">
+        <p role="alert" className="text-caption text-red-600 dark:text-red-300 mb-3">
           {error}
         </p>
       ) : null}
@@ -308,14 +306,14 @@ export function LoanOfferForm({
           type="button"
           onClick={onSubmit}
           disabled={submitDisabled}
-          className="flex-1 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-lg font-heading font-bold text-sm uppercase tracking-wider transition-colors disabled:opacity-50"
+          className="flex-1 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
         >
           {loading ? t("transfers.submitting") : t(submitLabelKey)}
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-gray-600 dark:text-gray-300 rounded-lg font-heading font-bold text-sm uppercase tracking-wider hover:bg-gray-300 dark:hover:bg-navy-600 transition-colors"
+          className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-gray-300 dark:hover:bg-navy-600 transition-colors"
         >
           {t("transfers.close")}
         </button>
@@ -330,7 +328,7 @@ export default function LoanOfferModal(props: LoanOfferModalProps) {
       labelledBy="loan-offer-modal-title"
       onClose={props.onClose}
       dismissOnBackdrop
-      className="w-full max-w-md rounded-xl p-6"
+      className="w-full max-w-md rounded-panel p-6"
     >
       <LoanOfferForm {...props} />
     </Dialog>

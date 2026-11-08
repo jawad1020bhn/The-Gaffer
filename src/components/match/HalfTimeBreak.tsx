@@ -18,7 +18,7 @@ import { SubPanel } from "./SubPanel";
 import { applyRoleChange } from "./applyRoleChange";
 import { sendMatchCommand } from "./matchCommands";
 import { applySubstitutions } from "./applySubstitutions";
-import { Badge, TeamLogo, ThemeToggle } from "../ui";
+import { Badge, TeamLogo } from "../ui";
 import { Play, RefreshCw, Shield, Zap, Target, Crosshair, Flag, MessageCircle } from "lucide-react";
 import { invokeForCareer } from "../../services/careerInvoke";
 
@@ -152,24 +152,23 @@ export default function HalfTimeBreak({
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-navy-900 dark:text-white flex flex-col transition-colors duration-300">
       {/* Header scoreboard */}
-      <header className="bg-linear-to-r from-gray-200 via-white to-gray-200 dark:from-navy-800 dark:via-navy-900 dark:to-navy-800 border-b border-gray-200 dark:border-navy-700 px-4 py-4 transition-colors duration-300">
+      <header className="bg-linear-to-r from-gray-200 via-white to-gray-200 dark:from-navy-800 dark:via-navy-900 dark:to-navy-800 border-b border-line px-4 py-4 transition-colors duration-300">
         <div className="relative">
           <div className="absolute right-0 top-0 flex items-center gap-3">
             <button
               type="button"
               onClick={onResume}
-              className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-xl font-heading font-bold uppercase tracking-wider text-sm text-white shadow-lg shadow-primary-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-panel font-heading font-bold uppercase tracking-label text-body text-white shadow-lg shadow-primary-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <Play className="w-4 h-4" />
               {t("match.resumeMatch")}
             </button>
-            <ThemeToggle />
           </div>
           <div className="flex items-center justify-center gap-8">
             <div className="flex items-center gap-3">
               <TeamLogo
                 team={homeTeam}
-                className="w-12 h-12 rounded-xl flex items-center justify-center font-heading font-bold overflow-hidden"
+                className="w-12 h-12 rounded-panel flex items-center justify-center font-heading font-bold overflow-hidden"
                 imageClassName="h-9 w-9 object-contain drop-shadow"
                 style={{
                   backgroundColor: `${homeTeamColor}30`,
@@ -177,37 +176,31 @@ export default function HalfTimeBreak({
                   borderWidth: 2,
                 }}
               />
-              <p className="font-heading font-bold text-gray-800 dark:text-gray-200">
-                {snapshot.home_team.name}
-              </p>
+              <p className="font-heading font-bold text-fg">{snapshot.home_team.name}</p>
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="text-5xl font-heading font-bold text-gray-900 dark:text-white tabular-nums">
+              <span className="text-5xl font-heading font-bold text-fg tabular-nums">
                 {snapshot.home_score}
               </span>
               <div className="text-center">
-                <p className="text-xs font-heading uppercase tracking-widest text-accent-700 dark:text-accent-400">
+                <p className="text-caption font-heading uppercase tracking-labelst text-accent-700 dark:text-accent-400">
                   {snapshot.phase === "ExtraTimeHalfTime"
                     ? t("match.extraTimeHalfTime")
                     : t("match.halfTime")}
                 </p>
-                <p className="text-lg font-heading font-bold text-gray-500 dark:text-gray-500">
-                  {t("match.ht")}
-                </p>
+                <p className="text-lead font-heading font-bold text-fg-muted">{t("match.ht")}</p>
               </div>
-              <span className="text-5xl font-heading font-bold text-gray-900 dark:text-white tabular-nums">
+              <span className="text-5xl font-heading font-bold text-fg tabular-nums">
                 {snapshot.away_score}
               </span>
             </div>
 
             <div className="flex items-center gap-3">
-              <p className="font-heading font-bold text-gray-800 dark:text-gray-200">
-                {snapshot.away_team.name}
-              </p>
+              <p className="font-heading font-bold text-fg">{snapshot.away_team.name}</p>
               <TeamLogo
                 team={awayTeam}
-                className="w-12 h-12 rounded-xl flex items-center justify-center font-heading font-bold overflow-hidden"
+                className="w-12 h-12 rounded-panel flex items-center justify-center font-heading font-bold overflow-hidden"
                 imageClassName="h-9 w-9 object-contain drop-shadow"
                 style={{
                   backgroundColor: `${awayTeamColor}30`,
@@ -220,7 +213,7 @@ export default function HalfTimeBreak({
 
           {/* Possession bar */}
           <div className="max-w-md mx-auto mt-3">
-            <div className="flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-2 text-caption">
               <span className="font-heading font-bold text-primary-400 w-12 text-right">
                 {snapshot.home_possession_pct.toFixed(0)}%
               </span>
@@ -247,12 +240,12 @@ export default function HalfTimeBreak({
         <div className="px-6 py-6 grid grid-cols-3 gap-6">
           {/* Left: First Half Summary */}
           <div className="flex flex-col gap-4">
-            <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
-              <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
+            <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
+              <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted mb-3">
                 {t("match.firstHalfEvents")}
               </h3>
               {firstHalfEvents.length === 0 ? (
-                <p className="text-xs text-gray-600 dark:text-gray-500">
+                <p className="text-caption text-gray-600 dark:text-gray-500">
                   {t("match.noMajorEvents")}
                 </p>
               ) : (
@@ -260,7 +253,7 @@ export default function HalfTimeBreak({
                   {firstHalfEvents.map((evt, i) => {
                     const display = getEventDisplay(evt);
                     return (
-                      <div key={i} className="flex items-center gap-2 text-xs">
+                      <div key={i} className="flex items-center gap-2 text-caption">
                         <span className="text-gray-600 dark:text-gray-500 tabular-nums w-6 text-right font-heading">
                           {evt.minute}'
                         </span>
@@ -284,45 +277,39 @@ export default function HalfTimeBreak({
           {/* Center: Team Talk (user only) */}
           <div className="flex flex-col gap-4">
             {!isSpectator ? (
-              <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
+              <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
                 <div className="flex items-center gap-2 mb-4">
                   <MessageCircle className="w-4 h-4 text-accent-400" />
-                  <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                  <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
                     {t("match.teamTalk")}
                   </h3>
                 </div>
 
                 {!talkDelivered ? (
                   <>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                      {t("match.teamTalkPrompt")}
-                    </p>
+                    <p className="text-caption text-fg-muted mb-3">{t("match.teamTalkPrompt")}</p>
                     <div className="flex flex-col gap-2">
                       {teamTalkOptions.map((opt) => (
                         <button
                           type="button"
                           key={opt.id}
                           onClick={() => setSelectedTalk(opt.id)}
-                          className={`flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
+                          className={`flex items-center gap-3 p-3 rounded-control text-left transition-all ${
                             selectedTalk === opt.id
                               ? "bg-primary-500/20 ring-2 ring-primary-500/50"
-                              : "bg-gray-100 hover:bg-gray-200 dark:bg-navy-700/50 dark:hover:bg-navy-700"
+                              : "bg-gray-100 hover:bg-hover/50 dark:hover:bg-navy-700"
                           }`}
                         >
-                          <span className="text-xl">{getTalkIcon(opt.icon)}</span>
+                          <span className="text-title">{getTalkIcon(opt.icon)}</span>
                           <div>
                             <p
-                              className={`text-sm font-heading font-bold ${
-                                selectedTalk === opt.id
-                                  ? "text-primary-400"
-                                  : "text-gray-800 dark:text-gray-200"
+                              className={`text-body font-heading font-bold ${
+                                selectedTalk === opt.id ? "text-primary-400" : "text-fg"
                               }`}
                             >
                               {opt.label}
                             </p>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                              {opt.description}
-                            </p>
+                            <p className="text-[11px] text-fg-muted">{opt.description}</p>
                           </div>
                         </button>
                       ))}
@@ -332,13 +319,13 @@ export default function HalfTimeBreak({
                         type="button"
                         onClick={handleDeliverTalk}
                         disabled={talkPending}
-                        className="w-full mt-3 py-2.5 bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 rounded-lg font-heading font-bold text-sm uppercase tracking-wider transition-colors disabled:opacity-50"
+                        className="w-full mt-3 py-2.5 bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
                       >
                         {t("match.deliverTeamTalk")}
                       </button>
                     )}
                     {talkError && (
-                      <p role="alert" className="text-sm text-danger mt-2">
+                      <p role="alert" className="text-body text-danger mt-2">
                         {talkError}
                       </p>
                     )}
@@ -347,7 +334,7 @@ export default function HalfTimeBreak({
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2 mb-1">
                       {getTalkIcon(selectedTalk || "")}
-                      <p className="text-sm font-heading font-bold text-primary-400">
+                      <p className="text-body font-heading font-bold text-primary-400">
                         {teamTalkOptions.find((o) => o.id === selectedTalk)?.label}
                       </p>
                       <Badge variant="success" size="sm">
@@ -359,13 +346,11 @@ export default function HalfTimeBreak({
                         {talkResults.map((r) => (
                           <div
                             key={r.player_id}
-                            className="flex items-center gap-2 px-2 py-1 text-xs"
+                            className="flex items-center gap-2 px-2 py-1 text-caption"
                           >
-                            <span className="text-gray-500 dark:text-gray-400 flex-1 truncate">
-                              {r.player_name}
-                            </span>
+                            <span className="text-fg-muted flex-1 truncate">{r.player_name}</span>
                             <span
-                              className={`font-heading font-bold tabular-nums ${r.delta > 0 ? "text-green-400" : r.delta < 0 ? "text-red-400" : "text-gray-500 dark:text-gray-400"}`}
+                              className={`font-heading font-bold tabular-nums ${r.delta > 0 ? "text-green-400" : r.delta < 0 ? "text-red-400" : "text-fg-muted"}`}
                             >
                               {r.delta > 0 ? "+" : ""}
                               {r.delta}
@@ -376,7 +361,7 @@ export default function HalfTimeBreak({
                                 style={{ width: `${r.new_morale}%` }}
                               />
                             </div>
-                            <span className="text-gray-500 dark:text-gray-400 tabular-nums w-6 text-right">
+                            <span className="text-fg-muted tabular-nums w-6 text-right">
                               {r.new_morale}
                             </span>
                           </div>
@@ -387,13 +372,11 @@ export default function HalfTimeBreak({
                 )}
               </div>
             ) : (
-              <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 flex flex-col items-center justify-center py-8 transition-colors duration-300">
-                <p className="text-xs font-heading uppercase tracking-widest text-gray-600 dark:text-gray-500 mb-1">
+              <div className="bg-panel rounded-panel border border-line shadow-sm p-4 flex flex-col items-center justify-center py-8 transition-colors duration-300">
+                <p className="text-caption font-heading uppercase tracking-labelst text-gray-600 dark:text-gray-500 mb-1">
                   {t("match.spectatorMode")}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                  {t("match.spectatorHT")}
-                </p>
+                <p className="text-body text-fg-muted text-center">{t("match.spectatorHT")}</p>
               </div>
             )}
           </div>
@@ -403,8 +386,8 @@ export default function HalfTimeBreak({
             {!isSpectator && (
               <>
                 {/* Formation */}
-                <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
-                  <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
+                <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
+                  <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted mb-3">
                     {t("match.formation")}
                   </h3>
                   <div className="grid grid-cols-3 gap-1.5">
@@ -413,7 +396,7 @@ export default function HalfTimeBreak({
                         type="button"
                         key={f}
                         onClick={() => handleFormationChange(f)}
-                        className={`py-2 rounded-lg text-xs font-heading font-bold transition-all ${
+                        className={`py-2 rounded-control text-caption font-heading font-bold transition-all ${
                           userTeam.formation === f
                             ? "bg-primary-500/20 text-primary-400 ring-1 ring-primary-500/50"
                             : "bg-gray-100 text-gray-600 hover:text-gray-900 dark:bg-navy-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -426,8 +409,8 @@ export default function HalfTimeBreak({
                 </div>
 
                 {/* Play Style */}
-                <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
-                  <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
+                <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
+                  <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted mb-3">
                     {t("match.playStyle")}
                   </h3>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -436,7 +419,7 @@ export default function HalfTimeBreak({
                         type="button"
                         key={style}
                         onClick={() => handlePlayStyleChange(style)}
-                        className={`flex items-center gap-1.5 py-2 px-3 rounded-lg text-xs font-heading font-bold transition-all ${
+                        className={`flex items-center gap-1.5 py-2 px-3 rounded-control text-caption font-heading font-bold transition-all ${
                           userTeam.play_style === style
                             ? "bg-primary-500/20 text-primary-400 ring-1 ring-primary-500/50"
                             : "bg-gray-100 text-gray-600 hover:text-gray-900 dark:bg-navy-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -450,9 +433,9 @@ export default function HalfTimeBreak({
                 </div>
 
                 {/* Substitutions */}
-                <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
+                <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                    <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
                       {t("match.substitutions")}
                     </h3>
                     <Badge variant="neutral" size="sm">
@@ -464,7 +447,7 @@ export default function HalfTimeBreak({
                   <button
                     type="button"
                     onClick={() => setShowSubPanel(true)}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-navy-700 dark:hover:bg-navy-600 rounded-lg text-sm font-heading uppercase tracking-wider text-gray-700 dark:text-gray-300 transition-colors"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-navy-700 dark:hover:bg-navy-600 rounded-control text-body font-heading uppercase tracking-label text-fg transition-colors"
                   >
                     <RefreshCw className="w-4 h-4" />
                     {t("match.makeSubstitution")}

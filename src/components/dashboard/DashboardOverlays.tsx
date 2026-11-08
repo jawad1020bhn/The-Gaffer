@@ -6,7 +6,7 @@ import DashboardBlockerModal from "./DashboardBlockerModal";
 import DashboardCloseConfirmModal from "./DashboardCloseConfirmModal";
 import DashboardExitConfirmModal from "./DashboardExitConfirmModal";
 import DashboardExitSavingModal from "./DashboardExitSavingModal";
-import type { DashboardMatchModeMeta } from "./DashboardHeader";
+import type { DashboardMatchModeMeta } from "../gameShell/GameCommandBar";
 import DashboardMatchConfirmModal from "./DashboardMatchConfirmModal";
 import DashboardSimulatingModal from "./DashboardSimulatingModal";
 

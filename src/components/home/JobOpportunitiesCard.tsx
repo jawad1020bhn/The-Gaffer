@@ -145,7 +145,7 @@ export default function JobOpportunitiesCard({
       <CardBody>
         {feedback && (
           <div
-            className={`mb-3 rounded-lg px-3 py-2 text-sm font-medium ${
+            className={`mb-3 rounded-control px-3 py-2 text-body font-medium ${
               feedback.type === "success"
                 ? "bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-400"
                 : "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400"
@@ -160,9 +160,7 @@ export default function JobOpportunitiesCard({
             <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : jobs.length === 0 ? (
-          <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">
-            {t("jobs.noJobs")}
-          </p>
+          <p className="text-body text-fg-subtle text-center py-4">{t("jobs.noJobs")}</p>
         ) : (
           <div className="flex flex-col gap-2">
             {jobs.map((job) => {
@@ -170,18 +168,16 @@ export default function JobOpportunitiesCard({
               return (
                 <div
                   key={job.team_id}
-                  className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 dark:border-navy-600 dark:bg-navy-700/50"
+                  className="flex items-center justify-between rounded-control border border-gray-100 bg-gray-50 px-4 py-3 dark:border-navy-600 dark:bg-navy-700/50"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      {job.team_name}
-                    </p>
+                    <p className="text-body font-semibold text-fg">{job.team_name}</p>
                     <div className="flex items-center gap-3 mt-0.5">
-                      <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                      <span className="flex items-center gap-1 text-caption text-fg-subtle">
                         <MapPin className="w-3 h-3" />
                         {job.city}
                       </span>
-                      <span className="flex items-center gap-0.5 text-xs">
+                      <span className="flex items-center gap-0.5 text-caption">
                         {Array.from({ length: stars }, (_, i) => (
                           <Star key={i} className="w-3 h-3 fill-accent-400 text-accent-400" />
                         ))}
@@ -193,7 +189,7 @@ export default function JobOpportunitiesCard({
                         ))}
                       </span>
                       {job.last_league_position && (
-                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                        <span className="text-caption text-fg-subtle">
                           {t("jobs.leaguePosition", {
                             position: job.last_league_position,
                           })}
@@ -205,7 +201,7 @@ export default function JobOpportunitiesCard({
                     type="button"
                     onClick={() => handleApply(job)}
                     disabled={applyingTo !== null}
-                    className="ml-3 shrink-0 rounded-lg bg-primary-500 px-4 py-1.5 text-xs font-heading font-bold uppercase tracking-wider text-white transition-all hover:bg-primary-600 disabled:opacity-50"
+                    className="ml-3 shrink-0 rounded-control bg-primary-500 px-4 py-1.5 text-caption font-heading font-bold uppercase tracking-label text-white transition-all hover:bg-primary-600 disabled:opacity-50"
                   >
                     {applyingTo === job.team_id ? t("jobs.applicationSent") : t("jobs.applyButton")}
                   </button>

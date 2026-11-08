@@ -26,20 +26,20 @@ export default function FinancesPayrollTable({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 dark:bg-navy-800 border-b border-gray-200 dark:border-navy-600 text-xs">
-                <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <tr className="bg-sunken border-b border-line text-caption">
+                <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
                   {t("common.player")}
                 </th>
-                <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
                   {t("common.position")}
                 </th>
-                <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
                   {t("finances.wagePerWeek")}
                 </th>
-                <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
                   {t("finances.marketValue")}
                 </th>
-                <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
                   {t("common.contract")}
                 </th>
               </tr>
@@ -75,9 +75,9 @@ export default function FinancesPayrollTable({
                       }
                       role={onSelectPlayer ? "button" : undefined}
                       tabIndex={onSelectPlayer ? 0 : undefined}
-                      className={`hover:bg-gray-50 dark:hover:bg-navy-700/50 transition-colors ${onSelectPlayer ? "cursor-pointer group" : ""}`}
+                      className={`hover:bg-hover/50 transition-colors ${onSelectPlayer ? "cursor-pointer group" : ""}`}
                     >
-                      <td className="py-3 px-5 font-semibold text-sm text-gray-800 dark:text-gray-200">
+                      <td className="py-3 px-5 font-semibold text-body text-fg">
                         <span className="group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                           {p.full_name}
                         </span>
@@ -85,13 +85,13 @@ export default function FinancesPayrollTable({
                       <td className="py-3 px-5">
                         <PlayerPositionBadge position={naturalPositionOf(p)} />
                       </td>
-                      <td className="py-3 px-5 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <td className="py-3 px-5 text-body font-medium text-fg">
                         {formatExactMoney(weeklyWageAmount(p.wage))}
                       </td>
-                      <td className="py-3 px-5 text-sm text-gray-600 dark:text-gray-400">
+                      <td className="py-3 px-5 text-body text-fg-muted">
                         {formatVal(p.market_value)}
                       </td>
-                      <td className="py-3 px-5 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="py-3 px-5 text-body text-fg-muted">
                         {p.contract_end
                           ? t("finances.until", {
                               year: p.contract_end.substring(0, 4),

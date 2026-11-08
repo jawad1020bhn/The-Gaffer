@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 
 import { ThemeProvider } from "../../context/ThemeContext";
 import { changeAppLanguage, type SupportedLanguageCode } from "../../i18n";
-import { STYLE_GUIDE_THEME_KEY, type StyleGuideOptions } from "../styleGuide/styleGuideOptions";
+import type { StyleGuideOptions } from "../styleGuide/styleGuideOptions";
 import { fixtureHandlers } from "./fixtureAnswers";
 import { gameState } from "./fixture.generated";
 import { createHarnessIpc } from "./harnessIpc";
@@ -39,7 +39,7 @@ export async function mountPageHarness(
   const reactRoot = ReactDOM.createRoot(root);
   reactRoot.render(
     <React.StrictMode>
-      <ThemeProvider storageKey={STYLE_GUIDE_THEME_KEY}>
+      <ThemeProvider>
         <PageHarness page={page} managerName={`${manager.first_name} ${manager.last_name}`} />
       </ThemeProvider>
     </React.StrictMode>,

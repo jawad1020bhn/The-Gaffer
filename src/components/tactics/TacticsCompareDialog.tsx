@@ -26,7 +26,7 @@ export default function TacticsCompareDialog({
       labelledBy={TACTICS_INSPECTOR_TITLE_ID}
       onClose={onClose}
       dismissOnBackdrop
-      className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-xl"
+      className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-panel"
     >
       <TacticsPlayerFocusPanel
         canConfirmSwap={canConfirmSwap}

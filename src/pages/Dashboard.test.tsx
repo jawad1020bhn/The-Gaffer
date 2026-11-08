@@ -5,7 +5,6 @@ import type { LeagueData, SeasonContextData } from "../store/types";
 import { applyExtraTranslations } from "../lib/extraTranslations";
 import Dashboard from "./Dashboard";
 import i18n, { i18nReady, SUPPORTED_LANGUAGES } from "../i18n";
-import { useTranslation } from "react-i18next";
 import { createSeasonContext } from "../test-utils/factories";
 
 const { listenMock, registeredEventHandlers, matchConfirmState } = vi.hoisted(() => {
@@ -280,80 +279,76 @@ vi.mock("../hooks/useAdvanceTime", () => ({
   }),
 }));
 
-vi.mock("../components/dashboard/DashboardSidebar", () => ({
+vi.mock("../components/gameShell/GameShell", () => ({
   default: ({
-    onNavClick,
-    onToggleCollapse,
     activeTab,
+    title,
+    onNavigate,
+    onBack,
     onExitClick,
     competitionName,
+    toolbar,
+    commands,
+    children,
   }: {
-    onToggleCollapse: () => void;
-    onExitClick: () => void;
-    onNavClick: (tab: string, options?: { fromDrawer: boolean }) => void;
     activeTab: string;
+    title: string;
+    onNavigate: (tab: string) => void;
+    onBack: () => void;
+    onExitClick: () => void;
     competitionName?: string | null;
+    toolbar?: React.ReactNode;
+    commands?: React.ReactNode;
+    children: React.ReactNode;
   }) => (
     <div>
       <span>Sidebar {activeTab}</span>
       {competitionName ? <span>{competitionName}</span> : null}
+      <h2 data-page-title tabIndex={-1}>
+        Header {title}
+      </h2>
       <button type="button" onClick={onExitClick}>
         exit-menu
       </button>
-      <button type="button" onClick={() => onNavClick("Inbox")}>
+      <button type="button" onClick={() => onNavigate("Inbox")}>
         nav-inbox
       </button>
-      <button type="button" onClick={() => onNavClick("Managers")}>
+      <button type="button" onClick={() => onNavigate("Managers")}>
         nav-managers
       </button>
-      <button type="button" onClick={() => onNavClick("Squad", { fromDrawer: true })}>
-        nav-squad-from-drawer
+      <button type="button" onClick={() => onNavigate("Squad")}>
+        nav-squad
       </button>
-      <button type="button" onClick={onToggleCollapse}>
-        fold-sidebar
+      <button type="button" onClick={onBack}>
+        header-back
       </button>
+      {toolbar}
+      {commands}
+      {children}
     </div>
   ),
 }));
 
-vi.mock("../components/dashboard/DashboardHeader", () => ({
+vi.mock("../components/dashboard/DashboardSearch", () => ({
   default: ({
-    title,
-    onBack,
     onSelectSearchPlayer,
     onSelectSearchTeam,
-    onSave,
   }: {
-    onSave: () => void;
-    title: string;
-    onBack: () => void;
     onSelectSearchPlayer: (playerId: string) => void;
     onSelectSearchTeam: (teamId: string) => void;
-  }) => {
-    const { t } = useTranslation();
-    return (
-      <div>
-        <button type="button" onClick={onSave}>
-          {t("common.save")}
-        </button>
-        <h2 data-page-title tabIndex={-1}>
-          Header {title}
-        </h2>
-        <button type="button" onClick={onBack}>
-          header-back
-        </button>
-        <button type="button" onClick={() => onSelectSearchPlayer("player-1")}>
-          search-player
-        </button>
-        <button type="button" onClick={() => onSelectSearchPlayer("retired-9")}>
-          search-retired-player
-        </button>
-        <button type="button" onClick={() => onSelectSearchTeam("team-2")}>
-          search-team
-        </button>
-      </div>
-    );
-  },
+  }) => (
+    <div>
+      <button type="button" onClick={() => onSelectSearchPlayer("player-1")}>
+        search-player
+      </button>
+      <button type="button" onClick={() => onSelectSearchPlayer("retired-9")}>
+        search-retired-player
+      </button>
+      <button type="button" onClick={() => onSelectSearchTeam("team-2")}>
+        search-team
+      </button>
+    </div>
+  ),
 }));
 
 vi.mock("../components/playerProfile/PlayerProfile", () => ({
@@ -580,63 +575,18 @@ describe("Dashboard", () => {
 
   /** Given a dirty career, when Save & Quit succeeds, then saving precedes closing the window. */
   /**
-   * Given the sidebar open as a drawer over the page
-   * When the player chooses a page from it, and then a page from the sidebar itself
-   * Then the new page's heading takes the focus after the drawer, so a keyboard player lands on the
-   * page; a choice from the open sidebar leaves the focus where it is.
+   * Given the game shell, when a section destination is chosen, then the active page and title
+   * follow the existing profile-navigation state without a sidebar drawer or fold preference.
    */
-  it("moves the focus to the page heading after a page chosen from the drawer", async () => {
+  it("navigates through the game shell destinations", async () => {
     render(<Dashboard />);
-    fireEvent.click(await screen.findByRole("button", { name: "nav-squad-from-drawer" }));
-    await waitFor(() => expect(screen.getByRole("heading", { name: /Header/ })).toHaveFocus());
+    fireEvent.click(await screen.findByRole("button", { name: "nav-squad" }));
+    await waitFor(() => expect(screen.getByText("Sidebar Squad")).toBeInTheDocument());
+    expect(screen.getByText("Header Squad")).toBeInTheDocument();
 
-    const inbox = screen.getByRole("button", { name: "nav-inbox" });
-    inbox.focus();
-    fireEvent.click(inbox);
+    fireEvent.click(screen.getByRole("button", { name: "nav-inbox" }));
     await waitFor(() => expect(screen.getByText("Sidebar Inbox")).toBeInTheDocument());
-    expect(inbox).toHaveFocus();
-  });
-
-  /**
-   * Given an unfolded sidebar (Normal, room to spare)
-   * When the player folds it
-   * Then the fold is saved in the settings, so the next launch opens folded too.
-   */
-  it("saves the player's fold of the sidebar", async () => {
-    render(<Dashboard />);
-    fireEvent.click(await screen.findByRole("button", { name: "fold-sidebar" }));
-    expect(updateSettingsMock).toHaveBeenCalledWith({ sidebar_collapsed: true });
-  });
-
-  /**
-   * Given Squad open
-   * When the player chooses Squad again from the drawer
-   * Then the heading still takes the focus: the drawer closed, and the keyboard player lands on the
-   * page even though the page didn't change.
-   */
-  it("moves the focus to the heading when the drawer chooses the page already open", async () => {
-    render(<Dashboard initialTab="Squad" />);
-    const choice = await screen.findByRole("button", { name: "nav-squad-from-drawer" });
-    choice.focus();
-    fireEvent.click(choice);
-    await waitFor(() => expect(screen.getByRole("heading", { name: /Header/ })).toHaveFocus());
-  });
-
-  /**
-   * Given Squad open, and the drawer has chosen Squad again
-   * When the page itself then navigates to the Inbox (not the drawer)
-   * Then the focus stays where the player put it: a heading focus is owed only to a drawer choice,
-   * and the earlier one was already paid.
-   */
-  it("doesn't move the focus on a later navigation from the page", async () => {
-    render(<Dashboard initialTab="Squad" />);
-    fireEvent.click(await screen.findByRole("button", { name: "nav-squad-from-drawer" }));
-
-    const contentLink = screen.getByRole("button", { name: "content-nav-inbox" });
-    contentLink.focus();
-    fireEvent.click(contentLink);
-    await waitFor(() => expect(screen.getByText("Sidebar Inbox")).toBeInTheDocument());
-    expect(contentLink).toHaveFocus();
+    expect(screen.getByText("Header Inbox")).toBeInTheDocument();
   });
 
   it("closes the window after a successful save", async () => {

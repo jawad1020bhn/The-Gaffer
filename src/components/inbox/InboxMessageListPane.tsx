@@ -50,11 +50,11 @@ export default function InboxMessageListPane({
   return (
     <div className={getListPaneClassName(hasSelectedMessage)}>
       <div className="bg-linear-to-r from-navy-700 to-navy-800 shrink-0 border-b border-gray-100 p-4 dark:border-navy-600">
-        <h3 className="text-sm font-heading font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+        <h3 className="text-body font-heading font-bold text-white flex items-center gap-2 uppercase tracking-label">
           <Mail className="w-4 h-4 text-accent-400" />
           {t("inbox.title")}
         </h3>
-        <p className="text-xs text-gray-400 mt-0.5 font-heading uppercase tracking-wider">
+        <p className="text-caption text-gray-400 mt-0.5 font-heading uppercase tracking-label">
           {t("inbox.nMessages", { count: filteredMessages.length })}
         </p>
       </div>
@@ -63,7 +63,7 @@ export default function InboxMessageListPane({
         {filteredMessages.length === 0 ? (
           <div className="p-6 text-center">
             <MailOpen className="w-8 h-8 text-gray-300 dark:text-navy-600 mx-auto mb-2" />
-            <p className="text-sm text-gray-400 dark:text-gray-500">{t("inbox.noMessages")}</p>
+            <p className="text-body text-fg-subtle">{t("inbox.noMessages")}</p>
           </div>
         ) : (
           filteredMessages.map((message) => {
@@ -112,10 +112,8 @@ export default function InboxMessageListPane({
                         <span className="w-2 h-2 rounded-full bg-primary-500 shrink-0" />
                       ) : null}
                     </div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">
-                      {message.sender}
-                    </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                    <p className="text-caption text-fg-subtle truncate mt-0.5">{message.sender}</p>
+                    <p className="text-caption text-fg-subtle mt-0.5">
                       {formatDateShort(message.date, language)}
                     </p>
                   </div>

@@ -10,7 +10,7 @@ import {
 import MatchEventSideBadge from "./MatchEventSideBadge";
 import { getEventDisplay, getPlayerName, makeTeamFallback } from "./helpers";
 import { getTalkIcon } from "./TeamTalkIcons";
-import { Badge, TeamLogo, ThemeToggle } from "../ui";
+import { Badge, TeamLogo } from "../ui";
 import { QuickStat, renderScorers, PlayerRatingsPanel } from "./PostMatchHelpers";
 import { PossessionDonut } from "./PostMatchCharts";
 import {
@@ -233,7 +233,7 @@ export default function PostMatchScreen({
     <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-navy-900 dark:text-white flex flex-col transition-colors duration-300">
       {/* Result Header */}
       <header
-        className={`border-b border-gray-200 dark:border-navy-700 px-4 py-6 transition-colors duration-300 ${
+        className={`border-b border-line px-4 py-6 transition-colors duration-300 ${
           resultType === "win"
             ? "bg-linear-to-r from-primary-100 via-white to-primary-100 dark:from-primary-900/50 dark:via-navy-900 dark:to-primary-900/50"
             : resultType === "loss"
@@ -242,15 +242,13 @@ export default function PostMatchScreen({
         }`}
       >
         <div className="text-center relative">
-          <ThemeToggle className="absolute right-0 top-0" />
-
           {/* Result badge */}
           {!isSpectator && userSide && (
             <div className="mb-3">
               {resultType === "win" && (
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-100 dark:bg-primary-500/20 rounded-full transition-colors duration-300">
                   <Trophy className="w-4 h-4 text-accent-700 dark:text-accent-400" />
-                  <span className="font-heading font-bold text-sm uppercase tracking-widest text-primary-700 dark:text-primary-400">
+                  <span className="font-heading font-bold text-body uppercase tracking-labelst text-primary-700 dark:text-primary-400">
                     {t("match.victory")}
                   </span>
                 </div>
@@ -258,7 +256,7 @@ export default function PostMatchScreen({
               {resultType === "loss" && (
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-red-500/20 rounded-full">
                   <TrendingDown className="w-4 h-4 text-red-400" />
-                  <span className="font-heading font-bold text-sm uppercase tracking-widest text-red-400">
+                  <span className="font-heading font-bold text-body uppercase tracking-labelst text-red-400">
                     {t("match.defeat")}
                   </span>
                 </div>
@@ -266,7 +264,7 @@ export default function PostMatchScreen({
               {resultType === "draw" && (
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-500/20 rounded-full">
                   <Minus className="w-4 h-4 text-gray-400" />
-                  <span className="font-heading font-bold text-sm uppercase tracking-widest text-gray-400">
+                  <span className="font-heading font-bold text-body uppercase tracking-labelst text-gray-400">
                     {t("match.draw")}
                   </span>
                 </div>
@@ -279,7 +277,7 @@ export default function PostMatchScreen({
             <div className="flex items-center gap-4">
               <TeamLogo
                 team={homeTeam}
-                className="w-14 h-14 rounded-xl flex items-center justify-center font-heading font-bold text-lg overflow-hidden"
+                className="w-14 h-14 rounded-panel flex items-center justify-center font-heading font-bold text-lead overflow-hidden"
                 imageClassName="h-10 w-10 object-contain drop-shadow"
                 style={{
                   backgroundColor: `${homeTeamColor}30`,
@@ -287,40 +285,34 @@ export default function PostMatchScreen({
                   borderWidth: 2,
                 }}
               />
-              <p className="font-heading font-bold text-base text-gray-800 dark:text-gray-200">
-                {snapshot.home_team.name}
-              </p>
+              <p className="font-heading font-bold text-base text-fg">{snapshot.home_team.name}</p>
             </div>
 
             <div className="flex items-center gap-5">
-              <span className="text-5xl font-heading font-bold text-gray-900 dark:text-white tabular-nums">
+              <span className="text-5xl font-heading font-bold text-fg tabular-nums">
                 {snapshot.home_score}
               </span>
               <div className="text-center">
-                <p className="text-xs font-heading uppercase tracking-widest text-accent-700 dark:text-accent-400">
+                <p className="text-caption font-heading uppercase tracking-labelst text-accent-700 dark:text-accent-400">
                   {t("match.fullTime")}
                 </p>
-                <p className="text-base font-heading font-bold text-gray-500 dark:text-gray-500">
-                  {t("match.ft")}
-                </p>
+                <p className="text-base font-heading font-bold text-fg-muted">{t("match.ft")}</p>
                 {shootout && (
-                  <p className="text-sm font-heading font-bold text-gray-500 dark:text-gray-400 tabular-nums whitespace-nowrap">
+                  <p className="text-body font-heading font-bold text-fg-muted tabular-nums whitespace-nowrap">
                     {t("match.pen")} {shootout.home_scored}–{shootout.away_scored}
                   </p>
                 )}
               </div>
-              <span className="text-5xl font-heading font-bold text-gray-900 dark:text-white tabular-nums">
+              <span className="text-5xl font-heading font-bold text-fg tabular-nums">
                 {snapshot.away_score}
               </span>
             </div>
 
             <div className="flex items-center gap-4">
-              <p className="font-heading font-bold text-base text-gray-800 dark:text-gray-200">
-                {snapshot.away_team.name}
-              </p>
+              <p className="font-heading font-bold text-base text-fg">{snapshot.away_team.name}</p>
               <TeamLogo
                 team={awayTeam}
-                className="w-14 h-14 rounded-xl flex items-center justify-center font-heading font-bold text-lg overflow-hidden"
+                className="w-14 h-14 rounded-panel flex items-center justify-center font-heading font-bold text-lead overflow-hidden"
                 imageClassName="h-10 w-10 object-contain drop-shadow"
                 style={{
                   backgroundColor: `${awayTeamColor}30`,
@@ -334,13 +326,13 @@ export default function PostMatchScreen({
       </header>
 
       {/* Sticky Action Bar */}
-      <div className="sticky top-0 z-10 bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 shadow-sm transition-colors duration-300">
+      <div className="sticky top-0 z-10 bg-panel border-b border-line shadow-sm transition-colors duration-300">
         <div className="px-6 py-3 flex items-center justify-center gap-3">
           {isSpectator ? (
             <button
               type="button"
               onClick={onFinish}
-              className="flex items-center gap-2 px-6 py-2 bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-lg font-heading font-bold uppercase tracking-wider text-sm text-white shadow-md shadow-primary-500/20 transition-all"
+              className="flex items-center gap-2 px-6 py-2 bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-control font-heading font-bold uppercase tracking-label text-body text-white shadow-md shadow-primary-500/20 transition-all"
             >
               {t("match.continueDashboard")}
               <ChevronRight className="w-4 h-4" />
@@ -350,14 +342,14 @@ export default function PostMatchScreen({
               <button
                 type="button"
                 onClick={onFinish}
-                className="flex items-center gap-2 px-5 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-navy-700 dark:hover:bg-navy-600 rounded-lg font-heading font-bold uppercase tracking-wider text-sm text-gray-700 dark:text-gray-300 transition-colors"
+                className="flex items-center gap-2 px-5 py-2 bg-gray-100 hover:bg-hover dark:hover:bg-navy-600 rounded-control font-heading font-bold uppercase tracking-label text-body text-fg transition-colors"
               >
                 {t("match.skip")}
               </button>
               <button
                 type="button"
                 onClick={onContinue}
-                className="flex items-center gap-2 px-6 py-2 bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-lg font-heading font-bold uppercase tracking-wider text-sm text-white shadow-md shadow-primary-500/20 transition-all"
+                className="flex items-center gap-2 px-6 py-2 bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-control font-heading font-bold uppercase tracking-label text-body text-white shadow-md shadow-primary-500/20 transition-all"
               >
                 {t("match.continue")}
                 <ChevronRight className="w-4 h-4" />
@@ -368,7 +360,7 @@ export default function PostMatchScreen({
       </div>
 
       {/* Tab Bar */}
-      <div className="bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 transition-colors duration-300">
+      <div className="bg-panel border-b border-line transition-colors duration-300">
         <div className="px-6">
           <div className="flex gap-1" role="tablist">
             {tabs.map((tab) => (
@@ -380,10 +372,10 @@ export default function PostMatchScreen({
                 aria-selected={activeTab === tab.id}
                 aria-controls={`tabpanel-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-3 text-sm font-heading font-bold uppercase tracking-wider border-b-2 transition-colors ${
+                className={`flex items-center gap-2 px-5 py-3 text-body font-heading font-bold uppercase tracking-label border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                    : "border-transparent text-fg-muted hover:text-fg"
                 }`}
               >
                 {tab.icon}
@@ -407,16 +399,14 @@ export default function PostMatchScreen({
               className="max-w-2xl mx-auto"
             >
               {!talkDelivered ? (
-                <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-6 transition-colors duration-300">
+                <div className="bg-panel rounded-panel border border-line shadow-sm p-6 transition-colors duration-300">
                   <div className="flex items-center gap-2 mb-4">
                     <MessageCircle className="w-4 h-4 text-accent-400" />
-                    <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                    <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
                       {t("match.postMatchTeamTalk")}
                     </h3>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    {t("match.addressPlayers")}
-                  </p>
+                  <p className="text-body text-fg-muted mb-4">{t("match.addressPlayers")}</p>
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     {teamTalkOptions.map((opt) => {
                       const isSuggested = suggestedTalks.includes(opt.id);
@@ -425,29 +415,25 @@ export default function PostMatchScreen({
                           key={opt.id}
                           type="button"
                           onClick={() => setSelectedTalk(opt.id)}
-                          className={`flex items-center gap-3 p-4 rounded-xl text-left transition-all ${
+                          className={`flex items-center gap-3 p-4 rounded-panel text-left transition-all ${
                             selectedTalk === opt.id
                               ? "bg-primary-500/20 ring-2 ring-primary-500/50"
                               : "bg-gray-50 hover:bg-gray-100 dark:bg-navy-700/50 dark:hover:bg-navy-700"
                           }`}
                         >
-                          <span className="text-2xl">{getTalkIcon(opt.icon)}</span>
+                          <span className="text-title">{getTalkIcon(opt.icon)}</span>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5">
                               <p
-                                className={`text-sm font-heading font-bold truncate ${
-                                  selectedTalk === opt.id
-                                    ? "text-primary-400"
-                                    : "text-gray-800 dark:text-gray-200"
+                                className={`text-body font-heading font-bold truncate ${
+                                  selectedTalk === opt.id ? "text-primary-400" : "text-fg"
                                 }`}
                               >
                                 {opt.label}
                               </p>
                               {isSuggested && <Star className="w-3 h-3 text-accent-400 shrink-0" />}
                             </div>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                              {opt.description}
-                            </p>
+                            <p className="text-[11px] text-fg-muted truncate">{opt.description}</p>
                           </div>
                         </button>
                       );
@@ -458,7 +444,7 @@ export default function PostMatchScreen({
                       type="button"
                       onClick={handleDeliverTalk}
                       disabled={talkPending}
-                      className={`w-full py-3 rounded-xl font-heading font-bold text-sm uppercase tracking-wider transition-colors ${
+                      className={`w-full py-3 rounded-panel font-heading font-bold text-body uppercase tracking-label transition-colors ${
                         talkPending
                           ? "bg-gray-300 dark:bg-navy-600 text-gray-500 cursor-not-allowed"
                           : "bg-primary-500/20 hover:bg-primary-500/30 text-primary-400"
@@ -467,14 +453,14 @@ export default function PostMatchScreen({
                       {talkPending ? t("match.delivering") : t("match.deliverTeamTalk")}
                     </button>
                   )}
-                  {talkError && <p className="text-sm text-red-500 mt-2">{talkError}</p>}
+                  {talkError && <p className="text-body text-red-500 mt-2">{talkError}</p>}
                 </div>
               ) : (
-                <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-6 transition-colors duration-300">
+                <div className="bg-panel rounded-panel border border-line shadow-sm p-6 transition-colors duration-300">
                   <div className="flex items-center gap-3 mb-5">
-                    <span className="text-2xl">{getTalkIcon(selectedTalk || "")}</span>
+                    <span className="text-title">{getTalkIcon(selectedTalk || "")}</span>
                     <div>
-                      <p className="text-sm font-heading font-bold text-primary-400">
+                      <p className="text-body font-heading font-bold text-primary-400">
                         {teamTalkOptions.find((o) => o.id === selectedTalk)?.label}
                       </p>
                       <Badge variant="success" size="sm">
@@ -483,29 +469,26 @@ export default function PostMatchScreen({
                     </div>
                   </div>
                   {talkResults.length > 0 && (
-                    <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-navy-700">
-                      <table className="w-full text-xs">
+                    <div className="rounded-control overflow-hidden border border-line">
+                      <table className="w-full text-caption">
                         <thead>
                           <tr className="bg-gray-50 dark:bg-navy-700/50">
-                            <th className="text-left px-3 py-2 font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                            <th className="text-left px-3 py-2 font-heading uppercase tracking-label text-fg-muted">
                               {t("match.player")}
                             </th>
-                            <th className="text-right px-3 py-2 font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                            <th className="text-right px-3 py-2 font-heading uppercase tracking-label text-fg-muted">
                               Δ
                             </th>
                             <th className="px-3 py-2 w-24"></th>
-                            <th className="text-right px-3 py-2 font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                            <th className="text-right px-3 py-2 font-heading uppercase tracking-label text-fg-muted">
                               %
                             </th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-navy-700">
                           {talkResults.map((r) => (
-                            <tr
-                              key={r.player_id}
-                              className="hover:bg-gray-50 dark:hover:bg-navy-700/30 transition-colors"
-                            >
-                              <td className="px-3 py-2 text-gray-700 dark:text-gray-300 font-medium truncate max-w-0 w-full">
+                            <tr key={r.player_id} className="hover:bg-hover/30 transition-colors">
+                              <td className="px-3 py-2 text-fg font-medium truncate max-w-0 w-full">
                                 {r.player_name}
                               </td>
                               <td
@@ -521,7 +504,7 @@ export default function PostMatchScreen({
                                 {r.delta}
                               </td>
                               <td className="px-3 py-2">
-                                <div className="h-1.5 bg-gray-200 dark:bg-navy-600 rounded-full overflow-hidden">
+                                <div className="h-1.5 bg-hover rounded-full overflow-hidden">
                                   <div
                                     className={`h-full rounded-full transition-all ${
                                       r.new_morale >= 70
@@ -534,7 +517,7 @@ export default function PostMatchScreen({
                                   />
                                 </div>
                               </td>
-                              <td className="px-3 py-2 text-right text-gray-500 dark:text-gray-400 tabular-nums font-heading">
+                              <td className="px-3 py-2 text-right text-fg-muted tabular-nums font-heading">
                                 {r.new_morale}
                               </td>
                             </tr>
@@ -557,23 +540,25 @@ export default function PostMatchScreen({
             className="grid grid-cols-2 gap-6"
           >
             {/* Scorers */}
-            <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
-              <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
+            <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
+              <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted mb-3">
                 {t("match.scorers")}
               </h3>
               {renderScorers(snapshot, importantEvents, "Home")}
               {renderScorers(snapshot, importantEvents, "Away")}
               {keyEvents.filter((e) => e.event_type === "Goal" || e.event_type === "PenaltyGoal")
                 .length === 0 && (
-                <p className="text-xs text-gray-600 dark:text-gray-500">{t("match.noGoals")}</p>
+                <p className="text-caption text-gray-600 dark:text-gray-500">
+                  {t("match.noGoals")}
+                </p>
               )}
             </div>
 
             {/* Quick Stats */}
-            <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
+            <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
               <div className="flex items-center gap-2 mb-3">
-                <BarChart3 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                <BarChart3 className="w-4 h-4 text-fg-muted" />
+                <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
                   {t("match.quickStats")}
                 </h3>
               </div>
@@ -602,18 +587,20 @@ export default function PostMatchScreen({
             </div>
 
             {/* Key Events */}
-            <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
-              <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
+            <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
+              <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted mb-3">
                 {t("match.matchEvents")}
               </h3>
               {keyEvents.length === 0 ? (
-                <p className="text-xs text-gray-600 dark:text-gray-500">{t("match.quietMatch")}</p>
+                <p className="text-caption text-gray-600 dark:text-gray-500">
+                  {t("match.quietMatch")}
+                </p>
               ) : (
                 <div className="flex flex-col gap-2">
                   {keyEvents.map((evt, i) => {
                     const display = getEventDisplay(evt);
                     return (
-                      <div key={i} className="flex items-center gap-2 text-xs">
+                      <div key={i} className="flex items-center gap-2 text-caption">
                         <span className="text-gray-600 dark:text-gray-500 tabular-nums w-6 text-right font-heading">
                           {evt.minute}'
                         </span>
@@ -635,22 +622,22 @@ export default function PostMatchScreen({
 
             {/* Substitutions */}
             {snapshot.substitutions.length > 0 && (
-              <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
-                <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
+              <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
+                <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted mb-3">
                   {t("match.substitutions")}
                 </h3>
                 <div className="flex flex-col gap-2">
                   {snapshot.substitutions.map((sub, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs">
+                    <div key={i} className="flex items-center gap-2 text-caption">
                       <span className="text-gray-600 dark:text-gray-500 tabular-nums w-6 text-right font-heading">
                         {sub.minute}'
                       </span>
                       <span className="text-green-400">↑</span>
-                      <span className="text-gray-700 dark:text-gray-300 truncate flex-1">
+                      <span className="text-fg truncate flex-1">
                         {getPlayerName(snapshot, sub.player_on_id)}
                       </span>
                       <span className="text-red-400">↓</span>
-                      <span className="text-gray-500 dark:text-gray-400 truncate">
+                      <span className="text-fg-muted truncate">
                         {getPlayerName(snapshot, sub.player_off_id)}
                       </span>
                     </div>
@@ -702,10 +689,10 @@ export default function PostMatchScreen({
                 { key: "penalties", label: t("match.penaltyGoals") },
               ];
               return (
-                <div className="col-span-2 bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
+                <div className="col-span-2 bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
                   <div className="flex items-center gap-2 mb-3">
-                    <BarChart3 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                    <BarChart3 className="w-4 h-4 text-fg-muted" />
+                    <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
                       {t("match.goalSources")}
                     </h3>
                   </div>
@@ -720,11 +707,11 @@ export default function PostMatchScreen({
                       const awayBarPct = rowTotal > 0 ? 100 - homeBarPct : 0;
                       return (
                         <div key={key} className="mb-1 last:mb-0">
-                          <div className="flex justify-between text-xs mb-0.5">
+                          <div className="flex justify-between text-caption mb-0.5">
                             <span className="font-heading font-bold text-primary-400 tabular-nums">
                               {hv} <span className="font-normal text-gray-500">({homePct}%)</span>
                             </span>
-                            <span className="text-gray-600 dark:text-gray-500 font-heading uppercase tracking-wider text-[10px]">
+                            <span className="text-gray-600 dark:text-gray-500 font-heading uppercase tracking-label text-[10px]">
                               {label}
                             </span>
                             <span className="font-heading font-bold text-indigo-400 tabular-nums">
@@ -756,31 +743,29 @@ export default function PostMatchScreen({
               return (
                 <div
                   key={side}
-                  className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300"
+                  className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <div
                       className="w-2 h-2 rounded-full shrink-0"
                       style={{ backgroundColor: teamColor }}
                     />
-                    <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                    <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
                       {team.name}
                     </h3>
                   </div>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-500 font-heading uppercase tracking-wider mb-3">
+                  <p className="text-[10px] text-fg-muted font-heading uppercase tracking-label mb-3">
                     {team.formation} ·{" "}
                     {t(`common.playStyles.${team.play_style}` as never, team.play_style)}
                   </p>
                   <div className="flex flex-col gap-0.5 max-h-52 overflow-auto">
                     {team.players.map((p) => (
-                      <div key={p.id} className="flex items-center gap-2 text-xs py-0.5">
-                        <span className="text-gray-500 dark:text-gray-500 text-[10px] font-heading uppercase w-6 shrink-0">
+                      <div key={p.id} className="flex items-center gap-2 text-caption py-0.5">
+                        <span className="text-fg-muted text-[10px] font-heading uppercase w-6 shrink-0">
                           {p.position.charAt(0)}
                         </span>
-                        <span className="text-gray-700 dark:text-gray-300 truncate flex-1">
-                          {p.name}
-                        </span>
-                        <span className="text-gray-500 dark:text-gray-400 text-[10px] font-heading shrink-0">
+                        <span className="text-fg truncate flex-1">{p.name}</span>
+                        <span className="text-fg-muted text-[10px] font-heading shrink-0">
                           {t(
                             `tactics.playerRoles.${p.role ?? "Standard"}` as never,
                             p.role ?? "Standard",

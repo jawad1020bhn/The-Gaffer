@@ -6,7 +6,7 @@ import { getFixtureDisplayLabel, getTeamName } from "../../lib/helpers";
 import type { FixtureData, TeamData } from "../../store/gameStore";
 import type { MatchModeType } from "../../hooks/useAdvanceTime";
 import { Dialog } from "../ui";
-import type { DashboardMatchModeMeta } from "./DashboardHeader";
+import type { DashboardMatchModeMeta } from "../gameShell/GameCommandBar";
 
 interface DashboardMatchConfirmModalProps {
   matchMode: MatchModeType;

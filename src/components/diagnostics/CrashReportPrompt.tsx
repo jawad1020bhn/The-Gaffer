@@ -69,7 +69,7 @@ function CrashPromptDialog({
       labelledBy="crash-prompt-title"
       describedBy="crash-prompt-body"
       onClose={decline}
-      className="w-full max-w-md rounded-xl p-6"
+      className="w-full max-w-md rounded-panel p-6"
     >
       <div className="flex items-start gap-3">
         <span className="text-accent-600 dark:text-accent-400 shrink-0 mt-0.5">
@@ -80,14 +80,14 @@ function CrashPromptDialog({
             id="crash-prompt-title"
             ref={headingRef}
             tabIndex={-1}
-            className="font-heading font-bold uppercase tracking-wider text-xl text-gray-900 dark:text-gray-100 focus:outline-none"
+            className="font-heading font-bold uppercase tracking-label text-title text-gray-900 dark:text-gray-100 focus:outline-none"
           >
             {t("crashPrompt.title")}
           </h2>
-          <p id="crash-prompt-body" className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+          <p id="crash-prompt-body" className="mt-2 text-body text-fg">
             {t("crashPrompt.body")}
           </p>
-          <p className="mt-2 text-xs font-mono text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-caption font-mono text-fg-muted">
             <time dateTime={notice.occurred_at}>
               {formatDate(notice.occurred_at, i18n.language)}
             </time>

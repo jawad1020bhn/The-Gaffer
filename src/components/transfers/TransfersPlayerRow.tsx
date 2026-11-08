@@ -101,7 +101,7 @@ export function TransferDealButton({ state, player }: TransferDealButtonProps) {
         if (view === "offers") openDealHistory(player);
         else openDealEntry(player);
       }}
-      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page motion-reduce:transition-none flex items-center gap-1 px-3 py-1.5 bg-primary-500/10 hover:bg-primary-500/20 text-primary-700 dark:text-primary-400 rounded-lg text-xs font-heading font-bold uppercase tracking-wider transition-colors"
+      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page motion-reduce:transition-none flex items-center gap-1 px-3 py-1.5 bg-primary-500/10 hover:bg-primary-500/20 text-primary-700 dark:text-primary-400 rounded-control text-caption font-heading font-bold uppercase tracking-label transition-colors"
     >
       {view === "offers" ? <History className="w-3 h-3" /> : getDealEntryIcon(player, "w-3 h-3")}
       {view === "offers" ? t("transfers.viewOfferHistory") : getDealEntryLabel(player)}
@@ -125,7 +125,7 @@ export function PlayerRowDetails({
     <tr
       onContextMenu={onContextMenu}
       key={player.id}
-      className="hover:bg-gray-50 dark:hover:bg-navy-700/50 transition-colors cursor-pointer group"
+      className="hover:bg-hover/50 transition-colors cursor-pointer group"
       onClick={() => onSelectPlayer(player.id)}
     >
       <td className="py-2.5 px-4">
@@ -135,21 +135,21 @@ export function PlayerRowDetails({
         <div className="flex items-center gap-3">
           <PlayerAvatar player={player} />
           <div className="min-w-0">
-            <span className="block truncate font-semibold text-sm text-gray-800 dark:text-gray-200 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+            <span className="block truncate font-semibold text-body text-fg group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
               {player.full_name}
             </span>
-            <div className="text-xs text-gray-500 dark:text-gray-300 mt-0.5 flex items-center gap-1">
+            <div className="text-caption text-gray-500 dark:text-gray-300 mt-0.5 flex items-center gap-1">
               <CountryFlag
                 code={player.nationality}
                 locale={i18n.language}
-                className="text-sm leading-none"
+                className="text-body leading-none"
               />
               <span>{countryName(player.nationality, i18n.language)}</span>
             </div>
           </div>
         </div>
       </td>
-      <td className="py-2.5 px-4 text-sm text-gray-600 dark:text-gray-400 tabular-nums">{age}</td>
+      <td className="py-2.5 px-4 text-body text-fg-muted tabular-nums">{age}</td>
       <td className="py-2.5 px-4">
         {player.team_id ? (
           <button
@@ -158,18 +158,18 @@ export function PlayerRowDetails({
               e.stopPropagation();
               onSelectTeam(player.team_id!);
             }}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none text-sm text-gray-600 dark:text-gray-400 hover:text-primary-500 hover:underline transition-colors"
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none text-body text-fg-muted hover:text-primary-500 hover:underline transition-colors"
           >
             {getTeamName(gameState.teams, player.team_id)}
           </button>
         ) : (
-          <span className="text-sm text-gray-600 dark:text-gray-400">{t("common.freeAgent")}</span>
+          <span className="text-body text-fg-muted">{t("common.freeAgent")}</span>
         )}
       </td>
-      <td className="py-2.5 px-4 text-sm text-gray-600 dark:text-gray-400 font-medium tabular-nums">
+      <td className="py-2.5 px-4 text-body text-fg-muted font-medium tabular-nums">
         {formatVal(player.market_value)}
       </td>
-      <td className="py-2.5 px-4 text-sm text-gray-600 dark:text-gray-400 tabular-nums">
+      <td className="py-2.5 px-4 text-body text-fg-muted tabular-nums">
         {visibleWageText(figures.wage, (weekly) => formatWeeklyWage(weekly, "compact"), t)}
       </td>
       <td className="py-2.5 px-4">

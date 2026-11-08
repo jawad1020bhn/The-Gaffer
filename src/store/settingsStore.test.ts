@@ -17,6 +17,7 @@ const DEFAULT_SETTINGS = {
   confirm_advance: false,
   continue_to_next_event: false,
   ui_scale: "normal",
+  ui_density: "comfortable",
   high_contrast: false,
   sidebar_width: "standard",
   sidebar_behaviour: "normal",
@@ -197,6 +198,55 @@ describe("useSettingsStore", () => {
     expect(useSettingsStore.getState().currency).toEqual(SUPPORTED_CURRENCIES[0]);
     expect(consoleError).toHaveBeenCalledWith("Failed to save settings:", error);
 
+    consoleError.mockRestore();
+  });
+});
+
+describe("ui_density", () => {
+  it("defaults missing density to comfortable when loading older settings", async () => {
+    vi.mocked(invoke).mockResolvedValue({
+      settings: { language: "es" },
+      currency: SUPPORTED_CURRENCIES[0],
+      supported_currencies: SUPPORTED_CURRENCIES,
+    });
+
+    await useSettingsStore.getState().loadSettings();
+
+    expect(useSettingsStore.getState().settings.ui_density).toBe("comfortable");
+    expect(useSettingsStore.getState().settings.language).toBe("es");
+  });
+
+  it("persists compact density without changing unrelated settings", async () => {
+    vi.mocked(invoke).mockResolvedValue(undefined);
+    useSettingsStore.setState({
+      settings: { ...DEFAULT_SETTINGS, language: "pt", ui_scale: "large" },
+      loaded: true,
+    });
+
+    await useSettingsStore.getState().updateSettings({ ui_density: "compact" });
+
+    expect(useSettingsStore.getState().settings).toMatchObject({
+      ui_density: "compact",
+      language: "pt",
+      ui_scale: "large",
+    });
+    expect(invoke).toHaveBeenCalledWith("save_settings", {
+      settings: expect.objectContaining({
+        ui_density: "compact",
+        language: "pt",
+        ui_scale: "large",
+      }),
+    });
+  });
+
+  it("rolls density back when saving fails", async () => {
+    vi.mocked(invoke).mockRejectedValue(new Error("save failed"));
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    useSettingsStore.setState({ settings: { ...DEFAULT_SETTINGS }, loaded: true });
+
+    await useSettingsStore.getState().updateSettings({ ui_density: "compact" });
+
+    expect(useSettingsStore.getState().settings.ui_density).toBe("comfortable");
     consoleError.mockRestore();
   });
 });

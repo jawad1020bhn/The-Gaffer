@@ -94,7 +94,7 @@ export default function TacticsRightPanel({
   return (
     <div className="flex flex-col gap-4">
       {/* Roles section */}
-      <div className="rounded-xl border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800">
+      <div className="rounded-panel border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800">
         <div className="border-b border-gray-100 px-3 py-2 dark:border-navy-700">
           <button
             type="button"
@@ -113,7 +113,7 @@ export default function TacticsRightPanel({
         {rolesOpen && (
           <div className="p-3">
             {startingPlayers.length === 0 ? (
-              <p className="py-4 text-center text-xs text-gray-500 dark:text-gray-400">
+              <p className="py-4 text-center text-caption text-fg-muted">
                 {t("tactics.noStartersForRoles")}
               </p>
             ) : (
@@ -123,7 +123,7 @@ export default function TacticsRightPanel({
                   onClick={() => {
                     void handleAutoSelectAssignments();
                   }}
-                  className="mb-2 w-full rounded-lg border border-primary-200 py-1.5 text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 transition-colors hover:bg-primary-50 dark:border-primary-500/30 dark:text-primary-400 dark:hover:bg-primary-500/10"
+                  className="mb-2 w-full rounded-control border border-primary-200 py-1.5 text-caption font-heading font-bold uppercase tracking-[0.18em] text-primary-500 transition-colors hover:bg-primary-50 dark:border-primary-500/30 dark:text-primary-400 dark:hover:bg-primary-500/10"
                 >
                   {t("tactics.autoSelectAssignments")}
                 </button>
@@ -189,7 +189,7 @@ export default function TacticsRightPanel({
       </div>
 
       {/* Phase Blueprint section */}
-      <div className="rounded-xl border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800">
+      <div className="rounded-panel border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800">
         <div className="border-b border-gray-100 px-3 py-2 dark:border-navy-700">
           <button
             type="button"

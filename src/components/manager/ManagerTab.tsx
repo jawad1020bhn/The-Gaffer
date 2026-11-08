@@ -51,19 +51,19 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
       {/* Profile card */}
       <Card accent="primary" className="md:col-span-3">
         <div className="bg-gradient-to-r from-navy-700 to-navy-800 p-6 rounded-t-xl flex items-center gap-6">
-          <div className="w-20 h-20 rounded-xl bg-primary-500/20 flex items-center justify-center font-heading font-bold text-3xl text-primary-400 border-2 border-primary-500/30">
+          <div className="w-20 h-20 rounded-panel bg-primary-500/20 flex items-center justify-center font-heading font-bold text-3xl text-primary-400 border-2 border-primary-500/30">
             {mgr.first_name.charAt(0)}
             {mgr.last_name.charAt(0)}
           </div>
           <div>
-            <h2 className="text-2xl font-heading font-bold text-white uppercase tracking-wide">
+            <h2 className="text-title font-heading font-bold text-white uppercase tracking-label">
               {mgr.display_name}
             </h2>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-gray-400 text-body mt-1">
               <CountryFlag
                 code={mgr.nationality}
                 locale={i18n.language}
-                className="mr-1 text-sm leading-none"
+                className="mr-1 text-body leading-none"
               />
               {countryName(mgr.nationality, i18n.language)} • {t("manager.born")}{" "}
               {formatDate(mgr.date_of_birth, i18n.language)}
@@ -74,22 +74,22 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
                   type="button"
                   data-testid="manager-current-team"
                   onClick={() => onSelectTeam(myTeam.id)}
-                  className="text-primary-400 text-sm font-semibold mt-0.5 hover:text-primary-300 transition-colors"
+                  className="text-primary-400 text-body font-semibold mt-0.5 hover:text-primary-300 transition-colors"
                 >
                   {t("manager.managerOf", { team: myTeam.name })}
                 </button>
               </ContextMenu>
             ) : myTeam ? (
-              <p className="text-primary-400 text-sm font-semibold mt-0.5">
+              <p className="text-primary-400 text-body font-semibold mt-0.5">
                 {t("manager.managerOf", { team: myTeam.name })}
               </p>
             ) : null}
           </div>
           <div className="ml-auto text-right">
-            <p className="text-xs text-gray-400 font-heading uppercase tracking-wider">
+            <p className="text-caption text-gray-400 font-heading uppercase tracking-label">
               {t("manager.reputation")}
             </p>
-            <p className="font-heading font-bold text-2xl text-accent-400">{mgr.reputation}</p>
+            <p className="font-heading font-bold text-title text-accent-400">{mgr.reputation}</p>
           </div>
         </div>
       </Card>
@@ -124,15 +124,13 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
             {/* Board */}
             <div>
               <div className="text-center mb-2">
-                <p className="font-heading font-bold text-3xl text-gray-800 dark:text-gray-100">
-                  {mgr.satisfaction}%
-                </p>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-heading uppercase tracking-wider mt-0.5">
+                <p className="font-heading font-bold text-3xl text-fg">{mgr.satisfaction}%</p>
+                <p className="text-caption text-fg-subtle font-heading uppercase tracking-label mt-0.5">
                   {t("manager.board")}
                 </p>
               </div>
               <ProgressBar value={mgr.satisfaction} variant="auto" size="md" />
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center mt-2">
+              <p className="text-caption text-fg-subtle text-center mt-2">
                 {standing ? t(BOARD_MOOD_KEYS[standing.board]) : null}
               </p>
               {standing && standing.warning !== "none" ? (
@@ -146,15 +144,13 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
             {/* Fans */}
             <div>
               <div className="text-center mb-2">
-                <p className="font-heading font-bold text-3xl text-gray-800 dark:text-gray-100">
-                  {mgr.fan_approval ?? 50}%
-                </p>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-heading uppercase tracking-wider mt-0.5">
+                <p className="font-heading font-bold text-3xl text-fg">{mgr.fan_approval ?? 50}%</p>
+                <p className="text-caption text-fg-subtle font-heading uppercase tracking-label mt-0.5">
                   {t("manager.fans")}
                 </p>
               </div>
               <ProgressBar value={mgr.fan_approval ?? 50} variant="auto" size="md" />
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center mt-2">
+              <p className="text-caption text-fg-subtle text-center mt-2">
                 {standing ? t(FANS_MOOD_KEYS[standing.fans]) : null}
               </p>
             </div>
@@ -177,23 +173,23 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
             </div>
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 dark:bg-navy-800 border-b border-gray-200 dark:border-navy-600 text-xs">
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <tr className="bg-sunken border-b border-line text-caption">
+                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("manager.club")}
                   </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("manager.period")}
                   </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">
+                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
                     {t("common.played")}
                   </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">
+                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
                     {t("common.won")}
                   </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">
+                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
                     {t("common.drawn")}
                   </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">
+                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
                     {t("common.lost")}
                   </th>
                 </tr>
@@ -221,27 +217,27 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
                       tabIndex={canSelectTeam ? 0 : undefined}
                       className={
                         canSelectTeam
-                          ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-700/30 transition-colors"
+                          ? "cursor-pointer hover:bg-hover/30 transition-colors"
                           : undefined
                       }
                     >
-                      <td className="py-3 px-5 font-semibold text-sm text-gray-800 dark:text-gray-200">
+                      <td className="py-3 px-5 font-semibold text-body text-fg">
                         {entry.team_name}
                       </td>
-                      <td className="py-3 px-5 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="py-3 px-5 text-body text-fg-muted">
                         {entry.start_date.substring(0, 4)} —{" "}
                         {entry.end_date?.substring(0, 4) || t("common.present")}
                       </td>
-                      <td className="py-3 px-5 text-center text-sm text-gray-600 dark:text-gray-400 tabular-nums">
+                      <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
                         {entry.matches}
                       </td>
-                      <td className="py-3 px-5 text-center text-sm text-gray-600 dark:text-gray-400 tabular-nums">
+                      <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
                         {entry.wins}
                       </td>
-                      <td className="py-3 px-5 text-center text-sm text-gray-600 dark:text-gray-400 tabular-nums">
+                      <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
                         {entry.draws}
                       </td>
-                      <td className="py-3 px-5 text-center text-sm text-gray-600 dark:text-gray-400 tabular-nums">
+                      <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
                         {entry.losses}
                       </td>
                     </tr>
@@ -271,11 +267,9 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
 
 function StatBlock({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
-      <p className="font-heading font-bold text-xl text-gray-800 dark:text-gray-100 tabular-nums">
-        {value}
-      </p>
-      <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase tracking-wider mt-0.5">
+    <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-control">
+      <p className="font-heading font-bold text-title text-fg tabular-nums">{value}</p>
+      <p className="text-caption text-fg-subtle font-heading uppercase tracking-label mt-0.5">
         {label}
       </p>
     </div>

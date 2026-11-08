@@ -33,9 +33,7 @@ vi.mock("react-i18next", () => ({
     i18n: { language: "en" },
   }),
 }));
-vi.mock("../../context/ThemeContext", () => ({
-  useTheme: () => ({ isDark: false, toggleTheme: vi.fn() }),
-}));
+vi.mock("../../context/ThemeContext", () => ({}));
 
 function enginePlayer(over: Record<string, unknown>): Record<string, unknown> {
   return {

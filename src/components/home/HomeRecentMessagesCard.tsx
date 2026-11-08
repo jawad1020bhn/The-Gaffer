@@ -27,7 +27,7 @@ export default function HomeRecentMessagesCard({
           <button
             type="button"
             onClick={() => onNavigate?.("Inbox")}
-            className="text-primary-500 dark:text-primary-400 text-xs font-heading font-bold uppercase tracking-wider hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
           >
             {t("home.viewAll")}
           </button>
@@ -38,7 +38,7 @@ export default function HomeRecentMessagesCard({
       <CardBody className="p-0">
         <div className="divide-y divide-gray-100 dark:divide-navy-600">
           {messages.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400 p-6 text-sm">{t("home.noMessages")}</p>
+            <p className="text-fg-muted p-6 text-body">{t("home.noMessages")}</p>
           ) : (
             messages.map((message) => {
               const contextItems: ContextMenuItem[] = [
@@ -60,9 +60,9 @@ export default function HomeRecentMessagesCard({
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 font-heading font-bold text-sm ${
+                      className={`w-9 h-9 rounded-control flex items-center justify-center flex-shrink-0 font-heading font-bold text-body ${
                         message.read
-                          ? "bg-gray-100 dark:bg-navy-600 text-gray-400 dark:text-gray-500"
+                          ? "bg-gray-100 dark:bg-navy-600 text-fg-subtle"
                           : "bg-primary-500/10 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400"
                       }`}
                     >
@@ -70,25 +70,21 @@ export default function HomeRecentMessagesCard({
                     </div>
                     <div className="min-w-0 flex-1">
                       <h4
-                        className={`font-semibold text-sm ${
-                          message.read
-                            ? "text-gray-500 dark:text-gray-400"
-                            : "text-gray-900 dark:text-gray-100"
+                        className={`font-semibold text-body ${
+                          message.read ? "text-fg-muted" : "text-gray-900 dark:text-gray-100"
                         }`}
                       >
                         {message.subject}
                       </h4>
                       <p
-                        className={`text-xs truncate mt-0.5 ${
-                          message.read
-                            ? "text-gray-400 dark:text-gray-500"
-                            : "text-gray-600 dark:text-gray-300"
+                        className={`text-caption truncate mt-0.5 ${
+                          message.read ? "text-fg-subtle" : "text-fg-muted"
                         }`}
                       >
                         {message.body}
                       </p>
                     </div>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500 flex-shrink-0 mt-1">
+                    <span className="text-caption text-fg-subtle flex-shrink-0 mt-1">
                       {formatDateShort(message.date, lang)}
                     </span>
                   </div>

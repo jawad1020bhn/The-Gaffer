@@ -1,15 +1,12 @@
 import { routeForActiveCareer } from "../services/careerService";
-import { useManagerDobError } from "../hooks/useManagerDobError";
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { listen } from "@tauri-apps/api/event";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore, type GameStateData } from "../store/gameStore";
-import { ThemeToggle } from "../components/ui/ThemeToggle";
 import type { CareerStartPhase, CreateManagerFormData } from "../components/menu/CreateManagerForm";
 import type { PackageInfo, PackageIssue } from "../components/menu/WorldSelect";
 import { defaultActivePackageIds } from "../components/menu/packageSelection";
@@ -18,27 +15,10 @@ import { applyExtraTranslations } from "../lib/extraTranslations";
 import { formatAppVersion } from "../lib/appVersion";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
-import { FolderOpen, Settings, PlusCircle, ChevronRight, Power, Package, Bug } from "lucide-react";
-import { DISCORD_INVITE_URL, GITHUB_REPO_URL } from "../lib/communityLinks";
+import { FolderOpen, Settings, PlusCircle, ChevronRight, Power, Package } from "lucide-react";
 import { ReportBugModal } from "../components/diagnostics/ReportBugModal";
 import { CrashReportPrompt } from "../components/diagnostics/CrashReportPrompt";
 import { showError } from "../lib/errorDialog";
-
-function DiscordIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
-      <path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.075.075 0 0 0-.079.038c-.21.375-.444.864-.608 1.249a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.029ZM8.02 15.331c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418Zm7.974 0c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418Z" />
-    </svg>
-  );
-}
-
-function GithubIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
-      <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.085 3.292 9.387 7.86 10.91.575.107.785-.25.785-.555 0-.275-.01-1-.015-1.965-3.2.695-3.875-1.54-3.875-1.54-.525-1.33-1.28-1.685-1.28-1.685-1.045-.715.08-.7.08-.7 1.155.08 1.765 1.185 1.765 1.185 1.025 1.755 2.69 1.25 3.345.955.1-.745.4-1.25.725-1.54-2.555-.29-5.245-1.275-5.245-5.685 0-1.255.45-2.28 1.18-3.085-.12-.29-.515-1.46.11-3.05 0 0 .965-.31 3.165 1.18a10.95 10.95 0 0 1 2.88-.39c.98.005 1.965.135 2.885.39 2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.235 2.76.115 3.05.735.805 1.18 1.83 1.18 3.085 0 4.42-2.695 5.39-5.265 5.675.41.355.78 1.055.78 2.125 0 1.535-.015 2.77-.015 3.15 0 .305.205.665.79.55C20.215 21.385 23.5 17.085 23.5 12 23.5 5.65 18.35.5 12 .5Z" />
-    </svg>
-  );
-}
 
 const CreateManagerForm = lazy(() => import("../components/menu/CreateManagerForm"));
 const ProfileSaveConfirm = lazy(() => import("../components/menu/ProfileSaveConfirm"));
@@ -136,7 +116,6 @@ function buildStartupOptions(
 const CREATE_MANAGER_FIELD_ORDER = [
   "firstName",
   "lastName",
-  "dob",
   "startYear",
   "startPhase",
   "nationality",
@@ -200,7 +179,6 @@ export default function MainMenu() {
   const [formData, setFormData] = useState<CreateManagerFormData>({
     firstName: "",
     lastName: "",
-    dob: "",
     startYear: defaultCareerStartYear(),
     startPhase: "seasonStart",
     nationality: "",
@@ -262,16 +240,6 @@ export default function MainMenu() {
     };
   }, [setGameState, setGameActive, navigate]);
 
-  /** The backend's answer about the date of birth, shown as the user edits and again on submit. */
-  const dobStartup = buildStartupOptions(formData, historyDepthYears);
-  const dobRuleKey = useManagerDobError(
-    formData.dob,
-    dobStartup?.startYear ?? null,
-    dobStartup?.startPhase ?? null,
-  );
-  const dobLiveRuleMessage = dobRuleKey ? resolveBackendError(dobRuleKey) : null;
-  const dobDisplayedError = formErrors.dob || dobLiveRuleMessage;
-
   const updateFormField = (field: keyof CreateManagerFormData, value: string) => {
     setFormData((previous) => ({
       ...previous,
@@ -313,13 +281,6 @@ export default function MainMenu() {
       });
     }
 
-    if (!formData.dob) {
-      errors.dob = t("validation.required", { field: t("createManager.dob") });
-    } else {
-      if (dobLiveRuleMessage) {
-        errors.dob = dobLiveRuleMessage;
-      }
-    }
     if (!formData.startYear.trim()) {
       errors.startYear = t("validation.required", {
         field: t("createManager.startYear"),
@@ -449,7 +410,6 @@ export default function MainMenu() {
       const game = await invoke<GameStateData>("start_new_game", {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        dob: formData.dob,
         nationality: formData.nationality,
         startupOptions,
         packageIds: activePackageIds.length > 0 ? activePackageIds : undefined,
@@ -519,7 +479,6 @@ export default function MainMenu() {
       ...prev,
       firstName: profile.first_name,
       lastName: profile.last_name,
-      dob: profile.date_of_birth,
       nationality: profile.nationality,
     }));
     setFormErrors({});
@@ -530,7 +489,6 @@ export default function MainMenu() {
   const formDiffersFromProfile = (form: CreateManagerFormData, profile: ManagerProfile) =>
     form.firstName !== profile.first_name ||
     form.lastName !== profile.last_name ||
-    form.dob !== profile.date_of_birth ||
     form.nationality !== profile.nationality;
 
   const proceedToPackages = () => {
@@ -545,7 +503,6 @@ export default function MainMenu() {
         id: loadedProfile.id,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        dob: formData.dob,
         nationality: formData.nationality,
       });
       if (updated) {
@@ -579,7 +536,6 @@ export default function MainMenu() {
       const saved = await invoke<ManagerProfile>("save_manager_profile", {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        dob: formData.dob,
         nationality: formData.nationality,
         force: forceNew || undefined,
       });
@@ -610,22 +566,19 @@ export default function MainMenu() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-navy-900 transition-colors duration-500 relative overflow-x-hidden">
+    <div className="relative flex min-h-screen items-center justify-center overflow-x-hidden bg-page">
       {/* Background gradient accents */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent-400/10 dark:bg-accent-400/5 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-selected/5 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-info/5 blur-3xl" />
       </div>
-
-      {/* Theme Toggle */}
-      <ThemeToggle className="absolute top-6 right-6 z-20" />
 
       {/* Main Card */}
       <div className="relative z-10 w-full max-w-md">
         {/* Top accent bar */}
-        <div className="h-1.5 bg-gradient-to-r from-primary-500 via-accent-400 to-primary-500 rounded-t-2xl" />
+        <div className="h-1.5 rounded-t-panel bg-selected" />
 
-        <div className="bg-white dark:bg-navy-800 p-8 rounded-b-2xl shadow-xl dark:shadow-2xl border border-gray-200 dark:border-navy-600 border-t-0 transition-all duration-500">
+        <div className="rounded-b-panel border border-t-0 border-line bg-panel p-8 shadow-xl">
           {/* Logo */}
           <img
             src="/openfootlogo.svg"
@@ -633,7 +586,7 @@ export default function MainMenu() {
             className="text-center w-full h-full object-cover"
           />
 
-          <div className="border-t border-gray-200 dark:border-navy-600 my-8 transition-colors duration-500" />
+          <div className="my-8 border-t border-line" />
 
           {/* Main Menu */}
           {menuState === "main" && (
@@ -641,11 +594,11 @@ export default function MainMenu() {
               <button
                 type="button"
                 onClick={() => setMenuState("create")}
-                className="group flex items-center justify-between w-full p-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-primary-500/20"
+                className="group flex w-full items-center justify-between rounded-control bg-selected p-4 text-on-brand transition-colors hover:bg-selected/90"
               >
                 <div className="flex items-center gap-3">
                   <PlusCircle className="w-6 h-6" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                  <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.newGame")}
                   </span>
                 </div>
@@ -655,11 +608,11 @@ export default function MainMenu() {
               <button
                 type="button"
                 onClick={handleOpenLoadMenu}
-                className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-gray-50 dark:hover:bg-navy-600 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-accent-400 dark:hover:border-accent-400 shadow-sm"
+                className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-selected hover:bg-hover"
               >
                 <div className="flex items-center gap-3">
                   <FolderOpen className="w-6 h-6 text-accent-500 dark:text-accent-400" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                  <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.loadGame")}
                   </span>
                 </div>
@@ -669,11 +622,11 @@ export default function MainMenu() {
               <button
                 type="button"
                 onClick={() => navigate("/world-editor")}
-                className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-gray-50 dark:hover:bg-navy-600 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-accent-400 dark:hover:border-accent-400 shadow-sm"
+                className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-selected hover:bg-hover"
               >
                 <div className="flex items-center gap-3">
                   <Package className="w-6 h-6 text-accent-500 dark:text-accent-400" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                  <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.worldEditor")}
                   </span>
                 </div>
@@ -683,11 +636,11 @@ export default function MainMenu() {
               <button
                 type="button"
                 onClick={() => navigate("/settings", { state: { from: "/" } })}
-                className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-gray-50 dark:hover:bg-navy-600 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-gray-300 dark:hover:border-navy-600 shadow-sm"
+                className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-line-strong hover:bg-hover"
               >
                 <div className="flex items-center gap-3">
                   <Settings className="w-6 h-6 text-gray-400 dark:text-gray-500" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                  <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.settings")}
                   </span>
                 </div>
@@ -703,7 +656,7 @@ export default function MainMenu() {
               >
                 <div className="flex items-center gap-3">
                   <Power className="w-6 h-6 text-red-500 dark:text-red-400" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                  <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.exitGame")}
                   </span>
                 </div>
@@ -717,7 +670,6 @@ export default function MainMenu() {
               <CreateManagerForm
                 formData={formData}
                 formErrors={formErrors}
-                dobError={dobDisplayedError}
                 profiles={profiles}
                 selectedProfileId={loadedProfile?.id}
                 onChange={updateFormField}
@@ -804,41 +756,6 @@ export default function MainMenu() {
 
           {/* Package Editor */}
         </div>
-      </div>
-
-      {/* Community links */}
-      <div className="absolute bottom-3 left-4 flex items-center gap-1">
-        <button
-          type="button"
-          aria-label={t("menu.openDiscord")}
-          title={t("menu.openDiscord")}
-          onClick={() => {
-            void openUrl(DISCORD_INVITE_URL);
-          }}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-[#5865F2] dark:hover:text-[#7289DA] hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
-        >
-          <DiscordIcon className="w-5 h-5" />
-        </button>
-        <button
-          type="button"
-          aria-label={t("menu.openGithub")}
-          title={t("menu.openGithub")}
-          onClick={() => {
-            void openUrl(GITHUB_REPO_URL);
-          }}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
-        >
-          <GithubIcon className="w-5 h-5" />
-        </button>
-        <button
-          type="button"
-          aria-label={t("menu.reportBug")}
-          title={t("menu.reportBug")}
-          onClick={() => setReportingBug(true)}
-          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-600 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900"
-        >
-          <Bug className="w-5 h-5" />
-        </button>
       </div>
 
       {/* Version */}

@@ -248,14 +248,17 @@
   --spacing-row: 2.5rem;
   --spacing-panel-header: 2.5rem;
   --spacing-toolbar: 3rem;
-  /* The sidebar's widths: the icon rail and the three open widths (Settings > Sidebar width). Wide
-     is the narrowest that puts every nav label on one line in all 12 locales, measured on the OS
-     fallback font; it is re-measured once the game bundles its Cyrillic fonts. sidebarLayout.ts
-     reckons with the same values, and a test holds them together. */
+  --spacing-game-top: 3.5rem;
+  --spacing-game-context: 3rem;
+  --spacing-game-commands: 4.5rem;
+  /* Legacy sidebar widths retained while the persisted settings schema rolls out. The game shell
+     no longer renders the website-like sidebar; new navigation uses the game-* bars above. */
   --spacing-sidebar-rail: 3.5rem;
   --spacing-sidebar-compact: 13rem;
   --spacing-sidebar-standard: 16rem;
   --spacing-sidebar-wide: 17.75rem;
+  --radius-control: 0.25rem;
+  --radius-panel: 0.375rem;
   --container-page: 80rem;
   /* Two-panel breakpoint for container queries. A container query's rem follows ui_scale, so in a
      960px window: at normal scale (16px root) 36rem = 576px fits the 655px workspace and two
@@ -287,37 +290,42 @@
 
 @layer base {
   .dark {
-    --color-page: #0a1128;
-    --color-panel: #1a2340;
-    --color-sunken: #131b33;
-    --color-fg: #f3f4f6;
-    --color-fg-muted: #a0aec0;
-    --color-fg-subtle: #8d99ae;
-    --color-line: #243054;
-    --color-line-strong: #2f3d66;
-    --color-focus: #34d399;
-    --color-hover: #243054;
-    --color-card-band: #212c4e;
-    --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 10px 24px -12px rgb(0 0 0 / 0.75);
+    color-scheme: dark;
+
+    /* Dedicated dark game presentation: graphite surfaces, one sharp lime action/selection. */
+    --color-page: #0b0f12;
+    --color-panel: #12181d;
+    --color-chrome: #080c0f;
+    --color-chrome-fg: #f2f6f8;
+    --color-chrome-fg-muted: #93a4af;
+    --color-sunken: #0e1419;
+    --color-hover: #232e36;
+    --color-line: #2a3640;
+    --color-line-strong: #43525e;
+    --color-fg: #f2f6f8;
+    --color-fg-muted: #c2ced6;
+    --color-fg-subtle: #93a4af;
+    --color-on-brand: #101600;
+    --color-card-band: #1a232a;
+    --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 12px 28px -16px rgb(0 0 0 / 0.85);
     --kit-wash-mix: 26%;
-    /* Lighter than primary-700, which is 2.8:1 against the panel here, so "on" reads; still dark
-       enough for white text at 4.5:1. */
-    --color-selected: #34d399;
-    --color-selected-tint: rgb(16 185 129 / 0.1);
-    --color-selected-fill: #05805c;
-    --color-series-1: #10b981;
-    --color-series-2: #6366f1;
-    --color-positive: #34d399;
-    --color-positive-tint: rgb(6 78 59 / 0.55);
+    --color-selected: #c8f45a;
+    --color-selected-tint: #25331a;
+    --color-selected-fill: #96c22f;
+    --color-focus: #e2ff8a;
+    --color-series-1: #c8f45a;
+    --color-series-2: #7dd3fc;
+    --color-positive: #6ee7a0;
+    --color-positive-tint: #102a1d;
     --color-warning: #fbbf24;
-    --color-warning-tint: rgb(120 53 15 / 0.45);
+    --color-warning-tint: #33270f;
     --color-danger: #f87171;
-    --color-danger-tint: rgb(127 29 29 / 0.45);
+    --color-danger-tint: #351719;
     --color-info: #7dd3fc;
-    --color-info-tint: rgb(12 74 110 / 0.5);
+    --color-info-tint: #102a36;
     --color-tone-top: #fcd34d;
     --color-tone-top-tint: rgb(113 63 18 / 0.45);
-    --color-tone-good: #34d399;
+    --color-tone-good: #6ee7a0;
     --color-tone-good-tint: rgb(6 78 59 / 0.55);
     --color-tone-fair: #7dd3fc;
     --color-tone-fair-tint: rgb(12 74 110 / 0.5);
@@ -325,6 +333,172 @@
     --color-tone-low-tint: rgb(120 53 15 / 0.45);
     --color-tone-bad: #f87171;
     --color-tone-bad-tint: rgb(127 29 29 / 0.45);
+
+    /* Compatibility bridge for screens still awaiting token migration. Navy surfaces become the
+       graphite scale; primary actions become lime. Semantic green/red/blue/yellow stay distinct. */
+    --color-primary-50: #1a230f;
+    --color-primary-100: #25331a;
+    --color-primary-200: #3a4d24;
+    --color-primary-300: #58752e;
+    --color-primary-400: #c8f45a;
+    --color-primary-500: #b6e34a;
+    --color-primary-600: #a7d43b;
+    --color-primary-700: #96c22f;
+    --color-primary-800: #78963a;
+    --color-primary-900: #58752e;
+    --color-primary-950: #25331a;
+
+    --color-navy-50: #1a232a;
+    --color-navy-100: #232e36;
+    --color-navy-200: #2a3640;
+    --color-navy-300: #f2f6f8;
+    --color-navy-400: #c2ced6;
+    --color-navy-500: #93a4af;
+    --color-navy-600: #43525e;
+    --color-navy-700: #1a232a;
+    --color-navy-800: #12181d;
+    --color-navy-900: #0b0f12;
+    --color-navy-950: #080c0f;
+
+    --color-gray-50: #1a2129;
+    --color-gray-100: #232c35;
+    --color-gray-200: #3a4550;
+    --color-gray-300: #5a6774;
+    --color-gray-400: #8896a3;
+    --color-gray-500: #a3b0bc;
+    --color-gray-600: #c2ccd5;
+    --color-gray-700: #d8e0e7;
+    --color-gray-800: #e8edf2;
+    --color-gray-900: #f2f6f9;
+    --color-gray-950: #f8fafc;
+
+    --color-red-50: #2a1215;
+    --color-red-100: #4a1d22;
+    --color-red-200: #7a2d35;
+    --color-red-400: #f87171;
+    --color-red-500: #ef4444;
+    --color-red-600: #dc2626;
+    --color-red-700: #b91c1c;
+    --color-red-900: #fecaca;
+
+    --color-green-50: #0d2818;
+    --color-green-100: #14432a;
+    --color-green-200: #1a5c3a;
+    --color-green-300: #86efac;
+    --color-green-400: #4ade80;
+    --color-green-500: #22c55e;
+    --color-green-600: #16a34a;
+    --color-green-700: #15803d;
+    --color-green-800: #166534;
+    --color-green-900: #bbf7d0;
+
+    --color-emerald-50: #0d2818;
+    --color-emerald-100: #14432a;
+    --color-emerald-200: #1a5c3a;
+    --color-emerald-400: #4ade80;
+    --color-emerald-500: #22c55e;
+    --color-emerald-600: #16a34a;
+    --color-emerald-700: #15803d;
+    --color-emerald-900: #0d2818;
+
+    --color-blue-50: #0c1e3a;
+    --color-blue-100: #1a3a6b;
+    --color-blue-200: #2a5090;
+    --color-blue-300: #93c5fd;
+    --color-blue-400: #60a5fa;
+    --color-blue-500: #3b82f6;
+    --color-blue-600: #2563eb;
+    --color-blue-700: #1d4ed8;
+    --color-blue-900: #dbeafe;
+
+    --color-indigo-50: #1a1a3a;
+    --color-indigo-100: #2a2a6b;
+    --color-indigo-200: #3a3a90;
+    --color-indigo-400: #818cf8;
+    --color-indigo-500: #6366f1;
+    --color-indigo-600: #4f46e5;
+    --color-indigo-900: #e0e7ff;
+
+    --color-yellow-50: #2a2008;
+    --color-yellow-100: #4a3810;
+    --color-yellow-200: #7a5c1a;
+    --color-yellow-300: #fde047;
+    --color-yellow-400: #fbbf24;
+    --color-yellow-500: #f59e0b;
+    --color-yellow-600: #d97706;
+    --color-yellow-700: #b45309;
+    --color-yellow-900: #fef3c7;
+
+    --color-orange-50: #2a1a08;
+    --color-orange-100: #4a2c10;
+    --color-orange-200: #7a4a1a;
+    --color-orange-400: #fb923c;
+    --color-orange-500: #f97316;
+    --color-orange-600: #ea580c;
+    --color-orange-700: #c2410c;
+    --color-orange-800: #fdba74;
+    --color-orange-900: #ffedd5;
+
+    --color-amber-50: #2a2008;
+    --color-amber-100: #4a3810;
+    --color-amber-200: #7a5c1a;
+    --color-amber-400: #fbbf24;
+    --color-amber-500: #f59e0b;
+    --color-amber-600: #d97706;
+    --color-amber-700: #b45309;
+    --color-amber-900: #fef3c7;
+
+    --color-purple-50: #1f0a3a;
+    --color-purple-100: #3a1a6b;
+    --color-purple-200: #5a2a90;
+    --color-purple-400: #a78bfa;
+    --color-purple-500: #8b5cf6;
+    --color-purple-600: #7c3aed;
+    --color-purple-700: #6d28d9;
+    --color-purple-900: #ede9fe;
+
+    --color-pink-50: #2a0a1f;
+    --color-pink-100: #4a1a3a;
+    --color-pink-200: #7a2a5a;
+    --color-pink-400: #f472b6;
+    --color-pink-600: #db2777;
+    --color-pink-900: #fce7f3;
+
+    --color-cyan-50: #0a2a2a;
+    --color-cyan-100: #1a4a4a;
+    --color-cyan-200: #2a7a7a;
+    --color-cyan-400: #22d3ee;
+    --color-cyan-500: #06b6d4;
+    --color-cyan-600: #0891b2;
+    --color-cyan-900: #cffafe;
+
+    --color-teal-50: #0a2a25;
+    --color-teal-100: #1a4a42;
+    --color-teal-200: #2a7a6a;
+    --color-teal-400: #2dd4bf;
+    --color-teal-500: #14b8a6;
+    --color-teal-600: #0d9488;
+    --color-teal-900: #ccfbf1;
+
+    --color-violet-50: #1a0a3a;
+    --color-violet-100: #2a1a6b;
+    --color-violet-200: #4a2a90;
+    --color-violet-400: #a78bfa;
+    --color-violet-500: #8b5cf6;
+    --color-violet-600: #7c3aed;
+    --color-violet-900: #ede9fe;
+
+    --color-sky-400: #38bdf8;
+
+    --color-pitch-grass: #1a4731;
+    --color-pitch-grass-dark: #163d29;
+    --color-pitch-lines: #ffffff4d;
+    --color-pitch-center: #ffffff66;
+    --color-pitch-markings: #ffffff33;
+    --color-pitch-attacking-third: #ff646414;
+    --color-pitch-attacking-line: #ff5050;
+    --color-pitch-defensive-third: #5096ff14;
+    --color-pitch-defensive-line: #5096ff;
   }
 
   /* App.tsx toggles .high-contrast in either theme; .high-contrast.dark is more specific and wins
@@ -336,21 +510,26 @@
   }
 
   .high-contrast.dark {
-    --color-fg-muted: #cfd8dc;
-    --color-fg-subtle: #b0bec5;
-    --color-line: #4a5a8c;
+    --color-fg-muted: #e2e8ec;
+    --color-fg-subtle: #c2ced6;
+    --color-line: #5a6b78;
+    --color-selected: #e2ff8a;
+    --color-selected-tint: #2f3d16;
+    --color-focus: #f0ffb8;
   }
 
   .density-compact {
     --spacing-row: 2rem;
     --spacing-panel-header: 2.25rem;
     --spacing-toolbar: 2.5rem;
+    --spacing-game-context: 2.5rem;
+    --spacing-game-commands: 4rem;
   }
 }
 
 @layer base {
   body {
-    @apply bg-gray-100 text-navy-900 antialiased dark:bg-navy-900 dark:text-gray-100 transition-colors duration-300;
+    @apply bg-page text-fg antialiased transition-colors duration-300;
   }
 
   h1,

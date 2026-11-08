@@ -44,14 +44,14 @@ function FocusAttributeChips({
   return (
     <div className="flex flex-wrap items-center gap-1 mt-2">
       {label && (
-        <span className="text-[10px] font-heading font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">
+        <span className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
           {label}:
         </span>
       )}
       {attributes.map((attribute) => (
         <span
           key={attribute}
-          className="text-[10px] bg-gray-100 dark:bg-navy-700 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded font-heading uppercase tracking-wider"
+          className="text-caption bg-gray-100 dark:bg-navy-700 text-fg-muted px-1.5 py-0.5 rounded font-heading uppercase tracking-label"
         >
           {t(`common.attributes.${attribute}`)}
         </span>
@@ -97,26 +97,26 @@ export default function TrainingSettingsPanel({
                 key={scheduleId}
                 disabled={isSaving}
                 onClick={() => onSetSchedule(scheduleId)}
-                className={`flex-1 p-3 rounded-xl text-left transition-all border-2 ${
+                className={`flex-1 p-3 rounded-panel text-left transition-all border-2 ${
                   currentSchedule === scheduleId
                     ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 shadow-md shadow-primary-500/10"
-                    : "border-gray-200 dark:border-navy-600 hover:border-gray-300 dark:hover:border-navy-500"
+                    : "border-line hover:border-gray-300 dark:hover:border-navy-500"
                 } ${isSaving ? "opacity-60 pointer-events-none" : ""}`}
               >
                 <div className={`mb-1.5 ${scheduleColors[scheduleId]}`}>
                   {scheduleIcons[scheduleId]}
                 </div>
-                <p className="font-heading font-bold text-sm uppercase tracking-wider text-gray-800 dark:text-gray-200">
+                <p className="font-heading font-bold text-body uppercase tracking-label text-fg">
                   {t(`training.schedules.${scheduleId}.label`)}
                 </p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-[11px] text-fg-muted mt-1">
                   {t(`training.schedules.${scheduleId}.desc`)}
                 </p>
               </button>
             ))}
           </div>
 
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
+          <p className="text-caption text-fg-subtle mt-3">
             {t(`training.schedules.${currentSchedule}.detail`)}{" "}
             <span
               dangerouslySetInnerHTML={{
@@ -140,19 +140,17 @@ export default function TrainingSettingsPanel({
                 key={focusId}
                 disabled={isSaving}
                 onClick={() => onSetTraining(focusId, currentIntensity)}
-                className={`p-4 rounded-xl text-left transition-all border-2 ${
+                className={`p-4 rounded-panel text-left transition-all border-2 ${
                   currentFocus === focusId
                     ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 shadow-md shadow-primary-500/10"
-                    : "border-gray-200 dark:border-navy-600 hover:border-gray-300 dark:hover:border-navy-500"
+                    : "border-line hover:border-gray-300 dark:hover:border-navy-500"
                 } ${isSaving ? "opacity-60 pointer-events-none" : ""}`}
               >
-                <div className="mb-2 text-gray-600 dark:text-gray-300">
-                  {trainingFocusIcons[focusId]}
-                </div>
-                <p className="font-heading font-bold text-sm uppercase tracking-wider text-gray-800 dark:text-gray-200">
+                <div className="mb-2 text-fg-muted">{trainingFocusIcons[focusId]}</div>
+                <p className="font-heading font-bold text-body uppercase tracking-label text-fg">
                   {t(`training.focuses.${focusId}.label`)}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-caption text-fg-muted mt-1">
                   {t(`training.focuses.${focusId}.desc`)}
                 </p>
                 <FocusAttributeChips
@@ -167,10 +165,10 @@ export default function TrainingSettingsPanel({
             ))}
           </div>
 
-          <div className="mt-5 pt-4 border-t border-gray-100 dark:border-navy-700">
+          <div className="mt-5 pt-4 border-t border-line">
             <div className="flex items-center gap-2 mb-3">
-              <Gauge className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-xs font-heading font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400">
+              <Gauge className="w-4 h-4 text-fg-muted" />
+              <span className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
                 {t("training.intensity")}
               </span>
             </div>
@@ -181,18 +179,18 @@ export default function TrainingSettingsPanel({
                   key={intensityId}
                   disabled={isSaving}
                   onClick={() => onSetTraining(currentFocus, intensityId)}
-                  className={`flex-1 p-3 rounded-lg text-left transition-all border-2 ${
+                  className={`flex-1 p-3 rounded-control text-left transition-all border-2 ${
                     currentIntensity === intensityId
                       ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10"
-                      : "border-gray-200 dark:border-navy-600 hover:border-gray-300 dark:hover:border-navy-500"
+                      : "border-line hover:border-gray-300 dark:hover:border-navy-500"
                   } ${isSaving ? "opacity-60 pointer-events-none" : ""}`}
                 >
                   <p
-                    className={`font-heading font-bold text-sm uppercase tracking-wider ${intensityColors[intensityId]}`}
+                    className={`font-heading font-bold text-body uppercase tracking-label ${intensityColors[intensityId]}`}
                   >
                     {t(`training.intensities.${intensityId}.label`)}
                   </p>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
+                  <p className="text-caption text-fg-muted mt-0.5">
                     {t(`training.intensities.${intensityId}.desc`)}
                   </p>
                 </button>
@@ -200,7 +198,7 @@ export default function TrainingSettingsPanel({
             </div>
           </div>
 
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-4">
+          <p className="text-caption text-fg-subtle mt-4">
             {t("training.trainingAppliedNote")}
             {activeFocusAttrs.length > 0 && (
               <>

@@ -20,7 +20,7 @@ Its URL sets the conditions:
 
 | Parameter | Values | Default |
 |---|---|---|
-| `theme` | `light`, `dark` | `light` |
+| `theme` | `dark` | `dark` |
 | `scale` | `small`, `normal`, `large`, `xlarge`, the same root sizes as the UI-scale setting | `normal` |
 | `density` | `comfortable`, `compact` | `comfortable` |
 | `contrast` | `high` | off |
@@ -37,9 +37,10 @@ Tokens live in one place, the `@theme` block of `src/App.css`. Each one becomes 
 
 ### Colour by role
 
-A role says what a colour is for, not what it looks like. Each role has a light value in `@theme`
-and a dark value in the `.dark` block below it, so **a component that uses a role needs no
-`dark:` partner**. High contrast swaps the text and line roles again, in either theme.
+A role says what a colour is for, not what it looks like. The player app now ships one dedicated
+dark game presentation: the `.dark` block is the target palette, while light `@theme` values remain
+as a compatibility base during migration. **A component that uses a role needs no `dark:` partner.**
+High contrast swaps the text and line roles again inside the dark presentation.
 
 | Role | For |
 |---|---|
@@ -47,7 +48,7 @@ and a dark value in the `.dark` block below it, so **a component that uses a rol
 | `panel` | cards, tables, dialogs |
 | `sunken` | insets: table headers, wells, stat tiles |
 | `hover` | the surface under the pointer |
-| `chrome` | the sidebar and the match band; dark in both themes |
+| `chrome` | the game shell bars and match band |
 | `overlay` | the backdrop behind a dialog |
 | `card-band`, `shadow-card` | an entity card's status band, a step off the panel, and its lift |
 | `kit`, `kit-wash`, `kit-hairline` | a club's kit on an entity card: the stripe, the header washed in it (`--kit-wash-mix` of the kit over the panel: 14% light, 26% dark) and a faint diagonal in its second colour. They read the `--kit` and `--kit-2` variables `kitStyle()` (`src/lib`) sets from the backend's team colours, so no component holds a colour |
@@ -73,8 +74,8 @@ enough for white text at 4.9:1. A list's keyboard-active option is marked with `
 it is where focus is, not what is chosen.
 
 **Readability is tested, not hoped for.** `src/designTokens.test.ts` checks that every text role
-reaches 4.5:1 on every surface it sits on, and that the focus ring reaches 3:1, in light, dark,
-high-contrast light and high-contrast dark. It composites a translucent tint over the panel
+reaches 4.5:1 on every surface it sits on, and that the focus ring reaches 3:1, in the dark game
+presentation and high-contrast dark. It composites a translucent tint over the panel
 before measuring.
 
 Two rules follow from what those numbers allow:
@@ -109,8 +110,8 @@ Two rules follow from what those numbers allow:
 | `h-row` / `min-h-row` | 40px, 32px when compact | list and table rows |
 | `h-panel-header` | 40px, 36px when compact | a panel's header |
 | `h-toolbar` | 48px, 40px when compact | the page toolbar |
-| `w-sidebar-rail` | 3.5rem | the sidebar's icon rail |
-| `w-sidebar-compact` / `w-sidebar-standard` / `w-sidebar-wide` | 13 / 16 / 17.75rem | the open sidebar, by Settings › Sidebar width; `sidebarLayout.ts` reckons with the same values |
+| `h-game-top` / `h-game-context` / `h-game-commands` | 3.5 / 3 / 4.5rem | the game shell section bar, page bar and command bar |
+| `w-sidebar-rail` / `w-sidebar-compact` / `w-sidebar-standard` / `w-sidebar-wide` | 3.5 / 13 / 16 / 17.75rem | legacy sidebar widths retained for settings compatibility during the shell rollout |
 | `max-w-page` | 80rem | the page width, applied once by the workspace |
 | `@split` | 36rem | the container breakpoint for two panels |
 
@@ -228,7 +229,7 @@ the only signal) is for review: the `ui-accessibility-reviewer` agent checks it.
 
 ## 8. Screenshots for a PR
 
-A PR that changes how something looks shows before and after, in light and dark, at 1280×800 (the
+A PR that changes how something looks shows before and after in the dedicated dark presentation, at 1280×800 (the
 window the game opens at) and 960×640 (its minimum).
 
 - **A primitive:** run the dev server on each commit and screenshot the style guide in headless

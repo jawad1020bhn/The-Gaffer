@@ -28,7 +28,7 @@ export function EventFeed({
     <div ref={feedRef} className="flex flex-col gap-1">
       {events.length === 0 ? (
         <div className="flex items-center justify-center h-40 text-gray-600 dark:text-gray-500">
-          <p className="font-heading text-sm uppercase tracking-wider">
+          <p className="font-heading text-body uppercase tracking-label">
             {t("match.waitingKickoff")}
           </p>
         </div>
@@ -40,28 +40,28 @@ export function EventFeed({
           return (
             <div
               key={i}
-              className={`flex items-start gap-3 px-3 py-2 rounded-lg transition-colors ${display.important ? "bg-white dark:bg-navy-800/80 border border-gray-200 dark:border-navy-700 shadow-sm" : "opacity-60"}`}
+              className={`flex items-start gap-3 px-3 py-2 rounded-control transition-colors ${display.important ? "bg-panel/80 border border-line shadow-sm" : "opacity-60"}`}
             >
-              <span className="text-gray-600 dark:text-gray-500 tabular-nums font-heading text-sm w-8 text-right flex-shrink-0 pt-0.5">
+              <span className="text-gray-600 dark:text-gray-500 tabular-nums font-heading text-body w-8 text-right flex-shrink-0 pt-0.5">
                 {evt.minute}'
               </span>
-              <span className="text-lg flex-shrink-0">{display.icon}</span>
+              <span className="text-lead flex-shrink-0">{display.icon}</span>
               <div className="flex-1 min-w-0">
                 {commentary ? (
                   <>
                     <div className="flex items-center gap-2">
                       <span
-                        className={`font-heading font-bold text-xs uppercase tracking-wider ${isHome ? "text-primary-400" : "text-indigo-400"}`}
+                        className={`font-heading font-bold text-caption uppercase tracking-label ${isHome ? "text-primary-400" : "text-indigo-400"}`}
                       >
                         {commentary.headline}
                       </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-caption text-fg-muted">
                         {isHome ? snapshot.home_team.name : snapshot.away_team.name}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">{commentary.line}</p>
+                    <p className="text-body text-fg">{commentary.line}</p>
                     {evt.event_type === "Goal" && evt.secondary_player_id && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-caption text-fg-muted">
                         {t("match.assist", {
                           name: displayName(evt.secondary_player_id),
                         })}
@@ -72,19 +72,19 @@ export function EventFeed({
                   <>
                     <div className="flex items-center gap-2">
                       <span
-                        className={`font-heading font-bold text-xs uppercase tracking-wider ${isHome ? "text-primary-400" : "text-indigo-400"}`}
+                        className={`font-heading font-bold text-caption uppercase tracking-label ${isHome ? "text-primary-400" : "text-indigo-400"}`}
                       >
                         {isHome ? snapshot.home_team.name : snapshot.away_team.name}
                       </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-caption text-fg-muted">
                         {getEventTypeLabel(evt.event_type, t)}
                       </span>
                     </div>
                     {evt.player_id && (
-                      <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                      <p className="text-body text-fg font-medium">
                         {displayName(evt.player_id)}
                         {evt.secondary_player_id && (
-                          <span className="text-gray-500 dark:text-gray-400 font-normal">
+                          <span className="text-fg-muted font-normal">
                             {evt.event_type === "Goal"
                               ? ` (${t("match.assist", { name: displayName(evt.secondary_player_id) })})`
                               : evt.event_type === "Substitution"
@@ -165,11 +165,11 @@ export function MatchStats({ snapshot }: { snapshot: MatchSnapshot }) {
         const pct = stat.homePct ?? (hv / total) * 100;
         return (
           <div key={i}>
-            <div className="flex justify-between text-xs mb-1">
+            <div className="flex justify-between text-caption mb-1">
               <span className="font-heading font-bold text-primary-400 tabular-nums">
                 {stat.home}
               </span>
-              <span className="text-gray-500 dark:text-gray-400 font-heading uppercase tracking-wider text-[10px]">
+              <span className="text-fg-muted font-heading uppercase tracking-label text-[10px]">
                 {stat.label}
               </span>
               <span className="font-heading font-bold text-indigo-400 tabular-nums">
@@ -221,10 +221,10 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
     return (
       <div className="flex-1">
         <h4
-          className={`font-heading font-bold text-sm uppercase tracking-wider mb-3 ${side === "Home" ? "text-primary-400" : "text-indigo-400"}`}
+          className={`font-heading font-bold text-body uppercase tracking-label mb-3 ${side === "Home" ? "text-primary-400" : "text-indigo-400"}`}
         >
           {team.name}{" "}
-          <span className="text-gray-600 dark:text-gray-500 font-normal text-xs">
+          <span className="text-gray-600 dark:text-gray-500 font-normal text-caption">
             ({team.formation})
           </span>
         </h4>
@@ -233,7 +233,7 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
           return (
             <div key={key} className="mb-3">
               {label ? (
-                <p className="text-[10px] font-heading uppercase tracking-widest text-gray-600 dark:text-gray-500 mb-1">
+                <p className="text-[10px] font-heading uppercase tracking-labelst text-gray-600 dark:text-gray-500 mb-1">
                   {label}
                 </p>
               ) : null}
@@ -250,11 +250,11 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
                 return (
                   <div
                     key={p.id}
-                    className={`flex items-center gap-2 py-1 px-2 rounded text-xs ${isOff ? "opacity-40" : ""}`}
+                    className={`flex items-center gap-2 py-1 px-2 rounded text-caption ${isOff ? "opacity-40" : ""}`}
                   >
                     {isSubOn && <span className="text-green-400 text-[10px]">▲</span>}
                     <span
-                      className={`font-medium flex-1 truncate ${isOff ? "line-through text-gray-600 dark:text-gray-500" : "text-gray-700 dark:text-gray-300"}`}
+                      className={`font-medium flex-1 truncate ${isOff ? "line-through text-gray-600 dark:text-gray-500" : "text-fg"}`}
                     >
                       {p.name}
                     </span>
@@ -271,7 +271,7 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
                           style={{ width: `${p.condition}%` }}
                         />
                       </div>
-                      <span className="text-gray-500 dark:text-gray-400 tabular-nums text-[10px] w-6 text-right">
+                      <span className="text-fg-muted tabular-nums text-[10px] w-6 text-right">
                         {Math.round(p.condition)}
                       </span>
                     </div>
@@ -284,8 +284,8 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
 
         {/* Bench */}
         {bench.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-navy-700">
-            <p className="text-[10px] font-heading uppercase tracking-widest text-gray-600 dark:text-gray-500 mb-1">
+          <div className="mt-3 pt-3 border-t border-line">
+            <p className="text-[10px] font-heading uppercase tracking-labelst text-gray-600 dark:text-gray-500 mb-1">
               {t("match.bench")}
             </p>
             {bench.map((p) => {
@@ -293,16 +293,14 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
               return (
                 <div
                   key={p.id}
-                  className={`flex items-center gap-2 py-1 px-2 rounded text-xs ${wasSubbedOff ? "opacity-50" : ""}`}
+                  className={`flex items-center gap-2 py-1 px-2 rounded text-caption ${wasSubbedOff ? "opacity-50" : ""}`}
                 >
                   {wasSubbedOff && <span className="text-red-400 text-[10px]">▼</span>}
-                  <span className="text-gray-600 dark:text-gray-400 font-medium flex-1 truncate">
-                    {p.name}
-                  </span>
+                  <span className="text-fg-muted font-medium flex-1 truncate">{p.name}</span>
                   <Badge variant="neutral" size="sm">
                     {translatePositionAbbreviation(t, p.position)}
                   </Badge>
-                  <span className="text-gray-500 dark:text-gray-400 tabular-nums text-[10px] w-6 text-right">
+                  <span className="text-fg-muted tabular-nums text-[10px] w-6 text-right">
                     {Math.round(p.condition)}
                   </span>
                 </div>
@@ -313,8 +311,8 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
 
         {/* Sub History */}
         {snapshot.substitutions.filter((s) => s.side === side).length > 0 && (
-          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-navy-700">
-            <p className="text-[10px] font-heading uppercase tracking-widest text-gray-600 dark:text-gray-500 mb-1">
+          <div className="mt-3 pt-3 border-t border-line">
+            <p className="text-[10px] font-heading uppercase tracking-labelst text-gray-600 dark:text-gray-500 mb-1">
               {t("match.substitutions")}
             </p>
             {snapshot.substitutions
@@ -325,11 +323,11 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
                     {sub.minute}'
                   </span>
                   <span className="text-green-400">▲</span>
-                  <span className="text-gray-700 dark:text-gray-300 truncate">
+                  <span className="text-fg truncate">
                     {getPlayerName(snapshot, sub.player_on_id)}
                   </span>
                   <span className="text-red-400">▼</span>
-                  <span className="text-gray-500 dark:text-gray-400 truncate">
+                  <span className="text-fg-muted truncate">
                     {getPlayerName(snapshot, sub.player_off_id)}
                   </span>
                 </div>
@@ -348,7 +346,7 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
         snapshot.home_yellows,
         snapshot.sent_off,
       )}
-      <div className="w-px bg-gray-200 dark:bg-navy-700 transition-colors duration-300" />
+      <div className="w-px bg-hover transition-colors duration-300" />
       {renderTeam(
         snapshot.away_team,
         snapshot.away_bench,

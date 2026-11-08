@@ -9,13 +9,17 @@ import { describe, expect, it } from "vitest";
  */
 const FINISHED_FOLDERS = [
   "./components/ui/",
-  // The dashboard shell. The rest of components/dashboard (its modals) joins with them, and these
-  // four entries become the one folder.
+  // The game shell and the dashboard pieces migrated with it. The rest of components/dashboard
+  // (its modals) joins when it is redrawn.
+  "./components/gameShell/",
   "./components/dashboard/DashboardAlerts.tsx",
-  "./components/dashboard/DashboardHeader.tsx",
-  "./components/dashboard/DashboardSidebar.tsx",
+  "./components/dashboard/DashboardSearch.tsx",
   "./components/dashboard/DashboardWorkspaceContent.tsx",
   "./pages/Dashboard.tsx",
+  // Settings and the shared match frame moved onto the dark HUD tokens.
+  "./pages/Settings.tsx",
+  "./pages/Settings.components.tsx",
+  "./components/match/MatchScreenLayout.tsx",
   // The Managers directory's table view. Its cards join when they move onto EntityCard.
   "./components/manager/ManagersTables.tsx",
   // The Teams directory: its search, accordion, table and cards.
@@ -156,17 +160,15 @@ function focusRingViolations(source: string): string[] {
 const TRANSLUCENT_FOCUS = /(?<=^|[\s"'`{(])(?:(?![^\s:"'`]*focus)[^\s:"'`]+:)*ring-focus\/\d+/g;
 
 /**
- * The files where the brand green is a brand moment, not a state: the primary button and the
- * header's Continue, the selected navigation item, the brand's own badge, card and bar variants,
- * and the dashboard's loading spinner. Rule 8 keeps `primary-*` to these.
+ * The files where the brand colour is a brand moment, not a state: the primary button, the
+ * brand's own badge, card and bar variants, and the dashboard's loading spinner. Rule 8 keeps
+ * `primary-*` to these.
  */
 const BRAND_FILES: Record<string, string> = {
   "./components/ui/Button.tsx": "the primary button is the brand fill",
   "./components/ui/Badge.tsx": "the `primary` badge variant",
   "./components/ui/Card.tsx": "the `primary` card's brand top border",
   "./components/ui/ProgressBar.tsx": "the `primary` bar colour",
-  "./components/dashboard/DashboardHeader.tsx": "the header's Continue button",
-  "./components/dashboard/DashboardSidebar.tsx": "the selected navigation item",
   "./pages/Dashboard.tsx": "the loading spinner",
 };
 

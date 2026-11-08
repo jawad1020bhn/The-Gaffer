@@ -52,23 +52,21 @@ export default function FinancesFacilitiesCard({
             return (
               <div
                 key={facility.id}
-                className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 flex flex-col gap-4"
+                className="rounded-panel border border-line bg-sunken p-4 flex flex-col gap-4"
               >
                 <div className="space-y-1">
-                  <h3 className="font-heading font-bold text-base text-gray-900 dark:text-gray-100 uppercase tracking-wider">
+                  <h3 className="font-heading font-bold text-base text-gray-900 dark:text-gray-100 uppercase tracking-label">
                     {t(facility.titleKey)}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-body text-fg-muted">
                     {t("finances.facilityLevel", { level })}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {t(facility.effectKey)}
-                  </p>
+                  <p className="text-body text-fg-muted">{t(facility.effectKey)}</p>
                 </div>
 
                 <div className="space-y-2 mt-auto">
                   {upgrade && (
-                    <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                       {t("finances.nextUpgradeCost", {
                         amount: formatExactMoney(upgrade.nextCost),
                       })}
@@ -82,12 +80,12 @@ export default function FinancesFacilitiesCard({
                     {t("finances.upgradeFacility")}
                   </Button>
                   {previewsCurrent && !canAffordUpgrade && !upgradeReason && (
-                    <p className="text-xs text-red-500 dark:text-red-400">
+                    <p className="text-caption text-red-500 dark:text-red-400">
                       {t("finances.insufficientFunds")}
                     </p>
                   )}
                   {upgradeReason && (
-                    <p className="text-xs text-red-500 dark:text-red-400">{upgradeReason}</p>
+                    <p className="text-caption text-red-500 dark:text-red-400">{upgradeReason}</p>
                   )}
                 </div>
               </div>

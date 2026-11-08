@@ -20,7 +20,7 @@ export function Card({ children, className = "", accent = "none" }: CardProps) {
       className={`
         bg-panel
         ${accent === "none" ? accentBorder : `border ${accentBorder} border-line`}
-        rounded-xl shadow-sm dark:shadow-md
+        rounded-panel shadow-sm dark:shadow-md
         transition-colors duration-300
         ${className}
       `}

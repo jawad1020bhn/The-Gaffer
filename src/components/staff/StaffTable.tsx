@@ -178,7 +178,7 @@ export default function StaffTable({ label, rows, menuItemsFor }: StaffTableProp
   ];
 
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-panel">
+    <div className="overflow-hidden rounded-control border border-line bg-panel">
       <DataTable
         label={label}
         columns={columns}

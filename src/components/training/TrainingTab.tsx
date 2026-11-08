@@ -101,7 +101,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
   const team = sessionState?.team ?? gameState?.teams.find((t) => t.id === teamId) ?? null;
 
   if (!team) {
-    return <p className="text-gray-500 dark:text-gray-400">{t("common.noTeam")}</p>;
+    return <p className="text-fg-muted">{t("common.noTeam")}</p>;
   }
 
   const currentFocus = team.training_focus || "Physical";
@@ -167,7 +167,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
       <div className="lg:col-span-2 flex flex-col gap-5">
         {staffAdvice ? (
           <div
-            className={`flex items-start gap-3 p-4 rounded-xl border-2 ${
+            className={`flex items-start gap-3 p-4 rounded-panel border-2 ${
               staffAdvice.level === "critical"
                 ? "bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/40"
                 : staffAdvice.level === "warn"
@@ -184,7 +184,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
             )}
             <div>
               <p
-                className={`text-xs font-heading font-bold uppercase tracking-wider mb-0.5 ${
+                className={`text-caption font-heading font-bold uppercase tracking-label mb-0.5 ${
                   staffAdvice.level === "critical"
                     ? "text-red-600 dark:text-red-400"
                     : staffAdvice.level === "warn"
@@ -198,7 +198,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
                     ? t("training.staffWarning")
                     : t("training.staffSuggestion")}
               </p>
-              <p className="text-sm text-gray-700 dark:text-gray-300">{staffAdvice.message}</p>
+              <p className="text-body text-fg">{staffAdvice.message}</p>
             </div>
           </div>
         ) : null}
@@ -249,11 +249,9 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
           <CardBody>
             <div className="flex flex-col gap-3">
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {t("training.avgCondition")}
-                  </span>
-                  <span className="font-heading font-bold text-gray-800 dark:text-gray-100">
+                <div className="flex justify-between text-body mb-1">
+                  <span className="text-fg-muted">{t("training.avgCondition")}</span>
+                  <span className="font-heading font-bold text-fg">
                     {avgCondition !== null ? `${avgCondition}%` : "—"}
                   </span>
                 </div>
@@ -268,26 +266,22 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
                 />
               </div>
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {t("training.avgMorale")}
-                  </span>
-                  <span className="font-heading font-bold text-gray-800 dark:text-gray-100">
-                    {avgMorale}%
-                  </span>
+                <div className="flex justify-between text-body mb-1">
+                  <span className="text-fg-muted">{t("training.avgMorale")}</span>
+                  <span className="font-heading font-bold text-fg">{avgMorale}%</span>
                 </div>
                 <ProgressBar value={avgMorale} variant="auto" size="md" />
               </div>
               {exhaustedCount > 0 || criticalCount > 0 ? (
-                <div className="mt-1 pt-2 border-t border-gray-100 dark:border-navy-700">
+                <div className="mt-1 pt-2 border-t border-line">
                   {criticalCount > 0 ? (
-                    <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <p className="text-caption text-red-500 dark:text-red-400 flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />{" "}
                       {t("training.criticalCondition", { count: criticalCount })}
                     </p>
                   ) : null}
                   {exhaustedCount > 0 ? (
-                    <p className="text-xs text-amber-500 dark:text-amber-400 flex items-center gap-1 mt-0.5">
+                    <p className="text-caption text-amber-500 dark:text-amber-400 flex items-center gap-1 mt-0.5">
                       <AlertTriangle className="w-3 h-3" />{" "}
                       {t("training.exhaustedPlayers", { count: exhaustedCount })}
                     </p>
@@ -315,10 +309,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
                       aria-labelledby={nameId}
                       className="flex items-center px-4 py-2 gap-3"
                     >
-                      <span
-                        id={nameId}
-                        className="text-sm font-medium flex-1 truncate text-gray-800 dark:text-gray-200"
-                      >
+                      <span id={nameId} className="text-body font-medium flex-1 truncate text-fg">
                         {player.match_name}
                         {player.jersey_number != null ? ` (#${player.jersey_number})` : ""}
                       </span>

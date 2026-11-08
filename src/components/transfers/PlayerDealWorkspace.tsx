@@ -124,22 +124,22 @@ export default function PlayerDealWorkspace({
             selectedKind={selectedKind}
             onSelectKind={onSelectKind}
           />
-          <section className="min-h-0 overflow-y-auto rounded-lg border border-gray-200 dark:border-navy-600 bg-white p-5  dark:bg-navy-800 ">
+          <section className="min-h-0 overflow-y-auto rounded-control border border-line bg-white p-5  dark:bg-navy-800 ">
             <PlayerOfferHistory player={player} userTeamId={myTeam?.id ?? null} teams={teams} />
             {selectedOption.disabledReason ? (
-              <div className="flex min-h-[280px] flex-col justify-center rounded-lg bg-gray-50 p-6 text-center dark:bg-navy-900/50">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-200 text-gray-500 dark:bg-navy-700 dark:text-gray-300">
+              <div className="flex min-h-[280px] flex-col justify-center rounded-control bg-gray-50 p-6 text-center dark:bg-navy-900/50">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-control bg-gray-200 text-gray-500 dark:bg-navy-700 dark:text-gray-300">
                   {selectedOption.icon}
                 </div>
-                <p className="font-heading text-lg font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+                <p className="font-heading text-lead font-bold uppercase tracking-label text-fg">
                   {selectedOption.title}
                 </p>
-                <p className="mx-auto mt-2 max-w-md text-sm text-gray-600 dark:text-gray-300">
+                <p className="mx-auto mt-2 max-w-md text-body text-fg-muted">
                   {selectedOption.description}
                 </p>
                 <p
                   role="status"
-                  className="mx-auto mt-2 max-w-md text-sm font-semibold text-red-600 dark:text-red-300"
+                  className="mx-auto mt-2 max-w-md text-body font-semibold text-red-600 dark:text-red-300"
                 >
                   {selectedOption.disabledReason}
                 </p>

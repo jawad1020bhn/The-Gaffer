@@ -39,17 +39,17 @@ export default function InboxDeleteConfirmModal({
       // While the delete runs, Cancel is disabled, and Escape asks for nothing either.
       onClose={isDeleting ? undefined : onCancel}
       busy={isDeleting}
-      className="w-full max-w-md rounded-2xl p-6"
+      className="w-full max-w-md rounded-panel p-6"
     >
       <div className="space-y-4" data-testid="inbox-delete-confirm-modal">
         <div>
           <h3
             id={titleId}
-            className="text-lg font-heading font-bold text-gray-900 dark:text-gray-100"
+            className="text-lead font-heading font-bold text-gray-900 dark:text-gray-100"
           >
             {title}
           </h3>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{message}</p>
+          <p className="mt-2 text-body text-fg-muted">{message}</p>
         </div>
         <div className="flex items-center justify-end gap-3">
           <Button

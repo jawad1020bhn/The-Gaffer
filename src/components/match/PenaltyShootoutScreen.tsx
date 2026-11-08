@@ -294,9 +294,9 @@ export default function PenaltyShootoutScreen({
             headingRef={picker.sheetHeadingRef}
           />
 
-          <aside className="flex flex-col gap-4 rounded-xl bg-panel p-4 shadow-sm">
+          <aside className="flex flex-col gap-4 rounded-panel bg-panel p-4 shadow-sm">
             {stepFailed && (
-              <div role="alert" className="flex flex-col gap-2 rounded-lg bg-danger-tint p-3">
+              <div role="alert" className="flex flex-col gap-2 rounded-control bg-danger-tint p-3">
                 <p className="text-body font-semibold text-danger">
                   {t("match.shootout.stepFailed")}
                 </p>
@@ -341,7 +341,7 @@ function KickSheetPanel({
   return (
     <section
       aria-labelledby="kick-sheet-heading"
-      className="overflow-hidden rounded-xl bg-panel shadow-sm"
+      className="overflow-hidden rounded-panel bg-panel shadow-sm"
     >
       <h2
         id="kick-sheet-heading"

@@ -133,7 +133,7 @@ export default function ManagersTables({ directory, onSelectTeam }: ManagersTabl
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="overflow-hidden rounded-lg border border-line bg-panel">
+      <div className="overflow-hidden rounded-control border border-line bg-panel">
         <DataTable
           label={t("managersWorld.title")}
           columns={managerColumns}
@@ -156,7 +156,7 @@ export default function ManagersTables({ directory, onSelectTeam }: ManagersTabl
         />
       </div>
       {directory.vacancies.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-line bg-panel">
+        <div className="overflow-hidden rounded-control border border-line bg-panel">
           <DataTable
             label={t("managersWorld.vacancy")}
             columns={vacancyColumns}

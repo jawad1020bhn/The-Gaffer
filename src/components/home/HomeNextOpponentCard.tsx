@@ -24,7 +24,7 @@ export default function HomeNextOpponentCard({
           <button
             type="button"
             onClick={() => onNavigate?.("Schedule")}
-            className="text-primary-500 dark:text-primary-400 text-xs font-heading font-bold uppercase tracking-wider hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
           >
             {t("dashboard.schedule")}
           </button>
@@ -47,14 +47,14 @@ export default function HomeNextOpponentCard({
                   <div className="min-w-0 flex items-center gap-3">
                     <TeamLogo
                       team={nextOpponent.opponent}
-                      className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-xs font-heading font-bold text-gray-500 dark:text-gray-300"
+                      className="h-11 w-11 shrink-0 overflow-hidden rounded-control bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-caption font-heading font-bold text-gray-500 dark:text-gray-300"
                       imageClassName="h-9 w-9 object-contain drop-shadow"
                     />
                     <div className="min-w-0">
-                      <p className="text-lg font-heading font-bold text-gray-800 dark:text-gray-100 truncate">
+                      <p className="text-lead font-heading font-bold text-fg truncate">
                         {nextOpponent.opponent.name}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-caption text-fg-muted mt-1">
                         {fixtureLabel} - {formatDateShort(nextOpponent.fixture.date, lang)}
                       </p>
                     </div>
@@ -67,14 +67,14 @@ export default function HomeNextOpponentCard({
             })()}
 
             {(nextOpponent.standingPosition !== null || nextOpponent.standingPoints !== null) && (
-              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-2 text-caption text-fg-muted">
                 {nextOpponent.standingPosition !== null && (
                   <Badge variant="neutral" size="sm">
                     #{nextOpponent.standingPosition}
                   </Badge>
                 )}
                 {nextOpponent.standingPoints !== null && (
-                  <span className="font-heading font-bold text-gray-700 dark:text-gray-300">
+                  <span className="font-heading font-bold text-fg">
                     {nextOpponent.standingPoints} {t("common.pts")}
                   </span>
                 )}
@@ -84,9 +84,7 @@ export default function HomeNextOpponentCard({
             <FormDots results={nextOpponent.recentForm} />
           </div>
         ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
-            {t("home.noUpcomingOpponent")}
-          </p>
+          <p className="text-body text-fg-muted py-4 text-center">{t("home.noUpcomingOpponent")}</p>
         )}
       </CardBody>
     </Card>

@@ -58,7 +58,7 @@ export default function TournamentsOverview({
           className="flex items-center justify-between px-4 py-2.5"
           data-testid={`tournaments-round-summary-${round.id}`}
         >
-          <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+          <span className="text-body font-semibold text-fg">
             {localizedRoundName(t, round.name)}
           </span>
           <Badge variant={round.completed ? "accent" : "neutral"} size="sm">

@@ -3,6 +3,22 @@
     "name": "OpenFoot Manager",
     "publisher": "Sturdy Robot"
   },
+  "gameNav": {
+    "career": "Carrière",
+    "team": "Équipe",
+    "transfers": "Transferts",
+    "competitions": "Compétitions",
+    "office": "Bureau",
+    "main": "Sections principales du jeu",
+    "context": "Pages de la section",
+    "careerStatus": "État de la carrière",
+    "commands": "Commandes de la carrière",
+    "noClub": "Sans club",
+    "noFixture": "Aucun match à venir",
+    "unknownBudget": "Budget indisponible",
+    "date": "Jour",
+    "transferBudget": "Budget des transferts"
+  },
   "menu": {
     "newGame": "Nouvelle Partie",
     "loadGame": "Charger Partie",
@@ -21,12 +37,9 @@
     "loadGameFailed": "Impossible de charger la sauvegarde : {{error}}",
     "invalidWorldDb": "Fichier de base de données de monde invalide : {{error}}",
     "failedStartGame": "Échec du démarrage du jeu : {{error}}",
-    "openDiscord": "Ouvrir la communauté Discord",
-    "openGithub": "Ouvrir le dépôt GitHub",
     "mainMenu": "Menu principal",
     "worldEditor": "Éditeur de Monde",
-    "startupOptionsRejected": "Ces paramètres de carrière n'ont pas pu être utilisés. Retournez à l'écran du monde et vérifiez l'année de début, la phase de début et la quantité d'historique à générer.",
-    "reportBug": "Signaler un bug"
+    "startupOptionsRejected": "Ces paramètres de carrière n'ont pas pu être utilisés. Retournez à l'écran du monde et vérifiez l'année de début, la phase de début et la quantité d'historique à générer."
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -41,7 +54,6 @@
     "title": "Créer un Entraîneur",
     "firstName": "Prénom",
     "lastName": "Nom",
-    "dob": "Date de Naissance",
     "startYear": "Année de départ",
     "startPhase": "Phase de départ",
     "phaseSeasonStart": "Début de saison",
@@ -1899,6 +1911,9 @@
     },
     "uiScale": "Échelle de l'UI",
     "uiScaleDesc": "Ajuster la taille de police et l'espacement pour la lisibilité",
+    "uiDensity": "Densité",
+    "uiDensityDesc": "Espace utilisé par les lignes et les panneaux.",
+    "uiDensityOptions": { "comfortable": "Confortable", "compact": "Compacte" },
     "sidebarWidth": "Largeur de la barre latérale",
     "sidebarWidthDesc": "La largeur de la barre latérale ouverte. « Large » affiche chaque nom du menu sur une ligne.",
     "sidebarWidthOptions": {

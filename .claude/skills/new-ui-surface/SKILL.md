@@ -1,6 +1,6 @@
 ---
 name: new-ui-surface
-description: Build a new frontend component, panel, dashboard tab, or screen that matches the Matchday design language, works in light and dark, is keyboard and screen-reader accessible, reuses existing primitives, and ships with a Testing Library test.
+description: Build a new frontend component, panel, dashboard tab, or screen that matches the Matchday design language, works in the dedicated dark game presentation, is keyboard and screen-reader accessible, reuses existing primitives, and ships with a Testing Library test.
 when_to_use: Creating any new React component, adding a dashboard tab, building a modal or panel, redesigning an existing screen, or when a UI change needs to look and behave like the rest of the app.
 argument-hint: "[what you are building]"
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash(npm exec --no -- vitest run src/components*), Bash(npm exec --no -- tsc --noEmit)
@@ -8,8 +8,13 @@ allowed-tools: Read, Edit, Write, Grep, Glob, Bash(npm exec --no -- vitest run s
 
 # Building a new UI surface
 
-The app has one visual voice — "Matchday", a broadcast-graphics look. New surfaces should be
-indistinguishable from existing ones. Reuse first, then compose, then style.
+The app has one visual voice — a modern football HUD on graphite surfaces with a sharp lime
+accent. New surfaces should be indistinguishable from existing ones. Reuse first, then compose,
+then style.
+
+The player app ships one dedicated dark presentation. Do not add `ThemeToggle`, light/dark
+switches, or `dark:` partners for role tokens. Verify high contrast, UI scale, keyboard and
+screen-reader behaviour in the dark presentation.
 
 ## 1. Reuse before you build
 
@@ -17,7 +22,7 @@ Read `src/components/ui/index.ts` before writing markup. It already exports:
 
 `Card` / `CardHeader` / `CardBody` · `Button` · `Badge` · `ProgressBar` · `Select` · `Checkbox` ·
 `DatePicker` · `CountryFlag` · `TeamLocation` · `PlayerAvatar` · `TeamLogo` · `InjuryBadge` ·
-`JerseyIcon` · `ThemeToggle` · `PitchToken` · `AssetImage` · `GeneratedAvatar` · `GeneratedCrest` ·
+`JerseyIcon` · `PitchToken` · `AssetImage` · `GeneratedAvatar` · `GeneratedCrest` ·
 `CountryCombobox`
 
 Also check before writing a helper:

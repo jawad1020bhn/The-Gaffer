@@ -12,6 +12,8 @@ export interface AppSettings {
   confirm_advance: boolean;
   continue_to_next_event: boolean;
   ui_scale: "small" | "normal" | "large" | "xlarge";
+  /** Row/panel spacing: comfortable by default, compact for dense screens. */
+  ui_density: "comfortable" | "compact";
   high_contrast: boolean;
   /** The open sidebar's width. */
   sidebar_width: "compact" | "standard" | "wide";
@@ -50,6 +52,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   confirm_advance: false,
   continue_to_next_event: false,
   ui_scale: "normal",
+  ui_density: "comfortable",
   high_contrast: false,
   sidebar_width: "standard",
   sidebar_behaviour: "normal",

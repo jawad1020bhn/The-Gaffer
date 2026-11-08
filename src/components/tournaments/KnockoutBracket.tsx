@@ -32,17 +32,15 @@ interface MatchSlotProps {
 
 function ScoreBadge({ score }: { score: number }): JSX.Element {
   return (
-    <span className="w-6 text-center text-xs font-bold font-heading tabular-nums">{score}</span>
+    <span className="w-6 text-center text-caption font-bold font-heading tabular-nums">
+      {score}
+    </span>
   );
 }
 
 /** Shootout tally shown in parentheses for a penalty-decided tie, e.g. "(4)". */
 function PenaltyScore({ score }: { score: number }): JSX.Element {
-  return (
-    <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 tabular-nums">
-      ({score})
-    </span>
-  );
+  return <span className="text-caption font-semibold text-fg-muted tabular-nums">({score})</span>;
 }
 
 function MatchSlot({
@@ -56,7 +54,7 @@ function MatchSlot({
     return (
       <div
         data-testid={`tournaments-bracket-${fixtureId}`}
-        className="rounded-lg border border-dashed border-gray-200 dark:border-navy-600 p-2 text-xs text-gray-400 dark:text-gray-500 text-center italic"
+        className="rounded-control border border-dashed border-line p-2 text-caption text-fg-subtle text-center italic"
       >
         {tbdLabel}
       </div>
@@ -80,10 +78,10 @@ function MatchSlot({
   const userInvolved =
     userTeamId && (fixture.home_team_id === userTeamId || fixture.away_team_id === userTeamId);
 
-  const baseRow = "flex items-center gap-1.5 rounded px-2 py-1 text-xs transition-colors";
-  const winnerRow = "font-bold text-gray-900 dark:text-white bg-primary-50 dark:bg-primary-900/20";
-  const loserRow = "text-gray-500 dark:text-gray-400";
-  const neutralRow = "text-gray-700 dark:text-gray-300";
+  const baseRow = "flex items-center gap-1.5 rounded px-2 py-1 text-caption transition-colors";
+  const winnerRow = "font-bold text-fg bg-primary-50 dark:bg-primary-900/20";
+  const loserRow = "text-fg-muted";
+  const neutralRow = "text-fg";
 
   const homeRowStyle = result
     ? isHomeWinner
@@ -103,10 +101,8 @@ function MatchSlot({
   return (
     <div
       data-testid={`tournaments-bracket-${fixtureId}`}
-      className={`rounded-lg border overflow-hidden ${
-        userInvolved
-          ? "border-primary-400/50 dark:border-primary-500/40"
-          : "border-gray-200 dark:border-navy-600"
+      className={`rounded-control border overflow-hidden ${
+        userInvolved ? "border-primary-400/50 dark:border-primary-500/40" : "border-line"
       }`}
     >
       {/* Home team row */}
@@ -147,7 +143,7 @@ export default function KnockoutBracket({
   );
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800">
+    <div className="overflow-x-auto rounded-panel border border-line bg-panel">
       <div className="flex gap-0 min-w-max">
         {rounds.map((round, roundIdx) => {
           const roundFixtures = round.fixture_ids.map((id) => fixtureById.get(id));
@@ -161,13 +157,13 @@ export default function KnockoutBracket({
           return (
             <div
               key={round.id}
-              className={`flex flex-col border-r border-gray-100 dark:border-navy-700 last:border-r-0 ${
+              className={`flex flex-col border-r border-line last:border-r-0 ${
                 roundIdx === rounds.length - 1 ? "min-w-[16rem]" : "min-w-[14rem]"
               }`}
             >
               {/* Round header */}
-              <div className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-gray-100 dark:border-navy-700 bg-gray-50 dark:bg-navy-900/40 shrink-0">
-                <span className="text-xs font-heading font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 truncate">
+              <div className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-line bg-sunken/40 shrink-0">
+                <span className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted truncate">
                   {localizedRoundName(round.name)}
                 </span>
                 <Badge variant={round.completed ? "accent" : "neutral"} size="sm">
@@ -193,9 +189,9 @@ export default function KnockoutBracket({
                 {byeTeams.length > 0 && (
                   <div
                     data-testid={`tournaments-byes-${round.id}`}
-                    className="rounded-lg border border-dashed border-gray-200 dark:border-navy-600 px-2 py-1.5 text-xs text-gray-500 dark:text-gray-400"
+                    className="rounded-control border border-dashed border-line px-2 py-1.5 text-caption text-fg-muted"
                   >
-                    <span className="font-heading font-semibold uppercase tracking-wide text-[10px] text-gray-400 dark:text-gray-500 mr-1.5">
+                    <span className="font-heading font-semibold uppercase tracking-label text-caption text-fg-subtle mr-1.5">
                       {byeLabel}
                     </span>
                     {byeTeams.map((id) => resolveTeamName(id)).join(", ")}

@@ -5,7 +5,6 @@ export { ProgressBar } from "./ProgressBar";
 export { TONE_TEXT } from "./ratedTone";
 export { CountryFlag } from "./CountryFlag";
 export { TeamLocation } from "./TeamLocation";
-export { ThemeToggle } from "./ThemeToggle";
 export { DatePicker } from "./DatePicker";
 export { Dialog, DialogCloseButton } from "./Dialog";
 export { Select } from "./Select";

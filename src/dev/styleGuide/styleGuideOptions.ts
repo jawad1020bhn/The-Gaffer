@@ -8,7 +8,7 @@ import { rootFontSizeFor, type UiScale } from "../../lib/uiScale";
 export const STYLE_GUIDE_THEME_KEY = "ofm-style-guide-theme";
 
 export interface StyleGuideOptions {
-  theme: "light" | "dark";
+  theme: "dark";
   density: "comfortable" | "compact";
   scale: UiScale;
   highContrast: boolean;
@@ -32,7 +32,7 @@ export function applyStyleGuideOptions(
   root: HTMLElement,
   storage: Pick<Storage, "setItem">,
 ): void {
-  root.classList.toggle("dark", options.theme === "dark");
+  root.classList.add("dark");
   root.classList.toggle("density-compact", options.density === "compact");
   root.classList.toggle("high-contrast", options.highContrast);
   root.style.fontSize = options.rootFontSize;
@@ -48,7 +48,7 @@ export function readStyleGuideOptions(search: string): StyleGuideOptions {
     "normal",
   );
   return {
-    theme: pick(params.get("theme"), ["light", "dark"] as const, "light"),
+    theme: pick(params.get("theme"), ["dark"] as const, "dark"),
     density: pick(params.get("density"), ["comfortable", "compact"] as const, "comfortable"),
     scale,
     highContrast: params.get("contrast") === "high",

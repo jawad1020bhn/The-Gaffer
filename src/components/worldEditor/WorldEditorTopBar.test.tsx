@@ -11,7 +11,6 @@ vi.mock("../../i18n", () => ({
   default: { language: "en", changeLanguage: () => {} },
   SUPPORTED_LANGUAGES: [],
 }));
-vi.mock("../ui/ThemeToggle", () => ({ ThemeToggle: () => null }));
 vi.mock("../ui/Select", () => ({ Select: () => null }));
 
 function renderTopBar(issueCount: number, warningCount: number) {

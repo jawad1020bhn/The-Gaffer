@@ -17,10 +17,10 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-navy-800 rounded-2xl border border-gray-200 dark:border-navy-700 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-navy-700">
-        <span className="text-primary-500">{icon}</span>
-        <h2 className="text-sm font-heading font-bold uppercase tracking-wider text-gray-800 dark:text-gray-200">
+    <div className="overflow-hidden rounded-panel border border-line bg-panel shadow-sm">
+      <div className="flex items-center gap-2 border-b border-line px-6 py-4">
+        <span className="text-selected">{icon}</span>
+        <h2 className="font-heading text-heading font-bold uppercase tracking-label text-fg">
           {title}
         </h2>
       </div>
@@ -51,13 +51,10 @@ export function SettingRow({
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
       <div className="min-w-0 grow basis-64">
-        <p
-          id={labelId}
-          className={`text-sm font-medium ${danger ? "text-red-500" : "text-gray-800 dark:text-gray-200"}`}
-        >
+        <p id={labelId} className={`text-body font-medium ${danger ? "text-danger" : "text-fg"}`}>
           {label}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+        <p className="mt-0.5 text-caption text-fg-muted">{description}</p>
       </div>
       <div className="max-w-full">
         {typeof children === "function" ? children(labelId) : children}

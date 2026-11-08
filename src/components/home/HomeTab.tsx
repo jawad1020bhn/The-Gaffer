@@ -301,7 +301,7 @@ export default function HomeTab({
                         <Circle className="w-4 h-4 text-gray-300 dark:text-navy-600 flex-shrink-0" />
                       )}
                       <span
-                        className={`text-sm ${obj.met ? "text-green-600 dark:text-green-400 line-through" : "text-gray-700 dark:text-gray-300"}`}
+                        className={`text-body ${obj.met ? "text-green-600 dark:text-green-400 line-through" : "text-fg"}`}
                       >
                         {obj.description}
                       </span>
@@ -315,8 +315,8 @@ export default function HomeTab({
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-navy-700">
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                <div className="mt-3 pt-2 border-t border-line">
+                  <p className="text-caption text-fg-subtle">
                     {t("home.objectivesMet", {
                       done: boardObjectives.filter((o) => o.met).length,
                       total: boardObjectives.length,

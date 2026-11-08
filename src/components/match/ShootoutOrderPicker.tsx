@@ -418,7 +418,7 @@ export function ShootoutOrderPicker({
   return (
     <section
       aria-labelledby="shootout-order-heading"
-      className="flex flex-col overflow-clip rounded-xl bg-panel shadow-sm"
+      className="flex flex-col overflow-clip rounded-panel bg-panel shadow-sm"
     >
       <header className="flex min-h-panel-header flex-wrap items-center gap-3 border-b border-line px-4 py-2">
         <h2 id="shootout-order-heading" className="font-heading text-heading font-bold text-fg">
@@ -455,7 +455,7 @@ export function ShootoutOrderPicker({
         {error ? (
           <p
             role="alert"
-            className="w-full rounded-lg bg-danger-tint px-3 py-2 text-body font-semibold text-danger"
+            className="w-full rounded-control bg-danger-tint px-3 py-2 text-body font-semibold text-danger"
           >
             {error}
           </p>

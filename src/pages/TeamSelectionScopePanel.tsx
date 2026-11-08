@@ -57,12 +57,12 @@ export default function TeamSelectionScopePanel({
         onClick={onToggleScopeExpanded}
         className="flex w-full items-center justify-between gap-3 px-5 py-3 text-left"
       >
-        <span className="font-heading text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-200">
+        <span className="font-heading text-body font-bold uppercase tracking-label text-fg">
           {t("teamSelect.simulationScope")}
         </span>
         <span className="flex items-center gap-2">
           {!scopeExpanded && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-caption text-fg-muted">
               {[
                 selectedHomeRegionId ? buildRegionLabel(t, selectedHomeRegionId) : null,
                 selectedCountryCode
@@ -83,7 +83,7 @@ export default function TeamSelectionScopePanel({
       {scopeExpanded && (
         <CardBody className="grid gap-4 lg:grid-cols-4">
           <div>
-            <p className="mb-2 text-xs font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+            <p className="mb-2 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
               {t("teamSelect.homeRegion")}
             </p>
             <Select
@@ -103,7 +103,7 @@ export default function TeamSelectionScopePanel({
           </div>
 
           <div>
-            <p className="mb-2 text-xs font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+            <p className="mb-2 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
               {t("teamSelect.homeCountry")}
             </p>
             <Select
@@ -122,7 +122,7 @@ export default function TeamSelectionScopePanel({
           </div>
 
           <div>
-            <p className="mb-2 text-xs font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+            <p className="mb-2 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
               {t("teamSelect.simulatedRegions")}
             </p>
             <div className="space-y-2">
@@ -144,7 +144,7 @@ export default function TeamSelectionScopePanel({
                         onRegionToggle(region.id);
                       }
                     }}
-                    className={`flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm dark:border-navy-600 dark:bg-navy-800 ${!isLocked ? "cursor-pointer" : ""}`}
+                    className={`flex items-center justify-between rounded-control border border-line bg-sunken px-3 py-2 text-body ${!isLocked ? "cursor-pointer" : ""}`}
                   >
                     <span className="flex items-center gap-2">
                       <Globe className="h-4 w-4 text-primary-500" />
@@ -173,7 +173,7 @@ export default function TeamSelectionScopePanel({
           </div>
 
           <div>
-            <p className="mb-2 text-xs font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+            <p className="mb-2 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
               {t("teamSelect.simulatedCompetitions")}
             </p>
             <div className="max-h-52 space-y-2 overflow-y-auto pr-1">
@@ -201,7 +201,7 @@ export default function TeamSelectionScopePanel({
                         onCompetitionToggle(competition);
                       }
                     }}
-                    className={`block rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm dark:border-navy-600 dark:bg-navy-800 ${!isLocked ? "cursor-pointer" : ""}`}
+                    className={`block rounded-control border border-line bg-sunken px-3 py-2 text-body ${!isLocked ? "cursor-pointer" : ""}`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="flex min-w-0 items-center gap-2">

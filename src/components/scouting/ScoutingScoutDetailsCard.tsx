@@ -37,23 +37,18 @@ export default function ScoutingScoutDetailsCard({
             );
 
             return (
-              <div
-                key={scout.id}
-                className="p-3 rounded-lg border border-gray-200 dark:border-navy-600"
-              >
+              <div key={scout.id} className="p-3 rounded-control border border-line">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-accent-500/10 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-control bg-accent-500/10 flex items-center justify-center">
                     <Eye className="w-4 h-4 text-accent-500" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-heading font-bold text-sm text-gray-800 dark:text-gray-100">
-                      {scout.display_name}
-                    </p>
-                    <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 flex items-center gap-1">
+                    <p className="font-heading font-bold text-body text-fg">{scout.display_name}</p>
+                    <div className="text-caption text-fg-subtle mt-0.5 flex items-center gap-1">
                       <CountryFlag
                         code={scout.nationality}
                         locale={i18n.language}
-                        className="text-xs leading-none"
+                        className="text-caption leading-none"
                       />
                       <span>{countryName(scout.nationality, i18n.language)}</span>
                     </div>
@@ -64,13 +59,13 @@ export default function ScoutingScoutDetailsCard({
                 </div>
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <div>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-heading uppercase">
+                    <p className="text-caption text-fg-subtle font-heading uppercase">
                       {t("scouting.judgingAbility")}
                     </p>
                     <ProgressBar value={scout.attributes.judgingAbility} variant="auto" size="sm" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-heading uppercase">
+                    <p className="text-caption text-fg-subtle font-heading uppercase">
                       {t("scouting.judgingPotential")}
                     </p>
                     <ProgressBar
@@ -88,11 +83,9 @@ export default function ScoutingScoutDetailsCard({
                       );
 
                       return player ? (
-                        <p key={assignment.id} className="text-xs text-gray-500 dark:text-gray-400">
+                        <p key={assignment.id} className="text-caption text-fg-muted">
                           {t("scouting.scoutLabel", { name: "" })}
-                          <span className="font-heading font-bold text-gray-700 dark:text-gray-300">
-                            {player.full_name}
-                          </span>{" "}
+                          <span className="font-heading font-bold text-fg">{player.full_name}</span>{" "}
                           - {assignment.days_remaining}d
                         </p>
                       ) : null;

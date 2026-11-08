@@ -173,25 +173,25 @@ export default function ScheduleCalendarGrid({
   ];
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800 overflow-hidden">
+    <div className="rounded-panel border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-navy-600">
         <button
           type="button"
           onClick={prevMonth}
           aria-label={t("schedule.calendar.prevMonth", "Previous month")}
-          className="p-1 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+          className="p-1 rounded-control text-gray-400 hover:text-fg hover:bg-hover transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="font-heading font-bold text-sm uppercase tracking-wider text-gray-700 dark:text-gray-200">
+        <span className="font-heading font-bold text-body uppercase tracking-label text-fg">
           {monthLabel}
         </span>
         <button
           type="button"
           onClick={nextMonth}
           aria-label={t("schedule.calendar.nextMonth", "Next month")}
-          className="p-1 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+          className="p-1 rounded-control text-gray-400 hover:text-fg hover:bg-hover transition-colors"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -202,7 +202,7 @@ export default function ScheduleCalendarGrid({
         {weekdays.map((wd) => (
           <div
             key={wd}
-            className="py-2 text-center font-heading text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+            className="py-2 text-center font-heading text-caption font-bold uppercase tracking-label text-fg-subtle"
           >
             {wd}
           </div>
@@ -220,14 +220,10 @@ export default function ScheduleCalendarGrid({
               disabled={!clickable}
               onClick={() => clickable && onSelectDate(day.date)}
               className={[
-                "relative flex flex-col items-center py-2 gap-1 text-xs font-heading font-bold transition-colors",
-                day.isCurrentMonth
-                  ? "text-gray-800 dark:text-gray-100"
-                  : "text-gray-300 dark:text-navy-600",
+                "relative flex flex-col items-center py-2 gap-1 text-caption font-heading font-bold transition-colors",
+                day.isCurrentMonth ? "text-fg" : "text-gray-300 dark:text-navy-600",
                 day.isToday ? "bg-primary-50 dark:bg-primary-500/10" : "",
-                clickable
-                  ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-700/50"
-                  : "cursor-default",
+                clickable ? "cursor-pointer hover:bg-hover/50" : "cursor-default",
               ]
                 .filter(Boolean)
                 .join(" ")}
@@ -243,7 +239,7 @@ export default function ScheduleCalendarGrid({
               <span
                 className={
                   day.isToday
-                    ? "w-6 h-6 flex items-center justify-center rounded-full bg-primary-500 text-white text-xs"
+                    ? "w-6 h-6 flex items-center justify-center rounded-full bg-primary-500 text-white text-caption"
                     : ""
                 }
               >
@@ -263,7 +259,7 @@ export default function ScheduleCalendarGrid({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 border-t border-gray-100 dark:border-navy-600 px-4 py-2 text-xs text-gray-400 dark:text-gray-500">
+      <div className="flex items-center gap-4 border-t border-gray-100 dark:border-navy-600 px-4 py-2 text-caption text-fg-subtle">
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-primary-500" />
           {t("schedule.calendar.yourMatch", "Your match")}

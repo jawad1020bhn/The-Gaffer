@@ -63,7 +63,7 @@ export default function ScoutingAssignmentsList({
 
             const row = (
               <div
-                className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50"
+                className="flex items-center gap-4 p-3 rounded-control bg-gray-50 dark:bg-navy-700/50"
                 data-testid={`scouting-assignment-${assignment.id}`}
                 key={assignment.id}
               >
@@ -71,23 +71,23 @@ export default function ScoutingAssignmentsList({
                   <button
                     type="button"
                     onClick={() => onSelectPlayer?.(player.id)}
-                    className="font-heading font-bold text-sm text-gray-800 dark:text-gray-100 hover:text-primary-500 transition-colors truncate block"
+                    className="font-heading font-bold text-body text-fg hover:text-primary-500 transition-colors truncate block"
                   >
                     {player.full_name}
                   </button>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-caption text-fg-muted">
                     {translatePositionLabel(t, naturalPositionOf(player))} · {team}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-caption text-fg-muted">
                     {t("scouting.scoutLabel", {
                       name: scout.display_name,
                     })}
                   </p>
                   <div className="flex items-center gap-1.5 justify-end mt-0.5">
                     <Clock className="w-3 h-3 text-accent-500" />
-                    <span className="text-xs font-heading font-bold text-accent-500">
+                    <span className="text-caption font-heading font-bold text-accent-500">
                       {t("scouting.daysLeft", { days: assignment.days_remaining })}
                     </span>
                   </div>

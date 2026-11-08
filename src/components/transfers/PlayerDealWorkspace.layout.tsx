@@ -21,7 +21,7 @@ export interface DealOption {
 
 function routeButtonClass(isSelected: boolean, isDisabled: boolean): string {
   const base =
-    "min-h-[88px] w-full rounded-lg border px-3 py-3 text-left transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800";
+    "min-h-[88px] w-full rounded-control border px-3 py-3 text-left transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800";
   if (isDisabled)
     return `${base} border-gray-200 bg-gray-50 text-gray-500 opacity-80 dark:border-navy-600 dark:bg-navy-900/50 dark:text-gray-300`;
   if (isSelected)
@@ -30,11 +30,11 @@ function routeButtonClass(isSelected: boolean, isDisabled: boolean): string {
 }
 
 function factLabelClass(): string {
-  return "text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-300";
+  return "text-caption font-heading font-bold uppercase tracking-label text-gray-500 dark:text-gray-300";
 }
 
 function factValueClass(): string {
-  return "mt-1 text-sm font-semibold text-gray-900 dark:text-gray-100";
+  return "mt-1 text-body font-semibold text-gray-900 dark:text-gray-100";
 }
 
 export function DealWorkspaceHeader({
@@ -57,37 +57,37 @@ export function DealWorkspaceHeader({
         <button
           type="button"
           onClick={onClose}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 -ml-2 flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm text-gray-500 transition-colors duration-150 motion-reduce:transition-none hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-navy-700 dark:hover:text-white"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 -ml-2 flex shrink-0 items-center gap-2 rounded-control px-2 py-2 text-body text-gray-500 transition-colors duration-150 motion-reduce:transition-none hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-navy-700 dark:hover:text-white"
           aria-label={t("common.back")}
         >
           <ArrowLeft className="h-5 w-5" />
-          <span className="hidden font-heading font-bold uppercase tracking-wider sm:inline">
+          <span className="hidden font-heading font-bold uppercase tracking-label sm:inline">
             {t("common.back")}
           </span>
         </button>
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <PlayerAvatar
             player={player}
-            className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 dark:border-navy-600 bg-gray-100 text-sm font-heading font-bold text-gray-500  dark:bg-navy-700 dark:text-gray-300"
+            className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-control border border-line bg-gray-100 text-body font-heading font-bold text-gray-500  dark:bg-navy-700 dark:text-gray-300"
             imageClassName="h-full w-full object-cover object-top"
           />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h2
                 id="player-deal-workspace-title"
-                className="truncate font-heading text-2xl font-bold uppercase tracking-wide text-gray-950 dark:text-white"
+                className="truncate font-heading text-title font-bold uppercase tracking-label text-gray-950 dark:text-white"
               >
                 {player.full_name}
               </h2>
               <PlayerPositionBadge position={naturalPositionOf(player)} />
             </div>
-            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-300">
+            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-gray-500 dark:text-gray-300">
               <span>{age}</span>
               <span className="flex items-center gap-1">
                 <CountryFlag
                   code={player.nationality}
                   locale={i18n.language}
-                  className="text-sm leading-none"
+                  className="text-body leading-none"
                 />
                 {countryName(player.nationality, i18n.language)}
               </span>
@@ -140,16 +140,16 @@ export function DealWorkspaceRoutes({
                 {option.icon}
               </span>
               <span className="min-w-0">
-                <span className="font-heading text-sm font-bold uppercase tracking-wider">
+                <span className="font-heading text-body font-bold uppercase tracking-label">
                   {option.title}
                 </span>
                 {/* Subtitle describes the route action, not availability, so a
                           selected route never reads as a confirmed deal (#305). */}
-                <span className="mt-1 block text-xs text-gray-500 dark:text-gray-300">
+                <span className="mt-1 block text-caption text-gray-500 dark:text-gray-300">
                   {option.disabledReason ?? option.description}
                 </span>
                 {!disabled ? (
-                  <span className="mt-1 block text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-300">
+                  <span className="mt-1 block text-caption font-medium uppercase tracking-label text-gray-500 dark:text-gray-300">
                     {option.detail}
                   </span>
                 ) : null}
@@ -177,7 +177,7 @@ export function DealWorkspaceFacts({
   const { t } = useTranslation();
   return (
     <aside className="min-h-0 space-y-4 lg:overflow-y-auto">
-      <div className="rounded-lg border border-gray-200 dark:border-navy-600 bg-white p-4  dark:bg-navy-800 ">
+      <div className="rounded-control border border-line bg-white p-4  dark:bg-navy-800 ">
         <p className={factLabelClass()}>{t("common.ovr")}</p>
         <p className="mt-1 font-heading text-3xl font-bold tabular-nums text-primary-700 dark:text-primary-400">
           {visibleRatingText(figures.ovr)}
@@ -203,7 +203,7 @@ export function DealWorkspaceFacts({
       </div>
 
       {myTeam ? (
-        <div className="rounded-lg border border-gray-200 dark:border-navy-600 bg-white p-4  dark:bg-navy-800 ">
+        <div className="rounded-control border border-line bg-white p-4  dark:bg-navy-800 ">
           <p className={factLabelClass()}>{t("finances.transferBudget")}</p>
           <p className={`${factValueClass()} tabular-nums`}>{formatVal(myTeam.transfer_budget)}</p>
           <div className="mt-4">

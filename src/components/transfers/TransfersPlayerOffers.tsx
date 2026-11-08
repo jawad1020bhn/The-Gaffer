@@ -48,7 +48,7 @@ export function TransferOfferRecord({ state, offer, player }: TransferOfferRecor
   const { gameState, t, userTeamId, handleRespondOffer, openCounterNegotiation } = state;
   return (
     <div key={offer.id} className="flex items-center gap-2">
-      <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+      <span className="text-caption text-fg-muted font-medium">
         {getTeamName(gameState.teams, offer.from_team_id, t("common.unknown"))}
       </span>
       <Badge variant={getTransferOfferBadgeVariant(offer.status)} size="sm">
@@ -86,7 +86,7 @@ export function TransferOfferRecord({ state, offer, player }: TransferOfferRecor
               openCounterNegotiation(player, offer);
             }}
             aria-label={t("transfers.counterOffer")}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-accent-500/20 hover:bg-accent-500/30 text-accent-700 dark:text-accent-400 text-xs font-heading font-bold uppercase tracking-wider"
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-accent-500/20 hover:bg-accent-500/30 text-accent-700 dark:text-accent-400 text-caption font-heading font-bold uppercase tracking-label"
             title={t("transfers.counterOffer")}
           >
             <Gavel className="w-3 h-3" /> {t("transfers.counter")}
@@ -117,7 +117,7 @@ export function LoanOfferRecord({ state, offer, player }: LoanOfferRecordProps) 
 
   return (
     <div key={`loan-${offer.id}`} className="flex items-center gap-2">
-      <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+      <span className="text-caption text-fg-muted font-medium">
         {getTeamName(gameState.teams, offer.from_team_id, t("common.unknown"))}
       </span>
       <Badge variant={getTransferOfferBadgeVariant(offer.status)} size="sm">
@@ -169,7 +169,7 @@ export function LoanOfferRecord({ state, offer, player }: LoanOfferRecordProps) 
                 openLoanCounterOffer(player, offer);
               }}
               aria-label={t("transfers.counterLoanOffer")}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-accent-500/20 hover:bg-accent-500/30 text-accent-700 dark:text-accent-400 text-xs font-heading font-bold uppercase tracking-wider"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-accent-500/20 hover:bg-accent-500/30 text-accent-700 dark:text-accent-400 text-caption font-heading font-bold uppercase tracking-label"
               title={t("transfers.counterLoanOffer")}
             >
               <Gavel className="w-3 h-3" /> {t("transfers.counter")}
@@ -183,7 +183,7 @@ export function LoanOfferRecord({ state, offer, player }: LoanOfferRecordProps) 
             e.stopPropagation();
             void handleExerciseLoanBuyOption(player.id);
           }}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-primary-500/10 hover:bg-primary-500/20 text-primary-700 dark:text-primary-400 text-xs font-heading font-bold uppercase tracking-wider"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-primary-500/10 hover:bg-primary-500/20 text-primary-700 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label"
           title={t("transfers.exerciseBuyOption")}
         >
           <ShoppingCart className="w-3 h-3" /> {t("transfers.exerciseBuyOption")}
@@ -205,7 +205,7 @@ export function PlayerOffersList({
   return (
     <div className="flex flex-col gap-1">
       {!hasOffersForThisPlayer ? (
-        <span className="text-xs text-gray-500 dark:text-gray-300">{t("transfers.none")}</span>
+        <span className="text-caption text-gray-500 dark:text-gray-300">{t("transfers.none")}</span>
       ) : (
         <>
           {transferOffersForThisPlayer.map((offer) => (
