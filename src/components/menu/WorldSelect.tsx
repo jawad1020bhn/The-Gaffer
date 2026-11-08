@@ -39,6 +39,8 @@ export interface PackageInfo {
   confederationCount: number;
   installedPath: string;
   logoDataUrl?: string;
+  /** Shipped with the build rather than installed by the player. */
+  bundled?: boolean;
 }
 
 // ---------------------------------------------------------------------------

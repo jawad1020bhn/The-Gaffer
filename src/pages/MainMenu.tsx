@@ -1,6 +1,6 @@
 import { routeForActiveCareer } from "../services/careerService";
 import { useManagerDobError } from "../hooks/useManagerDobError";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -12,6 +12,7 @@ import { useGameStore, type GameStateData } from "../store/gameStore";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import type { CareerStartPhase, CreateManagerFormData } from "../components/menu/CreateManagerForm";
 import type { PackageInfo, PackageIssue } from "../components/menu/WorldSelect";
+import { defaultActivePackageIds } from "../components/menu/packageSelection";
 import type { ManagerProfile } from "../components/menu/types";
 import { applyExtraTranslations } from "../lib/extraTranslations";
 import { formatAppVersion } from "../lib/appVersion";
@@ -212,6 +213,8 @@ export default function MainMenu() {
   const [installedPackages, setInstalledPackages] = useState<PackageInfo[]>([]);
   const [activePackageIds, setActivePackageIds] = useState<string[]>([]);
   const [isInstallingPackage, setIsInstallingPackage] = useState(false);
+  // Only ever applied once: after this the player's own toggles are the last word.
+  const preselectedPackageRef = useRef(false);
   const [packageStackErrors, setPackageStackErrors] = useState<PackageIssue[]>([]);
   const [historyDepthYears, setHistoryDepthYears] = useState(initialHistoryDepthYears);
 
@@ -366,6 +369,15 @@ export default function MainMenu() {
       // Tauri commands can resolve to null; never let installedPackages become
       // null or downstream `.filter` calls (here and in PackageBuildStep) throw.
       setInstalledPackages(pkgs ?? []);
+
+      // A portable build ships its world installed. Pre-selecting it keeps "New Game" from
+      // generating a fictional world beside data the player just downloaded — and from
+      // looking like the download was empty.
+      if (!preselectedPackageRef.current) {
+        preselectedPackageRef.current = true;
+        const defaults = defaultActivePackageIds(pkgs ?? []);
+        if (defaults.length > 0) setActivePackageIds(defaults);
+      }
     } catch (err) {
       console.error("Failed to list packages:", err);
     }

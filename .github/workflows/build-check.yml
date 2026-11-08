@@ -117,8 +117,20 @@ jobs:
       # toolchain's formatter what it thinks and takes the answer. `--manifest-path` because the
       # workspace lives under `src-tauri/`; a bare `cargo fmt --all` from the repository root
       # fails, which is its own small trap.
+      # Teed so a failure names the file and the lines rustfmt wants changed. `cargo fmt --check`
+      # exits 1 and prints nothing an annotation picks up on its own, and the diff otherwise lives
+      # in a log bundle that not every environment can open.
       - name: Check formatting
-        run: cargo fmt --manifest-path src-tauri/Cargo.toml --all --check
+        run: |
+          set +e
+          cargo fmt --manifest-path src-tauri/Cargo.toml --all --check > "$RUNNER_TEMP/fmt.diff" 2>&1
+          status=$?
+          cat "$RUNNER_TEMP/fmt.diff"
+          if [ "$status" -ne 0 ]; then
+            grep -m 60 -E "^Diff in |^[+-][^+-]" "$RUNNER_TEMP/fmt.diff" |
+              while IFS= read -r line; do echo "::error::fmt $line"; done
+          fi
+          exit "$status"
 
       # The fixtures run first, for the reason `toolchain-pin` does the same: the real file is
       # correct, so a check that had stopped working would sail through the step below and

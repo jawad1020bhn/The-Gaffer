@@ -261,6 +261,58 @@ fn default_package_type() -> String {
     "database".to_string()
 }
 
+/// Install the packages a build ships beside its executable.
+///
+/// A portable download is one folder: the binary, and a `packages/` directory holding the
+/// world it exists for. The game only reads `packages/` under its app data directory, so
+/// without this the download contains data it cannot see — the new-game screen lists no
+/// databases, offers no hint that one is sitting next to the executable, and quietly builds
+/// a generated world instead. A player reading the folder name reasonably concludes the data
+/// is broken rather than uninstalled.
+///
+/// `bundled_dir` is allowed to be absent: only builds that ship a world have one.
+///
+/// Existing files win. Someone who dropped a newer version of the same package into the
+/// game wins over the one baked into the download, and one who deleted the bundled package
+/// gets it back on the next launch — it is part of the build, not a user file.
+///
+/// Returns the file names copied, so the caller can log a first-run install.
+pub fn install_bundled_packages(
+    bundled_dir: &Path,
+    packages_dir: &Path,
+) -> std::io::Result<Vec<String>> {
+    let mut copied = Vec::new();
+    let entries = match std::fs::read_dir(bundled_dir) {
+        Ok(entries) => entries,
+        // Absent directory is the normal case for an installed build, not a failure.
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(copied),
+        Err(e) => return Err(e),
+    };
+
+    for entry in entries.flatten() {
+        let path = entry.path();
+        let is_ofm = path
+            .extension()
+            .and_then(|e| e.to_str())
+            .is_some_and(|e| e.eq_ignore_ascii_case("ofm"));
+        if !is_ofm || !path.is_file() {
+            continue;
+        }
+        let Some(name) = path.file_name() else {
+            continue;
+        };
+        let target = packages_dir.join(name);
+        if target.exists() {
+            continue;
+        }
+        std::fs::create_dir_all(packages_dir)?;
+        std::fs::copy(&path, &target)?;
+        copied.push(name.to_string_lossy().to_string());
+    }
+
+    Ok(copied)
+}
+
 /// A package summarised for display and install management.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -290,6 +342,14 @@ pub struct PackageInfo {
     pub confederation_count: usize,
     /// Absolute path to the installed `.ofm` file.
     pub installed_path: String,
+    /// Whether the build shipped this package rather than the player installing it.
+    ///
+    /// Set when a file of the same name also sits in the `packages/` directory beside the
+    /// executable. The new-game screen pre-selects such packages: they are the world the
+    /// download is *for*, and picking a random one instead would look like the data is
+    /// missing.
+    #[serde(default)]
+    pub bundled: bool,
     /// Logo encoded as a data URL (`data:<mime>;base64,...`), if available.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub logo_data_url: Option<String>,
@@ -2401,6 +2461,51 @@ mod tests {
         }
         zip.finish().unwrap();
         path
+    }
+
+    #[test]
+    fn a_bundled_package_is_copied_in_once() {
+        // The portable download's whole premise: the world sits in `packages/` beside the
+        // executable, while the game reads only the app data directory. Uncopied, a fresh
+        // install lists no databases at all and plays a generated world.
+        let root = temp_package();
+        let bundled = root.join("bundled");
+        let installed = root.join("installed");
+        std::fs::create_dir_all(&bundled).unwrap();
+        std::fs::write(bundled.join("eafc-fc27.ofm"), b"world").unwrap();
+        // Not a package: a README next to it must not be dragged in.
+        std::fs::write(bundled.join("READ ME FIRST.txt"), b"hello").unwrap();
+
+        let copied = install_bundled_packages(&bundled, &installed).expect("copies");
+        assert_eq!(copied, vec!["eafc-fc27.ofm".to_string()]);
+        let target = installed.join("eafc-fc27.ofm");
+        assert_eq!(std::fs::read(&target).unwrap(), b"world");
+        assert!(!installed.join("READ ME FIRST.txt").exists());
+
+        // Second launch: nothing to do, and nothing rewritten.
+        std::fs::write(&target, b"mine").unwrap();
+        let again = install_bundled_packages(&bundled, &installed).expect("copies");
+        assert!(
+            again.is_empty(),
+            "an installed package must not be recopied"
+        );
+        assert_eq!(
+            std::fs::read(&target).unwrap(),
+            b"mine",
+            "a bundled package must never overwrite an installed one"
+        );
+        std::fs::remove_dir_all(&root).ok();
+    }
+
+    #[test]
+    fn a_build_without_bundled_packages_is_not_an_error() {
+        // Every ordinary install has no `packages/` beside the executable. That is the
+        // common case, so it has to be silent rather than a warning on every menu load.
+        let root = temp_package();
+        let copied = install_bundled_packages(&root.join("absent"), &root.join("installed"))
+            .expect("an absent directory is not a failure");
+        assert!(copied.is_empty());
+        std::fs::remove_dir_all(&root).ok();
     }
 
     #[test]

@@ -1,0 +1,156 @@
+name: windows-portable
+
+# A Windows build with nothing to install: one zip holding the executable, the data files the
+# bundle would have placed beside it, and the FC 27 package.
+#
+# `--no-bundle` is the whole point. The stable `publish` workflow produces an NSIS installer and
+# an MSI, which is right for players and useless to anyone who just wants to try the game on a
+# Windows machine without leaving anything behind — both of those run an installer and write to
+# Program Files. This job ships the same release binary with its resources in a folder instead.
+#
+# Nothing here needs the game's data: `default_names.json` and `default_nations.json` are
+# `include_str!`-ed into the binary, and the copies beside the executable are there only so a
+# player can read and override them.
+#
+# Triggered by pushing a `portable-*` tag, because a release has to hang off the tag it names.
+# The Actions tab can also run it, with a tag name typed in.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to attach the release to"
+        required: true
+        default: "portable-manual"
+  push:
+    tags:
+      - "portable-*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-portable-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  portable:
+    # Windows-native rather than a Linux cross-build: `tauri build` on Windows links against the
+    # MSVC CRT and WebView2 loader the real target has, which is the difference between a binary
+    # that runs on the user's machine and one that only looks like it should.
+    runs-on: windows-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install Rust 1.95.0
+        uses: dtolnay/rust-toolchain@1.95.0
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        with:
+          workspaces: ./src-tauri -> target
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      # The debug smoke build in `build-check` proves this compiles; this is the release profile
+      # the player actually runs, and `--ci` stops Tauri waiting on a prompt nobody will answer.
+      - name: Build the app
+        run: npx tauri build --no-bundle --ci
+
+      # Packing the package needs the authoring CLI. A release build shares every dependency
+      # artifact with the step above, so this costs a minute rather than a second toolchain.
+      - name: Build the authoring CLI
+        run: cargo build --locked --release --manifest-path src-tauri/Cargo.toml -p ofm-cli
+
+      # Packed from the committed JSON, then validated, so the zip cannot ship a package the
+      # game would refuse — the same pair of commands `validate-eafc-package` gates on.
+      - name: Pack the FC 27 package
+        run: |
+          src-tauri/target/release/ofm-cli.exe pack mods/eafc-fc27 --output eafc-fc27.ofm
+          src-tauri/target/release/ofm-cli.exe validate eafc-fc27.ofm
+
+      - name: Assemble the folder
+        shell: pwsh
+        run: |
+          $out = "OpenfootManager-portable"
+          $exe = "src-tauri/target/release/openfootmanager.exe"
+          if (-not (Test-Path $exe)) {
+            Write-Host "release directory:"
+            Get-ChildItem src-tauri/target/release -Filter *.exe |
+              ForEach-Object { Write-Host "  $($_.Name)" }
+            throw "the release binary is not where --no-bundle leaves it"
+          }
+
+          New-Item -ItemType Directory -Force -Path "$out/data", "$out/packages" | Out-Null
+          # Renamed rather than shipped as the crate's binary name: this is the one file the
+          # user double-clicks, and `openfootmanager.exe` reads like a build artifact.
+          Copy-Item $exe "$out/OpenfootManager.exe"
+          Copy-Item src-tauri/crates/ofm_core/data/default_names.json "$out/data/"
+          Copy-Item src-tauri/crates/ofm_core/data/default_nations.json "$out/data/"
+          Copy-Item eafc-fc27.ofm "$out/packages/"
+
+          @'
+          Openfoot Manager — portable Windows build
+          =========================================
+
+          To play: unzip this folder anywhere you like and run OpenfootManager.exe.
+
+          There is nothing to install. The game writes its saves, generated portraits and
+          installed packages to %APPDATA%\com.sturdyrobot.openfootmanager, so deleting this
+          folder leaves nothing behind but that, which you can delete too.
+
+          Windows may show a SmartScreen warning the first time you run it, because the
+          executable is not code-signed. "More info" -> "Run anyway".
+
+          The only runtime dependency is Microsoft Edge WebView2, which is part of Windows 10
+          and 11 already. If the window stays blank, install it from
+          https://developer.microsoft.com/microsoft-edge/webview2/
+
+          Real players: packages/eafc-fc27.ofm holds 685 clubs, 18,893 players and 38
+          competitions imported from EA FC 27. The game installs it the first time it lists
+          packages and pre-selects it, so a new career starts on that world — you should see
+          Arsenal, Real Madrid and the rest, not generated clubs. If you ever want the
+          generated world instead, untick the package on the new game screen.
+
+          data/ holds the name and nation pools the game generates its procedurally created
+          players from. They are optional — the same files are compiled into the executable —
+          but a copy here is yours to edit.
+
+          This is a development build of OpenFoot Manager, not a release. Source:
+          https://github.com/sturdy-robot/openfootmanager
+          '@ | Set-Content -Path "$out/READ ME FIRST.txt" -Encoding utf8
+
+          Compress-Archive -Path $out -DestinationPath "OpenfootManager-portable-windows-x64.zip" -Force
+          Get-ChildItem "OpenfootManager-portable-windows-x64.zip" |
+            Select-Object Name, Length | Format-Table | Out-String | Write-Host
+
+      - name: Publish the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+        run: |
+          # `--latest=false`: the stable releases own "latest", and a portable development build
+          # taking that flag would silently become what every visitor is offered to download.
+          gh release create "$TAG" \
+            --title "Openfoot Manager portable build ($TAG)" \
+            --latest=false \
+            --notes "A Windows build with nothing to install: unzip, run \`OpenfootManager.exe\`.
+
+          Baked from \`${GITHUB_SHA:0:7}\`. Real players included — \`packages/eafc-fc27.ofm\` holds 685 clubs, 18,893 players and 38 competitions from EA FC 27, installed and pre-selected on first run, so a new career starts on the real world.
+
+          Not code-signed, so SmartScreen will ask once. Needs WebView2, which Windows 10 and 11 already have." \
+            "OpenfootManager-portable-windows-x64.zip"
+          echo "### Portable Windows build" >> "$GITHUB_STEP_SUMMARY"
+          gh release view "$TAG" --json url --jq '.url' >> "$GITHUB_STEP_SUMMARY"
