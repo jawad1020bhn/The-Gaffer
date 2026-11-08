@@ -12,6 +12,15 @@ interface JobOpportunitiesCardProps {
   gameState: GameStateData;
   onGameUpdate: (state: GameStateData) => void;
   hideWhenEmpty?: boolean;
+  className?: string;
+}
+
+/**
+ * The job list is optional content: if the backend (or a preview stub) answers with nothing,
+ * show an empty list rather than crashing the Home board on `jobs.length`.
+ */
+function toJobList(value: JobOpportunity[] | null | undefined): JobOpportunity[] {
+  return Array.isArray(value) ? value : [];
 }
 
 function getReputationStars(reputation: number): number {
@@ -22,6 +31,7 @@ export default function JobOpportunitiesCard({
   gameState,
   onGameUpdate,
   hideWhenEmpty = false,
+  className = "",
 }: JobOpportunitiesCardProps): JSX.Element | null {
   const { t } = useTranslation();
   const [jobs, setJobs] = useState<JobOpportunity[]>([]);
@@ -41,7 +51,7 @@ export default function JobOpportunitiesCard({
     setLoading(true);
     getAvailableJobs()
       .then((result) => {
-        if (!cancelled) setJobs(result);
+        if (!cancelled) setJobs(toJobList(result));
       })
       .catch((err) => console.error("Failed to fetch jobs:", err))
       .finally(() => {
@@ -66,11 +76,11 @@ export default function JobOpportunitiesCard({
         // to the old club — refetch so we don't keep showing offers that
         // would now fail the "step up" check.
         const updated = await getAvailableJobs();
-        setJobs(updated);
+        setJobs(toJobList(updated));
       } else if (response.result === "rejected") {
         setFeedback({ type: "error", message: t("jobs.rejected") });
         const updated = await getAvailableJobs();
-        setJobs(updated);
+        setJobs(toJobList(updated));
       } else if (response.result === "same_team") {
         setFeedback({
           type: "error",
@@ -111,7 +121,7 @@ export default function JobOpportunitiesCard({
     setLoading(true);
     try {
       const result = await getAvailableJobs();
-      setJobs(result);
+      setJobs(toJobList(result));
     } catch (err) {
       console.error("Failed to refresh jobs:", err);
     } finally {
@@ -124,7 +134,7 @@ export default function JobOpportunitiesCard({
   }
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">

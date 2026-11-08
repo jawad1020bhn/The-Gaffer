@@ -6,6 +6,13 @@ interface CardProps {
   accent?: "primary" | "accent" | "success" | "danger" | "none";
 }
 
+/**
+ * A panel on the game canvas: a raised surface with an optional accent strip along its top edge.
+ *
+ * A card is a column that owns its own scroll. Its parent (a dashboard grid band) decides the
+ * height, the header stays put and the body scrolls inside the panel, so a screen never grows past
+ * the window. Outside a sized parent the card is as tall as its content, exactly as before.
+ */
 export function Card({ children, className = "", accent = "none" }: CardProps) {
   const accentBorder = {
     primary: "border-t-4 border-t-primary-500",
@@ -18,6 +25,7 @@ export function Card({ children, className = "", accent = "none" }: CardProps) {
   return (
     <div
       className={`
+        flex min-h-0 flex-col overflow-hidden
         bg-panel
         ${accent === "none" ? accentBorder : `border ${accentBorder} border-line`}
         rounded-panel shadow-sm dark:shadow-md
@@ -39,9 +47,9 @@ interface CardHeaderProps {
 export function CardHeader({ children, action, className = "" }: CardHeaderProps) {
   return (
     <div
-      className={`px-6 py-4 border-b border-line flex items-center justify-between ${className}`}
+      className={`flex shrink-0 items-center justify-between gap-3 border-b border-line px-4 py-2.5 ${className}`}
     >
-      <h3 className="text-heading font-bold font-heading uppercase tracking-label text-fg">
+      <h3 className="flex min-w-0 items-center gap-2 text-lead font-bold font-heading uppercase tracking-label text-fg [&>svg]:shrink-0">
         {children}
       </h3>
       {action}
@@ -54,6 +62,9 @@ interface CardBodyProps {
   className?: string;
 }
 
+/** The panel's content. Scrolls on its own once the parent has given the card a height. */
 export function CardBody({ children, className = "" }: CardBodyProps) {
-  return <div className={`p-6 ${className}`}>{children}</div>;
+  return (
+    <div className={`scrollbar-thin min-h-0 flex-1 overflow-auto p-4 ${className}`}>{children}</div>
+  );
 }

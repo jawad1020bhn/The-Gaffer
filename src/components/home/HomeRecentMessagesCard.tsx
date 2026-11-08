@@ -11,17 +11,19 @@ interface HomeRecentMessagesCardProps {
   messages: MessageData[];
   lang: string;
   onNavigate?: (tab: string, context?: { messageId?: string }) => void;
+  className?: string;
 }
 
 export default function HomeRecentMessagesCard({
   messages,
   lang,
   onNavigate,
+  className = "",
 }: HomeRecentMessagesCardProps) {
   const { t } = useTranslation();
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button

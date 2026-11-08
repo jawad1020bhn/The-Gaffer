@@ -263,9 +263,17 @@
   --spacing-row: 2.5rem;
   --spacing-panel-header: 2.5rem;
   --spacing-toolbar: 3rem;
+  /* The game shell: one 56px top bar, a 72px left rail, a 28px hint strip. The old sub-nav,
+     context bar, page header and command footer are gone; their tokens stay only where a
+     surviving screen still reads them. */
   --spacing-game-top: 3.5rem;
-  --spacing-game-context: 3rem;
-  --spacing-game-commands: 4.5rem;
+  --spacing-game-rail: 4.5rem;
+  --spacing-game-hint: 1.75rem;
+  /* Home's dashboard bands. In rem, so they follow ui_scale and the root font size: three bands
+     plus their gaps come to ~43rem, which fits a 768px window at 1366px wide without scrolling. */
+  --spacing-band-hero: 18rem;
+  --spacing-band-secondary: 12.5rem;
+  --spacing-band-tertiary: 11rem;
   /* Legacy sidebar widths retained while the persisted settings schema rolls out. The game shell
      no longer renders the website-like sidebar; new navigation uses the game-* bars above. */
   --spacing-sidebar-rail: 3.5rem;
@@ -547,8 +555,6 @@
     --spacing-row: 2rem;
     --spacing-panel-header: 2.25rem;
     --spacing-toolbar: 2.5rem;
-    --spacing-game-context: 2.5rem;
-    --spacing-game-commands: 4rem;
   }
 }
 
@@ -572,12 +578,16 @@
     font-family: var(--font-heading);
   }
 
+  /* The game's scrollbars: thin, on the line colour, invisible until it has something to say.
+     A panel scrolls inside itself; the canvas never scrolls. */
   .scrollbar-thin {
     scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
   }
 
   .scrollbar-thin::-webkit-scrollbar {
-    width: 4px;
+    width: 8px;
+    height: 8px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -585,8 +595,39 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: var(--color-navy-600);
+    background-color: var(--color-line-strong);
+    border: 2px solid transparent;
+    background-clip: content-box;
     border-radius: 9999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-fg-subtle);
+    background-clip: content-box;
+  }
+
+  /* Chrome (the shell's bars) is not text the player reads with a cursor: it does not select. */
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* A keycap, for the hint strip and the pause menu. */
+  .kbd {
+    display: inline-flex;
+    min-width: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-line-strong);
+    border-bottom-width: 2px;
+    border-radius: 0.25rem;
+    background-color: var(--color-panel);
+    padding: 0 0.25rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-fg-muted);
   }
 }
 

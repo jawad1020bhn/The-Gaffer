@@ -17,7 +17,19 @@
     "noFixture": "Žádný nadcházející zápas",
     "unknownBudget": "Rozpočet nedostupný",
     "date": "Datum",
-    "transferBudget": "Přestupový rozpočet"
+    "transferBudget": "Přestupový rozpočet",
+    "club": "Klub",
+    "menu": "Nabídka",
+    "search": "Hledat"
+  },
+  "gameHint": {
+    "title": "Klávesové zkratky",
+    "select": "Vybrat",
+    "sections": "Sekce"
+  },
+  "pause": {
+    "title": "Pozastaveno",
+    "resume": "Pokračovat"
   },
   "menu": {
     "newGame": "Nová hra",
@@ -239,7 +251,9 @@
     "configTraining": "Konfigurovat trénink",
     "configTrainingDesc": "Vyberte zaměření a plán pro rozvoj svých hráčů",
     "readMessages": "Přečíst si zprávy",
-    "readMessagesDesc": "Čekají na vás důležité informace od vedení a realizačního týmu"
+    "readMessagesDesc": "Čekají na vás důležité informace od vedení a realizačního týmu",
+    "next": "Další",
+    "go": "Přejít"
   },
   "home": {
     "nextMatch": "Příští zápas",
@@ -280,7 +294,10 @@
     "inProgress": "Probíhá",
     "objectivesMet": "Splněné cíle: {{done}}/{{total}} — Spokojenost vedení: {{pct}} %",
     "unavailablePlayers": "Nedostupní hráči",
-    "daysUnavailable": "Zbývá dní: {{count}}"
+    "daysUnavailable": "Zbývá dní: {{count}}",
+    "setTactics": "Nastavit taktiku",
+    "fixtures": "Rozpis",
+    "form": "Forma"
   },
   "season": {
     "preseasonStatus": "Přípravné období",
@@ -308,7 +325,8 @@
       "Closed": "Okno uzavřeno",
       "Open": "Okno otevřeno",
       "DeadlineDay": "Uzávěrka přestupů"
-    }
+    },
+    "today": "Dnes"
   },
   "teamSelect": {
     "title": "Vyberte si klub",

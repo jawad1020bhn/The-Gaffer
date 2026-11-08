@@ -17,7 +17,19 @@
     "noFixture": "Kein anstehendes Spiel",
     "unknownBudget": "Budget nicht verfügbar",
     "date": "Datum",
-    "transferBudget": "Transferbudget"
+    "transferBudget": "Transferbudget",
+    "club": "Verein",
+    "menu": "Menü",
+    "search": "Suchen"
+  },
+  "gameHint": {
+    "title": "Tastenkürzel",
+    "select": "Auswählen",
+    "sections": "Bereiche"
+  },
+  "pause": {
+    "title": "Pausiert",
+    "resume": "Fortsetzen"
   },
   "menu": {
     "newGame": "Neues Spiel",
@@ -239,7 +251,9 @@
     "configTraining": "Training konfigurieren",
     "configTrainingDesc": "Wähle einen Fokus und Zeitplan zur Spielerentwicklung",
     "readMessages": "Nachrichten lesen",
-    "readMessagesDesc": "Wichtige Informationen vom Vorstand und Staff warten auf dich"
+    "readMessagesDesc": "Wichtige Informationen vom Vorstand und Staff warten auf dich",
+    "next": "Weiter",
+    "go": "Los"
   },
   "home": {
     "nextMatch": "Nächstes Spiel",
@@ -280,7 +294,10 @@
     "noLeagueDigest": "Noch kein Liga-Überblick verfügbar.",
     "objectivesMet": "{{done}}/{{total}} Ziele erreicht — Zufriedenheit des Vorstands: {{pct}}%",
     "unavailablePlayers": "Nicht verfügbare Spieler",
-    "daysUnavailable": "Noch {{count}} Tag(e)"
+    "daysUnavailable": "Noch {{count}} Tag(e)",
+    "setTactics": "Taktik festlegen",
+    "fixtures": "Spielplan",
+    "form": "Formkurve"
   },
   "season": {
     "preseasonStatus": "Status der Vorbereitung",
@@ -308,7 +325,8 @@
       "Closed": "Fenster Geschlossen",
       "Open": "Fenster Offen",
       "DeadlineDay": "Stichtag"
-    }
+    },
+    "today": "Heute"
   },
   "teamSelect": {
     "title": "Wähle Deinen Verein",

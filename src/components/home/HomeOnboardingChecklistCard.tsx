@@ -1,7 +1,7 @@
-import { CheckCircle2, Circle, Lightbulb } from "lucide-react";
+import { Check, Lightbulb } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Card, CardBody, CardHeader, ProgressBar } from "../ui";
+import { Card, CardBody, CardHeader } from "../ui";
 
 export interface HomeOnboardingStep {
   id: string;
@@ -17,63 +17,102 @@ interface HomeOnboardingChecklistCardProps {
   totalSteps: number;
   steps: HomeOnboardingStep[];
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
+/**
+ * The first week's errands, as a stepper: one row of stops joined by a line, each a button that
+ * opens the screen that completes it. Done steps are lime with a tick; the next one is highlighted.
+ */
 export default function HomeOnboardingChecklistCard({
   completedSteps,
   totalSteps,
   steps,
   onNavigate,
+  className = "",
 }: HomeOnboardingChecklistCardProps) {
   const { t } = useTranslation();
+  const nextStep = steps.find((step) => !step.done);
 
   return (
-    <Card accent="accent">
-      <CardHeader>
-        <div className="flex items-center gap-2">
-          <Lightbulb className="w-4 h-4 text-warning" />
-          {t("onboarding.title")}
-        </div>
-      </CardHeader>
-      <CardBody>
-        <p className="text-caption text-fg-muted mb-3">{t("onboarding.description")}</p>
-        <div className="flex items-center gap-2 mb-4">
-          <ProgressBar
-            value={Math.round((completedSteps / totalSteps) * 100)}
-            variant="accent"
-            size="sm"
-          />
-          <span className="text-caption font-heading font-bold text-fg-muted flex-shrink-0">
+    <Card accent="accent" className={className}>
+      <CardHeader
+        action={
+          <span className="shrink-0 font-heading text-caption font-bold tabular-nums text-fg-muted">
             {completedSteps}/{totalSteps}
           </span>
-        </div>
-        <div className="flex flex-col gap-2">
-          {steps.map((step) => (
+        }
+      >
+        <Lightbulb className="h-4 w-4 text-warning" aria-hidden="true" />
+        {t("onboarding.title")}
+      </CardHeader>
+      <CardBody className="flex flex-col gap-3">
+        <p className="text-caption text-fg-muted">{t("onboarding.description")}</p>
+
+        <ol className="flex items-start justify-between gap-1">
+          {steps.map((step, index) => {
+            const isNext = nextStep?.id === step.id;
+            return (
+              <li key={step.id} className="flex min-w-0 flex-1 items-start gap-1">
+                <button
+                  type="button"
+                  onClick={() => onNavigate?.(step.tab)}
+                  title={step.description}
+                  className={`group flex min-w-0 flex-1 flex-col items-center gap-1 rounded-control px-1 py-1 text-center transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel ${
+                    isNext ? "bg-selected-tint" : "hover:bg-hover"
+                  }`}
+                >
+                  <span
+                    className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-caption ${
+                      step.done
+                        ? "bg-selected-fill text-on-brand"
+                        : isNext
+                          ? "bg-panel text-selected ring-2 ring-selected"
+                          : "bg-sunken text-fg-subtle ring-1 ring-inset ring-line"
+                    }`}
+                  >
+                    {step.done ? (
+                      <Check className="h-4 w-4" aria-hidden="true" />
+                    ) : (
+                      <span aria-hidden="true">{index + 1}</span>
+                    )}
+                  </span>
+                  <span
+                    className={`w-full truncate text-caption font-heading font-bold uppercase tracking-label ${
+                      step.done ? "text-fg-subtle line-through" : "text-fg"
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                </button>
+                {index < steps.length - 1 ? (
+                  <span
+                    className={`mt-4 h-0.5 min-w-2 flex-1 rounded-full ${
+                      step.done ? "bg-selected" : "bg-line"
+                    }`}
+                    aria-hidden="true"
+                  />
+                ) : null}
+              </li>
+            );
+          })}
+        </ol>
+
+        {nextStep ? (
+          <div className="flex items-center gap-2 rounded-control bg-sunken px-2.5 py-1.5">
+            <span className="shrink-0 text-caption font-heading font-bold uppercase tracking-label text-fg-subtle">
+              {t("onboarding.next")}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-caption text-fg">{nextStep.label}</span>
             <button
               type="button"
-              key={step.id}
-              onClick={() => onNavigate?.(step.tab)}
-              className={`flex items-center gap-3 p-3 rounded-control text-left transition-all ${
-                step.done ? "bg-selected-tint opacity-70" : "bg-sunken hover:bg-hover"
-              }`}
+              onClick={() => onNavigate?.(nextStep.tab)}
+              className="shrink-0 rounded-control bg-selected px-2 py-1 font-heading text-caption font-bold uppercase tracking-label text-on-brand transition-colors hover:bg-selected/90 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
             >
-              <div className={`flex-shrink-0 ${step.done ? "text-selected" : "text-fg-subtle"}`}>
-                {step.done ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
-              </div>
-              <div className={`flex-shrink-0 ${step.done ? "text-selected" : "text-fg-muted"}`}>
-                {step.icon}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p
-                  className={`text-body font-heading font-bold ${step.done ? "text-fg-subtle line-through" : "text-fg"}`}
-                >
-                  {step.label}
-                </p>
-                <p className="text-caption text-fg-subtle mt-0.5">{step.description}</p>
-              </div>
+              {t("onboarding.go")}
             </button>
-          ))}
-        </div>
+          </div>
+        ) : null}
       </CardBody>
     </Card>
   );

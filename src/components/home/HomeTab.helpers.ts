@@ -1,21 +1,6 @@
-import {
-  getFixtureCompetitionName,
-  getPlayerOvr,
-  getUserCompetition,
-  getUserCompetitions,
-  getUserNextFixture,
-} from "../../lib/helpers";
+import { getPlayerOvr, getUserCompetitions } from "../../lib/helpers";
 import { averageRating } from "../../lib/playerOvr";
-import type { TFunction } from "i18next";
-import { hasCompetitiveStandings } from "../../lib/seasonContext";
-import type {
-  FixtureData,
-  GameStateData,
-  LeagueData,
-  NewsArticle,
-  PlayerData,
-  TeamData,
-} from "../../store/gameStore";
+import type { FixtureData, GameStateData, NewsArticle, PlayerData } from "../../store/gameStore";
 
 const ONBOARDING_VISIBLE_DAYS = 7;
 const ONBOARDING_PAGE_TABS = new Set(["Squad", "Staff", "Tactics", "Training"]);
@@ -36,16 +21,6 @@ export interface OnboardingCompletionState {
   showOnboarding: boolean;
 }
 
-export interface NextOpponentWidgetData {
-  fixture: FixtureData;
-  isHome: boolean;
-  opponent: TeamData;
-  recentForm: string[];
-  standingPoints: number | null;
-  standingPosition: number | null;
-  competitionName?: string;
-}
-
 export interface HomeRosterOverview {
   avgOvr: number;
   coldPlayers: PlayerData[];
@@ -62,70 +37,6 @@ export interface HomeRecentResult {
   opponentGoals: number;
   opponentId: string;
   resultCode: "W" | "D" | "L";
-}
-
-function getStandingPosition(league: LeagueData, teamId: string): number | null {
-  // Tiebreak matches the standings table (points → goal difference → goals
-  // for) so the opponent's position shown here can't disagree with it.
-  const sortedStandings = [...league.standings].sort((leftEntry, rightEntry) => {
-    return (
-      rightEntry.points - leftEntry.points ||
-      rightEntry.goals_for -
-        rightEntry.goals_against -
-        (leftEntry.goals_for - leftEntry.goals_against) ||
-      rightEntry.goals_for - leftEntry.goals_for
-    );
-  });
-  const standingIndex = sortedStandings.findIndex((entry) => entry.team_id === teamId);
-
-  if (standingIndex === -1) {
-    return null;
-  }
-
-  return standingIndex + 1;
-}
-
-export function getNextOpponentWidgetData(
-  gameState: GameStateData,
-  t: TFunction,
-): NextOpponentWidgetData | null {
-  const userTeamId = gameState.manager.team_id;
-
-  if (!userTeamId) {
-    return null;
-  }
-
-  const nextFixture = getUserNextFixture(gameState);
-
-  if (!nextFixture) {
-    return null;
-  }
-
-  const isHome = nextFixture.home_team_id === userTeamId;
-  const opponentId = isHome ? nextFixture.away_team_id : nextFixture.home_team_id;
-  const opponent = gameState.teams.find((team) => team.id === opponentId);
-
-  if (!opponent) {
-    return null;
-  }
-
-  const league = getUserCompetition(gameState);
-  const canShowStandings =
-    league !== null && hasCompetitiveStandings(gameState) && nextFixture.competition === "League";
-  const standingEntry =
-    canShowStandings && league
-      ? league.standings.find((entry) => entry.team_id === opponentId)
-      : null;
-
-  return {
-    fixture: nextFixture,
-    isHome,
-    opponent,
-    recentForm: opponent.form.slice(-5),
-    standingPoints: standingEntry?.points ?? null,
-    standingPosition: canShowStandings && league ? getStandingPosition(league, opponentId) : null,
-    competitionName: getFixtureCompetitionName(gameState, nextFixture, t),
-  };
 }
 
 export function getLeagueDigestArticles(gameState: GameStateData): NewsArticle[] {

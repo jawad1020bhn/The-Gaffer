@@ -16,6 +16,7 @@ interface HomeSquadOverviewCardProps {
   scheduleLabel: string;
   focus: string;
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomeSquadOverviewCard({
@@ -28,11 +29,12 @@ export default function HomeSquadOverviewCard({
   scheduleLabel,
   focus,
   onNavigate,
+  className = "",
 }: HomeSquadOverviewCardProps) {
   const { t } = useTranslation();
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button

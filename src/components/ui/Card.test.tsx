@@ -91,10 +91,11 @@ describe("CardBody", () => {
     expect(screen.getByText("Body text")).toBeInTheDocument();
   });
 
-  it("applies default padding", () => {
+  it("applies the compact panel padding and scrolls on its own", () => {
     const { container } = render(<CardBody>Padded</CardBody>);
     const el = container.firstChild as HTMLElement;
-    expect(el.className).toContain("p-6");
+    expect(el.className).toContain("p-4");
+    expect(el.className).toContain("overflow-auto");
   });
 
   it("merges custom className", () => {

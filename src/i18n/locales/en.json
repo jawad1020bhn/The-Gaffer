@@ -17,7 +17,19 @@
     "noFixture": "No upcoming fixture",
     "unknownBudget": "Budget unavailable",
     "date": "Date",
-    "transferBudget": "Transfer budget"
+    "transferBudget": "Transfer budget",
+    "club": "Club",
+    "menu": "Menu",
+    "search": "Search"
+  },
+  "gameHint": {
+    "title": "Keyboard shortcuts",
+    "select": "Select",
+    "sections": "Sections"
+  },
+  "pause": {
+    "title": "Paused",
+    "resume": "Resume"
   },
   "menu": {
     "newGame": "New Game",
@@ -239,7 +251,9 @@
     "configTraining": "Configure training",
     "configTrainingDesc": "Pick a focus and schedule to develop your players",
     "readMessages": "Read your messages",
-    "readMessagesDesc": "Important info from the board and staff awaits"
+    "readMessagesDesc": "Important info from the board and staff awaits",
+    "next": "Next",
+    "go": "Go"
   },
   "home": {
     "nextMatch": "Next Match",
@@ -280,7 +294,10 @@
     "inProgress": "In Progress",
     "objectivesMet": "{{done}}/{{total}} objectives met — Board satisfaction: {{pct}}%",
     "unavailablePlayers": "Unavailable Players",
-    "daysUnavailable": "{{count}} day(s) remaining"
+    "daysUnavailable": "{{count}} day(s) remaining",
+    "setTactics": "Set tactics",
+    "fixtures": "Fixtures",
+    "form": "Form"
   },
   "season": {
     "preseasonStatus": "Preseason Status",
@@ -308,7 +325,8 @@
       "Closed": "Window Closed",
       "Open": "Window Open",
       "DeadlineDay": "Deadline Day"
-    }
+    },
+    "today": "Today"
   },
   "teamSelect": {
     "title": "Choose Your Club",

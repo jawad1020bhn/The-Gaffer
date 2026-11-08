@@ -330,47 +330,56 @@ describe("HomeTab", (): void => {
     expect(screen.getByText(/Resolved source/)).toBeInTheDocument();
   });
 
-  it("renders the next opponent and league digest widgets when data is available", (): void => {
+  it("shows the season card in preseason and the league digest once the season is under way", (): void => {
+    const news = [
+      createNewsArticle({
+        id: "digest-1",
+        headline: "Standings headline",
+        category: "StandingsUpdate",
+        date: "2025-01-15",
+      }),
+    ];
+    const { unmount } = render(
+      <HomeTab gameState={createGameState({ news })} visitedOnboardingTabs={new Set<string>()} />,
+    );
+
+    expect(screen.getByText("season.preseasonStatus")).toBeInTheDocument();
+    expect(screen.queryByText("League Digest")).not.toBeInTheDocument();
+
+    unmount();
     render(
       <HomeTab
         gameState={createGameState({
-          news: [
-            createNewsArticle({
-              id: "digest-1",
-              headline: "Standings headline",
-              category: "StandingsUpdate",
-              date: "2025-01-15",
-            }),
-          ],
+          news,
+          season_context: createSeasonContext({
+            phase: "InSeason",
+            season_start: "2025-01-01",
+            season_end: "2025-05-01",
+          }),
         })}
         visitedOnboardingTabs={new Set<string>()}
       />,
     );
 
-    expect(screen.getByText("Next Opponent")).toBeInTheDocument();
-    expect(screen.getByText("Beta FC")).toBeInTheDocument();
     expect(screen.getByText("League Digest")).toBeInTheDocument();
     expect(screen.getAllByText("Standings headline").length).toBeGreaterThan(0);
   });
 
-  it("renders widget empty states when opponent and digest data are unavailable", (): void => {
+  it("shows the digest's empty state when the wire has no league news", (): void => {
     render(
       <HomeTab
         gameState={createGameState({
-          league: {
-            id: "league-1",
-            name: "League",
-            season: 1,
-            fixtures: [],
-            standings: [],
-          },
           news: [],
+          season_context: createSeasonContext({
+            phase: "InSeason",
+            season_start: "2025-01-01",
+            season_end: "2025-05-01",
+          }),
         })}
         visitedOnboardingTabs={new Set<string>()}
       />,
     );
 
-    expect(screen.getByText("No upcoming league fixture.")).toBeInTheDocument();
     expect(screen.getByText("No league digest yet.")).toBeInTheDocument();
   });
 

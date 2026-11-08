@@ -17,7 +17,19 @@
     "noFixture": "Нет ближайшего матча",
     "unknownBudget": "Бюджет недоступен",
     "date": "Дата",
-    "transferBudget": "Трансферный бюджет"
+    "transferBudget": "Трансферный бюджет",
+    "club": "Клуб",
+    "menu": "Меню",
+    "search": "Поиск"
+  },
+  "gameHint": {
+    "title": "Горячие клавиши",
+    "select": "Выбрать",
+    "sections": "Разделы"
+  },
+  "pause": {
+    "title": "Пауза",
+    "resume": "Продолжить"
   },
   "menu": {
     "newGame": "Новая игра",
@@ -239,7 +251,9 @@
     "configTraining": "Настройте тренировки",
     "configTrainingDesc": "Выберите фокус и расписание для развития игроков",
     "readMessages": "Прочитайте сообщения",
-    "readMessagesDesc": "Важная информация от совета директоров и штаба уже ждёт"
+    "readMessagesDesc": "Важная информация от совета директоров и штаба уже ждёт",
+    "next": "Далее",
+    "go": "Перейти"
   },
   "home": {
     "nextMatch": "Следующий матч",
@@ -280,7 +294,10 @@
     "inProgress": "Идёт",
     "objectivesMet": "Выполнено целей: {{done}}/{{total}} — удовлетворённость совета: {{pct}}%",
     "unavailablePlayers": "Недоступные игроки",
-    "daysUnavailable": "Осталось {{count}} дн."
+    "daysUnavailable": "Осталось {{count}} дн.",
+    "setTactics": "Настроить тактику",
+    "fixtures": "Календарь",
+    "form": "Форма"
   },
   "season": {
     "preseasonStatus": "Статус предсезонки",
@@ -308,7 +325,8 @@
       "Closed": "Окно закрыто",
       "Open": "Окно открыто",
       "DeadlineDay": "День дедлайна"
-    }
+    },
+    "today": "Сегодня"
   },
   "teamSelect": {
     "title": "Выберите клуб",

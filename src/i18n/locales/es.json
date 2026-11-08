@@ -17,7 +17,19 @@
     "noFixture": "Sin próximo partido",
     "unknownBudget": "Presupuesto no disponible",
     "date": "Fecha",
-    "transferBudget": "Presupuesto de fichajes"
+    "transferBudget": "Presupuesto de fichajes",
+    "club": "Equipo",
+    "menu": "Menú",
+    "search": "Buscar"
+  },
+  "gameHint": {
+    "title": "Atajos de teclado",
+    "select": "Seleccionar",
+    "sections": "Secciones"
+  },
+  "pause": {
+    "title": "En pausa",
+    "resume": "Continuar"
   },
   "menu": {
     "newGame": "Nuevo Juego",
@@ -239,7 +251,9 @@
     "configTraining": "Configura el entrenamiento",
     "configTrainingDesc": "Elige un enfoque y horario para desarrollar a tus jugadores",
     "readMessages": "Lee tus mensajes",
-    "readMessagesDesc": "Información importante de la directiva y el staff te espera"
+    "readMessagesDesc": "Información importante de la directiva y el staff te espera",
+    "next": "Siguiente",
+    "go": "Ir"
   },
   "home": {
     "nextMatch": "Próximo Partido",
@@ -280,7 +294,10 @@
     "standings": "Clasificación",
     "noLeague": "Sin datos de liga todavía.",
     "unavailablePlayers": "Jugadores no disponibles",
-    "daysUnavailable": "{{count}} día(s) restantes"
+    "daysUnavailable": "{{count}} día(s) restantes",
+    "setTactics": "Definir táctica",
+    "fixtures": "Calendario",
+    "form": "Forma"
   },
   "season": {
     "preseasonStatus": "Estado de la pretemporada",
@@ -308,7 +325,8 @@
       "Closed": "Mercado Cerrado",
       "Open": "Mercado Abierto",
       "DeadlineDay": "Día de Cierre"
-    }
+    },
+    "today": "Hoy"
   },
   "teamSelect": {
     "title": "Elige Tu Club",

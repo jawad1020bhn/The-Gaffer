@@ -17,7 +17,19 @@
     "noFixture": "无即将进行的比赛",
     "unknownBudget": "预算不可用",
     "date": "日期",
-    "transferBudget": "转会预算"
+    "transferBudget": "转会预算",
+    "club": "俱乐部",
+    "menu": "菜单",
+    "search": "搜索"
+  },
+  "gameHint": {
+    "title": "键盘快捷键",
+    "select": "选择",
+    "sections": "分区"
+  },
+  "pause": {
+    "title": "已暂停",
+    "resume": "继续"
   },
   "menu": {
     "newGame": "新游戏",
@@ -239,7 +251,9 @@
     "configTraining": "配置训练",
     "configTrainingDesc": "选择训练重点和日程，培养您的球员",
     "readMessages": "阅读您的消息",
-    "readMessagesDesc": "来自董事会和员工的重要信息等待您查阅"
+    "readMessagesDesc": "来自董事会和员工的重要信息等待您查阅",
+    "next": "下一步",
+    "go": "前往"
   },
   "home": {
     "nextMatch": "下一场比赛",
@@ -280,7 +294,10 @@
     "inProgress": "进行中",
     "objectivesMet": "目标完成 {{done}}/{{total}} —— 董事会满意度：{{pct}}%",
     "unavailablePlayers": "不可用球员",
-    "daysUnavailable": "剩余 {{count}} 天"
+    "daysUnavailable": "剩余 {{count}} 天",
+    "setTactics": "设置战术",
+    "fixtures": "赛程",
+    "form": "状态"
   },
   "season": {
     "preseasonStatus": "季前状态",
@@ -308,7 +325,8 @@
       "Closed": "窗口关闭",
       "Open": "窗口开启",
       "DeadlineDay": "截止日"
-    }
+    },
+    "today": "今天"
   },
   "teamSelect": {
     "title": "选择您的俱乐部",

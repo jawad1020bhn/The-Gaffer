@@ -1,29 +1,77 @@
+import { ArrowRight, CalendarDays, MapPin, Swords } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { GameStateData } from "../store/gameStore";
-import { Badge, TeamLogo } from "./ui";
+import type { GameStateData, TeamData } from "../store/gameStore";
+import { Badge, FormDots, TeamLogo } from "./ui";
 import {
+  formatMatchDate,
   getFixtureCompetitionName,
   getFixtureDisplayLabel,
   getTeamName,
   getUserCompetition,
   getUserNextFixture,
-  formatMatchDate,
 } from "../lib/helpers";
 import { isSeasonComplete } from "../lib/seasonContext";
 
-export default function NextMatchDisplay({ gameState }: { gameState: GameStateData }) {
+const FOCUS_RING =
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel";
+
+function TeamBlock({
+  team,
+  name,
+  tone,
+}: {
+  team: TeamData | undefined;
+  name: string;
+  tone: "own" | "opponent";
+}): React.JSX.Element {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
+      {team ? (
+        <TeamLogo
+          team={team}
+          className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 sm:h-16 sm:w-16 ${
+            tone === "own" ? "border-selected/50" : "border-line-strong"
+          }`}
+          imageClassName="h-11 w-11 object-contain drop-shadow"
+          style={{ backgroundColor: team.colors.primary }}
+        />
+      ) : null}
+      <p
+        className={`w-full truncate font-heading text-body font-bold uppercase tracking-label ${
+          tone === "own" ? "text-selected" : "text-fg-muted"
+        }`}
+        title={name}
+      >
+        {name}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * The next fixture, as the hero of Home: the two crests, when and where, how each side has been
+ * playing, and the two things a manager does about it. It fills a dashboard panel, so it takes the
+ * height it is given instead of growing the page.
+ */
+export default function NextMatchDisplay({
+  gameState,
+  onNavigate,
+}: {
+  gameState: GameStateData;
+  onNavigate?: (tab: string) => void;
+}): React.JSX.Element {
   const { t } = useTranslation();
   const userTeamId = gameState.manager.team_id;
   const league = getUserCompetition(gameState);
 
   if (!userTeamId || !league) {
-    return <p className="text-fg-muted text-body text-center py-4">{t("home.noLeagueSchedule")}</p>;
+    return <p className="py-4 text-center text-body text-fg-muted">{t("home.noLeagueSchedule")}</p>;
   }
 
   const nextFixture = getUserNextFixture(gameState);
   if (!nextFixture) {
     return (
-      <p className="text-fg-muted text-body text-center py-4">
+      <p className="py-4 text-center text-body text-fg-muted">
         {t(isSeasonComplete(gameState) ? "home.seasonComplete" : "home.noUpcomingOpponent")}
       </p>
     );
@@ -40,43 +88,62 @@ export default function NextMatchDisplay({ gameState }: { gameState: GameStateDa
   );
 
   return (
-    <div className="flex items-center justify-between py-6 px-4 bg-sunken rounded-control border border-line transition-colors">
-      <div className="text-center flex-1">
-        {userTeam && (
-          <TeamLogo
-            team={userTeam}
-            className="w-16 h-16 rounded-full mx-auto mb-2 flex items-center justify-center overflow-hidden border-2 border-selected/40"
-            imageClassName="h-12 w-12 object-contain drop-shadow"
-            style={{ backgroundColor: userTeam.colors.primary }}
-          />
-        )}
-        <p className="font-heading font-bold uppercase tracking-label text-body text-selected">
-          {getTeamName(gameState.teams, userTeamId)}
-        </p>
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <div className="flex min-h-0 flex-1 items-center gap-2">
+        <TeamBlock team={userTeam} name={getTeamName(gameState.teams, userTeamId)} tone="own" />
+        <div className="flex shrink-0 flex-col items-center gap-1 px-1 text-center">
+          <Swords className="h-4 w-4 text-fg-subtle" aria-hidden="true" />
+          <span className="flex items-center gap-1 text-caption font-heading font-bold uppercase tracking-label text-fg">
+            <CalendarDays className="h-3 w-3" aria-hidden="true" />
+            {formatMatchDate(nextFixture.date)}
+          </span>
+          <Badge variant={isHome ? "success" : "accent"} size="sm">
+            {isHome ? t("home.home") : t("home.away")}
+          </Badge>
+          <span className="max-w-36 truncate text-caption text-fg-subtle" title={fixtureLabel}>
+            {fixtureLabel}
+          </span>
+          {userTeam?.stadium_name ? (
+            <span className="flex max-w-40 items-center gap-1 truncate text-caption text-fg-subtle">
+              <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
+              <span className="truncate">{userTeam.stadium_name}</span>
+            </span>
+          ) : null}
+        </div>
+        <TeamBlock
+          team={opponentTeam}
+          name={getTeamName(gameState.teams, opponentId)}
+          tone="opponent"
+        />
       </div>
 
-      <div className="text-center px-4 flex flex-col items-center gap-1.5">
-        <span className="font-heading font-bold text-title text-fg-subtle">VS</span>
-        <Badge variant="neutral">{formatMatchDate(nextFixture.date)}</Badge>
-        <span className="text-caption text-fg-subtle">{fixtureLabel}</span>
-        <Badge variant={isHome ? "success" : "accent"} size="sm">
-          {isHome ? t("home.home") : t("home.away")}
-        </Badge>
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-line pt-2">
+        <FormDots results={(userTeam?.form ?? []).slice(-5)} />
+        <span className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle">
+          {t("home.form")}
+        </span>
+        <FormDots results={(opponentTeam?.form ?? []).slice(-5)} />
       </div>
 
-      <div className="text-center flex-1">
-        {opponentTeam && (
-          <TeamLogo
-            team={opponentTeam}
-            className="w-16 h-16 rounded-full mx-auto mb-2 flex items-center justify-center overflow-hidden border-2 border-line-strong"
-            imageClassName="h-12 w-12 object-contain drop-shadow"
-            style={{ backgroundColor: opponentTeam.colors.primary }}
-          />
-        )}
-        <p className="font-heading font-bold uppercase tracking-label text-body text-fg-muted">
-          {getTeamName(gameState.teams, opponentId)}
-        </p>
-      </div>
+      {onNavigate ? (
+        <div className="flex shrink-0 gap-2">
+          <button
+            type="button"
+            onClick={() => onNavigate("Tactics")}
+            className={`flex h-8 flex-1 items-center justify-center gap-1.5 rounded-control bg-selected font-heading text-caption font-bold uppercase tracking-label text-on-brand transition-colors hover:bg-selected/90 motion-reduce:transition-none ${FOCUS_RING}`}
+          >
+            {t("home.setTactics")}
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigate("Schedule")}
+            className={`flex h-8 flex-1 items-center justify-center rounded-control bg-sunken font-heading text-caption font-bold uppercase tracking-label text-fg-muted ring-1 ring-inset ring-line transition-colors hover:bg-hover hover:text-fg motion-reduce:transition-none ${FOCUS_RING}`}
+          >
+            {t("home.fixtures")}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

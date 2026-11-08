@@ -10,12 +10,14 @@ interface HomePlayerMomentumCardProps {
   hotPlayers: PlayerData[];
   coldPlayers: PlayerData[];
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomePlayerMomentumCard({
   hotPlayers,
   coldPlayers,
   onNavigate,
+  className = "",
 }: HomePlayerMomentumCardProps) {
   const { t } = useTranslation();
 
@@ -24,7 +26,7 @@ export default function HomePlayerMomentumCard({
   }
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button

@@ -10,12 +10,14 @@ interface HomeUnavailablePlayersCardProps {
   players: PlayerData[];
   resolveInjuryName: (injuryName: string) => string;
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomeUnavailablePlayersCard({
   players,
   resolveInjuryName,
   onNavigate,
+  className = "",
 }: HomeUnavailablePlayersCardProps) {
   const { t } = useTranslation();
 
@@ -24,7 +26,7 @@ export default function HomeUnavailablePlayersCard({
   }
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button

@@ -17,7 +17,19 @@
     "noFixture": "Sem próximo jogo",
     "unknownBudget": "Orçamento indisponível",
     "date": "Data",
-    "transferBudget": "Orçamento de transferências"
+    "transferBudget": "Orçamento de transferências",
+    "club": "Clube",
+    "menu": "Menu principal",
+    "search": "Pesquisar"
+  },
+  "gameHint": {
+    "title": "Atalhos de teclado",
+    "select": "Selecionar",
+    "sections": "Seções"
+  },
+  "pause": {
+    "title": "Em pausa",
+    "resume": "Continuar"
   },
   "menu": {
     "newGame": "Novo Jogo",
@@ -239,7 +251,9 @@
     "configTraining": "Configura o treino",
     "configTrainingDesc": "Escolhe um foco e horário para desenvolver os teus jogadores",
     "readMessages": "Lê as tuas mensagens",
-    "readMessagesDesc": "Informações importantes da direção e staff à tua espera"
+    "readMessagesDesc": "Informações importantes da direção e staff à tua espera",
+    "next": "Seguinte",
+    "go": "Ir"
   },
   "home": {
     "nextMatch": "Próximo Jogo",
@@ -280,7 +294,10 @@
     "noLeagueDigest": "Ainda não há resumo da liga.",
     "objectivesMet": "{{done}}/{{total}} objetivos cumpridos — Satisfação da direção: {{pct}}%",
     "unavailablePlayers": "Jogadores indisponíveis",
-    "daysUnavailable": "{{count}} dia(s) restantes"
+    "daysUnavailable": "{{count}} dia(s) restantes",
+    "setTactics": "Definir tática",
+    "fixtures": "Calendário",
+    "form": "Forma"
   },
   "season": {
     "preseasonStatus": "Estado da pré-época",
@@ -308,7 +325,8 @@
       "Closed": "Janela Fechada",
       "Open": "Janela Aberta",
       "DeadlineDay": "Dia Final"
-    }
+    },
+    "today": "Hoje"
   },
   "teamSelect": {
     "title": "Escolhe o Teu Clube",

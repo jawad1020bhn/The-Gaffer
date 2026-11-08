@@ -17,7 +17,19 @@
     "noFixture": "Yaklaşan maç yok",
     "unknownBudget": "Bütçe kullanılamıyor",
     "date": "Tarih",
-    "transferBudget": "Transfer bütçesi"
+    "transferBudget": "Transfer bütçesi",
+    "club": "Kulüp",
+    "menu": "Menü",
+    "search": "Ara"
+  },
+  "gameHint": {
+    "title": "Klavye kısayolları",
+    "select": "Seç",
+    "sections": "Bölümler"
+  },
+  "pause": {
+    "title": "Duraklatıldı",
+    "resume": "Devam et"
   },
   "menu": {
     "newGame": "Yeni Oyun",
@@ -239,7 +251,9 @@
     "configTraining": "Antrenmanı yapılandır",
     "configTrainingDesc": "Oyuncu gelişimi için odak ve program seç",
     "readMessages": "Mesajlarını oku",
-    "readMessagesDesc": "Yönetim ve personelden önemli bilgiler seni bekliyor"
+    "readMessagesDesc": "Yönetim ve personelden önemli bilgiler seni bekliyor",
+    "next": "Sonraki",
+    "go": "Git"
   },
   "home": {
     "nextMatch": "Sıradaki Maç",
@@ -280,7 +294,10 @@
     "inProgress": "Devam ediyor",
     "objectivesMet": "{{done}}/{{total}} hedef tamamlandı, yönetim memnuniyeti: %{{pct}}",
     "unavailablePlayers": "Eksik Oyuncular",
-    "daysUnavailable": "{{count}} gün kaldı"
+    "daysUnavailable": "{{count}} gün kaldı",
+    "setTactics": "Taktik belirle",
+    "fixtures": "Fikstür",
+    "form": "Form durumu"
   },
   "season": {
     "preseasonStatus": "Sezon Öncesi Durum",
@@ -308,7 +325,8 @@
       "Closed": "Dönem Kapalı",
       "Open": "Dönem Açık",
       "DeadlineDay": "Son Gün"
-    }
+    },
+    "today": "Bugün"
   },
   "teamSelect": {
     "title": "Kulübünü Seç",

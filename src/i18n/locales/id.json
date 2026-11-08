@@ -17,7 +17,19 @@
     "noFixture": "Tidak ada pertandingan mendatang",
     "unknownBudget": "Anggaran tidak tersedia",
     "date": "Tanggal",
-    "transferBudget": "Anggaran transfer"
+    "transferBudget": "Anggaran transfer",
+    "club": "Klub",
+    "menu": "Menu utama",
+    "search": "Cari"
+  },
+  "gameHint": {
+    "title": "Pintasan papan tombol",
+    "select": "Pilih",
+    "sections": "Bagian"
+  },
+  "pause": {
+    "title": "Jeda",
+    "resume": "Lanjutkan"
   },
   "menu": {
     "newGame": "Permainan Baru",
@@ -239,7 +251,9 @@
     "configTraining": "Atur latihan",
     "configTrainingDesc": "Pilih fokus dan jadwal untuk mengembangkan para pemainmu",
     "readMessages": "Baca pesan-pesanmu",
-    "readMessagesDesc": "Informasi penting dari manajemen dan staf menantimu"
+    "readMessagesDesc": "Informasi penting dari manajemen dan staf menantimu",
+    "next": "Berikutnya",
+    "go": "Buka"
   },
   "home": {
     "nextMatch": "Pertandingan Berikutnya",
@@ -280,7 +294,10 @@
     "inProgress": "Berlangsung",
     "objectivesMet": "{{done}}/{{total}} target tercapai — Kepuasan Manajemen: {{pct}}%",
     "unavailablePlayers": "Pemain Tidak Tersedia",
-    "daysUnavailable": "{{count}} hari tersisa"
+    "daysUnavailable": "{{count}} hari tersisa",
+    "setTactics": "Atur taktik",
+    "fixtures": "Jadwal",
+    "form": "Performa"
   },
   "season": {
     "preseasonStatus": "Status Pramusim",
@@ -308,7 +325,8 @@
       "Closed": "Jendela Ditutup",
       "Open": "Jendela Terbuka",
       "DeadlineDay": "Hari Penutupan"
-    }
+    },
+    "today": "Hari ini"
   },
   "teamSelect": {
     "title": "Pilih Klub",

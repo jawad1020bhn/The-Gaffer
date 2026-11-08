@@ -8,17 +8,19 @@ interface HomeLeagueDigestCardProps {
   articles: NewsArticle[];
   lang: string;
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomeLeagueDigestCard({
   articles,
   lang,
   onNavigate,
+  className = "",
 }: HomeLeagueDigestCardProps) {
   const { t } = useTranslation();
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button

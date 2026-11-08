@@ -10,6 +10,7 @@ interface HomeLatestNewsCardProps {
   teams: TeamData[];
   lang: string;
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomeLatestNewsCard({
@@ -17,11 +18,12 @@ export default function HomeLatestNewsCard({
   teams,
   lang,
   onNavigate,
+  className = "",
 }: HomeLatestNewsCardProps) {
   const { t } = useTranslation();
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button
