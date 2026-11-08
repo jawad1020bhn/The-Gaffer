@@ -73,7 +73,7 @@ export function PlayerPreviewCard({
   const abbr = t(`common.posAbbr.${editing.position}`, {
     defaultValue: editing.position.slice(0, 2).toUpperCase(),
   });
-  const posColor = POSITION_COLOR[editing.position] ?? "bg-gray-500";
+  const posColor = POSITION_COLOR[editing.position] ?? "bg-fg-subtle";
 
   const age = ageToday(editing.dateOfBirth);
   const initials = displayName ? displayName.slice(0, 2).toUpperCase() : "?";
@@ -90,30 +90,30 @@ export function PlayerPreviewCard({
   const isEstimated = !editing.attributes && editing.overall !== null;
 
   return (
-    <div className="rounded-2xl border border-gray-200 dark:border-navy-600 overflow-hidden bg-white dark:bg-navy-700 shadow-sm select-none">
+    <div className="rounded-panel border border-line overflow-hidden bg-panel shadow-sm select-none">
       {/* Header */}
-      <div className="bg-navy-800 px-4 pt-4 pb-3 flex flex-col items-center gap-2">
+      <div className="bg-panel px-4 pt-4 pb-3 flex flex-col items-center gap-2">
         {/* Photo or avatar */}
         {photoDataUrl ? (
           <img
             src={photoDataUrl}
             alt=""
-            className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
+            className="w-16 h-16 rounded-full object-cover border-2 border-line"
           />
         ) : displayName ? (
           <GeneratedAvatar name={displayName} initials={initials} className="w-16 h-16" />
         ) : (
-          <div className="w-16 h-16 rounded-full bg-navy-600 flex items-center justify-center">
-            <User className="w-8 h-8 text-gray-500" />
+          <div className="w-16 h-16 rounded-full bg-hover flex items-center justify-center">
+            <User className="w-8 h-8 text-fg-muted" />
           </div>
         )}
 
         <div className="text-center">
-          <p className="font-heading font-bold text-white text-sm leading-tight">
-            {displayName ?? <span className="italic text-gray-400">New Player</span>}
+          <p className="font-heading font-bold text-fg text-body leading-tight">
+            {displayName ?? <span className="italic text-fg-subtle">New Player</span>}
           </p>
           <span
-            className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white ${posColor}`}
+            className={`inline-block mt-1 px-2 py-0.5 rounded text-caption font-bold uppercase text-fg ${posColor}`}
           >
             {abbr}
           </span>
@@ -124,13 +124,13 @@ export function PlayerPreviewCard({
         {/* Overall rating badge */}
         {editing.overall !== null && (
           <div className="flex items-baseline gap-1.5">
-            <span className="text-[10px] uppercase tracking-wide text-gray-400">OVR</span>
+            <span className="text-caption uppercase tracking-label text-fg-subtle">OVR</span>
             <span
-              className={`text-2xl font-heading font-black leading-none ${ratingTierClass(tierOf(editing.overall), "text")}`}
+              className={`text-title font-heading font-black leading-none ${ratingTierClass(tierOf(editing.overall), "text")}`}
             >
               {editing.overall}
             </span>
-            {isEstimated && <span className="text-[10px] text-gray-400 italic">est.</span>}
+            {isEstimated && <span className="text-caption text-fg-subtle italic">est.</span>}
           </div>
         )}
 
@@ -142,7 +142,7 @@ export function PlayerPreviewCard({
               if (!anySet) return null;
               return (
                 <div key={groupKey}>
-                  <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">
+                  <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle mb-1">
                     {t(`common.attrGroups.${groupKey}`)}
                   </p>
                   <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
@@ -154,16 +154,16 @@ export function PlayerPreviewCard({
                       const label = t(`common.attributes.${key}`).slice(0, 3).toUpperCase();
                       return (
                         <div key={key} className="flex items-center gap-1">
-                          <span className="w-7 text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 flex-shrink-0">
+                          <span className="w-7 text-caption font-bold uppercase tracking-label text-fg-subtle flex-shrink-0">
                             {label}
                           </span>
-                          <div className="flex-1 h-1 bg-gray-100 dark:bg-navy-600 rounded-full overflow-hidden">
+                          <div className="flex-1 h-1 bg-hover rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${ratingTierClass(tierOf(val), "bar")}`}
                               style={{ width: `${(val / 99) * 100}%` }}
                             />
                           </div>
-                          <span className="w-5 text-right text-[10px] font-bold tabular-nums text-gray-700 dark:text-gray-200 flex-shrink-0">
+                          <span className="w-5 text-right text-caption font-bold tabular-nums text-fg flex-shrink-0">
                             {val}
                           </span>
                         </div>
@@ -177,11 +177,11 @@ export function PlayerPreviewCard({
         )}
 
         {/* Bio info */}
-        <div className="flex flex-col gap-1 text-xs text-gray-500 dark:text-gray-400 pt-1 border-t border-gray-100 dark:border-navy-600">
+        <div className="flex flex-col gap-1 text-caption text-fg-muted pt-1 border-t border-line">
           {editing.nationality && (
             <p>
               {t("worldEditor.playerNationality")}:{" "}
-              <span className="text-gray-700 dark:text-gray-200">{editing.nationality}</span>
+              <span className="text-fg">{editing.nationality}</span>
             </p>
           )}
           {editing.club && (
@@ -193,7 +193,7 @@ export function PlayerPreviewCard({
                     <img
                       src={clubLogoUrl}
                       alt=""
-                      className="h-4 w-4 shrink-0 rounded object-contain border border-gray-200 dark:border-navy-600 dark:bg-navy-800"
+                      className="h-4 w-4 shrink-0 rounded object-contain border border-line"
                     />
                   ) : (
                     <GeneratedCrest
@@ -203,19 +203,19 @@ export function PlayerPreviewCard({
                       className="w-4 h-4 flex-shrink-0"
                     />
                   )}
-                  <span className="text-gray-700 dark:text-gray-200 truncate">{clubName}</span>
+                  <span className="text-fg truncate">{clubName}</span>
                 </div>
               ) : (
-                <span className="text-gray-700 dark:text-gray-200">{editing.club}</span>
+                <span className="text-fg">{editing.club}</span>
               )}
             </div>
           )}
           {editing.dateOfBirth && (
             <p>
               {t("worldEditor.playerDateOfBirth")}:{" "}
-              <span className="text-gray-700 dark:text-gray-200">{editing.dateOfBirth}</span>
+              <span className="text-fg">{editing.dateOfBirth}</span>
               {age !== null && (
-                <span className="text-gray-400 dark:text-gray-500">
+                <span className="text-fg-subtle">
                   {" "}
                   ({t("worldEditor.playerAgeToday", { age })})
                 </span>
@@ -225,9 +225,7 @@ export function PlayerPreviewCard({
           {editing.footedness && editing.footedness !== "Right" && (
             <p>
               {t("worldEditor.playerFoot")}:{" "}
-              <span className="text-gray-700 dark:text-gray-200">
-                {t(`common.footedness.${editing.footedness}`)}
-              </span>
+              <span className="text-fg">{t(`common.footedness.${editing.footedness}`)}</span>
             </p>
           )}
         </div>

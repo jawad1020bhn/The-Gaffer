@@ -3,6 +3,22 @@
     "name": "OpenFoot Manager",
     "publisher": "Sturdy Robot"
   },
+  "gameNav": {
+    "career": "Карьера",
+    "team": "Команда",
+    "transfers": "Трансферы",
+    "competitions": "Соревнования",
+    "office": "Офис",
+    "main": "Основные разделы игры",
+    "context": "Страницы раздела",
+    "careerStatus": "Состояние карьеры",
+    "commands": "Команды карьеры",
+    "noClub": "Без клуба",
+    "noFixture": "Нет ближайшего матча",
+    "unknownBudget": "Бюджет недоступен",
+    "date": "Дата",
+    "transferBudget": "Трансферный бюджет"
+  },
   "menu": {
     "newGame": "Новая игра",
     "loadGame": "Загрузить игру",
@@ -21,12 +37,9 @@
     "loadGameFailed": "Не удалось загрузить сохранение: {{error}}",
     "invalidWorldDb": "Недопустимый файл базы мира: {{error}}",
     "failedStartGame": "Не удалось начать игру: {{error}}",
-    "openDiscord": "Открыть сообщество в Discord",
-    "openGithub": "Открыть репозиторий на GitHub",
     "mainMenu": "Главное меню",
     "worldEditor": "Редактор мира",
-    "startupOptionsRejected": "Эти настройки карьеры не удалось применить. Вернитесь к экрану мира и проверьте год начала, этап начала и объём генерируемой предыстории.",
-    "reportBug": "Сообщить об ошибке"
+    "startupOptionsRejected": "Эти настройки карьеры не удалось применить. Вернитесь к экрану мира и проверьте год начала, этап начала и объём генерируемой предыстории."
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -41,7 +54,6 @@
     "title": "Создание менеджера",
     "firstName": "Имя",
     "lastName": "Фамилия",
-    "dob": "Дата рождения",
     "startYear": "Год старта",
     "startPhase": "Фаза старта",
     "phaseSeasonStart": "Начало сезона",
@@ -1899,6 +1911,9 @@
     },
     "uiScale": "Масштаб интерфейса",
     "uiScaleDesc": "Изменить размер шрифта и отступы для удобства чтения",
+    "uiDensity": "Плотность",
+    "uiDensityDesc": "Сколько места занимают строки и панели.",
+    "uiDensityOptions": { "comfortable": "Свободная", "compact": "Компактная" },
     "sidebarWidth": "Ширина боковой панели",
     "sidebarWidthDesc": "Насколько широка открытая боковая панель. «Широкая» показывает каждый пункт меню в одну строку.",
     "sidebarWidthOptions": {

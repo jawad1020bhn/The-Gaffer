@@ -43,17 +43,15 @@ export function EntityListShell({
       <button
         type="button"
         onClick={onAdd}
-        className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-gray-300 dark:border-navy-500 rounded-xl text-sm text-gray-500 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 hover:border-primary-400 dark:hover:border-primary-500 transition-colors"
+        className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-line-strong rounded-panel text-body text-fg-muted hover:text-selected hover:border-selected transition-colors"
       >
         <Plus className="w-4 h-4" />
-        <span className="font-heading font-bold uppercase tracking-wider">{addLabel}</span>
+        <span className="font-heading font-bold uppercase tracking-label">{addLabel}</span>
       </button>
 
       {searchSlot && <div>{searchSlot}</div>}
 
-      {isEmpty && (
-        <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-4">{emptyLabel}</p>
-      )}
+      {isEmpty && <p className="text-caption text-fg-subtle text-center py-4">{emptyLabel}</p>}
 
       <div className="flex flex-col gap-2">{children}</div>
 
@@ -129,7 +127,7 @@ export function EntityListFooter({
       <p
         id={countId}
         role="status"
-        className={`text-xs text-gray-500 dark:text-gray-400 ${matches === 0 ? "text-center py-4" : "text-right"}`}
+        className={`text-caption text-fg-muted ${matches === 0 ? "text-center py-4" : "text-right"}`}
       >
         {matches === 0
           ? t("common.noResults")
@@ -154,7 +152,7 @@ export function ExportCsvButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       title={t("worldEditor.exportCsv")}
       aria-label={t("worldEditor.exportCsv")}
-      className="flex items-center justify-center p-1.5 rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-400 dark:text-gray-500 hover:text-primary-500 dark:hover:text-primary-400 hover:border-primary-400 dark:hover:border-primary-500 transition-colors flex-shrink-0"
+      className="flex items-center justify-center p-1.5 rounded-control border border-line bg-panel text-fg-subtle hover:text-selected hover:border-selected transition-colors flex-shrink-0"
     >
       <Download className="w-3.5 h-3.5" />
     </button>
@@ -214,26 +212,26 @@ export function EntityRow({
 
   return (
     <div
-      className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
+      className={`flex items-center gap-3 p-3 rounded-panel border transition-colors ${
         isSelected
-          ? "border-primary-400 dark:border-primary-500 bg-primary-50 dark:bg-primary-500/10"
-          : "border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 hover:border-gray-300 dark:hover:border-navy-500"
+          ? "border-selected bg-selected-tint"
+          : "border-line bg-panel hover:border-line-strong"
       } ${onClick ? "cursor-pointer" : ""}`}
       onClick={confirming ? undefined : onClick}
     >
       {badge}
       <div className="flex-1 min-w-0">
-        <p className="font-heading font-bold text-sm uppercase tracking-wide text-gray-800 dark:text-gray-200 truncate">
+        <p className="font-heading font-bold text-body uppercase tracking-label text-fg truncate">
           {title}
         </p>
-        {subtitle && <p className="text-[10px] text-gray-400 dark:text-gray-500">{subtitle}</p>}
+        {subtitle && <p className="text-caption text-fg-subtle">{subtitle}</p>}
       </div>
       {confirming ? (
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             type="button"
             onClick={handleConfirmDelete}
-            className="p-1 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
+            className="p-1 rounded-md bg-danger-tint text-danger hover:bg-danger-tint transition-colors"
             title={t("common.confirmDelete")}
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -241,7 +239,7 @@ export function EntityRow({
           <button
             type="button"
             onClick={handleCancelDelete}
-            className="p-1 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+            className="p-1 rounded-md text-fg-subtle hover:text-fg transition-colors"
             title={t("common.cancel")}
           >
             <X className="w-3.5 h-3.5" />
@@ -255,7 +253,7 @@ export function EntityRow({
               e.stopPropagation();
               onEdit();
             }}
-            className="text-gray-400 hover:text-primary-500 transition-colors flex-shrink-0"
+            className="text-fg-subtle hover:text-selected transition-colors flex-shrink-0"
             title={editLabel}
           >
             <Edit2 className="w-4 h-4" />
@@ -267,7 +265,7 @@ export function EntityRow({
                 e.stopPropagation();
                 onDuplicate();
               }}
-              className="text-gray-400 hover:text-primary-500 transition-colors flex-shrink-0"
+              className="text-fg-subtle hover:text-selected transition-colors flex-shrink-0"
               title={duplicateLabel}
               aria-label={duplicateLabel}
             >
@@ -277,7 +275,7 @@ export function EntityRow({
           <button
             type="button"
             onClick={handleDeleteClick}
-            className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+            className="text-fg-subtle hover:text-danger transition-colors flex-shrink-0"
             title={deleteLabel}
           >
             <Trash2 className="w-4 h-4" />
@@ -317,11 +315,11 @@ export function EntityFormShell({
         <button
           type="button"
           onClick={onBack}
-          className="text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-600"
+          className="text-fg-subtle hover:text-fg transition-colors p-1 rounded-control hover:bg-hover"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h2 className="text-xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+        <h2 className="text-heading font-heading font-bold uppercase tracking-label text-fg">
           {title}
         </h2>
       </div>
@@ -332,7 +330,7 @@ export function EntityFormShell({
         type="button"
         onClick={onSave}
         disabled={isBusy || saveDisabled}
-        className="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl font-heading font-bold uppercase tracking-wide transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-3 bg-gradient-to-r from-selected-fill to-selected-fill text-on-brand rounded-panel font-heading font-bold uppercase tracking-label transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isBusy ? (
           <Loader2 className="w-4 h-4 animate-spin" />

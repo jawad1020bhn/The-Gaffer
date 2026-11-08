@@ -34,13 +34,13 @@ export default function TournamentsFixturesView({
     <div className="flex flex-col gap-4">
       {sortedMatchdays.map(([matchday, fixtures]) => (
         <Card key={matchday}>
-          <div className="px-5 py-3 border-b border-gray-100 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 rounded-t-xl">
-            <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-gray-600 dark:text-gray-300">
+          <div className="px-5 py-3 border-b border-line bg-sunken rounded-t-xl">
+            <h4 className="font-heading font-bold text-body uppercase tracking-label text-fg-muted">
               {t("schedule.matchday", { number: matchday })} — {playedDates(fixtures, t)}
             </h4>
           </div>
           <CardBody className="p-0">
-            <div className="divide-y divide-gray-100 dark:divide-navy-600">
+            <div className="divide-y divide-line">
               {fixtures.map((fixture) => (
                 <TournamentsFixtureRow
                   key={fixture.id}

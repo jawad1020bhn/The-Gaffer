@@ -37,14 +37,14 @@ export default function HallOfFameWorldTab({
       <Card accent="primary">
         <CardBody className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs font-heading font-bold uppercase tracking-[0.25em] text-primary-500">
+            <p className="text-caption font-heading font-bold uppercase tracking-[0.25em] text-selected">
               {t("hallOfFameWorld.title")}
             </p>
-            <h2 className="text-2xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+            <h2 className="text-title font-heading font-bold uppercase tracking-label text-fg">
               {t("hallOfFameWorld.subtitle")}
             </h2>
           </div>
-          <div className="grid grid-cols-2 gap-3 text-sm md:min-w-[20rem]">
+          <div className="grid grid-cols-2 gap-3 text-body md:min-w-[20rem]">
             <SummaryTile
               icon={<UserRound className="h-4 w-4" />}
               label={t("hallOfFameWorld.legendsCount", { count: legends.length })}
@@ -62,7 +62,7 @@ export default function HallOfFameWorldTab({
       {worldCupChampions.length > 0 && (
         <section className="space-y-4">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="text-lg font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+            <h3 className="text-lead font-heading font-bold uppercase tracking-label text-fg">
               {t("hallOfFameWorld.worldCupChampions")}
             </h3>
             <Badge variant="accent" size="md">
@@ -74,24 +74,24 @@ export default function HallOfFameWorldTab({
               <Card key={champion.year} accent="accent">
                 <CardBody className="flex items-center justify-between gap-4">
                   <div data-testid={`world-cup-champion-${champion.year}`}>
-                    <p className="text-xs font-heading font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+                    <p className="text-caption font-heading font-bold uppercase tracking-[0.2em] text-fg-subtle">
                       {t("hallOfFameWorld.worldCupEdition", { year: champion.year })}
                     </p>
-                    <p className="mt-1 text-xl font-heading font-bold uppercase tracking-wide text-accent-500">
+                    <p className="mt-1 text-title font-heading font-bold uppercase tracking-label text-warning">
                       {champion.nation_name}
                     </p>
                     {champion.nation_code ? (
-                      <div className="mt-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="mt-2 flex items-center gap-2 text-body text-fg-muted">
                         <CountryFlag
                           code={champion.nation_code}
                           locale={i18n.language}
-                          className="text-sm leading-none"
+                          className="text-body leading-none"
                         />
                         <span>{countryName(champion.nation_code, i18n.language)}</span>
                       </div>
                     ) : null}
                   </div>
-                  <div className="rounded-xl bg-accent-100 p-3 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300">
+                  <div className="rounded-panel bg-warning-solid p-3 text-warning bg-warning-tint">
                     <Globe className="h-6 w-6" />
                   </div>
                 </CardBody>
@@ -103,7 +103,7 @@ export default function HallOfFameWorldTab({
 
       <section className="space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-lg font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+          <h3 className="text-lead font-heading font-bold uppercase tracking-label text-fg">
             {t("hallOfFameWorld.legends")}
           </h3>
           <Badge variant="primary" size="md">
@@ -113,7 +113,7 @@ export default function HallOfFameWorldTab({
 
         {legends.length === 0 ? (
           <Card>
-            <CardBody className="py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+            <CardBody className="py-10 text-center text-body text-fg-muted">
               {t("hallOfFameWorld.noLegends")}
             </CardBody>
           </Card>
@@ -132,7 +132,7 @@ export default function HallOfFameWorldTab({
                     <button
                       type="button"
                       onClick={() => onSelectPlayer?.(legend.player_id)}
-                      className="text-left transition-colors hover:text-primary-500"
+                      className="text-left transition-colors hover:text-selected"
                     >
                       {legend.full_name}
                     </button>
@@ -140,29 +140,29 @@ export default function HallOfFameWorldTab({
                   <CardBody className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-2 text-body text-fg-muted">
                           <CountryFlag
                             code={footballNation}
                             locale={i18n.language}
-                            className="text-sm leading-none"
+                            className="text-body leading-none"
                           />
                           <span>{countryName(footballNation, i18n.language)}</span>
                         </div>
-                        <p className="mt-2 text-xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                        <p className="mt-2 text-title font-heading font-bold uppercase tracking-label text-fg">
                           {translatePositionLabel(t, legend.position)}
                         </p>
                         {legend.last_club_name ? (
-                          <p className="mt-1 text-sm text-primary-500">
+                          <p className="mt-1 text-body text-selected">
                             {`${t("hallOfFameWorld.lastClub")}: ${legend.last_club_name}`}
                           </p>
                         ) : null}
                       </div>
-                      <div className="rounded-xl bg-primary-100 p-3 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+                      <div className="rounded-panel p-3 text-selected bg-selected-tint/40">
                         <Medal className="h-6 w-6" />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="grid grid-cols-2 gap-3 text-body">
                       <StatTile
                         label={t("hallOfFameWorld.appearances")}
                         value={legend.appearances.toString()}
@@ -190,7 +190,7 @@ export default function HallOfFameWorldTab({
 
       <section className="space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-lg font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+          <h3 className="text-lead font-heading font-bold uppercase tracking-label text-fg">
             {t("hallOfFameWorld.pastChampions")}
           </h3>
           <Badge variant="accent" size="md">
@@ -200,7 +200,7 @@ export default function HallOfFameWorldTab({
 
         {champions.length === 0 ? (
           <Card>
-            <CardBody className="py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+            <CardBody className="py-10 text-center text-body text-fg-muted">
               {t("hallOfFameWorld.noChampions")}
             </CardBody>
           </Card>
@@ -210,21 +210,21 @@ export default function HallOfFameWorldTab({
               <Card key={`${champion.team.id}-${champion.season}`} accent="accent">
                 <CardBody className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <p className="text-xs font-heading font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+                    <p className="text-caption font-heading font-bold uppercase tracking-[0.2em] text-fg-subtle">
                       {t("hallOfFameWorld.seasonLabel", { season: champion.season })}
                     </p>
                     <button
                       type="button"
                       onClick={() => onSelectTeam?.(champion.team.id)}
-                      className="mt-1 text-left text-xl font-heading font-bold uppercase tracking-wide text-accent-500 transition-colors hover:text-accent-400"
+                      className="mt-1 text-left text-title font-heading font-bold uppercase tracking-label text-warning transition-colors hover:text-warning"
                     >
                       {champion.team.name}
                     </button>
-                    <div className="mt-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="mt-2 flex items-center gap-2 text-body text-fg-muted">
                       <CountryFlag
                         code={champion.team.country}
                         locale={i18n.language}
-                        className="text-sm leading-none"
+                        className="text-body leading-none"
                       />
                       <span>{countryName(champion.team.country, i18n.language)}</span>
                     </div>
@@ -233,11 +233,11 @@ export default function HallOfFameWorldTab({
                   <div className="flex items-center gap-4">
                     <TeamLogo
                       team={champion.team}
-                      className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-heading font-bold text-accent-700 dark:text-accent-300"
+                      className="h-14 w-14 shrink-0 overflow-hidden rounded-panel bg-warning-solid bg-warning-tint flex items-center justify-center text-body font-heading font-bold text-warning"
                       imageClassName="h-11 w-11 object-contain drop-shadow"
                       fallback={<span>{champion.team.short_name.charAt(0)}</span>}
                     />
-                    <div className="grid grid-cols-2 gap-3 text-sm md:min-w-[16rem]">
+                    <div className="grid grid-cols-2 gap-3 text-body md:min-w-[16rem]">
                       <StatTile
                         label={t("hallOfFameWorld.played")}
                         value={champion.record.played.toString()}
@@ -276,14 +276,14 @@ interface SummaryTileProps {
 
 function SummaryTile({ icon, label, value }: SummaryTileProps) {
   return (
-    <div className="rounded-xl bg-gray-50 p-3 dark:bg-navy-800/70">
-      <div className="mb-2 flex items-center gap-2 text-gray-400 dark:text-gray-500">
+    <div className="rounded-panel bg-sunken p-3">
+      <div className="mb-2 flex items-center gap-2 text-fg-subtle">
         {icon}
-        <span className="text-[11px] font-heading font-bold uppercase tracking-[0.18em]">
+        <span className="text-caption font-heading font-bold uppercase tracking-[0.18em]">
           {label}
         </span>
       </div>
-      <p className="text-lg font-heading font-bold text-gray-800 dark:text-gray-100">{value}</p>
+      <p className="text-lead font-heading font-bold text-fg">{value}</p>
     </div>
   );
 }
@@ -295,13 +295,11 @@ interface StatTileProps {
 
 function StatTile({ label, value }: StatTileProps) {
   return (
-    <div className="rounded-lg bg-gray-50 p-3 dark:bg-navy-800/70">
-      <p className="text-[11px] font-heading font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
+    <div className="rounded-control bg-sunken p-3">
+      <p className="text-caption font-heading font-bold uppercase tracking-[0.18em] text-fg-subtle">
         {label}
       </p>
-      <p className="mt-2 text-lg font-heading font-bold text-gray-800 dark:text-gray-100">
-        {value}
-      </p>
+      <p className="mt-2 text-lead font-heading font-bold text-fg">{value}</p>
     </div>
   );
 }

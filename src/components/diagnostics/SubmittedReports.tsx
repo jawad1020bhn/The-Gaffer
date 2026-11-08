@@ -35,16 +35,10 @@ export function SubmittedReports({ refreshKey }: SubmittedReportsProps) {
 
   return (
     <div>
-      <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-        {t("settings.yourReports")}
-      </p>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-        {t("settings.yourReportsDesc")}
-      </p>
+      <p className="text-body font-medium text-fg">{t("settings.yourReports")}</p>
+      <p className="text-caption text-fg-muted mt-0.5">{t("settings.yourReportsDesc")}</p>
       {reports !== null && reports.length === 0 && (
-        <p className="mt-2 text-xs italic text-gray-500 dark:text-gray-400">
-          {t("settings.noReports")}
-        </p>
+        <p className="mt-2 text-caption italic text-fg-muted">{t("settings.noReports")}</p>
       )}
       {reports !== null && reports.length > 0 && (
         <ul className="mt-2 flex flex-col gap-1">
@@ -52,19 +46,16 @@ export function SubmittedReports({ refreshKey }: SubmittedReportsProps) {
             <li
               // Entries from before ids existed fall back to their position, which is unique.
               key={report.id || `${report.code}-${report.submitted_at}-${index}`}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50 dark:bg-navy-700 border border-gray-200 dark:border-navy-600"
+              className="flex items-center gap-3 px-3 py-2 rounded-control bg-sunken border border-line"
             >
               {report.unconfirmed ? (
-                <span className="text-xs text-accent-700 dark:text-accent-400">
+                <span className="text-caption text-warning">
                   {t("settings.reportOutcomeUnknown")}
                 </span>
               ) : (
                 <ReferenceCode code={report.code} />
               )}
-              <time
-                dateTime={report.submitted_at}
-                className="text-xs text-gray-600 dark:text-gray-400"
-              >
+              <time dateTime={report.submitted_at} className="text-caption text-fg-muted">
                 {formatDate(report.submitted_at, i18n.language)}
               </time>
               {report.included_save && (

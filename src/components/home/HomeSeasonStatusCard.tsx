@@ -33,7 +33,7 @@ export default function HomeSeasonStatusCard({
     <Card accent="primary">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <CalendarClock className="w-4 h-4 text-primary-500" />
+          <CalendarClock className="w-4 h-4 text-selected" />
           {t("season.preseasonStatus")}
         </div>
       </CardHeader>
@@ -50,35 +50,35 @@ export default function HomeSeasonStatusCard({
                 {t(`season.transferWindowStatus.${transferWindowStatus}`)}
               </Badge>
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300">{t("season.preseasonFocus")}</p>
+            <p className="text-body text-fg">{t("season.preseasonFocus")}</p>
           </div>
           <div data-season-tiles className="grid grid-cols-1 gap-3 @md:grid-cols-2">
-            <div className="rounded-xl bg-gray-50 px-4 py-3 dark:bg-navy-700/50">
-              <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            <div className="rounded-panel bg-sunken px-4 py-3">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle">
                 {t("season.opener")}
               </p>
-              <p className="mt-1 text-sm font-heading font-bold text-gray-800 dark:text-gray-100">
+              <p className="mt-1 text-body font-heading font-bold text-fg">
                 {seasonStartLabel
                   ? t("season.startsOn", { date: seasonStartLabel })
                   : t("season.noOpener")}
               </p>
               {daysUntilSeasonStart !== null && (
-                <p className="mt-1 text-xs text-primary-500 dark:text-primary-400">
+                <p className="mt-1 text-caption text-selected">
                   {t("season.startsInDays", {
                     count: daysUntilSeasonStart,
                   })}
                 </p>
               )}
             </div>
-            <div className="rounded-xl bg-gray-50 px-4 py-3 dark:bg-navy-700/50">
-              <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            <div className="rounded-panel bg-sunken px-4 py-3">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle">
                 {t("transfers.centre")}
               </p>
-              <p className="mt-1 text-sm font-heading font-bold text-gray-800 dark:text-gray-100">
+              <p className="mt-1 text-body font-heading font-bold text-fg">
                 {transferWindowSummary}
               </p>
               {(transferWindowOpensOn || transferWindowClosesOn) && (
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-caption text-fg-muted">
                   {transferWindowStatus === "Closed" && transferWindowOpensOn
                     ? t("season.windowOpensOn", {
                         date: formatDateShort(transferWindowOpensOn, lang),

@@ -225,7 +225,11 @@ fn take_or_create_manager(
     let reference_date = game_clock_for_world(startup_options, &world.metadata)?
         .current_date
         .date_naive();
-    let dob = reference_date - chrono::Duration::days(45 * 365);
+    // Calendar years, not 45 * 365 days: the day count lands a leap-day short and reads as 44,
+    // which is not the age this function's contract promises. Same derivation as `start_new_game`.
+    let dob = reference_date
+        .checked_sub_months(chrono::Months::new(45 * 12))
+        .ok_or_else(|| "be.error.createManager.invalidDob".to_string())?;
     Ok(Manager::new(
         "mgr_user".to_string(),
         request.manager_first_name.unwrap_or("Agent").to_string(),

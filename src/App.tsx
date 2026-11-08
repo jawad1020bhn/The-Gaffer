@@ -5,6 +5,7 @@ import { useSettingsStore } from "./store/settingsStore";
 import i18n, { changeAppLanguage } from "./i18n";
 import { formatAppVersion } from "./lib/appVersion";
 import { rootFontSizeFor } from "./lib/uiScale";
+import { densityClassFor } from "./lib/uiDensity";
 import "./App.css";
 
 const MainMenu = lazy(() => import("./pages/MainMenu"));
@@ -17,8 +18,8 @@ const WorldEditorPage = lazy(() => import("./pages/WorldEditor"));
 
 function LazyFallback() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-navy-900 flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+    <div className="flex min-h-screen items-center justify-center bg-page">
+      <div className="w-8 h-8 border-4 border-selected border-t-transparent rounded-full animate-spin" />
     </div>
   );
 }
@@ -53,6 +54,13 @@ function App() {
   useEffect(() => {
     document.documentElement.classList.toggle("high-contrast", settings.high_contrast);
   }, [settings.high_contrast]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle(
+      "density-compact",
+      densityClassFor(settings.ui_density) === "density-compact",
+    );
+  }, [settings.ui_density]);
 
   // Apply saved language from settings once loaded (overrides OS detection)
   useEffect(() => {

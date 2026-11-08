@@ -78,14 +78,14 @@ export default function AwardsCeremonyScreen({
       <Card accent="accent">
         <CardBody className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs font-heading font-bold uppercase tracking-[0.25em] text-accent-500">
+            <p className="text-caption font-heading font-bold uppercase tracking-[0.25em] text-warning">
               {t("awardsCeremony.title")}
             </p>
-            <h2 className="text-2xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+            <h2 className="text-title font-heading font-bold uppercase tracking-label text-fg">
               {t("awardsCeremony.subtitle", { season, league: leagueName })}
             </h2>
           </div>
-          <div className="flex flex-wrap gap-2 text-xs">
+          <div className="flex flex-wrap gap-2 text-caption">
             <Badge variant="accent" size="md">
               {t("awardsCeremony.managerOfSeason")}
             </Badge>
@@ -162,7 +162,7 @@ export default function AwardsCeremonyScreen({
             <button
               type="button"
               onClick={onBack}
-              className="rounded-xl border border-gray-200 px-4 py-2 font-heading font-bold uppercase tracking-wider text-gray-600 transition-colors hover:border-gray-300 hover:text-gray-900 dark:border-navy-600 dark:text-gray-300 dark:hover:border-navy-500 dark:hover:text-white"
+              className="rounded-panel border border-line px-4 py-2 font-heading font-bold uppercase tracking-label text-fg-muted transition-colors hover:border-line-strong hover:text-fg"
             >
               {t("awardsCeremony.back")}
             </button>
@@ -171,7 +171,7 @@ export default function AwardsCeremonyScreen({
             <button
               type="button"
               onClick={onContinue}
-              className="rounded-xl bg-primary-500 px-4 py-2 font-heading font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-600"
+              className="rounded-panel bg-selected-fill px-4 py-2 font-heading font-bold uppercase tracking-label text-on-brand transition-colors hover:bg-selected-fill"
             >
               {t("awardsCeremony.continue")}
             </button>
@@ -275,26 +275,24 @@ function WinnerCard({
       <CardBody className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-heading font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+            <p className="text-caption font-heading font-bold uppercase tracking-[0.2em] text-fg-subtle">
               {title}
             </p>
             {onSelectName ? (
               <button
                 type="button"
                 onClick={onSelectName}
-                className="mt-1 text-left text-2xl font-heading font-bold uppercase tracking-wide text-gray-900 transition-colors hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
+                className="mt-1 text-left text-title font-heading font-bold uppercase tracking-label text-fg transition-colors hover:text-selected"
               >
                 {name}
               </button>
             ) : (
-              <p className="mt-1 text-2xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+              <p className="mt-1 text-title font-heading font-bold uppercase tracking-label text-fg">
                 {name}
               </p>
             )}
           </div>
-          <div className="rounded-xl bg-gray-100 p-3 text-gray-700 dark:bg-navy-700 dark:text-gray-200">
-            {icon}
-          </div>
+          <div className="rounded-panel bg-hover p-3 text-fg">{icon}</div>
         </div>
 
         <div className="space-y-3">
@@ -302,22 +300,20 @@ function WinnerCard({
             <button
               type="button"
               onClick={onSelectTeam}
-              className="text-left text-sm font-heading font-bold uppercase tracking-wider text-accent-500 transition-colors hover:text-accent-400"
+              className="text-left text-body font-heading font-bold uppercase tracking-label text-warning transition-colors hover:text-warning"
             >
               {teamName}
             </button>
           ) : (
-            <p className="text-sm font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-body font-heading font-bold uppercase tracking-label text-fg-muted">
               {teamName}
             </p>
           )}
-          <div className="rounded-lg bg-gray-50 p-3 dark:bg-navy-800/70">
-            <p className="text-[11px] font-heading font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
+          <div className="rounded-control bg-sunken p-3">
+            <p className="text-caption font-heading font-bold uppercase tracking-[0.18em] text-fg-subtle">
               {valueLabel}
             </p>
-            <p className="mt-2 text-lg font-heading font-bold text-gray-800 dark:text-gray-100">
-              {value}
-            </p>
+            <p className="mt-2 text-heading font-heading font-bold text-fg">{value}</p>
           </div>
         </div>
       </CardBody>

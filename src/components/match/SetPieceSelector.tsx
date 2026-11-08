@@ -133,14 +133,14 @@ export default function SetPieceSelector({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-3 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-navy-700/50 dark:hover:bg-navy-700 transition-colors"
+        className="w-full flex items-center gap-3 p-3 rounded-control bg-hover hover:bg-hover/50 transition-colors"
       >
         {icon}
         <div className="flex-1 text-left">
-          <p className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+          <p className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
             {label}
           </p>
-          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">
+          <p className="text-body text-fg font-medium">
             {currentPlayer ? currentPlayer.name : t("match.notAssigned")}
           </p>
         </div>
@@ -150,21 +150,19 @@ export default function SetPieceSelector({
               <span
                 key={s.label}
                 title={getTranslatedStatLabel(s.label)}
-                className="inline-flex items-center gap-1 rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-800 px-2 py-1 text-xs font-heading font-bold text-gray-800 dark:text-gray-100"
+                className="inline-flex items-center gap-1 rounded-md border border-line bg-panel px-2 py-1 text-caption font-heading font-bold text-fg"
               >
-                <span className="text-gray-600 dark:text-gray-300">
-                  {getTranslatedStatLabel(s.label)}
-                </span>
+                <span className="text-fg-muted">{getTranslatedStatLabel(s.label)}</span>
                 <span className={getAttributeValueClassName(s.value)}>{s.value}</span>
               </span>
             ))}
           </div>
         )}
-        <ArrowUpDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+        <ArrowUpDown className="w-4 h-4 text-fg-muted" />
       </button>
 
       {expanded && (
-        <div className="mt-1 bg-white dark:bg-navy-700 rounded-lg border border-gray-200 dark:border-navy-600 p-2 flex flex-col gap-0.5 max-h-56 overflow-auto">
+        <div className="mt-1 bg-panel rounded-control border border-line p-2 flex flex-col gap-0.5 max-h-56 overflow-auto">
           {sortedPlayers.map((p) => {
             const isCurrent = p.id === currentId;
             return (
@@ -176,20 +174,18 @@ export default function SetPieceSelector({
                   setExpanded(false);
                 }}
                 className={`flex items-center gap-2 px-2 py-1.5 rounded text-left transition-colors ${
-                  isCurrent
-                    ? "bg-primary-500/20 text-primary-500 dark:text-primary-400"
-                    : "hover:bg-gray-100 dark:hover:bg-navy-600 text-gray-700 dark:text-gray-300"
+                  isCurrent ? "bg-selected-tint text-selected" : "hover:bg-hover text-fg"
                 }`}
               >
                 <span className="w-3 shrink-0">
-                  {isCurrent && <Check className="w-3 h-3 text-primary-400" />}
+                  {isCurrent && <Check className="w-3 h-3 text-selected" />}
                 </span>
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">{p.name}</span>
+                <span className="min-w-0 flex-1 truncate text-body font-medium">{p.name}</span>
                 <Badge variant="neutral" size="sm">
                   {getTranslatedPositionAbbreviation(p.position)}
                 </Badge>
                 <span
-                  className={`w-7 shrink-0 text-right text-xs font-heading font-bold tabular-nums ${getAttributeValueClassName(p.spStats.score)}`}
+                  className={`w-7 shrink-0 text-right text-caption font-heading font-bold tabular-nums ${getAttributeValueClassName(p.spStats.score)}`}
                 >
                   {p.spStats.score}
                 </span>

@@ -51,14 +51,14 @@ export default function TournamentsOverview({
   );
 
   const roundProgress = (
-    <div className="divide-y divide-gray-100 dark:divide-navy-600">
+    <div className="divide-y divide-line">
       {knockoutRounds.map((round) => (
         <div
           key={round.id}
           className="flex items-center justify-between px-4 py-2.5"
           data-testid={`tournaments-round-summary-${round.id}`}
         >
-          <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+          <span className="text-body font-semibold text-fg">
             {localizedRoundName(t, round.name)}
           </span>
           <Badge variant={round.completed ? "accent" : "neutral"} size="sm">

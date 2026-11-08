@@ -159,19 +159,19 @@ describe("parseFormationNeeds", () => {
 // ---------------------------------------------------------------------------
 
 describe("condColor", () => {
-  it("returns primary for high condition (>= 75)", () => {
-    expect(condColor(75)).toBe("text-primary-400");
-    expect(condColor(100)).toBe("text-primary-400");
+  it("returns the selected token for high condition (>= 75)", () => {
+    expect(condColor(75)).toBe("text-selected");
+    expect(condColor(100)).toBe("text-selected");
   });
 
-  it("returns amber for medium condition (50-74)", () => {
-    expect(condColor(50)).toBe("text-amber-400");
-    expect(condColor(74)).toBe("text-amber-400");
+  it("returns warning for medium condition (50-74)", () => {
+    expect(condColor(50)).toBe("text-warning");
+    expect(condColor(74)).toBe("text-warning");
   });
 
-  it("returns red for low condition (< 50)", () => {
-    expect(condColor(49)).toBe("text-red-400");
-    expect(condColor(0)).toBe("text-red-400");
+  it("returns danger for low condition (< 50)", () => {
+    expect(condColor(49)).toBe("text-danger");
+    expect(condColor(0)).toBe("text-danger");
   });
 });
 

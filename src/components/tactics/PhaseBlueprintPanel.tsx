@@ -44,7 +44,7 @@ function PhaseButtonGroup({
   const currentValue = (tacticsPhase?.[field] ?? options[0]) as string;
   return (
     <div className="flex items-center gap-2">
-      <span className="w-20 shrink-0 text-[11px] text-gray-500 dark:text-gray-400">
+      <span className="w-20 shrink-0 text-caption text-fg-muted">
         {t(`tactics.phaseSettings.${labelKey}`)}
       </span>
       <Select
@@ -81,10 +81,10 @@ export function PhaseBlueprintPanel({
 }): JSX.Element {
   const { t } = useTranslation();
   return (
-    <div className="divide-y divide-gray-100 dark:divide-navy-700">
+    <div className="divide-y divide-line">
       {SECTIONS.map(([labelKey, fields]) => (
         <div key={labelKey} className="p-3 space-y-2">
-          <div className="mb-1.5 text-[11px] font-heading font-bold uppercase tracking-[0.2em] text-primary-500 dark:text-primary-400">
+          <div className="mb-1.5 text-caption font-heading font-bold uppercase tracking-[0.2em] text-selected">
             {t(`tactics.phaseLabels.${labelKey}`)}
           </div>
           {fields.map(([field, fieldLabelKey, options]) => (

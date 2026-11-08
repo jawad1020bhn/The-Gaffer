@@ -162,7 +162,7 @@ export default function TacticsCommandBar({
           <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-heading font-bold uppercase tracking-[0.24em] text-gray-500 dark:text-gray-400">
+                <span className="text-caption font-heading font-bold uppercase tracking-[0.24em] text-fg-muted">
                   {t("tactics.presetTactics")}
                 </span>
                 <Badge variant={activeTactic.type === "custom" ? "accent" : "success"} size="sm">
@@ -174,9 +174,7 @@ export default function TacticsCommandBar({
                   {isDirty ? t("tactics.unsavedChanges") : t("tactics.synced")}
                 </Badge>
               </div>
-              <p className="mt-2 max-w-3xl text-sm text-gray-500 dark:text-gray-400">
-                {activeTactic.description}
-              </p>
+              <p className="mt-2 max-w-3xl text-body text-fg-muted">{activeTactic.description}</p>
             </div>
 
             <div className="flex flex-wrap gap-2 xl:justify-end">
@@ -222,12 +220,12 @@ export default function TacticsCommandBar({
           </div>
 
           <div className="grid gap-3 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)_minmax(0,1.2fr)]">
-            <div className="relative rounded-2xl border border-gray-200/70 bg-gray-50/80 p-3 dark:border-white/8 dark:bg-navy-900/35">
+            <div className="relative rounded-panel border bg-sunken p-3 border-line/8">
               <div className="mb-2 flex items-center justify-between gap-3">
-                <div className="text-[11px] font-heading font-bold uppercase tracking-[0.24em] text-gray-500 dark:text-gray-400">
+                <div className="text-caption font-heading font-bold uppercase tracking-[0.24em] text-fg-muted">
                   {t("tactics.chooseTactic")}
                 </div>
-                <div className="text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 dark:text-primary-300">
+                <div className="text-caption font-heading font-bold uppercase tracking-[0.18em] text-selected">
                   {activeTactic.type === "custom" ? t("tactics.myTactics") : t("tactics.presets")}
                 </div>
               </div>
@@ -238,32 +236,32 @@ export default function TacticsCommandBar({
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
                 onClick={() => setIsOpen((open) => !open)}
-                className="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-3 text-left transition-colors hover:border-primary-300 dark:border-white/10 dark:bg-navy-800/90 dark:hover:border-primary-400"
+                className="flex w-full items-center justify-between rounded-panel border bg-panel px-3 py-3 text-left transition-colors hover:border-selected/40 border-line/10"
               >
                 <div className="min-w-0">
-                  <div className="truncate text-base font-heading font-bold text-gray-900 dark:text-gray-100">
+                  <div className="truncate text-body font-heading font-bold text-fg">
                     {activeTactic.name}
                   </div>
-                  <div className="mt-1 truncate text-[11px] uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+                  <div className="mt-1 truncate text-caption uppercase tracking-[0.18em] text-fg-muted">
                     {summarizeTactic(activeTactic, t)}
                   </div>
                 </div>
-                <div className="shrink-0 rounded-full bg-primary-500/10 px-2 py-1 text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 dark:text-primary-300">
+                <div className="shrink-0 rounded-full bg-selected-tint px-2 py-1 text-caption font-heading font-bold uppercase tracking-[0.18em] text-selected">
                   {activeTactic.type === "custom" ? t("tactics.myTactics") : t("tactics.presets")}
                 </div>
               </button>
 
               {isOpen ? (
-                <div className="absolute left-0 right-0 top-full z-50 mt-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-2xl dark:border-navy-600 dark:bg-navy-800">
-                  <div className="mb-2 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-navy-600 dark:bg-navy-700">
-                    <Search className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 rounded-panel border border-line bg-panel p-2 shadow-2xl">
+                  <div className="mb-2 flex items-center gap-2 rounded-panel border border-line bg-sunken px-3 py-2">
+                    <Search className="h-4 w-4 text-fg-subtle" />
                     <input
                       type="text"
                       value={search}
                       onChange={(event) => setSearch(event.target.value)}
                       aria-label={t("tactics.searchTactics")}
                       placeholder={t("tactics.searchTactics")}
-                      className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400 dark:text-gray-100"
+                      className="w-full bg-transparent text-body text-fg outline-none placeholder:text-fg-subtle"
                     />
                   </div>
 
@@ -274,7 +272,7 @@ export default function TacticsCommandBar({
                   >
                     {customEntries.length > 0 ? (
                       <div>
-                        <div className="mb-2 px-2 text-[11px] font-heading font-bold uppercase tracking-[0.22em] text-gray-500 dark:text-gray-400">
+                        <div className="mb-2 px-2 text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
                           {t("tactics.myTactics")}
                         </div>
                         <div className="space-y-1">
@@ -289,22 +287,22 @@ export default function TacticsCommandBar({
                                 setIsOpen(false);
                                 setSearch("");
                               }}
-                              className={`w-full rounded-xl border px-3 py-3 text-left transition-colors ${
+                              className={`w-full rounded-panel border px-3 py-3 text-left transition-colors ${
                                 entry.id === activeTactic.id
-                                  ? "border-primary-300 bg-primary-50 dark:border-primary-400 dark:bg-primary-500/10"
-                                  : "border-transparent bg-gray-50 hover:border-gray-200 hover:bg-white dark:bg-navy-700/70 dark:hover:border-navy-500 dark:hover:bg-navy-700"
+                                  ? "border-selected/40 bg-selected-tint"
+                                  : "border-transparent bg-sunken hover:bg-panel/70 hover:border-line-strong"
                               }`}
                             >
                               <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
-                                  <div className="truncate text-sm font-heading font-bold text-gray-900 dark:text-gray-100">
+                                  <div className="truncate text-body font-heading font-bold text-fg">
                                     {entry.name}
                                   </div>
-                                  <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                  <div className="mt-1 text-caption text-fg-muted">
                                     {entry.description}
                                   </div>
                                 </div>
-                                <span className="shrink-0 text-[11px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 dark:text-primary-300">
+                                <span className="shrink-0 text-caption font-heading font-bold uppercase tracking-[0.18em] text-selected">
                                   {summarizeTactic(entry, t)}
                                 </span>
                               </div>
@@ -315,7 +313,7 @@ export default function TacticsCommandBar({
                     ) : null}
 
                     <div>
-                      <div className="mb-2 px-2 text-[11px] font-heading font-bold uppercase tracking-[0.22em] text-gray-500 dark:text-gray-400">
+                      <div className="mb-2 px-2 text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
                         {t("tactics.presets")}
                       </div>
                       <div className="space-y-1">
@@ -330,22 +328,22 @@ export default function TacticsCommandBar({
                               setIsOpen(false);
                               setSearch("");
                             }}
-                            className={`w-full rounded-xl border px-3 py-3 text-left transition-colors ${
+                            className={`w-full rounded-panel border px-3 py-3 text-left transition-colors ${
                               entry.id === activeTactic.id
-                                ? "border-primary-300 bg-primary-50 dark:border-primary-400 dark:bg-primary-500/10"
-                                : "border-transparent bg-gray-50 hover:border-gray-200 hover:bg-white dark:bg-navy-700/70 dark:hover:border-navy-500 dark:hover:bg-navy-700"
+                                ? "border-selected/40 bg-selected-tint"
+                                : "border-transparent bg-sunken hover:bg-panel/70 hover:border-line-strong"
                             }`}
                           >
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0">
-                                <div className="truncate text-sm font-heading font-bold text-gray-900 dark:text-gray-100">
+                                <div className="truncate text-body font-heading font-bold text-fg">
                                   {entry.name}
                                 </div>
-                                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                <div className="mt-1 text-caption text-fg-muted">
                                   {entry.description}
                                 </div>
                               </div>
-                              <span className="shrink-0 text-[11px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 dark:text-primary-300">
+                              <span className="shrink-0 text-caption font-heading font-bold uppercase tracking-[0.18em] text-selected">
                                 {summarizeTactic(entry, t)}
                               </span>
                             </div>
@@ -358,8 +356,8 @@ export default function TacticsCommandBar({
               ) : null}
             </div>
 
-            <div className="rounded-2xl border border-gray-200/70 bg-gray-50/80 p-3 dark:border-white/8 dark:bg-navy-900/35">
-              <div className="mb-2 text-[11px] font-heading font-bold uppercase tracking-[0.24em] text-gray-500 dark:text-gray-400">
+            <div className="rounded-panel border bg-sunken p-3 border-line/8">
+              <div className="mb-2 text-caption font-heading font-bold uppercase tracking-[0.24em] text-fg-muted">
                 {t("tactics.formation")}
               </div>
               <Select
@@ -376,8 +374,8 @@ export default function TacticsCommandBar({
               </Select>
             </div>
 
-            <div className="rounded-2xl border border-gray-200/70 bg-gray-50/80 p-3 dark:border-white/8 dark:bg-navy-900/35">
-              <div className="mb-2 text-[11px] font-heading font-bold uppercase tracking-[0.24em] text-gray-500 dark:text-gray-400">
+            <div className="rounded-panel border bg-sunken p-3 border-line/8">
+              <div className="mb-2 text-caption font-heading font-bold uppercase tracking-[0.24em] text-fg-muted">
                 {t("tactics.playStyle")}
               </div>
               <Select

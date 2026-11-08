@@ -119,13 +119,13 @@ describe("PlayerProfileAttributesCard", () => {
    * When the list and radar toggle render
    * Then both carry a visible focus ring in light and dark themes
    */
-  it("gives the view toggle buttons a focus ring for both themes", () => {
+  it("gives the view toggle buttons a focus ring in the focus colour", () => {
     renderCard({ attributesVisible: true });
 
     for (const name of ["List", "Radar"]) {
       const button = screen.getByRole("button", { name });
       expect(button.className).toContain("focus-visible:ring-2");
-      expect(button.className).toContain("dark:focus-visible:ring-primary-400");
+      expect(button.className).toContain("focus-visible:ring-focus");
     }
   });
 

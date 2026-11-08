@@ -71,50 +71,18 @@ beforeEach(() => {
   answerWithSaved({});
 });
 
-describe("Settings: the sidebar", () => {
-  /**
-   * Given the Display settings
-   * When the player picks the Compact width, then Expand on click
-   * Then each is saved, so the sidebar opens that way from now on.
-   */
-  it("saves the sidebar's width and behaviour", async () => {
+describe("Settings: retired presentation controls", () => {
+  /** Given the dedicated dark game shell, when Display settings render, then old theme/sidebar controls are gone. */
+  it("does not offer the retired theme or sidebar controls", async () => {
     renderSettings();
-
-    const width = await screen.findByRole("radiogroup", { name: "settings.sidebarWidth" });
-    fireEvent.click(
-      within(width).getByRole("radio", { name: "settings.sidebarWidthOptions.compact" }),
-    );
-    await waitFor(() => expect(lastSaved()).toMatchObject({ sidebar_width: "compact" }));
-
-    const behaviour = screen.getByRole("radiogroup", { name: "settings.sidebarBehaviour" });
-    fireEvent.click(
-      within(behaviour).getByRole("radio", { name: "settings.sidebarBehaviourOptions.click" }),
-    );
-    await waitFor(() =>
-      expect(lastSaved()).toMatchObject({
-        sidebar_width: "compact",
-        sidebar_behaviour: "click",
-      }),
-    );
-  });
-
-  /** Given the Display settings, then both rows offer every choice, named for the player. */
-  it("offers every width and behaviour", async () => {
-    renderSettings();
-    const width = await screen.findByRole("radiogroup", { name: "settings.sidebarWidth" });
-    for (const option of ["compact", "standard", "wide"]) {
-      expect(
-        within(width).getByRole("radio", { name: `settings.sidebarWidthOptions.${option}` }),
-      ).toBeInTheDocument();
-    }
-    const behaviour = screen.getByRole("radiogroup", { name: "settings.sidebarBehaviour" });
-    for (const option of ["normal", "hover", "click", "icons"]) {
-      expect(
-        within(behaviour).getByRole("radio", {
-          name: `settings.sidebarBehaviourOptions.${option}`,
-        }),
-      ).toBeInTheDocument();
-    }
+    await screen.findByRole("radiogroup", { name: "settings.uiScale" });
+    expect(screen.queryByRole("radiogroup", { name: "settings.theme" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("radiogroup", { name: "settings.sidebarWidth" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("radiogroup", { name: "settings.sidebarBehaviour" }),
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -123,13 +91,11 @@ describe("Settings: the choices", () => {
    * Given the Settings page
    * When a screen reader reaches each row with a choice of a few
    * Then it is a radio group named by the row's own label, with the saved choice checked and the
-   * only one in the tab order: theme, UI scale, sidebar width, sidebar behaviour, match speed.
+   * only one in the tab order: UI scale, density, match speed.
    */
   it.each([
-    ["settings.theme", "settings.themeOptions.dark"],
     ["settings.uiScale", "settings.uiScaleOptions.normal"],
-    ["settings.sidebarWidth", "settings.sidebarWidthOptions.standard"],
-    ["settings.sidebarBehaviour", "settings.sidebarBehaviourOptions.normal"],
+    ["settings.uiDensity", "settings.uiDensityOptions.comfortable"],
     ["settings.matchSpeed", "settings.speeds.normal"],
   ])("draws %s as a radio group named by its row", async (row, saved) => {
     renderSettings();
@@ -143,22 +109,27 @@ describe("Settings: the choices", () => {
   });
 
   /**
-   * Given the sidebar behaviour on Normal, with the focus on it
+   * Given the match speed on Normal, with the focus on it
    * When the player presses the right arrow
-   * Then the choice and the focus move to Expand on hover, and it is saved.
+   * Then the choice and the focus move to Fast, and it is saved.
    */
   it("moves a choice with the arrow keys", async () => {
     renderSettings();
-    const behaviour = await screen.findByRole("radiogroup", { name: "settings.sidebarBehaviour" });
-    const normal = within(behaviour).getByRole("radio", {
-      name: "settings.sidebarBehaviourOptions.normal",
-    });
+    const speed = await screen.findByRole("radiogroup", { name: "settings.matchSpeed" });
+    const normal = within(speed).getByRole("radio", { name: "settings.speeds.normal" });
     normal.focus();
     fireEvent.keyDown(normal, { key: "ArrowRight" });
-    await waitFor(() => expect(lastSaved()).toMatchObject({ sidebar_behaviour: "hover" }));
-    expect(
-      within(behaviour).getByRole("radio", { name: "settings.sidebarBehaviourOptions.hover" }),
-    ).toHaveFocus();
+    await waitFor(() => expect(lastSaved()).toMatchObject({ match_speed: "fast" }));
+    expect(within(speed).getByRole("radio", { name: "settings.speeds.fast" })).toHaveFocus();
+  });
+
+  it("saves compact density from the Display section", async () => {
+    renderSettings();
+    const density = await screen.findByRole("radiogroup", { name: "settings.uiDensity" });
+    fireEvent.click(
+      within(density).getByRole("radio", { name: "settings.uiDensityOptions.compact" }),
+    );
+    await waitFor(() => expect(lastSaved()).toMatchObject({ ui_density: "compact" }));
   });
 
   /**

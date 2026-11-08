@@ -38,9 +38,9 @@ function SavedOfferEntry({ entry, teams }: { entry: SavedOffer; teams: TeamData[
   const { t, i18n } = useTranslation();
   const { offer } = entry;
   return (
-    <li className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900 dark:border-navy-600 dark:bg-navy-900 dark:text-gray-100">
+    <li className="rounded-control border border-line bg-sunken p-3 text-body text-fg">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="font-heading font-bold uppercase tracking-wider">
+        <span className="font-heading font-bold uppercase tracking-label">
           {entry.kind === "transfer" ? t("transfers.transfer") : t("transfers.loan")}
         </span>
         <span>{getTeamName(teams, offer.from_team_id, t("common.unknown"))}</span>
@@ -57,7 +57,7 @@ function SavedOfferEntry({ entry, teams }: { entry: SavedOffer; teams: TeamData[
           })}
         </span>
       </div>
-      <p className="mt-2 text-gray-600 dark:text-gray-300">
+      <p className="mt-2 text-fg-muted">
         {t("transfers.offerRecordedOn", { date: formatDate(offer.date, i18n.language) })}
       </p>
       {entry.kind === "transfer" ? (
@@ -114,7 +114,7 @@ export default function PlayerOfferHistory({ player, userTeamId, teams }: Player
   if (offers.length === 0) return null;
   return (
     <section aria-label={t("transfers.offerHistory")} className="mb-5 space-y-3">
-      <h3 className="font-heading text-lg font-bold uppercase tracking-wider text-gray-900 dark:text-white">
+      <h3 className="font-heading text-lead font-bold uppercase tracking-label text-fg">
         {t("transfers.offerHistory")}
       </h3>
       <ul className="space-y-3">

@@ -18,33 +18,33 @@ export default function DashboardCloseConfirmModal({
   const titleId = useId();
 
   return (
-    <Dialog labelledBy={titleId} onClose={onCancel} className="w-full max-w-sm rounded-2xl p-6">
+    <Dialog labelledBy={titleId} onClose={onCancel} className="w-full max-w-sm rounded-panel p-6">
       <h3
         id={titleId}
-        className="text-lg font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-white"
+        className="text-heading font-heading font-bold uppercase tracking-label text-fg"
       >
         {t("closeConfirm.title")}
       </h3>
-      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{t("closeConfirm.message")}</p>
+      <p className="mt-2 text-body text-fg-muted">{t("closeConfirm.message")}</p>
       <div className="mt-6 flex flex-col gap-2">
         <button
           type="button"
           onClick={onSaveAndQuit}
-          className="w-full rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-heading font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-600"
+          className="w-full rounded-control bg-selected-fill px-4 py-2.5 text-body font-heading font-bold uppercase tracking-label text-on-brand transition-colors hover:bg-selected-fill"
         >
           {t("closeConfirm.saveQuit")}
         </button>
         <button
           type="button"
           onClick={onQuitWithoutSave}
-          className="w-full rounded-lg bg-red-500 px-4 py-2.5 text-sm font-heading font-bold uppercase tracking-wider text-white transition-colors hover:bg-red-600"
+          className="w-full rounded-control bg-danger-tint px-4 py-2.5 text-body font-heading font-bold uppercase tracking-label text-danger transition-colors hover:bg-danger-tint"
         >
           {t("closeConfirm.quitNoSave")}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="w-full rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-heading font-bold uppercase tracking-wider text-gray-700 transition-colors hover:bg-gray-200 dark:bg-navy-700 dark:text-gray-300 dark:hover:bg-navy-600"
+          className="w-full rounded-control bg-hover px-4 py-2.5 text-body font-heading font-bold uppercase tracking-label text-fg transition-colors hover:bg-hover"
         >
           {t("common.cancel")}
         </button>

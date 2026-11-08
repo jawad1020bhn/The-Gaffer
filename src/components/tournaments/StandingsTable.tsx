@@ -53,13 +53,13 @@ export default function StandingsTable({
       : []),
   ];
 
-  const headClass = `${headPad} font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400`;
-  const statClass = `${pad} text-center text-sm text-gray-600 dark:text-gray-400 tabular-nums`;
+  const headClass = `${headPad} font-heading font-bold uppercase tracking-label text-fg-muted`;
+  const statClass = `${pad} text-center text-body text-fg-muted tabular-nums`;
 
   return (
     <table className="w-full text-left border-collapse">
       <thead>
-        <tr className="bg-gray-50 dark:bg-navy-800 border-b border-gray-200 dark:border-navy-600 text-xs">
+        <tr className="bg-sunken border-b border-line text-caption">
           {/*
             The column reads "#" because the design has 8px for it, but "number
             sign" is not a column name. The label is what assistive tech gets.
@@ -83,7 +83,7 @@ export default function StandingsTable({
           </th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+      <tbody className="divide-y divide-line">
         {standings.map((entry, idx) => {
           const isUser = entry.team_id === userTeamId;
           const gd = entry.goals_for - entry.goals_against;
@@ -103,16 +103,16 @@ export default function StandingsTable({
             >
               <tr
                 onClick={clickable ? () => onSelectTeam(entry.team_id) : undefined}
-                className={`transition-colors ${clickable ? "cursor-pointer" : ""} ${isUser ? "bg-primary-50 dark:bg-primary-500/10" : "hover:bg-gray-50 dark:hover:bg-navy-700/50"}`}
+                className={`transition-colors ${clickable ? "cursor-pointer" : ""} ${isUser ? "bg-selected-tint" : "hover:bg-hover/50"}`}
                 data-testid={`${testIdPrefix}-${entry.team_id}`}
               >
                 <td
-                  className={`${pad} font-heading font-bold text-sm ${
+                  className={`${pad} font-heading font-bold text-body ${
                     inPromotionZone
-                      ? "border-l-2 border-primary-500 text-primary-500 dark:text-primary-400"
+                      ? "border-l-2 border-selected text-selected"
                       : inRelegationZone
-                        ? "border-l-2 border-red-500 text-red-500 dark:text-red-400"
-                        : "text-gray-400 dark:text-gray-500"
+                        ? "border-l-2 border-danger text-danger"
+                        : "text-fg-subtle"
                   }`}
                   data-testid={
                     inPromotionZone
@@ -125,7 +125,7 @@ export default function StandingsTable({
                   {idx + 1}
                 </td>
                 <td
-                  className={`${pad} font-semibold text-sm ${isUser ? "text-primary-600 dark:text-primary-400" : "text-gray-800 dark:text-gray-200"}`}
+                  className={`${pad} font-semibold text-body ${isUser ? "text-selected" : "text-fg"}`}
                 >
                   {clickable ? (
                     <button
@@ -135,7 +135,7 @@ export default function StandingsTable({
                         event.stopPropagation();
                         onSelectTeam(entry.team_id);
                       }}
-                      className="text-left hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 rounded"
+                      className="text-left hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel rounded"
                     >
                       {resolveTeamName(entry.team_id)}
                     </button>
@@ -149,12 +149,12 @@ export default function StandingsTable({
                   </td>
                 ))}
                 <td
-                  className={`${pad} text-center text-sm font-semibold tabular-nums ${gd > 0 ? "text-primary-500 dark:text-primary-400" : gd < 0 ? "text-red-500 dark:text-red-400" : "text-gray-500 dark:text-gray-400"}`}
+                  className={`${pad} text-center text-body font-semibold tabular-nums ${gd > 0 ? "text-selected" : gd < 0 ? "text-danger" : "text-fg-muted"}`}
                 >
                   {gd > 0 ? `+${gd}` : gd}
                 </td>
                 <td
-                  className={`${pad} text-center font-heading font-bold text-sm text-gray-800 dark:text-gray-100 tabular-nums`}
+                  className={`${pad} text-center font-heading font-bold text-body text-fg tabular-nums`}
                 >
                   {entry.points}
                 </td>

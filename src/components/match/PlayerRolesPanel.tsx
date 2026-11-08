@@ -54,7 +54,7 @@ export function PlayerRolesPanel({
 
   return (
     <details
-      className="rounded-lg border border-gray-200 bg-white px-3 py-2 dark:border-navy-600 dark:bg-navy-800"
+      className="rounded-control border border-line bg-panel px-3 py-2"
       // A refusal is about the last change made; once the section is put away it is stale, and so is
       // any change still in flight, whose answer must not bring it back.
       onToggle={(event) => {
@@ -63,14 +63,14 @@ export function PlayerRolesPanel({
         setRefusal(null);
       }}
     >
-      <summary className="cursor-pointer rounded font-heading text-xs font-bold uppercase tracking-widest text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-gray-200">
+      <summary className="cursor-pointer rounded font-heading text-caption font-bold uppercase tracking-labelst text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-selected">
         {t("match.playerRoles")}
       </summary>
       <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
         {sortByPositionGroup(players, positions).map((player) => (
-          <li key={player.id} className="flex items-center justify-between gap-2 text-xs">
-            <span className="min-w-0 truncate text-gray-900 dark:text-white">
-              <span className="mr-1.5 font-heading text-gray-500 dark:text-gray-400">
+          <li key={player.id} className="flex items-center justify-between gap-2 text-caption">
+            <span className="min-w-0 truncate text-fg">
+              <span className="mr-1.5 font-heading text-fg-muted">
                 {translatePositionAbbreviation(t, player.position)}
               </span>
               {player.name}
@@ -92,12 +92,7 @@ export function PlayerRolesPanel({
         ))}
       </ul>
       {refusal && (
-        <p
-          key={refusal.count}
-          id={alertId}
-          role="alert"
-          className="mt-2 text-xs text-red-600 dark:text-red-400"
-        >
+        <p key={refusal.count} id={alertId} role="alert" className="mt-2 text-caption text-danger">
           {t("match.roleChangeRefused", {
             player: refusal.player,
             reason: resolveBackendError(refusal.reason),

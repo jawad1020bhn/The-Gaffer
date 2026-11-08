@@ -52,9 +52,9 @@ const TRAINING_FOCUS_ICONS: Record<string, ReactNode> = {
 const INTENSITY_IDS = ["Low", "Medium", "High"] as const;
 
 const INTENSITY_COLORS: Record<string, string> = {
-  Low: "text-blue-500",
-  Medium: "text-accent-500",
-  High: "text-red-500",
+  Low: "text-info",
+  Medium: "text-warning",
+  High: "text-danger",
 };
 
 const SCHEDULE_IDS = ["Intense", "Balanced", "Light"] as const;
@@ -66,9 +66,9 @@ const SCHEDULE_ICONS: Record<string, ReactNode> = {
 };
 
 const SCHEDULE_COLORS: Record<string, string> = {
-  Intense: "text-red-500",
-  Balanced: "text-primary-500",
-  Light: "text-blue-500",
+  Intense: "text-danger",
+  Balanced: "text-selected",
+  Light: "text-info",
 };
 
 const SCHEDULE_TRAINING_DAYS: Record<string, number[]> = {
@@ -101,7 +101,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
   const team = sessionState?.team ?? gameState?.teams.find((t) => t.id === teamId) ?? null;
 
   if (!team) {
-    return <p className="text-gray-500 dark:text-gray-400">{t("common.noTeam")}</p>;
+    return <p className="text-fg-muted">{t("common.noTeam")}</p>;
   }
 
   const currentFocus = team.training_focus || "Physical";
@@ -167,29 +167,29 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
       <div className="lg:col-span-2 flex flex-col gap-5">
         {staffAdvice ? (
           <div
-            className={`flex items-start gap-3 p-4 rounded-xl border-2 ${
+            className={`flex items-start gap-3 p-4 rounded-panel border-2 ${
               staffAdvice.level === "critical"
-                ? "bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/40"
+                ? "bg-danger-tint border-danger/40"
                 : staffAdvice.level === "warn"
-                  ? "bg-amber-50 dark:bg-amber-500/10 border-amber-300 dark:border-amber-500/40"
-                  : "bg-blue-50 dark:bg-blue-500/10 border-blue-300 dark:border-blue-500/40"
+                  ? "bg-warning-tint border-warning/40"
+                  : "bg-info-tint border-info/40"
             }`}
           >
             {staffAdvice.level === "critical" ? (
-              <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-danger flex-shrink-0 mt-0.5" />
             ) : staffAdvice.level === "warn" ? (
-              <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
             ) : (
-              <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-info flex-shrink-0 mt-0.5" />
             )}
             <div>
               <p
-                className={`text-xs font-heading font-bold uppercase tracking-wider mb-0.5 ${
+                className={`text-caption font-heading font-bold uppercase tracking-label mb-0.5 ${
                   staffAdvice.level === "critical"
-                    ? "text-red-600 dark:text-red-400"
+                    ? "text-danger"
                     : staffAdvice.level === "warn"
-                      ? "text-amber-600 dark:text-amber-400"
-                      : "text-blue-600 dark:text-blue-400"
+                      ? "text-warning"
+                      : "text-info"
                 }`}
               >
                 {staffAdvice.level === "critical"
@@ -198,7 +198,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
                     ? t("training.staffWarning")
                     : t("training.staffSuggestion")}
               </p>
-              <p className="text-sm text-gray-700 dark:text-gray-300">{staffAdvice.message}</p>
+              <p className="text-body text-fg">{staffAdvice.message}</p>
             </div>
           </div>
         ) : null}
@@ -249,11 +249,9 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
           <CardBody>
             <div className="flex flex-col gap-3">
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {t("training.avgCondition")}
-                  </span>
-                  <span className="font-heading font-bold text-gray-800 dark:text-gray-100">
+                <div className="flex justify-between text-body mb-1">
+                  <span className="text-fg-muted">{t("training.avgCondition")}</span>
+                  <span className="font-heading font-bold text-fg">
                     {avgCondition !== null ? `${avgCondition}%` : "—"}
                   </span>
                 </div>
@@ -268,26 +266,22 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
                 />
               </div>
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {t("training.avgMorale")}
-                  </span>
-                  <span className="font-heading font-bold text-gray-800 dark:text-gray-100">
-                    {avgMorale}%
-                  </span>
+                <div className="flex justify-between text-body mb-1">
+                  <span className="text-fg-muted">{t("training.avgMorale")}</span>
+                  <span className="font-heading font-bold text-fg">{avgMorale}%</span>
                 </div>
                 <ProgressBar value={avgMorale} variant="auto" size="md" />
               </div>
               {exhaustedCount > 0 || criticalCount > 0 ? (
-                <div className="mt-1 pt-2 border-t border-gray-100 dark:border-navy-700">
+                <div className="mt-1 pt-2 border-t border-line">
                   {criticalCount > 0 ? (
-                    <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <p className="text-caption text-danger flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />{" "}
                       {t("training.criticalCondition", { count: criticalCount })}
                     </p>
                   ) : null}
                   {exhaustedCount > 0 ? (
-                    <p className="text-xs text-amber-500 dark:text-amber-400 flex items-center gap-1 mt-0.5">
+                    <p className="text-caption text-warning flex items-center gap-1 mt-0.5">
                       <AlertTriangle className="w-3 h-3" />{" "}
                       {t("training.exhaustedPlayers", { count: exhaustedCount })}
                     </p>
@@ -301,7 +295,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
         <Card>
           <CardHeader>{t("training.playerFitness")}</CardHeader>
           <CardBody className="p-0 max-h-64 overflow-y-auto">
-            <ul className="divide-y divide-gray-100 dark:divide-navy-600">
+            <ul className="divide-y divide-line">
               {[...roster]
                 .sort((left, right) => left.condition - right.condition)
                 .map((player) => {
@@ -315,10 +309,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
                       aria-labelledby={nameId}
                       className="flex items-center px-4 py-2 gap-3"
                     >
-                      <span
-                        id={nameId}
-                        className="text-sm font-medium flex-1 truncate text-gray-800 dark:text-gray-200"
-                      >
+                      <span id={nameId} className="text-body font-medium flex-1 truncate text-fg">
                         {player.match_name}
                         {player.jersey_number != null ? ` (#${player.jersey_number})` : ""}
                       </span>

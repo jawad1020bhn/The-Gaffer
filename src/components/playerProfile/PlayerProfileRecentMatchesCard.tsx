@@ -52,7 +52,7 @@ export default function PlayerProfileRecentMatchesCard({
       <CardBody>
         {ratedMatches.length >= MIN_POINTS_FOR_TREND ? (
           <div className="mb-4">
-            <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-heading mb-2">
+            <p className="text-caption uppercase tracking-label text-fg-subtle font-heading mb-2">
               {ratingTrendLabel}
             </p>
             <PlayerRatingTrendChart matches={ratedMatches} ratingLabel={ratingLabel} />
@@ -62,40 +62,38 @@ export default function PlayerProfileRecentMatchesCard({
           {matches.map((match) => (
             <div
               key={match.fixture_id}
-              className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)] gap-3 rounded-lg bg-gray-50 dark:bg-navy-700 px-3 py-2.5"
+              className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)] gap-3 rounded-control bg-sunken px-3 py-2.5"
             >
               <div>
-                <p className="font-heading font-bold text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <p className="font-heading font-bold text-body uppercase tracking-label text-fg-muted">
                   {match.date}
                 </p>
-                <p className="font-heading font-bold text-base text-gray-800 dark:text-gray-100">
-                  {match.opponent_name}
-                </p>
+                <p className="font-heading font-bold text-body text-fg">{match.opponent_name}</p>
               </div>
 
               <div className="text-center">
-                <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                <p className="text-caption uppercase tracking-label text-fg-subtle">
                   {t("playerProfile.recentMatchesScore")}
                 </p>
-                <p className="font-heading font-bold text-base text-gray-700 dark:text-gray-200 tabular-nums">
+                <p className="font-heading font-bold text-body text-fg tabular-nums">
                   {match.team_goals}-{match.opponent_goals}
                 </p>
               </div>
 
               <div className="text-center">
-                <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                <p className="text-caption uppercase tracking-label text-fg-subtle">
                   {t("playerProfile.recentMatchesGoalsAssists")}
                 </p>
-                <p className="font-heading font-bold text-base text-gray-700 dark:text-gray-200 tabular-nums">
+                <p className="font-heading font-bold text-body text-fg tabular-nums">
                   {match.goals} / {match.assists}
                 </p>
               </div>
 
               <div className="text-center">
-                <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                <p className="text-caption uppercase tracking-label text-fg-subtle">
                   {t("playerProfile.recentMatchesRating")}
                 </p>
-                <p className="font-heading font-bold text-base text-gray-700 dark:text-gray-200 tabular-nums">
+                <p className="font-heading font-bold text-body text-fg tabular-nums">
                   {match.rated ? match.rating.toFixed(1) : "–"}
                 </p>
               </div>

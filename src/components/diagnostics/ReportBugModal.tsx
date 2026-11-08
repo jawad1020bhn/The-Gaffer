@@ -183,7 +183,7 @@ export function ReportBugModal({ onClose, onUploaded }: ReportBugModalProps) {
       labelledBy="report-bug-title"
       onClose={requestClose}
       busy={busy}
-      className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl p-6"
+      className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-panel p-6"
     >
       <ReportDialogHeader
         step={step}

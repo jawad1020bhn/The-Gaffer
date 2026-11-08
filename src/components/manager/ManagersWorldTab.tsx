@@ -97,14 +97,14 @@ export default function ManagersWorldTab({ gameState, onSelectTeam }: ManagersWo
       <Card accent="primary">
         <CardBody className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs font-heading font-bold uppercase tracking-[0.25em] text-primary-500">
+            <p className="text-caption font-heading font-bold uppercase tracking-[0.25em] text-selected">
               {t("managersWorld.title")}
             </p>
-            <h2 className="text-2xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+            <h2 className="text-title font-heading font-bold uppercase tracking-label text-fg">
               {t("managersWorld.subtitle")}
             </h2>
           </div>
-          <div className="flex flex-wrap gap-2 text-xs">
+          <div className="flex flex-wrap gap-2 text-caption">
             <Badge variant="primary" size="md">
               {t("managersWorld.employed")}
             </Badge>
@@ -123,7 +123,7 @@ export default function ManagersWorldTab({ gameState, onSelectTeam }: ManagersWo
         <ManagersTables directory={directory} onSelectTeam={onSelectTeam} />
       ) : entries.length === 0 ? (
         <Card>
-          <CardBody className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">
+          <CardBody className="py-12 text-center text-body text-fg-muted">
             {t("managersWorld.noManagers")}
           </CardBody>
         </Card>
@@ -141,23 +141,23 @@ export default function ManagersWorldTab({ gameState, onSelectTeam }: ManagersWo
                   <CardBody className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-xs font-heading font-bold uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">
+                        <p className="text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-subtle">
                           {t("managersWorld.currentClub")}
                         </p>
                         <button
                           type="button"
                           onClick={() => onSelectTeam?.(entry.team.id)}
-                          className="mt-1 text-left text-xl font-heading font-bold uppercase tracking-wide text-accent-500 transition-colors hover:text-accent-400"
+                          className="mt-1 text-left text-title font-heading font-bold uppercase tracking-label text-warning transition-colors hover:text-warning"
                         >
                           {t("managersWorld.openRole", { team: entry.team.name })}
                         </button>
                       </div>
-                      <div className="rounded-xl bg-accent-100 p-3 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300">
+                      <div className="rounded-panel bg-warning-solid p-3 text-warning bg-warning-tint">
                         <Briefcase className="h-6 w-6" />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="grid grid-cols-2 gap-3 text-body">
                       <StatTile
                         icon={<Building2 className="h-4 w-4" />}
                         label={t("managersWorld.reputation")}
@@ -191,11 +191,11 @@ export default function ManagersWorldTab({ gameState, onSelectTeam }: ManagersWo
                 <CardBody className="space-y-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-2 text-body text-fg-muted">
                         <CountryFlag
                           code={manager.nationality}
                           locale={i18n.language}
-                          className="text-sm leading-none"
+                          className="text-body leading-none"
                         />
                         <span>{countryName(manager.nationality, i18n.language)}</span>
                       </div>
@@ -203,22 +203,22 @@ export default function ManagersWorldTab({ gameState, onSelectTeam }: ManagersWo
                         <button
                           type="button"
                           onClick={() => onSelectTeam?.(team.id)}
-                          className="mt-2 text-left text-xl font-heading font-bold uppercase tracking-wide text-primary-500 transition-colors hover:text-primary-400"
+                          className="mt-2 text-left text-title font-heading font-bold uppercase tracking-label text-selected transition-colors hover:text-selected"
                         >
                           {team.name}
                         </button>
                       ) : (
-                        <p className="mt-2 text-xl font-heading font-bold uppercase tracking-wide text-gray-700 dark:text-gray-200">
+                        <p className="mt-2 text-title font-heading font-bold uppercase tracking-label text-fg">
                           {t("managersWorld.unemployed")}
                         </p>
                       )}
                     </div>
-                    <div className="rounded-xl bg-primary-100 p-3 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+                    <div className="rounded-panel p-3 text-selected bg-selected-tint/40">
                       <UserRound className="h-6 w-6" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 text-sm">
+                  <div className="grid grid-cols-3 gap-3 text-body">
                     <StatTile
                       icon={<TrendingUp className="h-4 w-4" />}
                       label={t("managersWorld.reputation")}
@@ -253,14 +253,14 @@ interface StatTileProps {
 
 function StatTile({ icon, label, value }: StatTileProps) {
   return (
-    <div className="rounded-lg bg-gray-50 p-3 dark:bg-navy-800/70">
-      <div className="mb-2 flex items-center gap-2 text-gray-400 dark:text-gray-500">
+    <div className="rounded-control bg-sunken p-3">
+      <div className="mb-2 flex items-center gap-2 text-fg-subtle">
         {icon}
-        <span className="text-[11px] font-heading font-bold uppercase tracking-[0.18em]">
+        <span className="text-caption font-heading font-bold uppercase tracking-[0.18em]">
           {label}
         </span>
       </div>
-      <p className="text-lg font-heading font-bold text-gray-800 dark:text-gray-100">{value}</p>
+      <p className="text-lead font-heading font-bold text-fg">{value}</p>
     </div>
   );
 }

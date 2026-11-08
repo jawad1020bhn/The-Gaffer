@@ -324,7 +324,7 @@ describe("getEventDisplay", () => {
       player_id: "p1",
       secondary_player_id: null,
     });
-    expect(display.color).toBe("text-accent-700 dark:text-accent-400");
+    expect(display.color).toBe("text-warning");
     expect(display.important).toBe(true);
   });
 
@@ -337,7 +337,7 @@ describe("getEventDisplay", () => {
       player_id: "p2",
       secondary_player_id: null,
     });
-    expect(display.color).toBe("text-yellow-400");
+    expect(display.color).toBe("text-warning");
     expect(display.important).toBe(true);
   });
 
@@ -350,7 +350,7 @@ describe("getEventDisplay", () => {
       player_id: "p1",
       secondary_player_id: null,
     });
-    expect(display.color).toBe("text-green-700 dark:text-green-400");
+    expect(display.color).toBe("text-positive");
     expect(display.important).toBe(false);
   });
 
@@ -363,7 +363,7 @@ describe("getEventDisplay", () => {
       player_id: null,
       secondary_player_id: null,
     });
-    expect(display.color).toBe("text-gray-700 dark:text-gray-400");
+    expect(display.color).toBe("text-fg");
     expect(display.important).toBe(false);
   });
 });

@@ -45,7 +45,7 @@ export default function SquadTab({
   };
 
   if (!team) {
-    return <p className="text-gray-500 dark:text-gray-400">{t("common.unemployed")}</p>;
+    return <p className="text-fg-muted">{t("common.unemployed")}</p>;
   }
 
   return (

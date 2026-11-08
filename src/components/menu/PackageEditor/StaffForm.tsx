@@ -112,7 +112,7 @@ export function StaffForm({
         <label className={labelClass}>{t("worldEditor.staffId")}</label>
         <div className="flex gap-2 items-center">
           <input
-            className="flex-1 rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-400 transition"
+            className="flex-1 rounded-control border border-line bg-panel px-3 py-2 text-body text-fg focus:outline-none focus:ring-2 focus-visible:ring-focus transition"
             value={editing.id}
             onChange={(e) => {
               setIdAutoMode(false);
@@ -229,7 +229,7 @@ export function StaffForm({
                       type="number"
                       min={1}
                       max={99}
-                      className="w-full rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-400 transition"
+                      className="w-full rounded-control border border-line bg-panel px-3 py-2 text-body text-fg focus:outline-none focus:ring-2 focus-visible:ring-focus transition"
                       value={attrs[key]}
                       onChange={(e) => handleAttrChange(key, e.target.value)}
                     />

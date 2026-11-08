@@ -49,7 +49,7 @@ export default function HomeLeaguePositionCard({
           <button
             type="button"
             onClick={() => onNavigate?.("Schedule")}
-            className="text-primary-500 dark:text-primary-400 text-xs font-heading font-bold uppercase tracking-wider hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-selected text-caption font-heading font-bold uppercase tracking-label hover:text-selected transition-colors"
           >
             {t("home.standings")}
           </button>
@@ -63,25 +63,23 @@ export default function HomeLeaguePositionCard({
             <Badge variant="accent" size="sm">
               {t(`season.phases.${phase}`)}
             </Badge>
-            <p className="text-sm font-heading font-bold text-gray-800 dark:text-gray-100">
+            <p className="text-body font-heading font-bold text-fg">
               {seasonStartLabel
                 ? t("season.startsOn", { date: seasonStartLabel })
                 : t("season.noOpener")}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs">
-              {t("season.standingsLocked")}
-            </p>
+            <p className="text-caption text-fg-muted max-w-xs">{t("season.standingsLocked")}</p>
           </div>
         ) : myStanding && myStandingData ? (
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-xl bg-accent-500/10 flex items-center justify-center">
-                <span className="text-3xl font-heading font-bold text-accent-500">
+              <div className="w-16 h-16 rounded-panel bg-warning-tint flex items-center justify-center">
+                <span className="text-display font-heading font-bold text-warning">
                   {myStanding}
                 </span>
               </div>
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 font-heading uppercase tracking-wider">
+                <p className="text-caption text-fg-muted font-heading uppercase tracking-label">
                   {myStanding === 1
                     ? t("common.place.1")
                     : myStanding === 2
@@ -90,62 +88,62 @@ export default function HomeLeaguePositionCard({
                         ? t("common.place.3")
                         : t("common.place.other", { n: myStanding })}
                 </p>
-                <p className="text-lg font-heading font-bold text-gray-800 dark:text-gray-100">
+                <p className="text-lead font-heading font-bold text-fg">
                   {myStandingData.points} {t("common.pts")}
                 </p>
               </div>
             </div>
             <div className="w-full grid grid-cols-4 text-center gap-1">
               <div>
-                <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase">
+                <p className="text-caption text-fg-subtle font-heading uppercase">
                   <span aria-hidden="true">{t("common.played")}</span>
                   <span className="sr-only">{t("common.playedFull")}</span>
                 </p>
-                <p className="text-sm font-heading font-bold text-gray-700 dark:text-gray-300">
-                  {myStandingData.played}
-                </p>
+                <p className="text-body font-heading font-bold text-fg">{myStandingData.played}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase">
+                <p className="text-caption text-fg-subtle font-heading uppercase">
                   <span aria-hidden="true">{t("common.won")}</span>
                   <span className="sr-only">{t("common.wonFull")}</span>
                 </p>
-                <p className="text-sm font-heading font-bold text-green-500">
+                <p className="text-body font-heading font-bold text-positive">
                   {myStandingData.won}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase">
+                <p className="text-caption text-fg-subtle font-heading uppercase">
                   <span aria-hidden="true">{t("common.drawn")}</span>
                   <span className="sr-only">{t("common.drawnFull")}</span>
                 </p>
-                <p className="text-sm font-heading font-bold text-gray-500">
+                <p className="text-body font-heading font-bold text-fg-muted">
                   {myStandingData.drawn}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase">
+                <p className="text-caption text-fg-subtle font-heading uppercase">
                   <span aria-hidden="true">{t("common.lost")}</span>
                   <span className="sr-only">{t("common.lostFull")}</span>
                 </p>
-                <p className="text-sm font-heading font-bold text-red-500">{myStandingData.lost}</p>
+                <p className="text-body font-heading font-bold text-danger">
+                  {myStandingData.lost}
+                </p>
               </div>
             </div>
             {teamForm.length > 0 && (
               <div className="flex flex-col items-center gap-1.5 mt-1">
                 <FormDots results={teamForm} />
                 {winStreak && (
-                  <span className="text-[10px] font-heading font-bold text-green-500 uppercase tracking-wider">
+                  <span className="text-caption font-heading font-bold text-positive uppercase tracking-label">
                     {t("home.winningStreak")}
                   </span>
                 )}
                 {loseStreak && (
-                  <span className="text-[10px] font-heading font-bold text-red-500 uppercase tracking-wider">
+                  <span className="text-caption font-heading font-bold text-danger uppercase tracking-label">
                     {t("home.losingStreak")}
                   </span>
                 )}
                 {!winStreak && !loseStreak && unbeaten && (
-                  <span className="text-[10px] font-heading font-bold text-primary-500 uppercase tracking-wider">
+                  <span className="text-caption font-heading font-bold text-selected uppercase tracking-label">
                     {t("home.unbeatenRun")}
                   </span>
                 )}
@@ -154,8 +152,8 @@ export default function HomeLeaguePositionCard({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2 py-4">
-            <Trophy className="w-8 h-8 text-gray-300 dark:text-navy-600" />
-            <p className="text-xs text-gray-500 dark:text-gray-400">{t("home.noLeague")}</p>
+            <Trophy className="w-8 h-8 text-fg-subtle" />
+            <p className="text-caption text-fg-muted">{t("home.noLeague")}</p>
           </div>
         )}
       </CardBody>

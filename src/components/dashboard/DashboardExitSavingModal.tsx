@@ -10,20 +10,18 @@ export default function DashboardExitSavingModal(): JSX.Element {
 
   // The save is in flight and can't be cancelled: no onClose, so Escape asks for nothing.
   return (
-    <Dialog labelledBy={titleId} busy className="w-full max-w-sm rounded-2xl p-6">
+    <Dialog labelledBy={titleId} busy className="w-full max-w-sm rounded-panel p-6">
       <div className="flex flex-col items-center text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-500/15 dark:text-primary-300">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full text-selected bg-selected-tint/15">
           <Loader2 className="h-7 w-7 animate-spin" />
         </div>
         <h3
           id={titleId}
-          className="mt-4 text-lg font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-white"
+          className="mt-4 text-heading font-heading font-bold uppercase tracking-label text-fg"
         >
           {t("exitConfirm.savingTitle")}
         </h3>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          {t("exitConfirm.savingMessage")}
-        </p>
+        <p className="mt-2 text-body text-fg-muted">{t("exitConfirm.savingMessage")}</p>
       </div>
     </Dialog>
   );

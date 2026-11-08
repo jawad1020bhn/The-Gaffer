@@ -16,21 +16,21 @@ interface DashboardBlockerModalProps {
 }
 
 function getBlockerButtonClassName(severity: string): string {
-  const baseClassName = "w-full rounded-xl border p-3 text-left transition-all hover:shadow-sm";
+  const baseClassName = "w-full rounded-panel border p-3 text-left transition-all hover:shadow-sm";
 
   if (severity === "warn") {
-    return `${baseClassName} border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10`;
+    return `${baseClassName} border-warning/40 bg-warning-tint hover:bg-warning-tint`;
   }
 
-  return `${baseClassName} border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10`;
+  return `${baseClassName} border-info/40 bg-info-tint hover:bg-info-tint`;
 }
 
 function getBlockerTextClassName(severity: string): string {
   if (severity === "warn") {
-    return "text-sm font-medium text-amber-600 dark:text-amber-400";
+    return "text-body font-medium text-warning";
   }
 
-  return "text-sm font-medium text-blue-600 dark:text-blue-400";
+  return "text-body font-medium text-info";
 }
 
 function getBlockerText(blocker: BlockerData): string {
@@ -47,21 +47,19 @@ export default function DashboardBlockerModal({
   const titleId = useId();
 
   return (
-    <Dialog labelledBy={titleId} onClose={onClose} className="w-full max-w-md rounded-2xl p-6">
+    <Dialog labelledBy={titleId} onClose={onClose} className="w-full max-w-md rounded-panel p-6">
       <div className="mb-4 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/20">
-          <AlertCircle className="h-5 w-5 text-amber-500" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-panel bg-warning-tint">
+          <AlertCircle className="h-5 w-5 text-warning" />
         </div>
         <div>
           <h3
             id={titleId}
-            className="text-lg font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-white"
+            className="text-heading font-heading font-bold uppercase tracking-label text-fg"
           >
             {t("notifications.attentionRequired")}
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {t("notifications.resolveBeforeContinuing")}
-          </p>
+          <p className="text-caption text-fg-muted">{t("notifications.resolveBeforeContinuing")}</p>
         </div>
       </div>
       <div className="mb-5 flex flex-col gap-2">
@@ -73,7 +71,7 @@ export default function DashboardBlockerModal({
             className={getBlockerButtonClassName(blocker.severity)}
           >
             <p className={getBlockerTextClassName(blocker.severity)}>{getBlockerText(blocker)}</p>
-            <p className="mt-1 text-[10px] font-heading uppercase tracking-widest text-gray-400">
+            <p className="mt-1 text-caption font-heading uppercase tracking-label text-fg-subtle">
               {t("notifications.goTo")} {getBlockerTabLabel(t, blocker.tab)} →
             </p>
           </button>
@@ -83,7 +81,7 @@ export default function DashboardBlockerModal({
         <button
           type="button"
           onClick={onClose}
-          className="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-heading font-bold uppercase tracking-wider text-gray-700 transition-colors hover:bg-gray-200 dark:bg-navy-700 dark:text-gray-300 dark:hover:bg-navy-600"
+          className="flex-1 rounded-control bg-hover px-4 py-2.5 text-body font-heading font-bold uppercase tracking-label text-fg transition-colors hover:bg-hover"
         >
           {t("notifications.reviewIssues")}
         </button>
@@ -91,7 +89,7 @@ export default function DashboardBlockerModal({
           <button
             type="button"
             onClick={onContinueAnyway}
-            className="flex-1 rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-heading font-bold uppercase tracking-wider text-white transition-colors hover:bg-amber-600"
+            className="flex-1 rounded-control bg-warning-tint px-4 py-2.5 text-body font-heading font-bold uppercase tracking-label text-warning transition-colors hover:bg-warning-tint"
           >
             {t("notifications.continueAnyway")}
           </button>

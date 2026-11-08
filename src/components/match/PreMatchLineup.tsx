@@ -164,7 +164,7 @@ export default function PreMatchLineup({
 
   const jerseyChip = (playerId: string) =>
     jerseyNumberById ? (
-      <span className="w-6 shrink-0 rounded-md bg-gray-100 py-0.5 text-center text-[11px] font-heading font-bold tabular-nums text-gray-600 dark:bg-navy-700 dark:text-gray-300">
+      <span className="w-6 shrink-0 rounded-md bg-hover py-0.5 text-center text-caption font-heading font-bold tabular-nums text-fg-muted">
         {jerseyNumberById.get(playerId) ?? "–"}
       </span>
     ) : null;
@@ -173,8 +173,8 @@ export default function PreMatchLineup({
     <div className="flex flex-col gap-4">
       {/* Formation setup: formation/play-style controls, slot-fit counts, and
           auto-select — stacked so nothing clips in the narrow sidebar. */}
-      <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-3 flex flex-col gap-2.5 transition-colors duration-300">
-        <span className="text-[10px] font-heading uppercase tracking-widest text-gray-700 dark:text-gray-500">
+      <div className="bg-panel rounded-panel border border-line shadow-sm p-3 flex flex-col gap-2.5 transition-colors duration-300">
+        <span className="text-caption font-heading uppercase tracking-labelst text-fg">
           {t("match.formationFit")}
         </span>
         {formationControls}
@@ -186,16 +186,16 @@ export default function PreMatchLineup({
             return (
               <div
                 key={pos}
-                className="flex flex-col items-center gap-0.5 rounded-lg bg-gray-50 py-1.5 dark:bg-navy-700/40"
+                className="flex flex-col items-center gap-0.5 rounded-control bg-sunken py-1.5"
               >
-                <span className="text-[10px] font-heading uppercase tracking-widest text-gray-600 dark:text-gray-400">
+                <span className="text-caption font-heading uppercase tracking-labelst text-fg-muted">
                   {translatePositionAbbreviation(t, pos)}
                 </span>
                 <span
-                  className={`flex items-center gap-1 text-sm font-heading font-bold tabular-nums ${ok ? "text-primary-700 dark:text-primary-400" : "text-amber-600 dark:text-amber-400"}`}
+                  className={`flex items-center gap-1 text-body font-heading font-bold tabular-nums ${ok ? "text-selected" : "text-warning"}`}
                 >
                   {actual}/{needed}
-                  {!ok && <AlertTriangle className="w-3 h-3 text-amber-600 dark:text-amber-400" />}
+                  {!ok && <AlertTriangle className="w-3 h-3 text-warning" />}
                 </span>
               </div>
             );
@@ -206,10 +206,10 @@ export default function PreMatchLineup({
           onClick={onAutoSelect}
           // Until the table arrives there are no lines to pick from, and the pick would ignore position.
           disabled={isAutoSelecting || !positionTable.loaded}
-          className={`flex w-full items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-heading font-bold uppercase tracking-wider transition-all ${
+          className={`flex w-full items-center justify-center gap-2 px-4 py-2 rounded-control text-caption font-heading font-bold uppercase tracking-label transition-all ${
             isAutoSelecting || !positionTable.loaded
-              ? "bg-gray-200 dark:bg-navy-700 text-gray-600 dark:text-gray-400 cursor-wait"
-              : "bg-accent-100 text-accent-700 hover:bg-accent-200 dark:bg-accent-500/20 dark:text-accent-300 dark:hover:bg-accent-500/30"
+              ? "bg-hover text-fg-muted cursor-wait"
+              : "bg-warning-solid text-warning hover:bg-warning-solid bg-warning-tint hover:bg-warning-tint"
           }`}
         >
           <Wand2 className="w-3.5 h-3.5" />
@@ -219,9 +219,9 @@ export default function PreMatchLineup({
 
       {/* Starting XI */}
       {showStartingList && (
-        <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
+        <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+            <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
               {t("match.startingXI")}
             </h3>
             <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export default function PreMatchLineup({
                 <button
                   type="button"
                   onClick={() => onSelectStarter(null)}
-                  className="text-[10px] text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 font-heading uppercase tracking-wider"
+                  className="text-caption text-fg-muted hover:text-fg font-heading uppercase tracking-label"
                 >
                   {t("match.cancel")}
                 </button>
@@ -240,7 +240,7 @@ export default function PreMatchLineup({
             </div>
           </div>
           {selectedStarterId && (
-            <p className="text-[10px] text-accent-400 font-heading uppercase tracking-wider mb-2">
+            <p className="text-caption text-warning font-heading uppercase tracking-label mb-2">
               {t("match.swapPrompt")}
             </p>
           )}
@@ -254,13 +254,13 @@ export default function PreMatchLineup({
               <div key={pos} className="mb-3">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-1.5">
-                    <p className="text-[10px] font-heading uppercase tracking-widest text-gray-600">
+                    <p className="text-caption font-heading uppercase tracking-labelst text-fg-muted">
                       {t(`common.positionGroups.${pos}`)}
                     </p>
                     {!balanced && (
                       <span className="flex items-center gap-0.5">
-                        <AlertTriangle className="w-2.5 h-2.5 text-amber-400" />
-                        <span className="text-[9px] font-heading text-amber-400">
+                        <AlertTriangle className="w-2.5 h-2.5 text-warning" />
+                        <span className="text-caption font-heading text-warning">
                           {players.length}/{needed}
                         </span>
                       </span>
@@ -268,18 +268,18 @@ export default function PreMatchLineup({
                   </div>
                   {/* Stat column headers */}
                   <div className="flex items-center gap-0">
-                    <span className="text-[8px] font-heading uppercase tracking-widest text-gray-600 dark:text-gray-500 w-7 text-center">
+                    <span className="text-caption font-heading uppercase tracking-labelst text-fg-muted w-7 text-center">
                       OVR
                     </span>
                     {keyStats.map((s) => (
                       <span
                         key={s.label}
-                        className="text-[8px] font-heading uppercase tracking-widest text-gray-600 w-7 text-center"
+                        className="text-caption font-heading uppercase tracking-labelst text-fg-muted w-7 text-center"
                       >
                         {s.label}
                       </span>
                     ))}
-                    <span className="text-[8px] font-heading uppercase tracking-widest text-gray-600 w-8 text-right">
+                    <span className="text-caption font-heading uppercase tracking-labelst text-fg-muted w-8 text-right">
                       COND
                     </span>
                   </div>
@@ -295,40 +295,40 @@ export default function PreMatchLineup({
                       onClick={() => onSelectStarter(isSelected ? null : p.id)}
                       className={`flex items-center gap-2 py-1.5 px-2 rounded w-full text-left transition-all ${
                         isSelected
-                          ? "bg-primary-500/20 ring-1 ring-primary-500/50"
-                          : "hover:bg-gray-100 dark:hover:bg-navy-700/50"
+                          ? "bg-selected-tint ring-1 ring-selected/50"
+                          : "hover:bg-hover/50"
                       }`}
                     >
                       <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-heading font-bold flex-shrink-0"
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-caption font-heading font-bold flex-shrink-0"
                         style={starterBadgeStyle(userColor)}
                       >
                         {posOvr}
                       </div>
                       {jerseyChip(p.id)}
-                      <span className="text-sm text-gray-800 dark:text-gray-200 font-medium flex-1 truncate">
+                      <span className="text-body text-fg font-medium flex-1 truncate">
                         {p.name}
                       </span>
                       {isSelected && (
-                        <ArrowUpDown className="w-3.5 h-3.5 text-primary-400 flex-shrink-0" />
+                        <ArrowUpDown className="w-3.5 h-3.5 text-selected flex-shrink-0" />
                       )}
                       <div className="flex items-center gap-0">
                         <span
-                          className={`text-[10px] font-heading font-bold tabular-nums w-7 text-center ${ratingTierClass(tierOf(posOvr), "text")}`}
+                          className={`text-caption font-heading font-bold tabular-nums w-7 text-center ${ratingTierClass(tierOf(posOvr), "text")}`}
                         >
                           {posOvr}
                         </span>
                         {keyStats.map((s) => (
                           <span
                             key={s.label}
-                            className={`text-[10px] font-heading tabular-nums w-7 text-center ${ratingTierClass(tierOf(getStatVal(p, s.key)), "text")}`}
+                            className={`text-caption font-heading tabular-nums w-7 text-center ${ratingTierClass(tierOf(getStatVal(p, s.key)), "text")}`}
                           >
                             {getStatVal(p, s.key)}
                           </span>
                         ))}
                       </div>
                       <span
-                        className={`text-xs tabular-nums w-8 text-right ${condColor(p.condition)}`}
+                        className={`text-caption tabular-nums w-8 text-right ${condColor(p.condition)}`}
                       >
                         {Math.round(p.condition)}%
                       </span>
@@ -356,9 +356,9 @@ export default function PreMatchLineup({
       )}
 
       {/* Bench */}
-      <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
+      <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+          <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
             {t("match.substitutes")}
           </h3>
           <Badge variant="neutral" size="sm">
@@ -366,7 +366,7 @@ export default function PreMatchLineup({
           </Badge>
         </div>
         {userBench.length === 0 ? (
-          <p className="text-xs text-gray-600 dark:text-gray-500">{t("match.noBenchAvailable2")}</p>
+          <p className="text-caption text-fg-muted">{t("match.noBenchAvailable2")}</p>
         ) : (
           <div className="flex flex-col gap-1">
             {/* Bench column header */}
@@ -374,10 +374,10 @@ export default function PreMatchLineup({
               <span className="flex-1" />
               {/* Key stats hide at xl, where this panel is a narrow sidebar —
                     with them the player name gets truncated to nothing. */}
-              <span className="text-[8px] font-heading uppercase tracking-widest text-gray-600 w-[84px] text-center xl:hidden">
+              <span className="text-caption font-heading uppercase tracking-labelst text-fg-muted w-[84px] text-center xl:hidden">
                 {t("match.keyStats")}
               </span>
-              <span className="text-[8px] font-heading uppercase tracking-widest text-gray-600 w-8 text-right">
+              <span className="text-caption font-heading uppercase tracking-labelst text-fg-muted w-8 text-right">
                 COND
               </span>
             </div>
@@ -399,7 +399,7 @@ export default function PreMatchLineup({
                   }}
                   className={`flex items-center gap-2 py-1.5 px-2 rounded w-full text-left transition-all ${
                     canSwap
-                      ? "hover:bg-primary-500/20 hover:ring-1 hover:ring-primary-500/50 cursor-pointer"
+                      ? "hover:bg-selected-tint hover:ring-1 hover:ring-selected/50 cursor-pointer"
                       : "opacity-60 cursor-not-allowed"
                   }`}
                 >
@@ -407,26 +407,26 @@ export default function PreMatchLineup({
                     {translatePositionAbbreviation(t, bp.position)}
                   </Badge>
                   {jerseyChip(bp.id)}
-                  <span className="min-w-0 text-sm text-gray-700 dark:text-gray-300 font-medium flex-1 truncate">
+                  <span className="min-w-0 text-body text-fg font-medium flex-1 truncate">
                     {bp.name}
                   </span>
                   <div className="flex items-center gap-0 xl:hidden">
                     {keyStats.map((s) => (
                       <span
                         key={s.label}
-                        className={`text-[10px] font-heading tabular-nums w-7 text-center ${ratingTierClass(tierOf(getStatVal(bp, s.key)), "text")}`}
+                        className={`text-caption font-heading tabular-nums w-7 text-center ${ratingTierClass(tierOf(getStatVal(bp, s.key)), "text")}`}
                       >
                         {getStatVal(bp, s.key)}
                       </span>
                     ))}
                   </div>
                   <span
-                    className={`shrink-0 rounded-full px-1.5 py-0.5 text-xs font-heading font-bold ${ratingTierClass(tierOf(posOvr), "badge")}`}
+                    className={`shrink-0 rounded-full px-1.5 py-0.5 text-caption font-heading font-bold ${ratingTierClass(tierOf(posOvr), "badge")}`}
                   >
                     {posOvr}
                   </span>
                   <span
-                    className={`shrink-0 text-xs tabular-nums w-8 text-right ${condColor(bp.condition)}`}
+                    className={`shrink-0 text-caption tabular-nums w-8 text-right ${condColor(bp.condition)}`}
                   >
                     {Math.round(bp.condition)}%
                   </span>

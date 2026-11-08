@@ -123,7 +123,7 @@ describe("PlayerProfileHeroCard rating tiers", () => {
    * Then the frame takes the tint of the backend tier (B and A).
    */
   it("tints the rating frame by its backend tier", () => {
-    const frameOf = (ovr: string) => screen.getByText(ovr).closest(".rounded-2xl");
+    const frameOf = (ovr: string) => screen.getByText(ovr).closest("[class*='rounded-panel']");
 
     const { unmount } = renderHeroAtOvr(76);
     expect(frameOf("76")).toHaveClass(...ratingTierClass("B", "hero").split(" "));

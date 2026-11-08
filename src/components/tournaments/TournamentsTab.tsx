@@ -64,8 +64,8 @@ export default function TournamentsTab({
   if (!league) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
-        <Trophy className="w-12 h-12 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
-        <p className="text-gray-500 dark:text-gray-400 text-sm">{t("tournaments.noActive")}</p>
+        <Trophy className="w-12 h-12 text-fg-subtle mx-auto mb-3" />
+        <p className="text-fg-muted text-body">{t("tournaments.noActive")}</p>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function TournamentsTab({
                 <Badge variant="accent" size="sm">
                   {t(`season.phases.${seasonContext.phase}`)}
                 </Badge>
-                <span className="text-sm font-heading font-bold text-gray-800 dark:text-gray-100">
+                <span className="text-body font-heading font-bold text-fg">
                   {seasonContext.season_start
                     ? t("season.startsOn", {
                         date: formatMatchDate(seasonContext.season_start),
@@ -136,9 +136,7 @@ export default function TournamentsTab({
                     : t("season.noOpener")}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {t("season.tournamentsPreseasonHint")}
-              </p>
+              <p className="text-caption text-fg-muted">{t("season.tournamentsPreseasonHint")}</p>
             </div>
           </CardBody>
         </Card>

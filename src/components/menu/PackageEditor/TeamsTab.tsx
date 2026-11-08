@@ -29,7 +29,7 @@ function TeamBadge({ team, projectDir }: { team: TeamDef; projectDir?: string })
       <img
         src={logoUrl}
         alt=""
-        className="w-9 h-9 rounded-lg object-contain border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 flex-shrink-0"
+        className="w-9 h-9 rounded-control object-contain border border-line bg-panel flex-shrink-0"
       />
     );
   }
@@ -99,14 +99,14 @@ export function TeamsTab({
           <div className="flex items-center gap-2">
             {teams.length > 0 && (
               <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 dark:text-gray-500 pointer-events-none" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-fg-subtle pointer-events-none" />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => handleQueryChange(e.target.value)}
                   aria-label={t("worldEditor.searchTeams")}
                   placeholder={t("worldEditor.searchTeams")}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 transition"
+                  className="w-full pl-8 pr-3 py-1.5 text-caption rounded-control border border-line bg-panel text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus-visible:ring-focus transition"
                 />
               </div>
             )}

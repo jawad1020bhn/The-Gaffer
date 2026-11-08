@@ -10,6 +10,14 @@ This directory contains the technical documentation for OpenFoot Manager, a desk
 
 What Openfoot Manager is for, what it deliberately will not do, and where it is going. Covers the core pillars (open source, community-driven, offline-first, accessibility, internationalization, moddability, approachable depth), why this is explicitly not a Football Manager clone, the out-of-scope decisions (no multiplayer, no licensed data, no monetization), the quality bar a finished game must meet, and the unscheduled long-horizon ambitions. Start here if you are proposing something new.
 
+### [roadmap/GAME_UI_REDESIGN_PLAN.md](roadmap/GAME_UI_REDESIGN_PLAN.md)
+
+Full-UI redesign into a dark, broadcast-style football command centre, inspired by Ninty's desktop shell. Records the selected direction, current-state audit, complete destination mapping, screen specifications, theme/settings migration, phased delivery and verification gates. This is a plan, not a record of shipped changes.
+
+### [roadmap/GAME_UI_REDESIGN_STATUS.md](roadmap/GAME_UI_REDESIGN_STATUS.md)
+
+Implementation status for the redesign: what the first vertical slice shipped, targeted verification results, and the fixture/Rust/browser blockers still open.
+
 ### [roadmap/ARCHIVE.md](roadmap/ARCHIVE.md)
 
 Historical record of the shipped 0.1.x, 0.2.x and 0.3.0 releases, preserved verbatim from the roadmap issue before it was restructured into an index. Uses the old `-alpha`/`-beta` naming; see [CONTRIBUTING](../CONTRIBUTING.md) for the current odd/even scheme. The live roadmap is [issue #11](https://github.com/openfootmanager/openfootmanager/issues/11).

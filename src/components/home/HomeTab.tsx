@@ -48,14 +48,14 @@ interface HomeTabProps {
 }
 
 const SCHEDULE_ICONS: Record<string, { icon: React.ReactNode; color: string }> = {
-  Intense: { icon: <Flame className="w-3.5 h-3.5" />, color: "text-red-500" },
+  Intense: { icon: <Flame className="w-3.5 h-3.5" />, color: "text-danger" },
   Balanced: {
     icon: <Scale className="w-3.5 h-3.5" />,
-    color: "text-primary-500",
+    color: "text-selected",
   },
   Light: {
     icon: <Feather className="w-3.5 h-3.5" />,
-    color: "text-blue-500",
+    color: "text-info",
   },
 };
 
@@ -296,12 +296,12 @@ export default function HomeTab({
                   {boardObjectives.map((obj) => (
                     <div key={obj.id} className="flex items-center gap-3">
                       {obj.met ? (
-                        <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 text-positive flex-shrink-0" />
                       ) : (
-                        <Circle className="w-4 h-4 text-gray-300 dark:text-navy-600 flex-shrink-0" />
+                        <Circle className="w-4 h-4 text-fg-subtle flex-shrink-0" />
                       )}
                       <span
-                        className={`text-sm ${obj.met ? "text-green-600 dark:text-green-400 line-through" : "text-gray-700 dark:text-gray-300"}`}
+                        className={`text-body ${obj.met ? "text-positive line-through" : "text-fg"}`}
                       >
                         {obj.description}
                       </span>
@@ -315,8 +315,8 @@ export default function HomeTab({
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 pt-2 border-t border-gray-100 dark:border-navy-700">
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                <div className="mt-3 pt-2 border-t border-line">
+                  <p className="text-caption text-fg-subtle">
                     {t("home.objectivesMet", {
                       done: boardObjectives.filter((o) => o.met).length,
                       total: boardObjectives.length,

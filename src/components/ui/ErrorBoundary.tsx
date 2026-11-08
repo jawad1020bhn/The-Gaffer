@@ -58,7 +58,7 @@ function ErrorFallback({ onRetry }: { onRetry: () => void }) {
   return (
     <div role="alert" className="min-h-screen flex items-center justify-center bg-page px-6 py-12">
       <div className="w-full max-w-md bg-panel rounded-lg border border-line p-8 text-center">
-        <AlertTriangle aria-hidden="true" className="w-10 h-10 mx-auto text-accent-400" />
+        <AlertTriangle aria-hidden="true" className="w-10 h-10 mx-auto text-warning" />
         <h1 className="mt-4 font-heading font-bold uppercase tracking-label text-title text-fg">
           {t("errorBoundary.title")}
         </h1>

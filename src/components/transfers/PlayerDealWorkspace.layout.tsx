@@ -21,20 +21,18 @@ export interface DealOption {
 
 function routeButtonClass(isSelected: boolean, isDisabled: boolean): string {
   const base =
-    "min-h-[88px] w-full rounded-lg border px-3 py-3 text-left transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800";
-  if (isDisabled)
-    return `${base} border-gray-200 bg-gray-50 text-gray-500 opacity-80 dark:border-navy-600 dark:bg-navy-900/50 dark:text-gray-300`;
-  if (isSelected)
-    return `${base} border-primary-600 bg-primary-50 text-gray-900 dark:border-primary-400 dark:bg-primary-900/50 dark:text-white`;
-  return `${base} border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-950 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-300 dark:hover:bg-navy-700 dark:hover:text-white`;
+    "min-h-[88px] w-full rounded-control border px-3 py-3 text-left transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel";
+  if (isDisabled) return `${base} border-line bg-sunken text-fg-muted opacity-80`;
+  if (isSelected) return `${base} border-selected bg-selected-tint text-fg bg-selected-tint/50`;
+  return `${base} border-line bg-panel text-fg hover:bg-sunken hover:text-fg`;
 }
 
 function factLabelClass(): string {
-  return "text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-300";
+  return "text-caption font-heading font-bold uppercase tracking-label text-fg-muted";
 }
 
 function factValueClass(): string {
-  return "mt-1 text-sm font-semibold text-gray-900 dark:text-gray-100";
+  return "mt-1 text-body font-semibold text-fg";
 }
 
 export function DealWorkspaceHeader({
@@ -52,42 +50,42 @@ export function DealWorkspaceHeader({
   const teamName = player.team_id ? getTeamName(teams, player.team_id) : t("common.freeAgent");
   const age = calcAge(player.date_of_birth);
   return (
-    <header className="shrink-0 border-b border-gray-200 bg-white px-4 py-3 shadow-sm dark:shadow-sm dark:border-navy-600 dark:bg-navy-800">
+    <header className="shrink-0 border-b border-line bg-panel px-4 py-3 shadow-sm dark:shadow-sm">
       <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={onClose}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 -ml-2 flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm text-gray-500 transition-colors duration-150 motion-reduce:transition-none hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-navy-700 dark:hover:text-white"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel -ml-2 flex shrink-0 items-center gap-2 rounded-control px-2 py-2 text-body text-fg-muted transition-colors duration-150 motion-reduce:transition-none hover:bg-hover hover:text-fg"
           aria-label={t("common.back")}
         >
           <ArrowLeft className="h-5 w-5" />
-          <span className="hidden font-heading font-bold uppercase tracking-wider sm:inline">
+          <span className="hidden font-heading font-bold uppercase tracking-label sm:inline">
             {t("common.back")}
           </span>
         </button>
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <PlayerAvatar
             player={player}
-            className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 dark:border-navy-600 bg-gray-100 text-sm font-heading font-bold text-gray-500  dark:bg-navy-700 dark:text-gray-300"
+            className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-control border border-line bg-hover text-body font-heading font-bold text-fg-muted"
             imageClassName="h-full w-full object-cover object-top"
           />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h2
                 id="player-deal-workspace-title"
-                className="truncate font-heading text-2xl font-bold uppercase tracking-wide text-gray-950 dark:text-white"
+                className="truncate font-heading text-title font-bold uppercase tracking-label text-fg"
               >
                 {player.full_name}
               </h2>
               <PlayerPositionBadge position={naturalPositionOf(player)} />
             </div>
-            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-300">
+            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-fg-muted">
               <span>{age}</span>
               <span className="flex items-center gap-1">
                 <CountryFlag
                   code={player.nationality}
                   locale={i18n.language}
-                  className="text-sm leading-none"
+                  className="text-body leading-none"
                 />
                 {countryName(player.nationality, i18n.language)}
               </span>
@@ -131,25 +129,25 @@ export function DealWorkspaceRoutes({
               <span
                 className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${
                   disabled
-                    ? "bg-gray-200 text-gray-500 dark:bg-navy-700 dark:text-gray-300"
+                    ? "bg-hover text-fg-muted"
                     : selected
-                      ? "bg-primary-700 text-white dark:bg-primary-700 dark:text-white"
-                      : "bg-gray-100 text-gray-600 dark:bg-navy-700 dark:text-gray-300"
+                      ? "bg-selected-fill text-on-brand"
+                      : "bg-hover text-fg-muted"
                 }`}
               >
                 {option.icon}
               </span>
               <span className="min-w-0">
-                <span className="font-heading text-sm font-bold uppercase tracking-wider">
+                <span className="font-heading text-body font-bold uppercase tracking-label">
                   {option.title}
                 </span>
                 {/* Subtitle describes the route action, not availability, so a
                           selected route never reads as a confirmed deal (#305). */}
-                <span className="mt-1 block text-xs text-gray-500 dark:text-gray-300">
+                <span className="mt-1 block text-caption text-fg-muted">
                   {option.disabledReason ?? option.description}
                 </span>
                 {!disabled ? (
-                  <span className="mt-1 block text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-300">
+                  <span className="mt-1 block text-caption font-medium uppercase tracking-label text-fg-muted">
                     {option.detail}
                   </span>
                 ) : null}
@@ -177,9 +175,9 @@ export function DealWorkspaceFacts({
   const { t } = useTranslation();
   return (
     <aside className="min-h-0 space-y-4 lg:overflow-y-auto">
-      <div className="rounded-lg border border-gray-200 dark:border-navy-600 bg-white p-4  dark:bg-navy-800 ">
+      <div className="rounded-control border border-line bg-panel p-4">
         <p className={factLabelClass()}>{t("common.ovr")}</p>
-        <p className="mt-1 font-heading text-3xl font-bold tabular-nums text-primary-700 dark:text-primary-400">
+        <p className="mt-1 font-heading text-display font-bold tabular-nums text-selected">
           {visibleRatingText(figures.ovr)}
         </p>
         <div className="mt-4 grid grid-cols-2 gap-3">
@@ -195,7 +193,7 @@ export function DealWorkspaceFacts({
           </div>
         </div>
         {offeredWage != null && offeredWage > 0 ? (
-          <div className="mt-3 border-t border-gray-100 pt-3 dark:border-navy-700">
+          <div className="mt-3 border-t border-line pt-3">
             <p className={factLabelClass()}>{t("playerProfile.renewalWage")}</p>
             <p className={`${factValueClass()} tabular-nums`}>{formatWeeklyWage(offeredWage)}</p>
           </div>
@@ -203,7 +201,7 @@ export function DealWorkspaceFacts({
       </div>
 
       {myTeam ? (
-        <div className="rounded-lg border border-gray-200 dark:border-navy-600 bg-white p-4  dark:bg-navy-800 ">
+        <div className="rounded-control border border-line bg-panel p-4">
           <p className={factLabelClass()}>{t("finances.transferBudget")}</p>
           <p className={`${factValueClass()} tabular-nums`}>{formatVal(myTeam.transfer_budget)}</p>
           <div className="mt-4">

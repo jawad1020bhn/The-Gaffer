@@ -39,7 +39,6 @@ import {
   Tabs,
   TeamLocation,
   TeamLogo,
-  ThemeToggle,
   TONE_TEXT,
 } from "../../components/ui";
 import { ChartContainer } from "../../components/ui/charts/ChartContainer";
@@ -101,6 +100,16 @@ const BRAND = [
 const DATA_AND_PITCH = [
   "--color-series-1",
   "--color-series-2",
+  "--color-category-1",
+  "--color-category-1-tint",
+  "--color-category-2",
+  "--color-category-2-tint",
+  "--color-category-3",
+  "--color-category-3-tint",
+  "--color-category-4",
+  "--color-category-4-tint",
+  "--color-category-5",
+  "--color-category-5-tint",
   "--color-kit-home-fallback",
   "--color-kit-away-fallback",
   "--color-turf-near",
@@ -122,6 +131,17 @@ const HEIGHTS = [
   { token: "--spacing-row", className: "h-row", use: "a table or list row" },
   { token: "--spacing-panel-header", className: "h-panel-header", use: "a panel's header" },
   { token: "--spacing-toolbar", className: "h-toolbar", use: "a page toolbar" },
+  { token: "--spacing-game-top", className: "h-game-top", use: "the game shell's section bar" },
+  {
+    token: "--spacing-game-context",
+    className: "h-game-context",
+    use: "the game shell's page bar",
+  },
+  {
+    token: "--spacing-game-commands",
+    className: "h-game-commands",
+    use: "the game shell's command bar",
+  },
 ];
 const WIDTHS = [
   { token: "--container-page", use: "the page width (max-w-page)" },
@@ -137,6 +157,8 @@ const WIDTHS = [
 const CARD_TOKENS = [
   { token: "--shadow-card", use: "an entity card's lift (shadow-card)" },
   { token: "--kit-wash-mix", use: "how much of a club's kit a card's header takes (bg-kit-wash)" },
+  { token: "--radius-control", use: "a control's angular corner (rounded-control)" },
+  { token: "--radius-panel", use: "a panel's angular corner (rounded-panel)" },
 ];
 // Two fixture clubs' kits, and none: a free agent's card falls back to the neutral stripe.
 const CARD_KITS = [
@@ -251,7 +273,6 @@ function ControlsSection() {
         </Button>
         <Button size="lg">large</Button>
         <Button disabled>disabled</Button>
-        <ThemeToggle />
       </Row>
       <Row>
         {(["default", "subtle", "muted", "highlighted", "placeholder"] as const).map((variant) => (

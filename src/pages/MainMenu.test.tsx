@@ -7,14 +7,12 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { countryName } from "../lib/countries";
 import { resetCountryResourcesCache } from "../components/menu/CreateManagerNationalityField";
 import type { ManagerProfile } from "../components/menu/types";
-import { resolveBackendError } from "../utils/backendI18n";
 import MainMenu from "./MainMenu";
 
 const navigateMock = vi.fn();
 const setGameActiveMock = vi.fn();
 const setGameStateMock = vi.fn();
 const showErrorMock = vi.fn();
-let latestDatePickerOnChange: ((date: string) => void) | null = null;
 const translationState = {
   language: "en",
 };
@@ -25,11 +23,6 @@ vi.mock("@tauri-apps/api/core", () => ({
 
 vi.mock("../lib/errorDialog", () => ({
   showError: (title: string, detail: string) => showErrorMock(title, detail),
-}));
-
-const openUrlMock = vi.fn();
-vi.mock("@tauri-apps/plugin-opener", () => ({
-  openUrl: (...args: unknown[]) => openUrlMock(...args),
 }));
 
 // The native file-picker returns whatever the current test stages here.
@@ -85,25 +78,6 @@ vi.mock("../components/ui", async () => ({
     iconRight?: unknown;
     iconLeft?: unknown;
   }) => <button {...props}>{children}</button>,
-  ThemeToggle: () => <div data-testid="theme-toggle" />,
-  DatePicker: ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (date: string) => void;
-    error?: boolean;
-  }) => {
-    latestDatePickerOnChange = onChange;
-
-    return (
-      <input
-        aria-label="manager-date-of-birth"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    );
-  },
   CountryFlag: ({ code }: { code: string }) => (
     <span data-testid={`country-flag-${code.toLowerCase()}`} />
   ),
@@ -126,10 +100,6 @@ vi.mock("../components/ui", async () => ({
       {children}
     </select>
   ),
-}));
-
-vi.mock("../components/ui/ThemeToggle", () => ({
-  ThemeToggle: () => <div data-testid="theme-toggle" />,
 }));
 
 // Tested on its own; here it would only add a backend call these tests do not expect.
@@ -205,11 +175,6 @@ vi.mock("../components/menu/WorldSelect", () => ({
 
 const mockedInvoke = vi.mocked(invoke);
 
-/** What the mocked backend says about a manager's date of birth; a test sets it, as Rust would decide. */
-let dobVerdict: (args: { dob: string; startYear: number; startPhase: string }) => string | null =
-  () => null;
-const MIN_AGE_KEY = "be.error.createManager.minAge";
-
 // The packages step sits between the create form and the generation/world-select
 // step. Its internals (installed-package list, stack validation) are covered by
 // their own tests; here we shim it to a simple "advance" control so the manager-
@@ -229,9 +194,6 @@ function fillManagerDetails(): void {
   });
   fireEvent.change(screen.getByPlaceholderText("createManager.placeholderLast"), {
     target: { value: "Lovelace" },
-  });
-  fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-    target: { value: "1980-01-01" },
   });
 }
 
@@ -291,20 +253,13 @@ describe("MainMenu", () => {
     setGameActiveMock.mockReset();
     setGameStateMock.mockReset();
     showErrorMock.mockReset();
-    openUrlMock.mockReset();
     dialogOpenResult = null;
     localStorage.clear();
-    latestDatePickerOnChange = null;
     translationState.language = "en";
     mockedInvoke.mockReset();
-    dobVerdict = () => null;
-    mockedInvoke.mockImplementation(async (command: string, args?: unknown) => {
+    mockedInvoke.mockImplementation(async (command: string) => {
       if (command === "list_installed_packages") {
         return [];
-      }
-
-      if (command === "validate_manager_dob") {
-        return dobVerdict(args as { dob: string; startYear: number; startPhase: string });
       }
 
       if (command === "start_new_game") {
@@ -382,7 +337,6 @@ describe("MainMenu", () => {
           expect.objectContaining({
             firstName: "Ada",
             lastName: "Lovelace",
-            dob: "1980-01-01",
             nationality: "ES",
             startupOptions: expect.objectContaining({
               startYear: 2028,
@@ -429,33 +383,6 @@ describe("MainMenu", () => {
     expect(
       screen.getByRole("button", {
         name: /england/i,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("preserves nationality when a stale date picker callback fires after selection", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fillManagerDetails();
-
-    const staleDatePickerOnChange = latestDatePickerOnChange;
-
-    await selectNationality("en", "DE");
-
-    expect(
-      screen.getByRole("button", {
-        name: /germany/i,
-      }),
-    ).toBeInTheDocument();
-
-    act(() => {
-      staleDatePickerOnChange?.("1980-01-01");
-    });
-
-    expect(
-      screen.getByRole("button", {
-        name: /germany/i,
       }),
     ).toBeInTheDocument();
   });
@@ -520,94 +447,36 @@ describe("MainMenu", () => {
     });
   });
 
-  it("shows min-age feedback for an underage DOB, blocks progression, and focuses the DOB field on submit", async () => {
+  it("does not ask for a date of birth or send one when starting a career", async () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-      target: { value: "Ada" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderLast"), {
-      target: { value: "Lovelace" },
-    });
+    expect(document.getElementById("create-manager-field-dob")).toBeNull();
+    expect(screen.queryByText("createManager.dob")).not.toBeInTheDocument();
+
+    fillManagerDetails();
     fillCareerStartDetails("2026", "seasonStart");
-    dobVerdict = () => MIN_AGE_KEY;
-    fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-      target: { value: "2010-06-15" },
-    });
-
-    expect(await screen.findByText(resolveBackendError(MIN_AGE_KEY))).toBeInTheDocument();
-    expect(mockedInvoke).toHaveBeenCalledWith("validate_manager_dob", {
-      dob: "2010-06-15",
-      startYear: 2026,
-      startPhase: "seasonStart",
-    });
-
     await selectNationality("en", "ES");
-    fireEvent.click(screen.getByText("createManager.chooseWorld"));
-
-    await waitFor(() => {
-      expect(screen.getByLabelText("manager-date-of-birth")).toHaveFocus();
-    });
-    expect(screen.queryByTestId("package-build-step")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("world-select")).not.toBeInTheDocument();
-  });
-
-  it("allows a manager who is 30 by the selected start year to continue", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-      target: { value: "Ada" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderLast"), {
-      target: { value: "Lovelace" },
-    });
-    fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-      target: { value: "2008-01-01" },
-    });
-    fillCareerStartDetails("2038", "seasonStart");
-    await selectNationality("en", "ES");
-
-    expect(screen.queryByText(resolveBackendError(MIN_AGE_KEY))).not.toBeInTheDocument();
-
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
     await advanceThroughPackages();
-    expect(await screen.findByTestId("world-select")).toBeInTheDocument();
-  });
-
-  it("uses the selected start phase when evaluating manager age", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-      target: { value: "Ada" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderLast"), {
-      target: { value: "Lovelace" },
-    });
-    // Rust decides: this manager turns 30 between the start of the season and mid-season.
-    dobVerdict = ({ startPhase }) => (startPhase === "seasonStart" ? MIN_AGE_KEY : null);
-    fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-      target: { value: "2008-08-01" },
-    });
-    fillCareerStartDetails("2038", "seasonStart");
-
-    expect(await screen.findByText(resolveBackendError(MIN_AGE_KEY))).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText("createManager.startPhase"), {
-      target: { value: "midSeason" },
-    });
+    fireEvent.click(screen.getByText("start-world"));
 
     await waitFor(() => {
-      expect(screen.queryByText(resolveBackendError(MIN_AGE_KEY))).not.toBeInTheDocument();
+      expect(mockedInvoke).toHaveBeenCalledWith(
+        "start_new_game",
+        expect.objectContaining({ firstName: "Ada", lastName: "Lovelace", nationality: "ES" }),
+      );
     });
-    expect(mockedInvoke).toHaveBeenCalledWith("validate_manager_dob", {
-      dob: "2008-08-01",
-      startYear: 2038,
-      startPhase: "midSeason",
-    });
+    expect(mockedInvoke).not.toHaveBeenCalledWith("validate_manager_dob", expect.anything());
+    const startArgs = mockedInvoke.mock.calls.find(
+      ([command]) => command === "start_new_game",
+    )?.[1];
+    const saveArgs = mockedInvoke.mock.calls.find(
+      ([command]) => command === "save_manager_profile",
+    )?.[1];
+    expect(startArgs).not.toHaveProperty("dob");
+    expect(saveArgs).not.toHaveProperty("dob");
   });
 
   it("blocks progression when the start year is before the floor and focuses the year field", async () => {
@@ -632,11 +501,6 @@ describe("MainMenu", () => {
 
     await openCreateManagerForm();
     fillManagerDetails();
-    // A manager active in 1962 has to have been born in the era too — the
-    // minimum-age rule is measured against the career start, not today.
-    fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-      target: { value: "1920-01-01" },
-    });
     fillCareerStartDetails("1962", "seasonStart");
     await selectNationality("en", "ES");
 
@@ -890,26 +754,6 @@ describe("MainMenu", () => {
       expect(screen.getByText("set-history-depth-24:12")).toBeInTheDocument();
     });
     expect(localStorage.getItem("ofm-generated-history-depth-years")).toBe("12");
-  });
-
-  it("opens the Discord invite in the system browser when the Discord link is clicked", async () => {
-    render(<MainMenu />);
-
-    const discordButton = await screen.findByRole("button", { name: "menu.openDiscord" });
-    fireEvent.click(discordButton);
-
-    expect(openUrlMock).toHaveBeenCalledTimes(1);
-    expect(openUrlMock).toHaveBeenCalledWith("https://discord.gg/2CXaesaukT");
-  });
-
-  it("opens the GitHub repository in the system browser when the GitHub link is clicked", async () => {
-    render(<MainMenu />);
-
-    const githubButton = await screen.findByRole("button", { name: "menu.openGithub" });
-    fireEvent.click(githubButton);
-
-    expect(openUrlMock).toHaveBeenCalledTimes(1);
-    expect(openUrlMock).toHaveBeenCalledWith("https://github.com/openfootmanager/openfootmanager");
   });
 
   describe("profile confirm modal", () => {

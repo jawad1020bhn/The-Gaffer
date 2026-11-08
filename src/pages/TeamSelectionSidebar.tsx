@@ -33,17 +33,17 @@ export default function TeamSelectionSidebar({
         {selectedTeam ? (
           <>
             <div>
-              <p className="text-xs font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {t("teamSelect.selectedClub")}
               </p>
-              <h2 className="mt-1 font-heading text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 className="mt-1 font-heading text-title font-bold text-fg">
                 {selectedTeam.name}
               </h2>
               <TeamLocation
                 city={selectedTeam.city}
                 countryCode={selectedTeam.country}
                 locale={i18n.language}
-                className="mt-2 text-sm text-gray-500 dark:text-gray-400"
+                className="mt-2 text-body text-fg-muted"
               />
             </div>
 
@@ -77,20 +77,18 @@ export default function TeamSelectionSidebar({
             </div>
 
             <div>
-              <p className="mb-3 text-xs font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+              <p className="mb-3 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {t("teamSelect.keyPlayers")}
               </p>
               <div className="space-y-2">
                 {selectedTeamXi.slice(0, 5).map((player) => (
                   <div
                     key={player.id}
-                    className="flex items-center justify-between rounded-xl bg-gray-50 px-3 py-2 dark:bg-navy-800"
+                    className="flex items-center justify-between rounded-control bg-sunken px-3 py-2"
                   >
                     <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">
-                        {player.match_name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="font-semibold text-fg">{player.match_name}</p>
+                      <p className="text-caption text-fg-muted">
                         {translatePositionLabel(t, naturalPositionOf(player))}
                       </p>
                     </div>
@@ -101,7 +99,7 @@ export default function TeamSelectionSidebar({
             </div>
 
             <div>
-              <p className="mb-3 text-xs font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+              <p className="mb-3 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {t("teamSelect.activeCompetitions")}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -111,15 +109,13 @@ export default function TeamSelectionSidebar({
                   </Badge>
                 ))}
               </div>
-              <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-3 text-caption text-fg-muted">
                 {t("teamSelect.clubCompetitionsAlwaysSimulated")}
               </p>
             </div>
           </>
         ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t("teamSelect.selectClubPrompt")}
-          </p>
+          <p className="text-body text-fg-muted">{t("teamSelect.selectClubPrompt")}</p>
         )}
       </CardBody>
     </Card>
@@ -128,11 +124,11 @@ export default function TeamSelectionSidebar({
 
 function DetailTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-gray-50 px-3 py-3 dark:bg-navy-800">
-      <p className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+    <div className="rounded-control bg-sunken px-3 py-3">
+      <p className="flex items-center gap-1 text-caption text-fg-subtle">
         {icon} {label}
       </p>
-      <p className="mt-1 font-heading font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="mt-1 font-heading font-bold text-fg">{value}</p>
     </div>
   );
 }

@@ -2,25 +2,25 @@
 // player list/preview and the tactics pitch badges so they never drift apart:
 // amber for keepers, blue for defenders, green for midfielders, red for attack.
 export const POSITION_COLOR: Record<string, string> = {
-  Goalkeeper: "bg-amber-500",
-  Defender: "bg-blue-600",
-  CenterBack: "bg-blue-600",
-  RightBack: "bg-blue-600",
-  LeftBack: "bg-blue-600",
-  RightWingBack: "bg-blue-500",
-  LeftWingBack: "bg-blue-500",
-  Midfielder: "bg-green-600",
-  DefensiveMidfielder: "bg-green-700",
-  CentralMidfielder: "bg-green-600",
-  AttackingMidfielder: "bg-green-500",
-  RightMidfielder: "bg-green-600",
-  LeftMidfielder: "bg-green-600",
-  RightWinger: "bg-red-500",
-  LeftWinger: "bg-red-500",
-  Forward: "bg-red-600",
-  Striker: "bg-red-600",
+  Goalkeeper: "bg-warning-solid",
+  Defender: "bg-info-solid",
+  CenterBack: "bg-info-solid",
+  RightBack: "bg-info-solid",
+  LeftBack: "bg-info-solid",
+  RightWingBack: "bg-info-solid",
+  LeftWingBack: "bg-info-solid",
+  Midfielder: "bg-positive-solid",
+  DefensiveMidfielder: "bg-positive-solid",
+  CentralMidfielder: "bg-positive-solid",
+  AttackingMidfielder: "bg-positive-solid",
+  RightMidfielder: "bg-positive-solid",
+  LeftMidfielder: "bg-positive-solid",
+  RightWinger: "bg-danger-solid",
+  LeftWinger: "bg-danger-solid",
+  Forward: "bg-danger-solid",
+  Striker: "bg-danger-solid",
 };
 
 export function getPositionColor(position: string): string {
-  return POSITION_COLOR[position] ?? "bg-gray-600";
+  return POSITION_COLOR[position] ?? "bg-fg-subtle";
 }

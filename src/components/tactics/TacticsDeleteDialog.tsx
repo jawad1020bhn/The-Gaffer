@@ -29,15 +29,15 @@ export default function TacticsDeleteDialog({
       describedBy="delete-tactic-body"
       onClose={onCancel}
       dismissOnBackdrop
-      className="w-full max-w-md rounded-xl p-6"
+      className="w-full max-w-md rounded-panel p-6"
     >
       <h2
         id="delete-tactic-title"
-        className="font-heading font-bold uppercase tracking-wider text-xl text-gray-900 dark:text-gray-100"
+        className="font-heading font-bold uppercase tracking-label text-title text-fg"
       >
         {t("tactics.deleteTacticTitle")}
       </h2>
-      <p id="delete-tactic-body" className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+      <p id="delete-tactic-body" className="mt-2 text-body text-fg">
         {t("tactics.deleteTacticBody", { name })}
       </p>
       <div ref={buttonsRef} className="mt-6 flex gap-3">

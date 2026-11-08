@@ -106,7 +106,7 @@ function getRoleMarkers(
     markers.push({
       key: "captain",
       shortLabel: "C",
-      toneClassName: "border-accent-500 bg-accent-500 text-white",
+      toneClassName: "border-warning bg-warning-tint text-warning",
     });
   }
 
@@ -114,7 +114,7 @@ function getRoleMarkers(
     markers.push({
       key: "vice_captain",
       shortLabel: "VC",
-      toneClassName: "border-white/60 bg-gray-800/85 text-white",
+      toneClassName: "border-line/60 bg-chrome/85 text-fg",
     });
   }
 
@@ -122,7 +122,7 @@ function getRoleMarkers(
     markers.push({
       key: "penalty_taker",
       shortLabel: "PK",
-      toneClassName: "border-primary-500 bg-primary-500 text-white",
+      toneClassName: "border-selected bg-selected-fill text-on-brand",
     });
   }
 
@@ -130,7 +130,7 @@ function getRoleMarkers(
     markers.push({
       key: "free_kick_taker",
       shortLabel: "FK",
-      toneClassName: "border-success-600 bg-success-600 text-white",
+      toneClassName: "border-positive bg-positive-solid text-on-brand",
     });
   }
 
@@ -138,7 +138,7 @@ function getRoleMarkers(
     markers.push({
       key: "corner_taker",
       shortLabel: "CK",
-      toneClassName: "border-orange-500 bg-orange-500 text-white",
+      toneClassName: "border-warning bg-warning-tint text-warning",
     });
   }
 
@@ -160,22 +160,22 @@ function getPitchMarkerClassName(options: {
   const isHovered = hoveredSlot === slot.index;
 
   const base =
-    "absolute z-20 flex w-[6rem] -translate-x-1/2 -translate-y-1/2 cursor-grab flex-col items-center gap-0.5 rounded-2xl px-1 py-1 text-center transition-all active:cursor-grabbing";
+    "absolute z-20 flex w-[6rem] -translate-x-1/2 -translate-y-1/2 cursor-grab flex-col items-center gap-0.5 rounded-panel px-1 py-1 text-center transition-all active:cursor-grabbing";
 
   if (isDragged) {
     return `${base} opacity-60`;
   }
 
   if (isSelected) {
-    return `${base} bg-accent-500/15 ring-2 ring-accent-300/60 shadow-lg`;
+    return `${base} bg-warning-tint ring-2 ring-focus shadow-lg`;
   }
 
   if (isComparing) {
-    return `${base} bg-primary-500/10 ring-2 ring-primary-300/50 shadow-lg`;
+    return `${base} bg-selected-tint ring-2 ring-selected/50 shadow-lg`;
   }
 
   if (isHovered) {
-    return `${base} bg-primary-500/10 shadow-lg`;
+    return `${base} bg-selected-tint shadow-lg`;
   }
 
   return `${base} hover:-translate-y-[54%]`;
@@ -183,14 +183,14 @@ function getPitchMarkerClassName(options: {
 
 function getSlotTargetClassName(isHovered: boolean, hasPlayer: boolean): string {
   if (isHovered) {
-    return "absolute z-10 h-[4.5rem] w-[4.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary-300 bg-primary-500/10";
+    return "absolute z-10 h-[4.5rem] w-[4.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-selected/40 bg-selected-tint";
   }
 
   if (hasPlayer) {
-    return "absolute z-10 h-[4.5rem] w-[4.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-transparent";
+    return "absolute z-10 h-[4.5rem] w-[4.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-line/10 bg-transparent";
   }
 
-  return "absolute z-10 h-[4.5rem] w-[4.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/25 bg-black/10";
+  return "absolute z-10 h-[4.5rem] w-[4.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-line/25 bg-overlay/10";
 }
 
 function getPitchDisplayName(player: PlayerData): string {
@@ -304,13 +304,13 @@ export default function TacticsPitch({
 
   return (
     <Card className="overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-t-xl border-b border-gray-100 bg-linear-to-r from-navy-700 to-navy-800 px-5 py-4 dark:border-navy-600">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-t-xl border-b border-line bg-panel px-5 py-4">
         <div>
-          <h3 className="flex items-center gap-2 text-sm font-heading font-bold uppercase tracking-wide text-white">
-            <Star className="h-4 w-4 fill-current text-accent-400" />
+          <h3 className="flex items-center gap-2 text-body font-heading font-bold uppercase tracking-label text-fg">
+            <Star className="h-4 w-4 fill-current text-warning" />
             {t("preMatch.startingXI")} - {formation}
           </h3>
-          <p className="mt-0.5 text-xs text-gray-400">{t("tactics.pitchInteractionHint")}</p>
+          <p className="mt-0.5 text-caption text-fg-subtle">{t("tactics.pitchInteractionHint")}</p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {outOfPositionCount === null ? null : (
@@ -318,23 +318,23 @@ export default function TacticsPitch({
               {outOfPositionCount} {t("squad.outOfPosition")}
             </Badge>
           )}
-          <span className="rounded-full bg-success-500/15 px-2.5 py-1 text-[10px] font-heading font-bold uppercase tracking-widest text-success-300">
+          <span className="rounded-full bg-positive-tint px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-labelst text-positive">
             {t("tactics.naturalFit")}
           </span>
-          <span className="rounded-full bg-accent-500/15 px-2.5 py-1 text-[10px] font-heading font-bold uppercase tracking-widest text-accent-300">
+          <span className="rounded-full bg-warning-tint px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-labelst text-warning">
             {t("tactics.adaptedFit")}
           </span>
-          <span className="rounded-full bg-red-500/15 px-2.5 py-1 text-[10px] font-heading font-bold uppercase tracking-widest text-red-300">
+          <span className="rounded-full bg-danger-tint px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-labelst text-danger">
             {t("squad.outOfPosition")}
           </span>
-          <span className="rounded-full bg-white/8 px-2.5 py-1 text-[10px] font-heading font-bold uppercase tracking-widest text-white/70">
+          <span className="rounded-full bg-panel/8 px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-labelst text-fg/70">
             {t("tactics.tableInteractionHint")}
           </span>
           {selectedPlayer ? (
             <button
               type="button"
               onClick={onClearSelection}
-              className="text-xs font-heading font-bold uppercase tracking-wider text-accent-400 hover:text-accent-300"
+              className="text-caption font-heading font-bold uppercase tracking-label text-warning hover:text-warning"
             >
               {t("common.clear")}
             </button>
@@ -343,7 +343,7 @@ export default function TacticsPitch({
       </div>
 
       <div className="p-5 sm:p-6 lg:p-7">
-        <div className="relative mx-auto w-full max-w-[36rem] overflow-hidden rounded-[1.5rem] border border-primary-500/20 bg-linear-to-b from-primary-500 to-primary-700 shadow-inner">
+        <div className="relative mx-auto w-full max-w-[36rem] overflow-hidden rounded-[1.5rem] border border-selected/20 bg-linear-to-b from-selected-fill to-selected-fill shadow-inner">
           <div className="aspect-[8/10] min-h-[35rem] w-full">
             <svg
               viewBox="0 0 100 140"
@@ -578,10 +578,10 @@ export default function TacticsPitch({
                     })()
                   ) : (
                     <div className="absolute z-20 flex w-[4.5rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-white/28 bg-black/12 text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-white/70">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-line/28 bg-overlay/12 text-caption font-heading font-bold uppercase tracking-[0.18em] text-fg/70">
                         {translatePositionAbbreviation(t, slot.position)}
                       </div>
-                      <div className="mt-1 max-w-full text-[9px] font-heading font-bold uppercase tracking-[0.16em] text-white/45">
+                      <div className="mt-1 max-w-full text-caption font-heading font-bold uppercase tracking-[0.16em] text-fg/45">
                         {t("squad.dropPlayerHere")}
                       </div>
                     </div>

@@ -6,11 +6,7 @@ import { ThemeProvider } from "../../context/ThemeContext";
 import { i18nReady } from "../../i18n";
 import { readHarnessLanguage, readHarnessPage } from "../pageHarness/harnessPage";
 import { StyleGuide } from "./StyleGuide";
-import {
-  applyStyleGuideOptions,
-  readStyleGuideOptions,
-  STYLE_GUIDE_THEME_KEY,
-} from "./styleGuideOptions";
+import { applyStyleGuideOptions, readStyleGuideOptions } from "./styleGuideOptions";
 
 const options = readStyleGuideOptions(window.location.search);
 applyStyleGuideOptions(options, document.documentElement, localStorage);
@@ -28,7 +24,7 @@ if (rootElement && page) {
   void i18nReady.then(() => {
     ReactDOM.createRoot(rootElement).render(
       <React.StrictMode>
-        <ThemeProvider storageKey={STYLE_GUIDE_THEME_KEY}>
+        <ThemeProvider>
           <StyleGuide options={options} />
         </ThemeProvider>
       </React.StrictMode>,

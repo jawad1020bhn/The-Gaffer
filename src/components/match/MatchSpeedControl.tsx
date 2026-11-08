@@ -87,7 +87,7 @@ export function MatchSpeedControl({
         aria-keyshortcuts="Space"
         // Three columns keep the word centred while the key hint sits at the end, and a long word
         // ("Fortsetzen" beside "Leertaste") pushes the hint aside instead of running under it.
-        className="grid h-11 w-full grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-lg bg-primary-700 px-3 font-heading text-lead font-bold uppercase tracking-label text-on-brand shadow-sm transition-colors hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
+        className="grid h-11 w-full grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-control bg-selected-fill px-3 font-heading text-lead font-bold uppercase tracking-label text-on-brand shadow-sm transition-colors hover:bg-selected focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
       >
         <span className="col-start-2 flex items-center gap-2">
           {paused ? (

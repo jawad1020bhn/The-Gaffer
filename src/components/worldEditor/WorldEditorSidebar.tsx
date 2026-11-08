@@ -118,10 +118,10 @@ export function WorldEditorSidebar({
   ];
 
   const itemClass = (active: boolean) =>
-    `flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm transition-colors text-left ${
+    `flex items-center gap-2 w-full px-3 py-2 rounded-control text-body transition-colors text-left ${
       active
-        ? "bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 font-semibold"
-        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-700 hover:text-gray-900 dark:hover:text-white"
+        ? "bg-selected-tint/15 text-selected font-semibold"
+        : "text-fg-muted hover:bg-hover hover:text-fg"
     }`;
 
   return (
@@ -129,7 +129,7 @@ export function WorldEditorSidebar({
       <div className="flex-1 overflow-y-auto scrollbar-thin px-2">
         {groups.map((group) => (
           <div key={group.groupKey} className="mb-4">
-            <p className="px-3 mb-1 text-[10px] font-heading font-bold uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500">
+            <p className="px-3 mb-1 text-caption font-heading font-bold uppercase tracking-[0.15em] text-fg-subtle">
               {group.label}
             </p>
             {group.items.map((item) => (
@@ -143,10 +143,10 @@ export function WorldEditorSidebar({
                 <span className="flex-1">{item.label}</span>
                 {item.count !== undefined && (
                   <span
-                    className={`text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center leading-none ${
+                    className={`text-caption rounded-full px-1.5 py-0.5 min-w-[20px] text-center leading-none ${
                       selectedSection === item.key && !showingIssues
-                        ? "bg-primary-200 dark:bg-primary-500/30 text-primary-700 dark:text-primary-300"
-                        : "bg-gray-200 dark:bg-navy-600 text-gray-500 dark:text-gray-400"
+                        ? "bg-selected-tint text-selected"
+                        : "bg-line text-fg-muted"
                     }`}
                   >
                     {item.count}
@@ -159,20 +159,20 @@ export function WorldEditorSidebar({
       </div>
 
       {/* Findings at the bottom: errors in red, warnings in amber */}
-      <div className="flex-shrink-0 px-2 pt-2 border-t border-gray-200 dark:border-navy-700">
+      <div className="flex-shrink-0 px-2 pt-2 border-t border-line">
         <button
           type="button"
           onClick={onShowIssues}
-          className={`flex flex-col items-start gap-0.5 w-full px-3 py-2 rounded-lg text-sm transition-colors ${
+          className={`flex flex-col items-start gap-0.5 w-full px-3 py-2 rounded-control text-body transition-colors ${
             showingIssues
               ? issueCount > 0
-                ? "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400"
-                : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                ? "bg-danger-tint text-danger"
+                : "bg-warning-tint text-warning"
               : issueCount > 0
-                ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
+                ? "text-danger hover:bg-danger-tint"
                 : warningCount > 0
-                  ? "text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10"
-                  : "text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-navy-700"
+                  ? "text-warning hover:bg-warning-tint"
+                  : "text-fg-subtle hover:bg-hover"
           }`}
         >
           {issueCount > 0 && (
@@ -182,7 +182,7 @@ export function WorldEditorSidebar({
             </span>
           )}
           {warningCount > 0 && (
-            <span className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+            <span className="flex items-center gap-2 text-warning">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               {t("worldEditor.warningsBadge", { count: warningCount })}
             </span>

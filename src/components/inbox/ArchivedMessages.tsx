@@ -53,23 +53,23 @@ function ArchivedMessagesOfCareer(): JSX.Element {
     <section aria-labelledby="inbox-archive-heading" className="mt-4">
       <h3
         id="inbox-archive-heading"
-        className="mb-2 font-heading text-sm font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300"
+        className="mb-2 font-heading text-body font-bold uppercase tracking-label text-fg"
       >
         {t("inbox.archive.heading")}
       </h3>
 
       {messages.length > 0 && (
-        <ul className="mb-3 divide-y divide-gray-100 rounded-xl border border-gray-200 bg-white dark:divide-navy-600 dark:border-navy-600 dark:bg-navy-800">
+        <ul className="mb-3 divide-y divide-line rounded-panel border border-line bg-panel">
           {messages.map((message) => (
             <li key={message.id}>
               <details className="group px-4 py-3">
-                <summary className="cursor-pointer text-sm text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:text-gray-100 dark:focus-visible:ring-offset-navy-800">
-                  <span className="mr-2 text-xs text-gray-500 dark:text-gray-400">
+                <summary className="cursor-pointer text-body text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel">
+                  <span className="mr-2 text-caption text-fg-muted">
                     {formatDateShort(message.date, i18n.language)}
                   </span>
                   {message.subject}
                 </summary>
-                <div className="mt-2 text-gray-700 dark:text-gray-300">
+                <div className="mt-2 text-fg">
                   {message.body.split("\n").map(renderMessageBodyLine)}
                 </div>
               </details>
@@ -79,13 +79,13 @@ function ArchivedMessagesOfCareer(): JSX.Element {
       )}
 
       {state === "failed" && (
-        <p role="alert" className="mb-2 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mb-2 text-body text-danger">
           {t("inbox.archive.error")}
         </p>
       )}
 
       {exhausted ? (
-        <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+        <p role="status" className="text-body text-fg-muted">
           {t(messages.length === 0 ? "inbox.archive.empty" : "inbox.archive.end")}
         </p>
       ) : (

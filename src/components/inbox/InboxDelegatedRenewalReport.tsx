@@ -34,7 +34,7 @@ export default function InboxDelegatedRenewalReport({
 
   return (
     <div
-      className="mt-6 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-navy-600 dark:bg-navy-700"
+      className="mt-6 rounded-panel border border-line bg-sunken p-4"
       data-testid="delegated-renewal-report"
     >
       <div className="space-y-2">
@@ -88,7 +88,7 @@ export default function InboxDelegatedRenewalReport({
                   <button
                     type="button"
                     aria-describedby={`delegated-renewal-profile-${renewalCase.player_id}`}
-                    className="text-xs font-heading font-bold uppercase tracking-wider text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300"
+                    className="text-caption font-heading font-bold uppercase tracking-label text-selected hover:text-selected"
                     onClick={() => onPlayerClick(renewalCase.player_id)}
                   >
                     {t("squad.viewProfile")}

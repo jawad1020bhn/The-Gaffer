@@ -3,6 +3,22 @@
     "name": "OpenFoot Manager",
     "publisher": "Sturdy Robot"
   },
+  "gameNav": {
+    "career": "Carriera",
+    "team": "Squadra",
+    "transfers": "Trasferimenti",
+    "competitions": "Competizioni",
+    "office": "Ufficio",
+    "main": "Sezioni principali del gioco",
+    "context": "Pagine della sezione",
+    "careerStatus": "Stato della carriera",
+    "commands": "Comandi della carriera",
+    "noClub": "Senza club",
+    "noFixture": "Nessuna partita in arrivo",
+    "unknownBudget": "Budget non disponibile",
+    "date": "Data",
+    "transferBudget": "Budget trasferimenti"
+  },
   "menu": {
     "newGame": "Nuova partita",
     "loadGame": "Carica partita",
@@ -21,12 +37,9 @@
     "loadGameFailed": "Impossibile caricare il salvataggio: {{error}}",
     "invalidWorldDb": "File di database del mondo non valido: {{error}}",
     "failedStartGame": "Impossibile avviare il gioco: {{error}}",
-    "openDiscord": "Apri la comunità Discord",
-    "openGithub": "Apri il repository GitHub",
     "mainMenu": "Menu principale",
     "worldEditor": "Editor Mondo",
-    "startupOptionsRejected": "Non è stato possibile usare quelle impostazioni di carriera. Torna alla schermata del mondo e controlla l'anno di inizio, la fase di inizio e quanta storia passata generare.",
-    "reportBug": "Segnala un bug"
+    "startupOptionsRejected": "Non è stato possibile usare quelle impostazioni di carriera. Torna alla schermata del mondo e controlla l'anno di inizio, la fase di inizio e quanta storia passata generare."
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -41,7 +54,6 @@
     "title": "Crea allenatore",
     "firstName": "Nome",
     "lastName": "Cognome",
-    "dob": "Data di nascita",
     "startYear": "Anno di inizio",
     "startPhase": "Fase di inizio",
     "phaseSeasonStart": "Inizio stagione",
@@ -1918,6 +1930,9 @@
     },
     "uiScale": "Scala interfaccia",
     "uiScaleDesc": "Regola dimensione del testo e spaziatura per migliorare la leggibilità",
+    "uiDensity": "Densità",
+    "uiDensityDesc": "Quanto spazio usano righe e pannelli.",
+    "uiDensityOptions": { "comfortable": "Comoda", "compact": "Compatta" },
     "sidebarWidth": "Larghezza della barra laterale",
     "sidebarWidthDesc": "Quanto è larga la barra laterale aperta. «Larga» mostra ogni voce del menu su una riga.",
     "sidebarWidthOptions": {

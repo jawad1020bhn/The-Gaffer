@@ -1,0 +1,28 @@
+[
+  {
+    "viewport": "1280x800",
+    "openedWizard": true,
+    "overflowX": false,
+    "scrollW": 1280,
+    "clientW": 1280,
+    "hasDobText": false,
+    "dobField": false,
+    "discordBtn": false,
+    "githubBtn": false,
+    "tinyTextNodes": 0,
+    "bodyLen": 159
+  },
+  {
+    "viewport": "960x640",
+    "openedWizard": true,
+    "overflowX": false,
+    "scrollW": 960,
+    "clientW": 960,
+    "hasDobText": false,
+    "dobField": false,
+    "discordBtn": false,
+    "githubBtn": false,
+    "tinyTextNodes": 0,
+    "bodyLen": 159
+  }
+]

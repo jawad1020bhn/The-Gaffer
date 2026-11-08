@@ -37,14 +37,14 @@ export default function NegotiationFeedbackPanel({
 
   return (
     <div
-      className={`rounded-xl border border-gray-200 dark:border-navy-700 bg-gray-50 dark:bg-navy-800/80 p-3 space-y-3 ${className}`.trim()}
+      className={`rounded-panel border border-line bg-sunken/80 p-3 space-y-3 ${className}`.trim()}
     >
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-[11px] font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
             {t(titleKey)}
           </p>
-          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1">
+          <p className="text-body font-medium text-fg mt-1">
             {t(feedback.headline_key, {
               ...(feedback.params ?? {}),
               defaultValue: feedback.headline_key,
@@ -55,7 +55,7 @@ export default function NegotiationFeedbackPanel({
       </div>
 
       {feedback.detail_key ? (
-        <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+        <p className="text-caption text-fg-muted leading-relaxed">
           {t(feedback.detail_key, {
             ...(feedback.params ?? {}),
             defaultValue: feedback.detail_key,
@@ -65,13 +65,13 @@ export default function NegotiationFeedbackPanel({
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <p className="text-[11px] font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
             {t(patienceKey)}
           </p>
           <ProgressBar value={feedback.patience} variant="success" size="md" showLabel />
         </div>
         <div className="space-y-1">
-          <p className="text-[11px] font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
             {t(tensionKey)}
           </p>
           <ProgressBar value={feedback.tension} variant="danger" size="md" showLabel />

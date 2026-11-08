@@ -25,8 +25,8 @@ export default function TournamentsGroupTable({ group, teams }: TournamentsGroup
 
   return (
     <div data-testid={`tournaments-group-${group.id}`}>
-      <div className="px-4 py-2 border-b border-gray-100 dark:border-navy-600 bg-gray-50 dark:bg-navy-800">
-        <h5 className="font-heading font-bold text-xs uppercase tracking-wider text-gray-600 dark:text-gray-300">
+      <div className="px-4 py-2 border-b border-line bg-sunken">
+        <h5 className="font-heading font-bold text-caption uppercase tracking-label text-fg-muted">
           {t("tournaments.group", { name: group.name })}
         </h5>
       </div>
@@ -44,7 +44,7 @@ export default function TournamentsGroupTable({ group, teams }: TournamentsGroup
             <th scope="col">{t("common.pts")}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+        <tbody className="divide-y divide-line">
           {groupStandings.map((entry, idx) => {
             const isUser = entry.team_id === userTeamId;
             const clickable = isClubTeam(entry.team_id);
@@ -52,14 +52,14 @@ export default function TournamentsGroupTable({ group, teams }: TournamentsGroup
               <tr
                 key={entry.team_id}
                 onClick={clickable ? () => onSelectTeam(entry.team_id) : undefined}
-                className={`${clickable ? "cursor-pointer" : ""} transition-colors ${isUser ? "bg-primary-50 dark:bg-primary-500/10" : "hover:bg-gray-50 dark:hover:bg-navy-700/50"}`}
+                className={`${clickable ? "cursor-pointer" : ""} transition-colors ${isUser ? "bg-selected-tint" : "hover:bg-hover/50"}`}
                 data-testid={`tournaments-group-standing-${entry.team_id}`}
               >
-                <td className="py-1.5 px-3 font-heading font-bold text-xs text-gray-400 dark:text-gray-500 w-6">
+                <td className="py-1.5 px-3 font-heading font-bold text-caption text-fg-subtle w-6">
                   {idx + 1}
                 </td>
                 <td
-                  className={`py-1.5 px-3 font-semibold text-sm ${isUser ? "text-primary-600 dark:text-primary-400" : "text-gray-800 dark:text-gray-200"}`}
+                  className={`py-1.5 px-3 font-semibold text-body ${isUser ? "text-selected" : "text-fg"}`}
                 >
                   {clickable ? (
                     <button
@@ -69,7 +69,7 @@ export default function TournamentsGroupTable({ group, teams }: TournamentsGroup
                         event.stopPropagation();
                         onSelectTeam(entry.team_id);
                       }}
-                      className="text-left hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 rounded"
+                      className="text-left hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel rounded"
                     >
                       {resolveTeamName(entry.team_id)}
                     </button>
@@ -77,10 +77,10 @@ export default function TournamentsGroupTable({ group, teams }: TournamentsGroup
                     resolveTeamName(entry.team_id)
                   )}
                 </td>
-                <td className="py-1.5 px-3 text-center text-xs text-gray-600 dark:text-gray-400 tabular-nums">
+                <td className="py-1.5 px-3 text-center text-caption text-fg-muted tabular-nums">
                   {entry.played}
                 </td>
-                <td className="py-1.5 px-3 text-center font-heading font-bold text-sm text-gray-800 dark:text-gray-100 tabular-nums">
+                <td className="py-1.5 px-3 text-center font-heading font-bold text-body text-fg tabular-nums">
                   {entry.points}
                 </td>
               </tr>

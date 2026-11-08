@@ -22,6 +22,9 @@ pub struct AppSettings {
     pub confirm_advance: bool,
     #[serde(default = "default_ui_scale")]
     pub ui_scale: String, // "small" | "normal" | "large" | "xlarge"
+    /// Row/panel spacing: "comfortable" | "compact". Older settings files default to comfortable.
+    #[serde(default = "default_ui_density")]
+    pub ui_density: String,
     #[serde(default)]
     pub high_contrast: bool,
     /// When true, the Continue button rolls forward several days until the next
@@ -59,6 +62,9 @@ fn default_language() -> String {
 fn default_ui_scale() -> String {
     "normal".to_string()
 }
+fn default_ui_density() -> String {
+    "comfortable".to_string()
+}
 
 const SIDEBAR_WIDTHS: [&str; 3] = ["compact", "standard", "wide"];
 const SIDEBAR_BEHAVIOURS: [&str; 4] = ["normal", "hover", "click", "icons"];
@@ -68,6 +74,14 @@ fn default_sidebar_width() -> String {
 }
 fn default_sidebar_behaviour() -> String {
     "normal".to_string()
+}
+
+const UI_DENSITIES: [&str; 2] = ["comfortable", "compact"];
+
+fn normalize_ui_density(settings: &mut AppSettings) {
+    if !UI_DENSITIES.contains(&settings.ui_density.as_str()) {
+        settings.ui_density = default_ui_density();
+    }
 }
 
 const LIST_VIEWS: [&str; 2] = ["table", "cards"];
@@ -107,6 +121,7 @@ impl Default for AppSettings {
             show_match_commentary: true,
             confirm_advance: false,
             ui_scale: "normal".to_string(),
+            ui_density: default_ui_density(),
             high_contrast: false,
             continue_to_next_event: false,
             sidebar_width: default_sidebar_width(),
@@ -134,6 +149,7 @@ fn normalize_loaded_settings(mut settings: AppSettings) -> AppSettings {
         .unwrap_or(currency::DEFAULT_CURRENCY_CODE)
         .to_string();
     normalize_sidebar(&mut settings);
+    normalize_ui_density(&mut settings);
     normalize_list_view(&mut settings);
     settings
 }
@@ -143,6 +159,7 @@ fn validate_settings(mut settings: AppSettings) -> Result<AppSettings, String> {
         .ok_or("be.error.settings.invalidCurrency".to_string())?
         .to_string();
     normalize_sidebar(&mut settings);
+    normalize_ui_density(&mut settings);
     normalize_list_view(&mut settings);
     Ok(settings)
 }
@@ -413,6 +430,65 @@ mod tests {
         let read: AppSettings = serde_json::from_str(&json).expect("read back");
 
         assert_eq!(normalize_loaded_settings(read).list_view, "cards");
+    }
+
+    /// Given a settings file written before density existed
+    /// When it is loaded
+    /// Then the game opens comfortable, and unrelated choices survive.
+    #[test]
+    fn a_settings_file_from_before_density_opens_comfortable() {
+        let json = r#"{"theme":"light","language":"de","currency":"EUR","default_match_mode":"live",
+            "auto_save":true,"match_speed":"normal","show_match_commentary":true,
+            "confirm_advance":false,"ui_scale":"large","high_contrast":true}"#;
+
+        let settings: AppSettings = serde_json::from_str(json).expect("an older settings file");
+        let loaded = normalize_loaded_settings(settings);
+
+        assert_eq!(loaded.ui_density, "comfortable");
+        assert_eq!(loaded.language, "de");
+        assert_eq!(loaded.ui_scale, "large");
+        assert!(loaded.high_contrast);
+    }
+
+    /// Given a density this build doesn't know
+    /// When it is loaded or saved
+    /// Then it falls back to comfortable rather than failing the whole settings file.
+    #[test]
+    fn an_unknown_density_falls_back_to_comfortable() {
+        let unknown = AppSettings {
+            ui_density: "ultra".to_string(),
+            ..AppSettings::default()
+        };
+
+        assert_eq!(
+            normalize_loaded_settings(unknown.clone()).ui_density,
+            "comfortable"
+        );
+        let saved = validate_settings(unknown).expect("an unknown density is not an error");
+        assert_eq!(saved.ui_density, "comfortable");
+    }
+
+    /// Given a player who chose compact density
+    /// When the settings are written and read back
+    /// Then compact survives without resetting unrelated settings.
+    #[test]
+    fn compact_density_survives_a_save_and_a_load() {
+        let chosen = AppSettings {
+            ui_density: "compact".to_string(),
+            language: "fr".to_string(),
+            ui_scale: "xlarge".to_string(),
+            high_contrast: true,
+            ..AppSettings::default()
+        };
+
+        let json = serde_json::to_string(&validate_settings(chosen).expect("valid")).expect("json");
+        let read: AppSettings = serde_json::from_str(&json).expect("read back");
+        let read = normalize_loaded_settings(read);
+
+        assert_eq!(read.ui_density, "compact");
+        assert_eq!(read.language, "fr");
+        assert_eq!(read.ui_scale, "xlarge");
+        assert!(read.high_contrast);
     }
 
     #[test]

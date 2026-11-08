@@ -10,10 +10,9 @@ interface PlayerStatusFieldsProps {
 }
 
 const chipClass =
-  "px-2.5 py-1 text-[11px] font-heading font-bold uppercase tracking-wide rounded-full border transition focus:outline-none focus:ring-2 focus:ring-primary-400";
-const chipOnClass = "bg-primary-500 text-white border-primary-500";
-const chipOffClass =
-  "bg-white dark:bg-navy-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-navy-600 hover:bg-gray-50 dark:hover:bg-navy-600";
+  "px-2.5 py-1 text-caption font-heading font-bold uppercase tracking-label rounded-full border transition focus:outline-none focus:ring-2 focus-visible:ring-focus";
+const chipOnClass = "bg-selected-fill text-on-brand border-selected";
+const chipOffClass = "bg-panel text-fg-muted border-line hover:bg-sunken";
 
 /**
  * Condition, morale, weak foot and alternate positions.

@@ -121,7 +121,7 @@ export function WorldEditorFormPanel({
   if (formPanel === "metadata") {
     return (
       <div className="max-w-4xl">
-        <h2 className="text-lg font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-white mb-5">
+        <h2 className="text-lead font-heading font-bold uppercase tracking-label text-fg mb-5">
           {t("worldEditor.metadata")}
         </h2>
         <MetadataForm
@@ -136,7 +136,7 @@ export function WorldEditorFormPanel({
           type="button"
           onClick={onSaveMetadata}
           disabled={isBusy}
-          className="mt-6 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl font-heading font-bold uppercase tracking-wide text-sm transition-all disabled:opacity-60"
+          className="mt-6 px-5 py-2.5 bg-gradient-to-r from-selected-fill to-selected-fill text-on-brand rounded-panel font-heading font-bold uppercase tracking-label text-body transition-all disabled:opacity-60"
         >
           {t("common.save")}
         </button>
@@ -147,11 +147,11 @@ export function WorldEditorFormPanel({
   if (formPanel === "issues") {
     return (
       <div className="max-w-2xl">
-        <h2 className="text-lg font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-white mb-5">
+        <h2 className="text-lead font-heading font-bold uppercase tracking-label text-fg mb-5">
           {t("worldEditor.issuesTitle")}
         </h2>
         {issues.length === 0 && warnings.length === 0 ? (
-          <p className="text-sm text-gray-400 dark:text-gray-500">{t("worldEditor.noIssues")}</p>
+          <p className="text-body text-fg-subtle">{t("worldEditor.noIssues")}</p>
         ) : (
           <div className="space-y-3">
             <IssueList issues={issues} />
@@ -309,8 +309,8 @@ export function WorldEditorFormPanel({
 
   return (
     <div className="flex flex-col items-center justify-center h-full text-center gap-3">
-      <MousePointerClick className="w-10 h-10 text-gray-300 dark:text-navy-600" />
-      <p className="text-sm text-gray-400 dark:text-gray-500">{t("worldEditor.noItemSelected")}</p>
+      <MousePointerClick className="w-10 h-10 text-fg-subtle" />
+      <p className="text-body text-fg-subtle">{t("worldEditor.noItemSelected")}</p>
     </div>
   );
 }

@@ -149,14 +149,14 @@ export default function SimLab() {
 
   return (
     <div
-      className="min-h-screen bg-navy-900 text-slate-100 flex flex-col"
+      className="min-h-screen bg-sunken text-fg flex flex-col"
       style={{ fontFamily: "system-ui, sans-serif" }}
     >
       {/* Header */}
-      <div className="border-b border-navy-700 px-6 py-3 flex items-center justify-between bg-navy-900">
+      <div className="border-b border-line px-6 py-3 flex items-center justify-between bg-sunken">
         <div>
-          <h1 className="text-lg font-bold text-blue-400">Simulation Lab</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h1 className="text-lead font-bold text-selected">Simulation Lab</h1>
+          <p className="text-caption text-fg-muted mt-0.5">
             Batch match simulation &amp; engine analysis tool
           </p>
         </div>
@@ -166,7 +166,7 @@ export default function SimLab() {
             void run();
           }}
           disabled={running}
-          className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm transition-colors"
+          className="px-5 py-2 rounded-control bg-selected text-on-brand hover:bg-selected/90 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-body transition-colors"
         >
           {running ? "Simulating…" : `Run ${cfg.games.toLocaleString()} games`}
         </button>
@@ -174,10 +174,10 @@ export default function SimLab() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Config sidebar */}
-        <aside className="w-72 flex-shrink-0 border-r border-navy-700 bg-navy-900 overflow-y-auto p-4 space-y-5">
+        <aside className="w-72 flex-shrink-0 border-r border-line bg-sunken overflow-y-auto p-4 space-y-5">
           <Section title="Teams">
             <TeamConfig side="Home" cfg={cfg} onChange={update} prefix="home" />
-            <div className="my-3 border-t border-navy-700" />
+            <div className="my-3 border-t border-line" />
             <TeamConfig side="Away" cfg={cfg} onChange={update} prefix="away" />
           </Section>
 
@@ -197,7 +197,7 @@ export default function SimLab() {
               className={inputCls}
             />
             {cfg.games > 10000 && (
-              <p className="text-xs text-amber-400 mt-1">Large runs may take several seconds.</p>
+              <p className="text-caption text-warning mt-1">Large runs may take several seconds.</p>
             )}
             <Label htmlFor="seed-input">Seed (blank = random)</Label>
             <input
@@ -293,7 +293,7 @@ export default function SimLab() {
             <button
               type="button"
               onClick={() => setCfg(defaultConfig())}
-              className="w-full mt-2 text-xs text-slate-500 hover:text-slate-300 underline"
+              className="w-full mt-2 text-caption text-fg-muted hover:text-fg underline"
             >
               Reset to defaults
             </button>
@@ -303,7 +303,7 @@ export default function SimLab() {
         {/* Results area */}
         <main className="flex-1 overflow-y-auto p-6">
           {error && (
-            <div className="mb-4 p-3 bg-red-900/40 border border-red-700 rounded-lg text-red-300 text-sm">
+            <div className="mb-4 p-3 border border-danger bg-danger-tint rounded-control text-danger text-body">
               {error}
             </div>
           )}
@@ -311,8 +311,8 @@ export default function SimLab() {
           {!results && !running && <EmptyState />}
 
           {running && (
-            <div className="flex items-center gap-3 text-slate-400">
-              <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+            <div className="flex items-center gap-3 text-fg-muted">
+              <div className="w-5 h-5 border-2 border-info border-t-transparent rounded-full animate-spin" />
               Simulating {cfg.games.toLocaleString()} games…
             </div>
           )}
@@ -320,16 +320,16 @@ export default function SimLab() {
           {results && !running && (
             <>
               {/* Tab bar */}
-              <div className="flex gap-1 mb-6 border-b border-navy-700">
+              <div className="flex gap-1 mb-6 border-b border-line">
                 {TABS.map((t) => (
                   <button
                     type="button"
                     key={t}
                     onClick={() => setActiveTab(t)}
-                    className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                    className={`px-4 py-2 text-body font-medium transition-colors border-b-2 -mb-px ${
                       activeTab === t
-                        ? "border-blue-400 text-blue-400"
-                        : "border-transparent text-slate-500 hover:text-slate-300"
+                        ? "border-info text-selected"
+                        : "border-transparent text-fg-muted hover:text-fg"
                     }`}
                   >
                     {t}
@@ -366,7 +366,7 @@ function TeamConfig({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-blue-400 mb-2">{side}</p>
+      <p className="text-caption font-semibold text-selected mb-2">{side}</p>
       <Label htmlFor={`${prefix}-style`}>Style</Label>
       <select
         id={`${prefix}-style`}
@@ -401,7 +401,7 @@ function TeamConfig({
         max={95}
         value={cfg[`${prefix}_rating`]}
         onChange={(e) => onChange(`${prefix}_rating`, Number(e.target.value))}
-        className="w-full accent-blue-400"
+        className="w-full accent-info-solid"
       />
     </div>
   );
@@ -429,7 +429,7 @@ function ConfigSlider({
     <div className="mb-3">
       <div className="flex justify-between items-center mb-1">
         <Label>{label}</Label>
-        <span className={`text-xs font-mono ${isModified ? "text-yellow-400" : "text-slate-400"}`}>
+        <span className={`text-caption font-mono ${isModified ? "text-warning" : "text-fg-muted"}`}>
           {value.toFixed(3).replace(/\.?0+$/, "")}
         </span>
       </div>
@@ -440,7 +440,7 @@ function ConfigSlider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-blue-400"
+        className="w-full accent-info-solid"
       />
     </div>
   );
@@ -505,9 +505,9 @@ function OverviewTab({ r }: { r: SimBatchResults }) {
 
       {/* Real-football benchmark table */}
       <Card title="Real-Football Benchmark Comparison">
-        <table className="w-full text-sm">
+        <table className="w-full text-body">
           <thead>
-            <tr className="text-xs text-slate-500 uppercase border-b border-navy-700">
+            <tr className="text-caption text-fg-muted uppercase border-b border-line">
               <th className="py-2 text-left">Metric</th>
               <th className="py-2 text-right">Simulated</th>
               <th className="py-2 text-right">Target</th>
@@ -519,13 +519,13 @@ function OverviewTab({ r }: { r: SimBatchResults }) {
               const v = getVal(label);
               const ok = v >= lo && v <= hi;
               return (
-                <tr key={label} className="border-b border-navy-800">
-                  <td className="py-1.5 text-slate-400">{label}</td>
+                <tr key={label} className="border-b border-line">
+                  <td className="py-1.5 text-fg-muted">{label}</td>
                   <td className="py-1.5 text-right font-mono font-semibold">{v.toFixed(2)}</td>
-                  <td className="py-1.5 text-right text-slate-500 text-xs">{target}</td>
+                  <td className="py-1.5 text-right text-fg-muted text-caption">{target}</td>
                   <td className="py-1.5 text-right">
                     <span
-                      className={`text-xs font-semibold ${ok ? "text-green-400" : "text-red-400"}`}
+                      className={`text-caption font-semibold ${ok ? "text-positive" : "text-danger"}`}
                     >
                       {ok ? "✓" : "✗"}
                     </span>
@@ -583,7 +583,7 @@ function ShootingTab({ r }: { r: SimBatchResults }) {
       </Card>
 
       <Card title="Expected Goals (Proxy)">
-        <p className="text-xs text-slate-500 mb-4">
+        <p className="text-caption text-fg-muted mb-4">
           xG proxy = shots on target/game × goal_conversion_base. Not per-shot (engine doesn't emit
           shot quality in static path).
         </p>
@@ -594,7 +594,7 @@ function ShootingTab({ r }: { r: SimBatchResults }) {
             label="Goals vs xG"
             value={`${diff >= 0 ? "+" : ""}${diff.toFixed(2)}`}
             sub={diff >= 0 ? "Overperforming" : "Underperforming"}
-            valueClass={diff >= 0 ? "text-green-400" : "text-yellow-400"}
+            valueClass={diff >= 0 ? "text-positive" : "text-warning"}
           />
         </div>
       </Card>
@@ -647,16 +647,16 @@ function DisciplineTab({ r }: { r: SimBatchResults }) {
       </div>
 
       <Card title="Discipline Notes">
-        <p className="text-sm text-slate-400 leading-relaxed">
+        <p className="text-body text-fg-muted leading-relaxed">
           The static simulation engine only triggers fouls in the midfield and attacking-third
           zones. Box fouls (leading to penalties) are not generated via this path — penalties will
           show as 0 regardless of the{" "}
-          <code className="bg-navy-800 px-1 rounded">penalty_probability</code> config. This is a
-          known limitation of the static engine path. The live match engine handles this correctly.
+          <code className="bg-panel px-1 rounded">penalty_probability</code> config. This is a known
+          limitation of the static engine path. The live match engine handles this correctly.
         </p>
-        <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+        <p className="text-body text-fg-muted mt-2 leading-relaxed">
           If fouls per game is below 18, consider increasing{" "}
-          <code className="bg-navy-800 px-1 rounded">foul_probability</code> or reviewing how often
+          <code className="bg-panel px-1 rounded">foul_probability</code> or reviewing how often
           tackle events occur in the zone resolution logic.
         </p>
       </Card>
@@ -669,14 +669,17 @@ function HeatmapTab({ r }: { r: SimBatchResults }) {
   return (
     <div className="space-y-6">
       <Card title="Scoreline Heatmap — Home Goals (rows) × Away Goals (cols)">
-        <p className="text-xs text-slate-500 mb-4">Goals capped at 5+. Cell = % of games.</p>
+        <p className="text-caption text-fg-muted mb-4">Goals capped at 5+. Cell = % of games.</p>
         <div className="overflow-x-auto">
           <table className="border-collapse">
             <thead>
               <tr>
                 <th className="w-10 h-10" />
                 {[0, 1, 2, 3, 4, 5].map((ag) => (
-                  <th key={ag} className="w-14 h-10 text-xs text-slate-500 text-center font-normal">
+                  <th
+                    key={ag}
+                    className="w-14 h-10 text-caption text-fg-muted text-center font-normal"
+                  >
                     {ag === 5 ? "5+" : ag}
                   </th>
                 ))}
@@ -685,7 +688,7 @@ function HeatmapTab({ r }: { r: SimBatchResults }) {
             <tbody>
               {r.scoreline_heatmap.map((row, hg) => (
                 <tr key={hg}>
-                  <td className="w-10 text-xs text-slate-500 text-right pr-2">
+                  <td className="w-10 text-caption text-fg-muted text-right pr-2">
                     {hg === 5 ? "5+" : hg}
                   </td>
                   {row.map((frac, ag) => {
@@ -695,7 +698,7 @@ function HeatmapTab({ r }: { r: SimBatchResults }) {
                       <td
                         key={ag}
                         title={`${hg}-${ag}: ${pct}%`}
-                        className="w-14 h-10 text-center text-xs font-semibold rounded"
+                        className="w-14 h-10 text-center text-caption font-semibold rounded"
                         style={{
                           backgroundColor: `rgba(79,142,247,${Math.max(0.04, opacity * 0.9)})`,
                           color: opacity > 0.55 ? "#fff" : "#64748b",
@@ -720,26 +723,26 @@ function TimelineTab({ r }: { r: SimBatchResults }) {
   return (
     <div className="space-y-6">
       <Card title="Scoring Timeline — Goals by 15-minute Interval">
-        <p className="text-xs text-slate-500 mb-4">
+        <p className="text-caption text-fg-muted mb-4">
           Fraction of all goals scored in each 15-minute window.
         </p>
         <div className="space-y-3">
           {r.goals_by_bucket.map((frac, i) => (
             <div key={i} className="flex items-center gap-3">
-              <span className="text-xs text-slate-500 w-12 text-right">{BUCKET_LABELS[i]}</span>
-              <div className="flex-1 h-5 bg-navy-800 rounded overflow-hidden">
+              <span className="text-caption text-fg-muted w-12 text-right">{BUCKET_LABELS[i]}</span>
+              <div className="flex-1 h-5 bg-panel rounded overflow-hidden">
                 <div
-                  className="h-full rounded bg-blue-500 transition-all"
+                  className="h-full rounded bg-info-solid transition-all"
                   style={{ width: `${(frac / max) * 100}%` }}
                 />
               </div>
-              <span className="text-xs text-slate-400 w-12 text-right">
+              <span className="text-caption text-fg-muted w-12 text-right">
                 {(frac * 100).toFixed(1)}%
               </span>
             </div>
           ))}
         </div>
-        <p className="text-xs text-slate-500 mt-4">
+        <p className="text-caption text-fg-muted mt-4">
           A fairly even distribution across all periods is expected. Goals should increase slightly
           in the 76–90 window as teams push for results. Check for anomalies in the extra time
           bucket.
@@ -747,18 +750,18 @@ function TimelineTab({ r }: { r: SimBatchResults }) {
       </Card>
 
       <Card title="Possession">
-        <div className="mb-2 text-xs text-slate-500">
+        <div className="mb-2 text-caption text-fg-muted">
           Average possession split across {r.games.toLocaleString()} games
         </div>
         <div className="flex h-7 rounded overflow-hidden gap-px">
           <div
-            className="flex items-center justify-center text-xs font-bold text-white"
+            className="flex items-center justify-center text-caption font-bold text-fg"
             style={{ width: `${r.home_possession_avg}%`, background: "#4f8ef7" }}
           >
             {r.home_possession_avg.toFixed(1)}%
           </div>
           <div
-            className="flex items-center justify-center text-xs font-bold text-white"
+            className="flex items-center justify-center text-caption font-bold text-fg"
             style={{ width: `${r.away_possession_avg}%`, background: "#f472b6" }}
           >
             {r.away_possession_avg.toFixed(1)}%
@@ -787,13 +790,13 @@ function BenchmarkTab({ r }: { r: SimBatchResults }) {
       </div>
 
       <Card title="Interpretation">
-        <p className="text-sm text-slate-400 leading-relaxed">
+        <p className="text-body text-fg-muted leading-relaxed">
           This is single-threaded throughput for the static simulation engine (
-          <code className="bg-navy-800 px-1 rounded">engine::simulate_with_rng</code>). For deeper
-          analysis, use the <code className="bg-navy-800 px-1 rounded">ofm-sim-bench --bench</code>{" "}
-          CLI which measures per-game latency distribution (p50/p95/p99).
+          <code className="bg-panel px-1 rounded">engine::simulate_with_rng</code>). For deeper
+          analysis, use the <code className="bg-panel px-1 rounded">ofm-sim-bench --bench</code> CLI
+          which measures per-game latency distribution (p50/p95/p99).
         </p>
-        <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+        <p className="text-body text-fg-muted mt-2 leading-relaxed">
           At {Math.round(r.games_per_sec).toLocaleString()} games/sec you can run 100,000 games in
           approximately {(100000 / r.games_per_sec).toFixed(1)} seconds — useful for large parameter
           sweeps.
@@ -808,7 +811,9 @@ function BenchmarkTab({ r }: { r: SimBatchResults }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">{title}</p>
+      <p className="text-caption font-semibold text-fg-muted uppercase tracking-label mb-3">
+        {title}
+      </p>
       {children}
     </div>
   );
@@ -816,8 +821,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-navy-900 border border-navy-700 rounded-xl p-5">
-      <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">{title}</h3>
+    <div className="bg-sunken border border-line rounded-panel p-5">
+      <h3 className="text-caption font-bold uppercase tracking-label text-fg-muted mb-4">
+        {title}
+      </h3>
       {children}
     </div>
   );
@@ -825,7 +832,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 function Label({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
-    <label htmlFor={htmlFor} className="text-xs text-slate-500 mb-1 mt-2 block">
+    <label htmlFor={htmlFor} className="text-caption text-fg-muted mb-1 mt-2 block">
       {children}
     </label>
   );
@@ -843,10 +850,10 @@ function StatCard({
   valueClass?: string;
 }) {
   return (
-    <div className="bg-navy-800 rounded-lg p-4">
-      <p className="text-xs text-slate-500 mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${valueClass ?? "text-slate-100"}`}>{value}</p>
-      {sub && <p className="text-xs text-slate-500 mt-1">{sub}</p>}
+    <div className="bg-panel rounded-control p-4">
+      <p className="text-caption text-fg-muted mb-1">{label}</p>
+      <p className={`text-title font-bold ${valueClass ?? "text-fg"}`}>{value}</p>
+      {sub && <p className="text-caption text-fg-muted mt-1">{sub}</p>}
     </div>
   );
 }
@@ -864,15 +871,15 @@ function OutcomeBar({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-20 text-sm text-slate-400">{label}</span>
-      <div className="flex-1 h-5 bg-navy-800 rounded overflow-hidden">
+      <span className="w-20 text-body text-fg-muted">{label}</span>
+      <div className="flex-1 h-5 bg-panel rounded overflow-hidden">
         <div
           className="h-full rounded transition-all"
           style={{ width: `${value}%`, backgroundColor: color }}
         />
       </div>
-      <span className="text-sm font-semibold w-14 text-right">{value.toFixed(1)}%</span>
-      <span className="text-xs text-slate-500 w-12 text-right">{count.toLocaleString()}</span>
+      <span className="text-body font-semibold w-14 text-right">{value.toFixed(1)}%</span>
+      <span className="text-caption text-fg-muted w-12 text-right">{count.toLocaleString()}</span>
     </div>
   );
 }
@@ -892,7 +899,7 @@ function Histogram({ data, labels, color }: { data: number[]; labels: string[]; 
               minHeight: v > 0 ? 2 : 0,
             }}
           />
-          <span className="text-xs text-slate-500">{labels[i]}</span>
+          <span className="text-caption text-fg-muted">{labels[i]}</span>
         </div>
       ))}
     </div>
@@ -912,24 +919,24 @@ function FunnelRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-28 text-sm text-slate-400">{label}</span>
-      <div className="flex-1 h-5 bg-navy-800 rounded overflow-hidden">
+      <span className="w-28 text-body text-fg-muted">{label}</span>
+      <div className="flex-1 h-5 bg-panel rounded overflow-hidden">
         <div
           className="h-full rounded"
           style={{ width: `${(value / max) * 100}%`, backgroundColor: color }}
         />
       </div>
-      <span className="text-sm font-semibold w-10 text-right">{value.toFixed(1)}</span>
+      <span className="text-body font-semibold w-10 text-right">{value.toFixed(1)}</span>
     </div>
   );
 }
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center h-64 text-center text-slate-500">
-      <div className="text-4xl mb-3">⚽</div>
+    <div className="flex flex-col items-center justify-center h-64 text-center text-fg-muted">
+      <div className="text-display mb-3">⚽</div>
       <p className="font-semibold">Configure and run a simulation</p>
-      <p className="text-sm mt-1">Adjust the parameters on the left, then press Run.</p>
+      <p className="text-body mt-1">Adjust the parameters on the left, then press Run.</p>
     </div>
   );
 }
@@ -937,8 +944,8 @@ function EmptyState() {
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
 const inputCls =
-  "w-full bg-navy-800 border border-navy-600 rounded-md px-2.5 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500";
+  "w-full bg-panel border border-line rounded-md px-2.5 py-1.5 text-body text-fg focus:outline-none focus:border-selected";
 
 function inRange(value: number, lo: number, hi: number): string {
-  return value >= lo && value <= hi ? "text-green-400" : "text-red-400";
+  return value >= lo && value <= hi ? "text-positive" : "text-danger";
 }

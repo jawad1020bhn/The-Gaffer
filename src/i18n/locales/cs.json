@@ -3,6 +3,22 @@
     "name": "OpenFoot Manager",
     "publisher": "Sturdy Robot"
   },
+  "gameNav": {
+    "career": "Kariéra",
+    "team": "Tým",
+    "transfers": "Přestupy",
+    "competitions": "Soutěže",
+    "office": "Kancelář",
+    "main": "Hlavní sekce hry",
+    "context": "Stránky sekce",
+    "careerStatus": "Stav kariéry",
+    "commands": "Příkazy kariéry",
+    "noClub": "Bez klubu",
+    "noFixture": "Žádný nadcházející zápas",
+    "unknownBudget": "Rozpočet nedostupný",
+    "date": "Datum",
+    "transferBudget": "Přestupový rozpočet"
+  },
   "menu": {
     "newGame": "Nová hra",
     "loadGame": "Načíst hru",
@@ -21,12 +37,9 @@
     "loadGameFailed": "Nepodařilo se načíst hru: {{error}}",
     "invalidWorldDb": "Neplatný soubor databáze světa: {{error}}",
     "failedStartGame": "Nepodařilo se spustit hru: {{error}}",
-    "openDiscord": "Otevřít Discord",
-    "openGithub": "Otevřít GitHub",
     "mainMenu": "Hlavní menu",
     "worldEditor": "Editor světa",
-    "startupOptionsRejected": "Tato nastavení kariéry nebylo možné použít. Vraťte se na obrazovku světa a zkontrolujte rok začátku, fázi začátku a kolik minulé historie se má vygenerovat.",
-    "reportBug": "Nahlásit chybu"
+    "startupOptionsRejected": "Tato nastavení kariéry nebylo možné použít. Vraťte se na obrazovku světa a zkontrolujte rok začátku, fázi začátku a kolik minulé historie se má vygenerovat."
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -41,7 +54,6 @@
     "title": "Vytvořit manažera",
     "firstName": "Jméno",
     "lastName": "Příjmení",
-    "dob": "Datum narození",
     "startYear": "Výchozí rok",
     "startPhase": "Počáteční fáze",
     "phaseSeasonStart": "Začátek sezóny",
@@ -1899,6 +1911,9 @@
     },
     "uiScale": "Měřítko rozhraní",
     "uiScaleDesc": "Upravit velikost písma a mezery pro lepší čitelnost",
+    "uiDensity": "Hustota",
+    "uiDensityDesc": "Kolik místa používají řádky a panely.",
+    "uiDensityOptions": { "comfortable": "Pohodlné", "compact": "Kompaktní" },
     "sidebarWidth": "Šířka postranního panelu",
     "sidebarWidthDesc": "Jak široký je otevřený postranní panel. „Široký“ zobrazí každou položku nabídky na jednom řádku.",
     "sidebarWidthOptions": {

@@ -33,17 +33,14 @@ export default function SwitchClubConfirmModal({
       // While the switch runs, Cancel is disabled, and Escape asks for nothing either.
       onClose={busy ? undefined : onCancel}
       busy={busy}
-      className="w-full max-w-md rounded-2xl p-6"
+      className="w-full max-w-md rounded-panel p-6"
     >
       <div className="space-y-4" data-testid="switch-club-confirm-modal">
         <div>
-          <h3
-            id={titleId}
-            className="text-lg font-heading font-bold text-gray-900 dark:text-gray-100"
-          >
+          <h3 id={titleId} className="text-heading font-heading font-bold text-fg">
             {t("jobs.switchConfirmTitle")}
           </h3>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+          <p className="mt-2 text-body text-fg-muted">
             {t("jobs.switchConfirmBody", {
               currentClub: currentClubName,
               newClub: newClubName,

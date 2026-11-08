@@ -33,16 +33,13 @@ export default function TournamentsFixtureRow({
     }));
 
   const teamName = (teamId: string, align: "text-right" | "text-left") => {
-    const tone =
-      teamId === userTeamId
-        ? "text-primary-600 dark:text-primary-400"
-        : "text-gray-800 dark:text-gray-200";
+    const tone = teamId === userTeamId ? "text-selected" : "text-fg";
 
     // A national team has no page to open, so it stays plain text rather than
     // a button that goes nowhere.
     if (!isClubTeam(teamId)) {
       return (
-        <span className={`flex-1 ${align} font-semibold text-sm ${tone}`}>
+        <span className={`flex-1 ${align} font-semibold text-body ${tone}`}>
           {resolveTeamName(teamId)}
         </span>
       );
@@ -52,7 +49,7 @@ export default function TournamentsFixtureRow({
       <button
         type="button"
         onClick={() => onSelectTeam(teamId)}
-        className={`flex-1 ${align} font-semibold text-sm hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 rounded ${tone}`}
+        className={`flex-1 ${align} font-semibold text-body hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel rounded ${tone}`}
       >
         {resolveTeamName(teamId)}
       </button>
@@ -62,13 +59,13 @@ export default function TournamentsFixtureRow({
   return (
     <ContextMenu items={menuItems}>
       <div
-        className={`flex items-center px-5 py-3 transition-colors ${isUserMatch ? "bg-primary-50/50 dark:bg-primary-500/5" : ""}`}
+        className={`flex items-center px-5 py-3 transition-colors ${isUserMatch ? "bg-selected-tint" : ""}`}
         data-testid={testId}
       >
         {teamName(fixture.home_team_id, "text-right")}
         <div className="w-24 text-center mx-3">
           {completed && fixture.result ? (
-            <span className="font-heading font-bold text-lg text-gray-800 dark:text-gray-100">
+            <span className="font-heading font-bold text-lead text-fg">
               {fixture.result.home_goals} - {fixture.result.away_goals}
             </span>
           ) : (

@@ -38,13 +38,9 @@ export default function PlayerProfileSeasonStatsCard({
 
 function StatBox({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="text-center p-2.5 bg-gray-50 dark:bg-navy-700 rounded-lg">
-      <p className="font-heading font-bold text-lg text-gray-800 dark:text-gray-100 tabular-nums">
-        {value}
-      </p>
-      <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase tracking-wider">
-        {label}
-      </p>
+    <div className="text-center p-2.5 bg-sunken rounded-control">
+      <p className="font-heading font-bold text-heading text-fg tabular-nums">{value}</p>
+      <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">{label}</p>
     </div>
   );
 }

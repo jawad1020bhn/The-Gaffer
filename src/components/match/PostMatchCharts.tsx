@@ -32,9 +32,7 @@ export function PossessionDonut({
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <p className="text-[10px] font-heading uppercase tracking-widest text-gray-500 dark:text-gray-400">
-        {label}
-      </p>
+      <p className="text-[10px] font-heading uppercase tracking-labelst text-fg-muted">{label}</p>
       <div className="relative" style={{ width: 72, height: 72 }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -63,12 +61,12 @@ export function PossessionDonut({
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-[10px] font-heading font-bold text-gray-700 dark:text-gray-300 tabular-nums">
+          <span className="text-[10px] font-heading font-bold text-fg tabular-nums">
             {roundedHome}%
           </span>
         </div>
       </div>
-      <div className="flex gap-3 text-[9px] font-heading uppercase tracking-wider">
+      <div className="flex gap-3 text-[9px] font-heading uppercase tracking-label">
         <span style={{ color: homeColor }}>{roundedHome}%</span>
         <span style={{ color: awayColor }}>{roundedAway}%</span>
       </div>

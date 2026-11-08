@@ -70,7 +70,7 @@ export default function TournamentsAwardCard({
           {icon}
           <div>
             <span>{title}</span>
-            <p className="text-[10px] text-gray-400 dark:text-gray-500 font-normal normal-case tracking-normal">
+            <p className="text-caption text-fg-subtle font-normal normal-case tracking-normal">
               {subtitle}
             </p>
           </div>
@@ -78,9 +78,9 @@ export default function TournamentsAwardCard({
       </CardHeader>
       <CardBody className="p-0">
         {entries.length === 0 ? (
-          <p className="p-4 text-sm text-gray-400 dark:text-gray-500 text-center">{emptyText}</p>
+          <p className="p-4 text-body text-fg-subtle text-center">{emptyText}</p>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-navy-600">
+          <div className="divide-y divide-line">
             {entries.map((entry, i) => (
               <ContextMenu items={buildAwardMenuItems(entry)} key={entryId(entry)}>
                 <div
@@ -88,36 +88,30 @@ export default function TournamentsAwardCard({
                   data-testid={`tournaments-award-entry-${entryId(entry)}`}
                 >
                   <span
-                    className={`font-heading font-bold text-sm w-5 text-center ${
-                      i === 0
-                        ? "text-accent-500 dark:text-accent-400"
-                        : "text-gray-400 dark:text-gray-500"
+                    className={`font-heading font-bold text-body w-5 text-center ${
+                      i === 0 ? "text-warning" : "text-fg-subtle"
                     }`}
                   >
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
                     <p
-                      className={`text-sm font-semibold truncate ${
-                        i === 0
-                          ? "text-gray-900 dark:text-gray-100"
-                          : "text-gray-700 dark:text-gray-300"
+                      className={`text-body font-semibold truncate ${
+                        i === 0 ? "text-fg" : "text-fg"
                       }`}
                     >
                       {entryName(entry)}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">{entry.team_name}</p>
+                    <p className="text-caption text-fg-subtle">{entry.team_name}</p>
                   </div>
                   <span
                     className={`font-heading font-bold tabular-nums ${
-                      i === 0
-                        ? "text-lg text-accent-500 dark:text-accent-400"
-                        : "text-sm text-gray-600 dark:text-gray-400"
+                      i === 0 ? "text-lead text-warning" : "text-body text-fg-muted"
                     }`}
                   >
                     {decimal ? entryValue(entry).toFixed(2) : `${Math.round(entryValue(entry))}`}
                   </span>
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500 w-12">{unit}</span>
+                  <span className="text-caption text-fg-subtle w-12">{unit}</span>
                 </div>
               </ContextMenu>
             ))}

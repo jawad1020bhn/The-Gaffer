@@ -58,7 +58,7 @@ interface FinancesTabProps {
 export default function FinancesTab({ gameState, onGameUpdate, onSelectPlayer }: FinancesTabProps) {
   const { t } = useTranslation();
   const myTeam = gameState.teams.find((tm) => tm.id === gameState.manager.team_id);
-  if (!myTeam) return <p className="text-gray-500 dark:text-gray-400">{t("common.noTeam")}</p>;
+  if (!myTeam) return <p className="text-fg-muted">{t("common.noTeam")}</p>;
 
   return (
     <FinancesTabContent
@@ -123,7 +123,7 @@ function FinancesTabContent({
   const failedForThisState =
     loadFailure?.teamId === myTeam.id && loadFailure.key === financeSnapshotKey;
   const failureBanner = failedForThisState ? (
-    <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+    <div className="flex items-center gap-3 text-body text-fg-muted">
       <p role="alert">{t("finances.snapshotLoadFailed")}</p>
       <Button size="sm" variant="outline" onClick={() => setLoadAttempt((n) => n + 1)}>
         {t("common.retry")}
@@ -132,9 +132,7 @@ function FinancesTabContent({
   ) : null;
 
   if (!ownData) {
-    return (
-      failureBanner ?? <p className="text-gray-500 dark:text-gray-400">{t("common.loading")}</p>
-    );
+    return failureBanner ?? <p className="text-fg-muted">{t("common.loading")}</p>;
   }
 
   return (
@@ -447,27 +445,27 @@ function FinancesTabLoaded({
     {
       label: t("finances.clubBalance"),
       value: myTeam.finance,
-      color: myTeam.finance >= 0 ? "text-primary-500" : "text-red-500",
+      color: myTeam.finance >= 0 ? "text-selected" : "text-danger",
     },
     {
       label: t("finances.wageBudget"),
       value: myTeam.wage_budget,
-      color: "text-gray-800 dark:text-gray-200",
+      color: "text-fg",
     },
     {
       label: t("finances.transferBudget"),
       value: myTeam.transfer_budget,
-      color: "text-gray-800 dark:text-gray-200",
+      color: "text-fg",
     },
     {
       label: t("finances.seasonIncome"),
       value: myTeam.season_income,
-      color: "text-primary-500",
+      color: "text-selected",
     },
     {
       label: t("finances.seasonExpenses"),
       value: myTeam.season_expenses,
-      color: "text-red-500",
+      color: "text-danger",
     },
   ];
 
@@ -479,25 +477,20 @@ function FinancesTabLoaded({
         <CardBody>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {financeItems.map((item) => (
-              <div
-                key={item.label}
-                className="bg-gray-50 dark:bg-navy-800 rounded-xl p-4 text-center"
-              >
-                <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">
+              <div key={item.label} className="bg-sunken rounded-panel p-4 text-center">
+                <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle mb-1">
                   {item.label}
                 </p>
-                <p className={`font-heading font-bold text-xl ${item.color}`}>
+                <p className={`font-heading font-bold text-title ${item.color}`}>
                   {formatVal(item.value)}
                 </p>
               </div>
             ))}
-            <div className="bg-gray-50 dark:bg-navy-800 rounded-xl p-4 text-center">
-              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">
+            <div className="bg-sunken rounded-panel p-4 text-center">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle mb-1">
                 {t("finances.squadValue")}
               </p>
-              <p className="font-heading font-bold text-xl text-gray-800 dark:text-gray-200">
-                {formatVal(totalValue)}
-              </p>
+              <p className="font-heading font-bold text-title text-fg">{formatVal(totalValue)}</p>
             </div>
           </div>
         </CardBody>
@@ -508,18 +501,18 @@ function FinancesTabLoaded({
         <CardHeader>{t("finances.wageBill")}</CardHeader>
         <CardBody>
           <div className="text-center mb-4">
-            <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle">
               {t("finances.weeklyTotal")}
             </p>
-            <p className="font-heading font-bold text-2xl text-gray-800 dark:text-gray-100 mt-1">
+            <p className="font-heading font-bold text-title text-fg mt-1">
               {formatWeeklyWage(totalWages, "compact")}
             </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            <p className="text-caption text-fg-subtle mt-1">
               {t("finances.budget")}: {formatWeeklyWage(weeklyWageBudget, "compact")} —{" "}
               {totalWages <= weeklyWageBudget ? (
-                <span className="text-primary-500">{t("finances.underBudget")}</span>
+                <span className="text-selected">{t("finances.underBudget")}</span>
               ) : (
-                <span className="text-red-500">{t("finances.overBudget")}</span>
+                <span className="text-danger">{t("finances.overBudget")}</span>
               )}
             </p>
           </div>
@@ -536,37 +529,37 @@ function FinancesTabLoaded({
         <CardHeader>{t("finances.cashFlow")}</CardHeader>
         <CardBody>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 text-center">
-              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+            <div className="rounded-panel border border-line bg-sunken p-4 text-center">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
                 {t("finances.weeklyWageSpend")}
               </p>
-              <p className="font-heading font-bold text-xl text-red-500">
+              <p className="font-heading font-bold text-title text-danger">
                 {formatWeeklyAmount(formatSignedAmount(-totalWages))}
               </p>
             </div>
-            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 text-center">
-              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+            <div className="rounded-panel border border-line bg-sunken p-4 text-center">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
                 {t("finances.weeklySponsorIncome")}
               </p>
-              <p className="font-heading font-bold text-xl text-primary-500">
+              <p className="font-heading font-bold text-title text-selected">
                 {formatWeeklyAmount(formatSignedAmount(weeklySponsorIncome))}
               </p>
             </div>
-            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 text-center">
-              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+            <div className="rounded-panel border border-line bg-sunken p-4 text-center">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
                 {t("finances.projectedWeeklyNet")}
               </p>
               <p
-                className={`font-heading font-bold text-xl ${projectedWeeklyNet >= 0 ? "text-primary-500" : "text-red-500"}`}
+                className={`font-heading font-bold text-title ${projectedWeeklyNet >= 0 ? "text-selected" : "text-danger"}`}
               >
                 {formatWeeklyAmount(formatSignedAmount(projectedWeeklyNet))}
               </p>
             </div>
-            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 text-center">
-              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+            <div className="rounded-panel border border-line bg-sunken p-4 text-center">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
                 {t("finances.cashRunway")}
               </p>
-              <p className="font-heading font-bold text-base text-gray-800 dark:text-gray-100">
+              <p className="font-heading font-bold text-body text-fg">
                 {cashRunwayWeeks === null
                   ? t("finances.runwayStable")
                   : t("finances.runwayWeeks", { count: cashRunwayWeeks })}
@@ -584,19 +577,15 @@ function FinancesTabLoaded({
               />
             </div>
           )}
-          <div className="mt-4 rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 space-y-3">
+          <div className="mt-4 rounded-panel border border-line bg-sunken p-4 space-y-3">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
-                <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                   {t("finances.boardSupport")}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t("finances.boardSupportDescription")}
-                </p>
+                <p className="text-body text-fg-muted">{t("finances.boardSupportDescription")}</p>
                 {boardSupportPreviewText ? (
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {boardSupportPreviewText}
-                  </p>
+                  <p className="text-caption text-fg-muted">{boardSupportPreviewText}</p>
                 ) : null}
               </div>
               <Button
@@ -609,15 +598,13 @@ function FinancesTabLoaded({
             </div>
             {boardSupportFeedback ? (
               <p
-                className={`text-sm ${boardSupportFeedback.tone === "error" ? "text-red-500" : "text-primary-500"}`}
+                className={`text-body ${boardSupportFeedback.tone === "error" ? "text-danger" : "text-selected"}`}
               >
                 {boardSupportFeedback.text}
               </p>
             ) : null}
             {previewsCurrent && !canRequestBoardSupport ? (
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {t("finances.boardSupportUnavailable")}
-              </p>
+              <p className="text-caption text-fg-muted">{t("finances.boardSupportUnavailable")}</p>
             ) : null}
           </div>
         </CardBody>
@@ -627,11 +614,11 @@ function FinancesTabLoaded({
         <CardHeader>{t("finances.wagePressure")}</CardHeader>
         <CardBody>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 space-y-3">
-              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {t("finances.wagePressure")}
               </p>
-              <p className="font-heading font-bold text-2xl text-gray-900 dark:text-gray-100">
+              <p className="font-heading font-bold text-title text-fg">
                 {t("finances.wageBudgetUsed", {
                   percent: wageBudgetUsagePercent,
                 })}
@@ -644,20 +631,18 @@ function FinancesTabLoaded({
               />
             </div>
 
-            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 space-y-3">
+            <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="space-y-1">
-                  <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("finances.contractRisk")}
                   </p>
                   {delegatedRenewalsSummary ? (
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {delegatedRenewalsSummary}
-                    </p>
+                    <p className="text-caption text-fg-muted">{delegatedRenewalsSummary}</p>
                   ) : null}
                 </div>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <p className="text-body font-semibold text-fg">
                     {t("finances.atRiskWages", {
                       amount: formatExactMoney(atRiskWages),
                     })}
@@ -687,7 +672,7 @@ function FinancesTabLoaded({
                   {contractRiskPlayers.map(({ player, riskLevel }) => (
                     <div
                       key={player.id}
-                      className="rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 p-3 flex items-start justify-between gap-3"
+                      className="rounded-control border border-line bg-panel p-3 flex items-start justify-between gap-3"
                     >
                       <div className="flex items-start gap-3">
                         <Checkbox
@@ -699,15 +684,13 @@ function FinancesTabLoaded({
                           className="mt-1"
                         />
                         <div className="space-y-1">
-                          <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">
-                            {player.full_name}
-                          </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="font-semibold text-body text-fg">{player.full_name}</p>
+                          <p className="text-caption text-fg-muted">
                             {player.contract_end
                               ? contractExpiryLabel(player.contract_end, i18n.language, t)
                               : null}
                           </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="text-caption text-fg-muted">
                             {t("playerProfile.yearsRemaining")}:{" "}
                             {getContractYearsRemaining(
                               player.contract_end,
@@ -722,7 +705,7 @@ function FinancesTabLoaded({
                             ? t("finances.contractRiskCritical")
                             : t("finances.contractRiskWarning")}
                         </Badge>
-                        <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                        <span className="text-caption font-semibold text-fg">
                           {formatWeeklyWage(weeklyWageAmount(player.wage))}
                         </span>
                         {onSelectPlayer ? (
@@ -744,9 +727,7 @@ function FinancesTabLoaded({
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t("finances.noContractRisks")}
-                </p>
+                <p className="text-body text-fg-muted">{t("finances.noContractRisks")}</p>
               )}
             </div>
           </div>
@@ -757,50 +738,46 @@ function FinancesTabLoaded({
         <CardHeader>{t("finances.sponsors")}</CardHeader>
         <CardBody>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 space-y-2">
-              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <div className="rounded-panel border border-line bg-sunken p-4 space-y-2">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {t("finances.activeSponsor")}
               </p>
               {activeSponsorship ? (
                 <>
-                  <h3 className="font-heading font-bold text-base text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+                  <h3 className="font-heading font-bold text-body text-fg uppercase tracking-label">
                     {activeSponsorship.sponsor_name}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-body text-fg-muted">
                     {t("finances.sponsorWeeklyValue", {
                       amount: formatExactMoney(activeSponsorship.base_value),
                     })}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-body text-fg-muted">
                     {t("finances.sponsorRemainingWeeks", {
                       count: activeSponsorship.remaining_weeks,
                     })}
                   </p>
                 </>
               ) : (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t("finances.noActiveSponsor")}
-                </p>
+                <p className="text-body text-fg-muted">{t("finances.noActiveSponsor")}</p>
               )}
             </div>
 
-            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 space-y-3">
-              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {t("finances.pendingSponsorOffers")}
               </p>
-              <div className="rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 p-4 space-y-3">
+              <div className="rounded-control border border-line bg-panel p-4 space-y-3">
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div className="space-y-1">
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                    <h3 className="font-semibold text-body text-fg">
                       {t("finances.pitchSponsor")}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-body text-fg-muted">
                       {t("finances.sponsorPitchDescription")}
                     </p>
                     {sponsorPitchPreviewText ? (
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {sponsorPitchPreviewText}
-                      </p>
+                      <p className="text-caption text-fg-muted">{sponsorPitchPreviewText}</p>
                     ) : null}
                   </div>
                   <Button
@@ -812,35 +789,31 @@ function FinancesTabLoaded({
                   </Button>
                 </div>
                 {sponsorPitchDisabledReason ? (
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {sponsorPitchDisabledReason}
-                  </p>
+                  <p className="text-caption text-fg-muted">{sponsorPitchDisabledReason}</p>
                 ) : null}
                 {sponsorPitchFeedback ? (
                   <p
                     className={
                       sponsorPitchFeedback.tone === "error"
-                        ? "text-sm text-red-500"
-                        : "text-sm text-primary-500"
+                        ? "text-body text-danger"
+                        : "text-body text-selected"
                     }
                   >
                     {sponsorPitchFeedback.text}
                   </p>
                 ) : null}
               </div>
-              <div className="rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 p-4 space-y-3">
+              <div className="rounded-control border border-line bg-panel p-4 space-y-3">
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div className="space-y-1">
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                    <h3 className="font-semibold text-body text-fg">
                       {t("finances.marketingCampaign")}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-body text-fg-muted">
                       {t("finances.marketingCampaignDescription")}
                     </p>
                     {marketingCampaignPreviewText ? (
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {marketingCampaignPreviewText}
-                      </p>
+                      <p className="text-caption text-fg-muted">{marketingCampaignPreviewText}</p>
                     ) : null}
                   </div>
                   <Button
@@ -854,16 +827,14 @@ function FinancesTabLoaded({
                   </Button>
                 </div>
                 {marketingCampaignDisabledReason ? (
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {marketingCampaignDisabledReason}
-                  </p>
+                  <p className="text-caption text-fg-muted">{marketingCampaignDisabledReason}</p>
                 ) : null}
                 {marketingCampaignFeedback ? (
                   <p
                     className={
                       marketingCampaignFeedback.tone === "error"
-                        ? "text-sm text-red-500"
-                        : "text-sm text-primary-500"
+                        ? "text-body text-danger"
+                        : "text-body text-selected"
                     }
                   >
                     {marketingCampaignFeedback.text}
@@ -883,13 +854,11 @@ function FinancesTabLoaded({
                   return (
                     <div
                       key={message.id}
-                      className="rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 p-4 space-y-3"
+                      className="rounded-control border border-line bg-panel p-4 space-y-3"
                     >
                       <div className="space-y-1">
-                        <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
-                          {message.subject}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{message.body}</p>
+                        <h3 className="font-semibold text-body text-fg">{message.subject}</h3>
+                        <p className="text-body text-fg-muted">{message.body}</p>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {sponsorAction.action_type.ChooseOption.options.map((option) => {
@@ -897,11 +866,9 @@ function FinancesTabLoaded({
                           return (
                             <div
                               key={option.id}
-                              className="min-w-55 flex-1 rounded-lg border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-3 space-y-2"
+                              className="min-w-55 flex-1 rounded-control border border-line bg-sunken p-3 space-y-2"
                             >
-                              <p className="text-xs text-gray-600 dark:text-gray-400">
-                                {option.description}
-                              </p>
+                              <p className="text-caption text-fg-muted">{option.description}</p>
                               <Button
                                 disabled={actionLoading === optionLoadingKey}
                                 onClick={() =>
@@ -920,9 +887,7 @@ function FinancesTabLoaded({
                   );
                 })
               ) : (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {t("finances.noPendingSponsorOffers")}
-                </p>
+                <p className="text-body text-fg-muted">{t("finances.noPendingSponsorOffers")}</p>
               )}
             </div>
           </div>

@@ -7,13 +7,13 @@
  * the bar/fill class. Both use identical thresholds and color families.
  */
 export function condColor(condition: number): string {
-  if (condition >= 75) return "text-primary-400";
-  if (condition >= 50) return "text-amber-400";
-  return "text-red-400";
+  if (condition >= 75) return "text-selected";
+  if (condition >= 50) return "text-warning";
+  return "text-danger";
 }
 
 export function condBgColor(condition: number): string {
-  if (condition >= 75) return "bg-primary-500 dark:bg-primary-400";
-  if (condition >= 50) return "bg-amber-500 dark:bg-amber-400";
-  return "bg-red-500 dark:bg-red-400";
+  if (condition >= 75) return "bg-selected-fill";
+  if (condition >= 50) return "bg-warning-solid";
+  return "bg-danger-solid";
 }

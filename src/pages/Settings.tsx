@@ -3,8 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore, type AppSettings } from "../store/settingsStore";
-import { useTheme } from "../context/ThemeContext";
-import { SegmentedControl, Switch, ThemeToggle, Select } from "../components/ui";
+import { SegmentedControl, Switch, Select } from "../components/ui";
 import { SUPPORTED_LANGUAGES, changeAppLanguage } from "../i18n";
 import { formatAppVersion } from "../lib/appVersion";
 import { Section, SettingRow } from "./Settings.components";
@@ -13,8 +12,6 @@ import { SubmittedReports } from "../components/diagnostics/SubmittedReports";
 import {
   ArrowLeft,
   Monitor,
-  Moon,
-  Sun,
   Gamepad2,
   Save,
   Zap,
@@ -25,6 +22,7 @@ import {
   Maximize,
   Minimize,
   Bug,
+  Rows3,
 } from "lucide-react";
 
 const CURRENCY_OPTIONS = [
@@ -33,19 +31,16 @@ const CURRENCY_OPTIONS = [
   { value: "USD", labelKey: "settings.currencyOptions.usd", symbol: "$" },
 ] as const;
 
-const THEME_OPTION_KEYS = ["light", "dark", "system"] as const;
 const MATCH_MODE_KEYS = ["live", "spectator", "delegate"] as const;
 const MATCH_SPEED_KEYS = ["slow", "normal", "fast"] as const;
 const UI_SCALE_KEYS = ["small", "normal", "large", "xlarge"] as const;
-const SIDEBAR_WIDTH_KEYS = ["compact", "standard", "wide"] as const;
-const SIDEBAR_BEHAVIOUR_KEYS = ["normal", "hover", "click", "icons"] as const;
+const UI_DENSITY_KEYS = ["comfortable", "compact"] as const;
 
 export default function Settings() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const { settings, loaded, loadSettings, updateSettings } = useSettingsStore();
-  const { theme, toggleTheme } = useTheme();
   const [confirmClear, setConfirmClear] = useState(false);
   const [reportingBug, setReportingBug] = useState(false);
   // Bumped whenever the report dialog closes, so a code it just received is listed straight away.
@@ -86,17 +81,6 @@ export default function Settings() {
   const handleUpdate = (partial: Partial<AppSettings>) => {
     updateSettings(partial);
 
-    // Sync theme with ThemeContext
-    if (partial.theme) {
-      const desired =
-        partial.theme === "system"
-          ? window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light"
-          : partial.theme;
-      if (desired !== theme) toggleTheme();
-    }
-
     // Sync language with i18n
     if (partial.language) {
       void changeAppLanguage(partial.language);
@@ -129,30 +113,30 @@ export default function Settings() {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-navy-900 flex items-center justify-center transition-colors">
-        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      <div className="flex min-h-screen items-center justify-center bg-page">
+        <div className="w-8 h-8 border-4 border-selected border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-navy-900 transition-colors duration-300">
+    <div className="min-h-screen bg-page">
       {/* Header */}
-      <header className="bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 shadow-sm">
+      <header className="border-b border-line bg-panel">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => navigate(returnTo)}
-              className="p-2 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+              aria-label={t("common.back")}
+              className="rounded-control p-2 text-fg-muted transition-colors hover:bg-hover hover:text-fg"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+            <h1 className="font-heading text-title font-bold uppercase tracking-label text-fg">
               {t("settings.title")}
             </h1>
           </div>
-          <ThemeToggle />
         </div>
       </header>
 
@@ -160,21 +144,6 @@ export default function Settings() {
       <div className="max-w-3xl mx-auto px-6 py-8 flex flex-col gap-8">
         {/* ─── Display ─── */}
         <Section title={t("settings.display")} icon={<Monitor className="w-5 h-5" />}>
-          <SettingRow label={t("settings.theme")} description={t("settings.themeDesc")}>
-            {(labelId) => (
-              <SegmentedControl
-                labelledBy={labelId}
-                options={THEME_OPTION_KEYS.map((key) => ({
-                  value: key,
-                  label: t(`settings.themeOptions.${key}`),
-                  icon: key === "light" ? <Sun /> : key === "dark" ? <Moon /> : <Monitor />,
-                }))}
-                value={settings.theme}
-                onChange={(theme) => handleUpdate({ theme })}
-              />
-            )}
-          </SettingRow>
-
           <SettingRow label={t("settings.language")} description={t("settings.languageDesc")}>
             <Select
               value={settings.language}
@@ -225,37 +194,20 @@ export default function Settings() {
             )}
           </SettingRow>
 
-          <SettingRow
-            label={t("settings.sidebarWidth")}
-            description={t("settings.sidebarWidthDesc")}
-          >
+          <SettingRow label={t("settings.uiDensity")} description={t("settings.uiDensityDesc")}>
             {(labelId) => (
-              <SegmentedControl
-                labelledBy={labelId}
-                options={SIDEBAR_WIDTH_KEYS.map((key) => ({
-                  value: key,
-                  label: t(`settings.sidebarWidthOptions.${key}`),
-                }))}
-                value={settings.sidebar_width}
-                onChange={(sidebar_width) => handleUpdate({ sidebar_width })}
-              />
-            )}
-          </SettingRow>
-
-          <SettingRow
-            label={t("settings.sidebarBehaviour")}
-            description={t("settings.sidebarBehaviourDesc")}
-          >
-            {(labelId) => (
-              <SegmentedControl
-                labelledBy={labelId}
-                options={SIDEBAR_BEHAVIOUR_KEYS.map((key) => ({
-                  value: key,
-                  label: t(`settings.sidebarBehaviourOptions.${key}`),
-                }))}
-                value={settings.sidebar_behaviour}
-                onChange={(sidebar_behaviour) => handleUpdate({ sidebar_behaviour })}
-              />
+              <div className="flex max-w-full items-center gap-2">
+                <Rows3 aria-hidden="true" className="w-4 h-4 shrink-0 text-fg-subtle" />
+                <SegmentedControl
+                  labelledBy={labelId}
+                  options={UI_DENSITY_KEYS.map((key) => ({
+                    value: key,
+                    label: t(`settings.uiDensityOptions.${key}`),
+                  }))}
+                  value={settings.ui_density}
+                  onChange={(ui_density) => handleUpdate({ ui_density })}
+                />
+              </div>
             )}
           </SettingRow>
 
@@ -276,7 +228,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={toggleFullscreen}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-navy-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-navy-600 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
+              className="flex items-center gap-2 rounded-control border border-line bg-sunken px-4 py-2 font-heading text-caption font-bold uppercase tracking-label text-fg transition-colors hover:bg-hover"
             >
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
               {isFullscreen ? t("settings.exitFullscreen") : t("settings.enterFullscreen")}
@@ -390,19 +342,19 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleExportWorld}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
+              className="flex items-center gap-2 rounded-control bg-selected-tint px-4 py-2 font-heading text-caption font-bold uppercase tracking-label text-selected transition-colors hover:bg-selected/20"
             >
               <Download className="w-4 h-4" />
               {t("settings.export")}
             </button>
           </SettingRow>
           {exportPath && (
-            <p className="text-xs text-primary-500 -mt-2 ml-1">
+            <p className="-mt-2 ml-1 text-caption text-selected">
               {t("settings.exportedTo", { path: exportPath })}
             </p>
           )}
 
-          <div className="border-t border-gray-200 dark:border-navy-600 pt-4 mt-2">
+          <div className="mt-2 border-t border-line pt-4">
             <SettingRow
               label={t("settings.clearSaves")}
               description={t("settings.clearSavesDesc")}
@@ -413,27 +365,27 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={handleClearSaves}
-                    className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-heading font-bold uppercase tracking-wider hover:bg-red-600 transition-colors"
+                    className="rounded-control border border-danger bg-danger-tint px-4 py-2 font-heading text-caption font-bold uppercase tracking-label text-danger transition-colors hover:bg-danger-solid/20"
                   >
                     {t("common.confirm")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmClear(false)}
-                    className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-navy-600 text-gray-700 dark:text-gray-300 text-sm font-heading font-bold uppercase tracking-wider hover:bg-gray-300 dark:hover:bg-navy-500 transition-colors"
+                    className="rounded-control border border-line bg-sunken px-4 py-2 font-heading text-caption font-bold uppercase tracking-label text-fg transition-colors hover:bg-hover"
                   >
                     {t("common.cancel")}
                   </button>
                 </div>
               ) : clearSuccess ? (
-                <span className="text-sm text-primary-500 font-heading font-bold uppercase tracking-wider">
+                <span className="font-heading text-caption font-bold uppercase tracking-label text-positive">
                   {t("settings.savesCleared")}
                 </span>
               ) : (
                 <button
                   type="button"
                   onClick={() => setConfirmClear(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors"
+                  className="flex items-center gap-2 rounded-control bg-danger-tint px-4 py-2 font-heading text-caption font-bold uppercase tracking-label text-danger transition-colors hover:bg-danger-solid/20"
                 >
                   <Trash2 className="w-4 h-4" />
                   {t("settings.clear")}
@@ -449,7 +401,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={() => setReportingBug(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20 text-sm font-heading font-bold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+              className="flex items-center gap-2 rounded-control bg-selected-tint px-4 py-2 font-heading text-caption font-bold uppercase tracking-label text-selected transition-colors hover:bg-selected/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
             >
               <Bug className="w-4 h-4" />
               {t("settings.report")}
@@ -462,14 +414,10 @@ export default function Settings() {
         <Section title={t("settings.about")} icon={<Zap className="w-5 h-5" />}>
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {t("app.name")}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                {formatAppVersion()}
-              </p>
+              <p className="text-body font-medium text-fg">{t("app.name")}</p>
+              <p className="mt-0.5 text-caption text-fg-muted">{formatAppVersion()}</p>
             </div>
-            <span className="text-[10px] font-heading uppercase tracking-widest text-gray-400 dark:text-gray-600">
+            <span className="font-heading text-caption uppercase tracking-label text-fg-subtle">
               {t("app.publisher")}
             </span>
           </div>

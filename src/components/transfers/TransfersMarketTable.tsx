@@ -72,8 +72,8 @@ export function TransfersMarketPagination({ state }: TransfersMarketPaginationPr
     marketTotalPages,
   } = state;
   return showMarketPagination ? (
-    <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3 dark:border-navy-600">
-      <p className="text-xs font-heading text-gray-500 dark:text-gray-300">
+    <div className="flex items-center justify-between border-t border-line px-4 py-3">
+      <p className="text-caption font-heading text-fg-muted">
         {t("players.showingRange", {
           from: marketRangeFrom,
           to: marketRangeTo,
@@ -86,11 +86,11 @@ export function TransfersMarketPagination({ state }: TransfersMarketPaginationPr
           onClick={() => setMarketPage(Math.max(1, safeMarketPage - 1))}
           disabled={safeMarketPage === 1}
           aria-label={t("scouting.previousPage")}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none rounded-lg p-1.5 text-gray-500 dark:text-gray-300 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:pointer-events-none disabled:opacity-30 dark:hover:bg-navy-700 dark:hover:text-white"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none rounded-control p-1.5 text-fg-muted transition-colors hover:bg-hover hover:text-fg disabled:pointer-events-none disabled:opacity-30"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <span className="px-3 py-1 text-xs font-heading font-bold text-gray-600 dark:text-gray-300">
+        <span className="px-3 py-1 text-caption font-heading font-bold text-fg-muted">
           {safeMarketPage} / {marketTotalPages}
         </span>
         <button
@@ -98,7 +98,7 @@ export function TransfersMarketPagination({ state }: TransfersMarketPaginationPr
           onClick={() => setMarketPage(Math.min(marketTotalPages, safeMarketPage + 1))}
           disabled={safeMarketPage === marketTotalPages}
           aria-label={t("scouting.nextPage")}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none rounded-lg p-1.5 text-gray-500 dark:text-gray-300 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:pointer-events-none disabled:opacity-30 dark:hover:bg-navy-700 dark:hover:text-white"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none rounded-control p-1.5 text-fg-muted transition-colors hover:bg-hover hover:text-fg disabled:pointer-events-none disabled:opacity-30"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
@@ -144,23 +144,23 @@ export function TransfersMarketTable({ state }: TransfersMarketTableProps) {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 dark:bg-navy-800 border-b border-gray-200 dark:border-navy-600 text-xs">
-                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <tr className="bg-sunken border-b border-line text-caption">
+                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("common.position")}
                   </th>
-                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("common.player")}
                   </th>
-                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("common.age")}
                   </th>
-                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("common.team")}
                   </th>
-                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("common.value")}
                   </th>
-                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("common.wage")}
                   </th>
                   <th
@@ -172,7 +172,7 @@ export function TransfersMarketTable({ state }: TransfersMarketTableProps) {
                           : "none"
                     }
                     tabIndex={0}
-                    className={`py-3 px-4 font-heading font-bold uppercase tracking-wider cursor-pointer select-none hover:text-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 transition-colors ${ovrSortDir !== "none" ? "text-primary-700 dark:text-primary-400" : "text-gray-500 dark:text-gray-400"}`}
+                    className={`py-3 px-4 font-heading font-bold uppercase tracking-label cursor-pointer select-none hover:text-selected focus:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-colors ${ovrSortDir !== "none" ? "text-selected" : "text-fg-muted"}`}
                     onClick={cycleOvrSort}
                     onKeyDown={(event) => {
                       if (event.key === "Enter" || event.key === " ") {
@@ -190,22 +190,22 @@ export function TransfersMarketTable({ state }: TransfersMarketTableProps) {
                       ) : null}
                     </div>
                   </th>
-                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                     {t("common.status")}
                   </th>
                   {view === "offers" && (
-                    <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                       {t("transfers.offers")}
                     </th>
                   )}
                   {(isScoutingView || view === "offers") && (
-                    <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    <th className="py-3 px-4 font-heading font-bold uppercase tracking-label text-fg-muted">
                       {isScoutingView ? t("scouting.action") : t("common.actions")}
                     </th>
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+              <tbody className="divide-y divide-line">
                 {visibleList.map((player) => (
                   <TransferPlayerRow key={player.id} state={state} player={player} />
                 ))}

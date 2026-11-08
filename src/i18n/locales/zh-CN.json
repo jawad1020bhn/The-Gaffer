@@ -3,6 +3,22 @@
     "name": "OpenFoot Manager",
     "publisher": "Sturdy Robot"
   },
+  "gameNav": {
+    "career": "生涯",
+    "team": "球队",
+    "transfers": "转会",
+    "competitions": "赛事",
+    "office": "办公室",
+    "main": "游戏主分区",
+    "context": "分区页面",
+    "careerStatus": "生涯状态",
+    "commands": "生涯指令",
+    "noClub": "无俱乐部",
+    "noFixture": "无即将进行的比赛",
+    "unknownBudget": "预算不可用",
+    "date": "日期",
+    "transferBudget": "转会预算"
+  },
   "menu": {
     "newGame": "新游戏",
     "loadGame": "读取存档",
@@ -21,12 +37,9 @@
     "loadGameFailed": "无法加载存档：{{error}}",
     "invalidWorldDb": "无效的世界数据库文件：{{error}}",
     "failedStartGame": "启动游戏失败：{{error}}",
-    "openDiscord": "打开 Discord 社区",
-    "openGithub": "打开 GitHub 仓库",
     "mainMenu": "主菜单",
     "worldEditor": "世界编辑器",
-    "startupOptionsRejected": "无法使用这些生涯设置。请返回世界界面，检查起始年份、起始阶段以及要生成的历史年限。",
-    "reportBug": "报告错误"
+    "startupOptionsRejected": "无法使用这些生涯设置。请返回世界界面，检查起始年份、起始阶段以及要生成的历史年限。"
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -41,7 +54,6 @@
     "title": "创建经理",
     "firstName": "名",
     "lastName": "姓",
-    "dob": "出生日期",
     "startYear": "开始年份",
     "startPhase": "开始阶段",
     "phaseSeasonStart": "赛季开始",
@@ -1899,6 +1911,9 @@
     },
     "uiScale": "界面缩放",
     "uiScaleDesc": "调整字号与间距以提升可读性",
+    "uiDensity": "密度",
+    "uiDensityDesc": "行和面板占用多少空间。",
+    "uiDensityOptions": { "comfortable": "舒适", "compact": "紧凑" },
     "sidebarWidth": "侧边栏宽度",
     "sidebarWidthDesc": "展开时侧边栏的宽度。“宽”可让每个菜单名称显示在一行内。",
     "sidebarWidthOptions": {

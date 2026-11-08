@@ -13,7 +13,6 @@ This guide walks you through the basics of gameplay from creating your manager t
 From the main menu, click **New Game**. You'll be asked to fill in your manager profile:
 
 - **First Name** and **Last Name**
-- **Date of Birth** (your manager must be at least 30 years old)
 - **Nationality** (choose from the full list of nationalities)
 
 ### 2. Choose a World
@@ -39,29 +38,40 @@ Click a team to select it, then confirm. You're now the manager!
 
 ## The Dashboard
 
-The Dashboard is your command centre. It's organized into a **sidebar** with navigation tabs, a **header** with key information and the Continue button, and the **main content area**.
+The Dashboard is your club's command centre. It uses a dark game shell instead of a website sidebar: a **section bar** across the top, a **context bar** for the current page, a persistent **career status strip** (club, date, next fixture, unread messages and budget), the **main content area**, and a bottom **command bar** carrying Continue, match mode and save.
 
-### Sidebar Sections
+### Sections and destinations
 
-**General:**
+**Career:**
 - **Home** — Overview of your club: next fixture, league position, recent messages, and a quick squad summary
-- **Inbox** — Messages from the board, staff, scouts, and the league office. Read match previews, result reports, and fitness warnings here
 - **Manager** — Your career stats: matches managed, win rate, trophies
 
-**Club:**
+**Team:**
 - **Squad** — Your full player roster with attributes, condition, value, and overall rating
 - **Tactics** — Set your formation and play style, view the pitch layout
 - **Training** — Choose training focus, intensity, and weekly schedule
 - **Staff** — Manage your coaching and medical staff (hire and release)
-- **Finances** — Club balance, wage budget, transfer budget, and payroll breakdown
-- **Transfers** — Transfer market, loan market, and your transfer-listed players
+- **Youth** — Review and develop your youth prospects
 
-**World:**
-- **Players** — Browse every player in the league with filters and sorting
-- **Teams** — View all teams in the league with key stats
-- **Tournaments** — League standings and full fixture results
+**Transfers:**
+- **Transfers** — Transfer market, loan market, and your transfer-listed players
+- **Transfer Centre** — Track active deals and negotiations
+- **Scouting** — Assignments and shortlists
+- **Players** — Browse every player in the world with filters and sorting
+
+**Competitions:**
 - **Schedule** — Your calendar of upcoming and past fixtures
+- **Tournaments** — League standings and full fixture results
+- **Teams** — View all teams with key stats
+- **Managers** — Browse other managers and their records
+- **Hall of Fame** — Historical winners and records
+
+**Office:**
+- **Inbox** — Messages from the board, staff, scouts, and the league office. Read match previews, result reports, and fitness warnings here
 - **News** — Read match reports, league roundups, and standings updates
+- **Finances** — Club balance, wage budget, transfer budget, and payroll breakdown
+
+Club-only destinations are hidden while you are unemployed; the rest remain reachable. Search, settings and your manager profile stay available from the shell.
 
 ---
 
@@ -71,7 +81,7 @@ Openfoot Manager advances **one day at a time**. Each day either has a match or 
 
 ### Advancing Time
 
-The **Continue** button in the top-right of the Dashboard is your main control. Click the arrow to see your options:
+The **Continue** button in the Dashboard's bottom command bar is your main control. On match days, use the mode selector beside it to choose how the match is played:
 
 - **Go to the Field** — Play the match live with full tactical control
 - **Watch as Spectator** — Watch the match unfold without being able to make changes

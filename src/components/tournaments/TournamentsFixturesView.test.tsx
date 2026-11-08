@@ -95,7 +95,9 @@ describe("TournamentsFixturesView", () => {
     ]);
     // Without this the test is about headings, not cards: dropping the <Card> wrapper entirely
     // leaves both headings in place and the assertion above still passes.
-    expect(headings.map((h) => h.closest("[class*='rounded-xl']")).filter(Boolean)).toHaveLength(2);
+    expect(headings.map((h) => h.closest("[class*='rounded-panel']")).filter(Boolean)).toHaveLength(
+      2,
+    );
   });
 
   // The mock keeps a hook inside `useTranslation` so a Rules-of-Hooks violation surfaces here

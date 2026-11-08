@@ -98,7 +98,7 @@ export default function InboxToolbar({
         <div className="flex items-center gap-2">
           <label
             htmlFor="inbox-sort-order"
-            className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
           >
             {t("inbox.sortLabel")}
           </label>
@@ -136,7 +136,7 @@ export default function InboxToolbar({
               />
               <label
                 htmlFor="inbox-select-all"
-                className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
               >
                 {t("inbox.selectAll")}
               </label>
@@ -152,7 +152,7 @@ export default function InboxToolbar({
               onClick={onDeleteSelected}
               disabled={selectedMessageCount === 0}
               icon={<Trash2 className="w-4 h-4" />}
-              className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500"
+              className="bg-danger-solid hover:bg-danger-solid active:bg-danger-solid focus-visible:ring-focus"
               data-testid="inbox-delete-selected"
             >
               {t("inbox.deleteSelected")}
@@ -163,7 +163,7 @@ export default function InboxToolbar({
           <button
             type="button"
             onClick={onMarkAllRead}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600 hover:text-primary-500 hover:border-primary-300 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-control text-caption font-heading font-bold uppercase tracking-label bg-panel text-fg-muted border border-line hover:text-selected hover:border-selected/40 transition-all"
           >
             <CheckCheck className="w-3.5 h-3.5" />
             {t("inbox.markAllRead")}
@@ -172,7 +172,7 @@ export default function InboxToolbar({
         <button
           type="button"
           onClick={onClearOld}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600 hover:text-red-500 hover:border-red-300 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-control text-caption font-heading font-bold uppercase tracking-label bg-panel text-fg-muted border border-line hover:text-danger hover:border-danger/40 transition-all"
         >
           <Trash2 className="w-3.5 h-3.5" />
           {t("inbox.clearOld")}

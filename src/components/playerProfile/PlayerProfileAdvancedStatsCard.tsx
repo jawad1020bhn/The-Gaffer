@@ -57,21 +57,21 @@ function AdvancedStatCard({
       headerRight={
         <span
           title={percentile === null ? percentileUnavailableLabel : percentileLabel}
-          className="font-heading font-bold text-sm tabular-nums text-gray-700 dark:text-gray-200"
+          className="font-heading font-bold text-body tabular-nums text-fg"
         >
           {percentile === null ? "-" : formatOrdinal(percentile, i18n.language, t)}
         </span>
       }
     >
       <div className="mt-auto flex items-baseline justify-between gap-3">
-        <span className="font-heading font-bold text-2xl text-gray-800 dark:text-gray-100 tabular-nums">
+        <span className="font-heading font-bold text-title text-fg tabular-nums">
           {primaryValue}
         </span>
         <span className="text-right">
-          <span className="block text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <span className="block text-caption uppercase tracking-label text-fg-subtle">
             {secondaryLabel}
           </span>
-          <span className="block font-heading font-bold text-sm text-gray-700 dark:text-gray-200 tabular-nums">
+          <span className="block font-heading font-bold text-body text-fg tabular-nums">
             {secondaryValue}
           </span>
         </span>
@@ -158,7 +158,7 @@ export default function PlayerProfileAdvancedStatsCard({
       <CardHeader>{labels.title}</CardHeader>
       <CardBody>
         {summary.peerGroup && (
-          <p className="mb-3 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mb-3 text-caption text-fg-muted">
             {t("playerProfile.percentileGroup", {
               position: t(`common.positions.${summary.peerGroup.position}`),
               league: competitionDisplayName(

@@ -116,10 +116,10 @@ describe("style guide", () => {
     });
   });
 
-  /** Given an empty or nonsense URL, then the guide falls back to light, comfortable, normal. */
+  /** Given an empty or nonsense URL, then the guide falls back to the dark game presentation, comfortable, normal. */
   it("falls back to the defaults for unknown values", () => {
     expect(readStyleGuideOptions("?theme=sepia&scale=huge&view=grid")).toMatchObject({
-      theme: "light",
+      theme: "dark",
       listView: "table",
       density: "comfortable",
       scale: "normal",
@@ -171,7 +171,7 @@ describe("style guide", () => {
    * Given dark, compact, extra large and high contrast in the URL,
    * when the options are put on the document,
    * then the root carries the three classes and the 20px root size, and the theme is stored under
-   * the guide's own key, never the app's; light, comfortable and normal take the classes off again.
+   * the guide's own key, never the app's; comfortable and normal keep the dedicated dark presentation.
    */
   it("puts every option on the document", () => {
     const root = document.createElement("html");
@@ -189,8 +189,8 @@ describe("style guide", () => {
     expect(stored.has("ofm-theme")).toBe(false);
 
     applyStyleGuideOptions(readStyleGuideOptions(""), root, storage);
-    expect([...root.classList]).toEqual([]);
+    expect([...root.classList]).toEqual(["dark"]);
     expect(root.style.fontSize).toBe("16px");
-    expect(stored.get("ofm-style-guide-theme")).toBe("light");
+    expect(stored.get("ofm-style-guide-theme")).toBe("dark");
   });
 });

@@ -15,10 +15,10 @@ interface TacticsFiltersProps {
 
 function getClearButtonClassName(isEnabled: boolean): string {
   if (isEnabled) {
-    return "rounded-lg bg-gray-100 px-3 py-2 text-xs font-heading font-bold uppercase tracking-wider text-gray-600 transition-all hover:bg-gray-200 dark:bg-navy-700 dark:text-gray-300 dark:hover:bg-navy-600";
+    return "rounded-control bg-hover px-3 py-2 text-caption font-heading font-bold uppercase tracking-label text-fg-muted transition-all hover:bg-hover";
   }
 
-  return "cursor-not-allowed rounded-lg bg-gray-100 px-3 py-2 text-xs font-heading font-bold uppercase tracking-wider text-gray-400 transition-all dark:bg-navy-700";
+  return "cursor-not-allowed rounded-control bg-hover px-3 py-2 text-caption font-heading font-bold uppercase tracking-label text-fg-subtle transition-all";
 }
 
 export default function TacticsFilters({
@@ -40,7 +40,7 @@ export default function TacticsFilters({
           value={playerSearch}
           onChange={(event) => onPlayerSearchChange(event.target.value)}
           placeholder={t("squad.filterPlayers")}
-          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200"
+          className="w-full rounded-control border border-line bg-panel px-3 py-2 text-body text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-selected/40"
         />
         <div className="flex gap-2">
           <Select

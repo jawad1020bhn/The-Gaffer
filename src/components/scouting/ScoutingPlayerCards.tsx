@@ -38,7 +38,7 @@ export function ScoutAction({
       type="button"
       disabled={sending}
       onClick={onSendScout}
-      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary-500/10 text-primary-500 hover:bg-primary-500/20 transition-colors text-caption font-heading font-bold uppercase tracking-wider disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
+      className="flex items-center gap-1 px-2.5 py-1 rounded-control bg-selected-tint text-selected hover:bg-selected-tint transition-colors text-caption font-heading font-bold uppercase tracking-label disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
     >
       <ScanSearch className="w-3 h-3" />
       {sending ? "..." : t("scouting.scoutBtn")}

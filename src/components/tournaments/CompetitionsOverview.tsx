@@ -40,8 +40,8 @@ export default function CompetitionsOverview({ competitions, userTeamId, onSelec
       <Card>
         <CardBody>
           <div className="flex flex-col items-center gap-2 py-6 text-center">
-            <Trophy className="w-8 h-8 text-gray-300 dark:text-navy-600" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t("tournaments.noActive")}</p>
+            <Trophy className="w-8 h-8 text-fg-subtle" />
+            <p className="text-body text-fg-muted">{t("tournaments.noActive")}</p>
           </div>
         </CardBody>
       </Card>
@@ -65,12 +65,12 @@ export default function CompetitionsOverview({ competitions, userTeamId, onSelec
       <CardBody className="p-0">
         {byScope.map(([scope, comps]) => (
           <div key={scope}>
-            <div className="px-4 py-2 border-b border-gray-100 dark:border-navy-600 bg-gray-50 dark:bg-navy-800">
-              <h5 className="font-heading font-bold text-xs uppercase tracking-wider text-gray-600 dark:text-gray-300">
+            <div className="px-4 py-2 border-b border-line bg-sunken">
+              <h5 className="font-heading font-bold text-caption uppercase tracking-label text-fg-muted">
                 {t(`teamSelect.scopes.${scope}`)}
               </h5>
             </div>
-            <div className="divide-y divide-gray-100 dark:divide-navy-600">
+            <div className="divide-y divide-line">
               {comps.map((comp) => {
                 const status = getCompetitionStatus(comp);
                 const isParticipating =
@@ -81,12 +81,12 @@ export default function CompetitionsOverview({ competitions, userTeamId, onSelec
                     type="button"
                     key={comp.id}
                     onClick={() => onSelect(comp.id)}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-navy-700 text-left transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-hover text-left transition-colors"
                     data-testid={`competitions-overview-row-${comp.id}`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">
+                        <span className="text-body font-semibold text-fg truncate">
                           {competitionDisplayName(comp, t)}
                         </span>
                         <Badge variant="neutral" size="sm">
@@ -99,7 +99,7 @@ export default function CompetitionsOverview({ competitions, userTeamId, onSelec
                           </Badge>
                         )}
                       </div>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                      <p className="text-caption text-fg-subtle mt-0.5">
                         {t("schedule.season", { number: comp.season })}
                       </p>
                     </div>

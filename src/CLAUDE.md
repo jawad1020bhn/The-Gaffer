@@ -37,16 +37,17 @@ Use `/add-ui-string` — it is the whole procedure, in order.
 
 ---
 
-## 2. Design tokens and the "Matchday" language
+## 2. Design tokens and the football HUD language
 
 Tailwind v4 keeps its config **in CSS**: the `@theme` block in `src/App.css`. That block is the
 only place colours, type sizes and layout sizes are defined. The full reference is
-[`docs/DESIGN_SYSTEM.md`](../docs/DESIGN_SYSTEM.md); every primitive is drawn, in every theme
-and scale, at `/style-guide.html` on the dev server.
+[`docs/DESIGN_SYSTEM.md`](../docs/DESIGN_SYSTEM.md); every primitive is drawn in the dedicated dark presentation and supported scales at
+`/style-guide.html` on the dev server. Do not add light/dark switches; the game shell and new
+surfaces target the `.dark` graphite/lime palette.
 
 | Token family | Meaning |
 |---|---|
-| `page`, `panel`, `sunken`, `hover`, `chrome`, `overlay` | Surfaces: the workspace, cards and tables, insets, a hovered row, the always-dark sidebar and match band, a modal backdrop |
+| `page`, `panel`, `sunken`, `hover`, `chrome`, `overlay` | Surfaces: the workspace, cards and tables, insets, a hovered row, the game shell bars and match band, a modal backdrop |
 | `fg`, `fg-muted`, `fg-subtle`, `line`, `line-strong`, `focus`, `on-brand` | Text in three strengths, borders, the focus ring, text on the brand fill, chrome or turf (never on a `-solid`) |
 | `selected`, `selected-tint`, `selected-fill` | A control that is on or chosen: the chosen option's text and background in a list, and the fill of a switch that is on, a checked box, a strong segmented option or a count badge (carries `on-brand`) |
 | `positive`, `warning`, `danger`, `info` (+ `-tint`, `-solid`) | Status: text, background tint, bar or dot |
@@ -59,7 +60,7 @@ and scale, at `/style-guide.html` on the dev server.
 Rules:
 
 - **Use role tokens** (`bg-panel`, `text-fg-muted`, `border-line`, `text-positive`,
-  `bg-tone-good-tint`). They change value in dark mode, high contrast and compact density by
+  `bg-tone-good-tint`). They change value in high contrast and compact density by
   themselves, so **a role token never needs a `dark:` partner**. The raw Tailwind palette
   (`red-500`, `gray-400`, `white`, …) is not used in a finished folder; brand colours (`primary-*`,
   `accent-*`) only for brand moments. Never a hex literal in a component, never an arbitrary value
@@ -80,7 +81,7 @@ Rules:
 ## 3. Reuse before you build
 
 Check the barrel at `src/components/ui/index.ts` first. It already exports `Card`/`CardHeader`/
-`CardBody`, `Button`, `Badge`, `ProgressBar`, `CountryFlag`, `TeamLocation`, `ThemeToggle`,
+`CardBody`, `Button`, `Badge`, `ProgressBar`, `CountryFlag`, `TeamLocation`,
 `DatePicker`, `Select`, `Checkbox`, `PlayerAvatar`, `TeamLogo`, `InjuryBadge`, `JerseyIcon`, and
 `PitchToken`.
 

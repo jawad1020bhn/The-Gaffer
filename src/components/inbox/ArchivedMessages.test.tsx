@@ -244,7 +244,7 @@ describe("ArchivedMessages", () => {
    * When its summary takes keyboard focus
    * Then it shows a ring with an offset in both themes, like every other focusable control.
    */
-  it("gives the row summary a focus ring offset in both themes", async () => {
+  it("gives the row summary a focus ring offset on the panel", async () => {
     fetchArchivedMessages.mockResolvedValueOnce(page([message("a", "Row", "2030-01-01")], null));
     render(<ArchivedMessages />);
     fireEvent.click(screen.getByRole("button", { name: "inbox.archive.load" }));
@@ -252,6 +252,6 @@ describe("ArchivedMessages", () => {
     const summary = (await screen.findByText("Row")).closest("summary");
 
     expect(summary?.className).toContain("focus-visible:ring-offset-2");
-    expect(summary?.className).toContain("dark:focus-visible:ring-offset-navy-800");
+    expect(summary?.className).toContain("focus-visible:ring-offset-panel");
   });
 });

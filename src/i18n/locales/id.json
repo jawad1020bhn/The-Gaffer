@@ -3,6 +3,22 @@
     "name": "OpenFoot Manager",
     "publisher": "Sturdy Robot"
   },
+  "gameNav": {
+    "career": "Karier",
+    "team": "Tim",
+    "transfers": "Transfer",
+    "competitions": "Kompetisi",
+    "office": "Kantor",
+    "main": "Bagian utama permainan",
+    "context": "Halaman bagian",
+    "careerStatus": "Status karier",
+    "commands": "Perintah karier",
+    "noClub": "Tanpa klub",
+    "noFixture": "Tidak ada pertandingan mendatang",
+    "unknownBudget": "Anggaran tidak tersedia",
+    "date": "Tanggal",
+    "transferBudget": "Anggaran transfer"
+  },
   "menu": {
     "newGame": "Permainan Baru",
     "loadGame": "Muat Permainan",
@@ -21,12 +37,9 @@
     "loadGameFailed": "Tidak dapat memuat simpanan: {{error}}",
     "invalidWorldDb": "File database dunia tidak valid: {{error}}",
     "failedStartGame": "Gagal memulai permainan: {{error}}",
-    "openDiscord": "Buka komunitas Discord",
-    "openGithub": "Buka repositori GitHub",
     "mainMenu": "Menu Utama",
     "worldEditor": "Editor Dunia",
-    "startupOptionsRejected": "Pengaturan karier itu tidak bisa digunakan. Kembali ke layar dunia dan periksa tahun mulai, fase mulai, dan berapa banyak riwayat masa lalu yang dibuat.",
-    "reportBug": "Laporkan bug"
+    "startupOptionsRejected": "Pengaturan karier itu tidak bisa digunakan. Kembali ke layar dunia dan periksa tahun mulai, fase mulai, dan berapa banyak riwayat masa lalu yang dibuat."
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -41,7 +54,6 @@
     "title": "Buat Manajer",
     "firstName": "Nama Depan",
     "lastName": "Nama Belakang",
-    "dob": "Tanggal Lahir",
     "startYear": "Tahun Mulai",
     "startPhase": "Fase Awal",
     "phaseSeasonStart": "Awal Musim",
@@ -1899,6 +1911,9 @@
     },
     "uiScale": "Skala UI",
     "uiScaleDesc": "Sesuaikan ukuran huruf dan jarak agar mudah dibaca",
+    "uiDensity": "Kepadatan",
+    "uiDensityDesc": "Seberapa banyak ruang yang dipakai baris dan panel.",
+    "uiDensityOptions": { "comfortable": "Nyaman", "compact": "Ringkas" },
     "sidebarWidth": "Lebar bilah sisi",
     "sidebarWidthDesc": "Seberapa lebar bilah sisi saat terbuka. “Lebar” menampilkan setiap nama menu dalam satu baris.",
     "sidebarWidthOptions": {
