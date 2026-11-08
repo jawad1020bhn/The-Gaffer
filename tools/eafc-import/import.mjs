@@ -53,6 +53,7 @@ import { verifySourceLock } from "./lib/source.mjs";
 import {
   badgeAssetPath,
   competitionLogoAssetPath,
+  playerFaceAssetPath,
   packageManifest as badgePackageManifest,
   readBadgeManifest,
   verifyBadgePack,
@@ -482,6 +483,7 @@ function parseArgs(argv) {
     else if (arg === "--out") args.out = next();
     else if (arg === "--badges") args.badges = next();
     else if (arg === "--competition-logos") args.competitionLogos = next();
+    else if (arg === "--player-faces") args.playerFaces = next();
     else if (arg === "--no-pack") args.pack = false;
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new Error(`unknown argument: ${arg}`);
@@ -539,6 +541,7 @@ async function main() {
   // package is unchanged and every club falls back to a generated crest.
   let badges = null;
   let competitionLogos = null;
+  let playerFaces = null;
   let verifiedPack = null;
   let badgePackDir = null;
   if (args.badges) {
@@ -546,8 +549,9 @@ async function main() {
     badgePackDir = args.badges;
     badges = verifiedPack.badges;
     competitionLogos = verifiedPack.competitionLogos;
+    playerFaces = verifiedPack.playerFaces;
     console.log(
-      `  badge pack  ${badges.length} verified club badges, ${competitionLogos.length} verified competition logos`,
+      `  badge pack  ${badges.length} verified club badges, ${competitionLogos.length} verified competition logos, ${playerFaces.length} verified player faces`,
     );
   }
   if (args.competitionLogos && args.competitionLogos !== args.badges) {
@@ -558,11 +562,24 @@ async function main() {
       `  competition logo pack  ${compVerified.competitionLogos.length} verified competition logos`,
     );
   }
+  if (
+    args.playerFaces &&
+    args.playerFaces !== args.badges &&
+    args.playerFaces !== args.competitionLogos
+  ) {
+    const faceVerified = await verifyBadgePack(args.playerFaces);
+    playerFaces = faceVerified.playerFaces;
+    badgePackDir = args.playerFaces;
+    console.log(`  player face pack  ${faceVerified.playerFaces.length} verified player faces`);
+  }
   const badgesByTeam = new Map(badges ? badges.map((entry) => [entry.eaTeamId, entry]) : []);
   // Also index by OFM club id (slug) so packs keyed by club slug match too.
   const badgesByClubId = new Map(badges ? badges.map((entry) => [entry.ofmClubId, entry]) : []);
   const competitionLogosById = new Map(
     competitionLogos ? competitionLogos.map((entry) => [entry.competitionId, entry]) : [],
+  );
+  const playerFacesByEaId = new Map(
+    playerFaces ? playerFaces.map((entry) => [entry.eaPlayerId, entry]) : [],
   );
 
   console.log(`reading ${args.version} databases...`);
@@ -853,6 +870,9 @@ async function main() {
       Math.round(player.overallrating),
     );
     const potential = Math.max(ability, Math.min(99, Math.round(player.potential) || ability));
+    const faceEntry = playerFacesByEaId.has(player.playerid)
+      ? playerFacesByEaId.get(player.playerid)
+      : undefined;
     const entity = {
       schema: "player",
       id: buildPlayerId(firstName, lastName, player.playerid),
@@ -873,6 +893,7 @@ async function main() {
       alternatePositions: specific ? alternatePositions(player) : [],
       contractEnd: contractEnd(player.contractvaliduntil),
       wage: weeklyWage(player.wage),
+      photo: faceEntry ? playerFaceAssetPath(faceEntry) : undefined,
     };
     playerEntities.push(entity);
   }
@@ -1064,6 +1085,18 @@ async function main() {
         zipEntries.push({ name: assetPath, data });
       }
       console.log(`  competition logos  ${competitionLogos.length} competition logos packed`);
+    }
+
+    if (playerFaces.length > 0) {
+      const facesDir = path.join(outDir, "assets/players");
+      await mkdir(facesDir, { recursive: true });
+      for (const entry of playerFaces) {
+        const data = await readFile(entry.path);
+        const assetPath = playerFaceAssetPath(entry);
+        await writeFile(path.join(outDir, assetPath), data);
+        zipEntries.push({ name: assetPath, data });
+      }
+      console.log(`  player faces   ${playerFaces.length} player faces packed`);
     }
 
     await writeFile(path.join(outDir, "assets/clubs/manifest.json"), `${provenance}\n`);

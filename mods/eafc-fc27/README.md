@@ -115,12 +115,13 @@ scope — including the South American ones.
 
 - **453 clubs have no stadium name.** Unresolved grounds retain the city-based
   fallback; generic EA placeholder names are not presented as real grounds.
-- **Badges are a separate optional pack** — the database holds no image assets,
-  only ids into EA's own CDN, so the checked-in package ships without badges and
-  clubs draw generated crests. `tools/eafc-import --badges <pack>` packs a
-  separate, versioned graphics pack into the `.ofm`; per-asset source, licence,
-  attribution and checksum travel inside it (see its README). Kits and photos
-  are not imported.
+- **Badges, competition logos and player mini-faces are separate optional
+  packs** — the database holds no image assets, only ids into EA's own CDN, so
+  the checked-in package ships without them and clubs/competitions/players draw
+  generated fallbacks. `tools/eafc-import --badges <pack> --competition-logos
+  <pack> --player-faces <pack>` packs separate, versioned graphics packs into
+  the `.ofm`; per-asset source, licence, attribution and checksum travel inside
+  it (see the importer README). Kits are not imported.
 - **No imported managers or backroom staff.** Verified staff can be authored for
   supported roles, but there is no club-manager schema. The game generates
   managers; an assistant-manager record is not a substitute for a real manager.

@@ -128,6 +128,42 @@ League, UEFA Europa League) match on their OFM competition id
 (`uefa-champions-league`, `uefa-europa-league`). Without a logo pack they
 render with no badge.
 
+### Player mini-faces
+
+Player mini-faces work the same way as club badges, keyed by EA player id
+instead of EA team id. A pack's `manifest.json` can carry a `playerFaces`
+array alongside `badges` and `competitionLogos`:
+
+```json
+{
+  "version": 1,
+  "source": "https://example.com/player-faces",
+  "licence": "MIT",
+  "playerFaces": [
+    {
+      "eaPlayerId": 278455,
+      "ofmPlayerId": "aarón-anselmino-278455",
+      "file": "278455.png",
+      "source": "https://example.com/278455.png",
+      "licence": "MIT",
+      "attribution": "Example Pack",
+      "checksum": "sha256:<64 hex>"
+    }
+  ]
+}
+```
+
+Pass the pack with `--player-faces <pack>`. The importer verifies every
+checksum, packs the images into `assets/players/` inside the `.ofm`, and sets
+`player.photo` so the UI renders each player's mini-face. Player faces share
+the same provenance manifest as club badges, so the archive documents where
+each asset came from.
+
+The OFM player id embeds the EA player id as its trailing numeric segment
+(e.g. `aarón-anselmino-278455` → EA id `278455`), so faces are matched on EA
+player id, never on player name. Without a face pack, players render with no
+photo.
+
 ## What comes out
 
 From the bundled **FC 27** database:

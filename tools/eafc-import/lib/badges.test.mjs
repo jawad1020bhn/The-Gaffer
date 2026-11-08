@@ -15,6 +15,7 @@ import {
   BadgePackError,
   badgeAssetPath,
   competitionLogoAssetPath,
+  playerFaceAssetPath,
   packageManifest as badgePackageManifest,
   readBadgeManifest,
   verifyBadgePack,
@@ -50,6 +51,7 @@ describe("badge pack manifest", () => {
     const verified = await verifyBadgePack(fixtureDir);
     assert.equal(verified.badges.length, 5);
     assert.equal(verified.competitionLogos.length, 0);
+    assert.equal(verified.playerFaces.length, 0);
     for (const badge of verified.badges) {
       assert.ok(badge.path.endsWith(badge.file));
       assert.ok(Number.isInteger(badge.bytes) && badge.bytes > 0);
@@ -75,7 +77,7 @@ describe("badge pack manifest", () => {
     ];
     const manifest = badgePackageManifest(
       { version: 1, source: "https://example.com", licence: "MIT" },
-      { badges: entries, competitionLogos: [] },
+      { badges: entries, competitionLogos: [], playerFaces: [] },
     );
     assert.equal(manifest.badges.length, 1);
     assert.equal(manifest.badges[0].asset, "assets/clubs/10001.png");
@@ -83,6 +85,7 @@ describe("badge pack manifest", () => {
     assert.equal(manifest.badges[0].source, "https://example.com/arsenal.png");
     assert.equal(manifest.badges[0].attribution, "Example");
     assert.equal(manifest.competitionLogos.length, 0);
+    assert.equal(manifest.playerFaces.length, 0);
   });
 
   it("names competition logo assets by competition id inside the package", () => {
@@ -115,7 +118,7 @@ describe("badge pack manifest", () => {
     ];
     const manifest = badgePackageManifest(
       { version: 1, source: "https://example.com", licence: "MIT" },
-      { badges: [], competitionLogos: entries },
+      { badges: [], competitionLogos: entries, playerFaces: [] },
     );
     assert.equal(manifest.competitionLogos.length, 1);
     assert.equal(
@@ -125,6 +128,71 @@ describe("badge pack manifest", () => {
     assert.equal(manifest.competitionLogos[0].competitionId, "uefa-champions-league");
     assert.equal(manifest.competitionLogos[0].source, "https://example.com/ucl.png");
     assert.equal(manifest.competitionLogos[0].attribution, "Example");
+    assert.equal(manifest.playerFaces.length, 0);
+  });
+
+  it("names player face assets by EA player id inside the package", () => {
+    assert.equal(
+      playerFaceAssetPath({ eaPlayerId: 278455, file: "anselmino.png" }),
+      "assets/players/278455.png",
+    );
+    assert.equal(
+      playerFaceAssetPath({ eaPlayerId: 270735, file: "sangwan.svg" }),
+      "assets/players/270735.svg",
+    );
+  });
+
+  it("carries player faces into the packed manifest", () => {
+    const entries = [
+      {
+        eaPlayerId: 278455,
+        ofmPlayerId: "aarón-anselmino-278455",
+        file: "anselmino.png",
+        source: "https://example.com/anselmino.png",
+        licence: "MIT",
+        attribution: "Example",
+        checksum: `sha256:${"c".repeat(64)}`,
+      },
+    ];
+    const manifest = badgePackageManifest(
+      { version: 1, source: "https://example.com", licence: "MIT" },
+      { badges: [], competitionLogos: [], playerFaces: entries },
+    );
+    assert.equal(manifest.playerFaces.length, 1);
+    assert.equal(manifest.playerFaces[0].asset, "assets/players/278455.png");
+    assert.equal(manifest.playerFaces[0].eaPlayerId, 278455);
+    assert.equal(manifest.playerFaces[0].ofmPlayerId, "aarón-anselmino-278455");
+    assert.equal(manifest.playerFaces[0].source, "https://example.com/anselmino.png");
+    assert.equal(manifest.playerFaces[0].attribution, "Example");
+  });
+
+  it("refuses a player face file that is not an image", async () => {
+    const dir = await tempDir([
+      [
+        "manifest.json",
+        JSON.stringify({
+          badges: [],
+          competitionLogos: [],
+          playerFaces: [
+            {
+              eaPlayerId: 999999,
+              ofmPlayerId: "fake-player-999999",
+              file: "not-an-image.png",
+              source: "https://example.com/not-an-image.png",
+              licence: "MIT",
+              attribution: "Example",
+              checksum: `sha256:${createHash("sha256").update("not an image").digest("hex")}`,
+            },
+          ],
+        }),
+      ],
+      ["not-an-image.png", "not an image"],
+    ]);
+    await assert.rejects(
+      verifyBadgePack(dir),
+      (err) => err instanceof BadgePackError && /not a recognised image/.test(err.message),
+    );
+    await rm(dir, { recursive: true, force: true });
   });
 
   it("refuses a competition logo file that is not an image", async () => {

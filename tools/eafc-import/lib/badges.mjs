@@ -1,21 +1,23 @@
 /**
  * An optional graphics pack: a folder of images plus a `manifest.json` that
  * records, for every asset, its source, licence, attribution and sha256
- * checksum. Two asset kinds are supported:
+ * checksum. Three asset kinds are supported:
  *
  * - club badges, keyed by EA team id (`badges` array)
  * - competition logos, keyed by OFM competition id (`competitionLogos` array)
+ * - player mini-faces, keyed by EA player id (`playerFaces` array)
  *
  * The pack is separate from the game's code and is never fetched live: a run
- * of `import.mjs --badges <pack>` (and/or `--competition-logos <pack>`)
- * points at a checked-out copy, verifies every checksum, and packs only
- * verified images into the `.ofm`. The manifest travels inside the archive,
- * so an installed package still documents where each asset came from.
+ * of `import.mjs --badges <pack>` (and/or `--competition-logos <pack>` and/or
+ * `--player-faces <pack>`) points at a checked-out copy, verifies every
+ * checksum, and packs only verified images into the `.ofm`. The manifest
+ * travels inside the archive, so an installed package still documents where
+ * each asset came from.
  *
  * Crosswalk recorded per asset — EA team id ↔ OFM club id ↔ image file, or
- * OFM competition id ↔ image file. Matching club badges is always by EA id,
- * never by club name, so a badge survives club-name changes and re-imports
- * from a different database vintage.
+ * OFM competition id ↔ image file, or EA player id ↔ OFM player id ↔ image
+ * file. Matching is always by EA id, never by name, so a face survives
+ * player-name changes and re-imports from a different database vintage.
  */
 
 import { createHash } from "node:crypto";
@@ -27,6 +29,9 @@ export const PACKAGE_ASSET_DIR = "assets/clubs";
 
 /** Where a verified competition logo lives inside the package root. */
 export const PACKAGE_COMPETITION_DIR = "assets/competitions";
+
+/** Where a verified player mini-face lives inside the package root. */
+export const PLAYER_ASSET_DIR = "assets/players";
 
 const MANIFEST_NAME = "manifest.json";
 const CHECKSUM = /^sha256:[0-9a-f]{64}$/;
@@ -70,6 +75,9 @@ const isPlainObject = (value) =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 
 const isEaTeamId = (value) =>
+  (Number.isInteger(value) && value > 0) || (typeof value === "string" && value.trim().length > 0);
+/** An EA player id — either the numeric EA id or the OFM player slug suffix. */
+const isEaPlayerId = (value) =>
   (Number.isInteger(value) && value > 0) || (typeof value === "string" && value.trim().length > 0);
 const isClubId = (value) => typeof value === "string" && value.trim().length > 0;
 /** A competition slug used as an OFM competition id. */
@@ -149,6 +157,37 @@ function readCompetitionLogoEntry(entry, index) {
   };
 }
 
+function readPlayerFaceEntry(entry, index) {
+  const where = `player face manifest entry ${index}`;
+  const fail = (field) => {
+    throw new BadgePackError(`${where}: ${field} is missing or invalid`);
+  };
+  if (!isPlainObject(entry)) fail("entry");
+  const eaPlayerId = entry.eaPlayerId;
+  if (!isEaPlayerId(eaPlayerId)) fail("eaPlayerId");
+  const ofmPlayerId = entry.ofmPlayerId;
+  if (!isClubId(ofmPlayerId)) fail("ofmPlayerId");
+  const file = entry.file;
+  if (!isPackFileName(file)) fail("file");
+  const source = entry.source;
+  if (!isSourceUrl(source)) fail("source");
+  const licence = entry.licence;
+  if (!isClubId(licence)) fail("licence");
+  const attribution = entry.attribution;
+  if (!isClubId(attribution)) fail("attribution");
+  const checksum = entry.checksum;
+  if (!isChecksum(checksum)) fail("checksum");
+  return {
+    eaPlayerId,
+    ofmPlayerId: ofmPlayerId.trim(),
+    file,
+    source,
+    licence: licence.trim(),
+    attribution: attribution.trim(),
+    checksum,
+  };
+}
+
 /** Read and strictly validate a badge pack's manifest. No file checks yet. */
 export async function readBadgeManifest(packDir) {
   const manifestPath = path.join(packDir, MANIFEST_NAME);
@@ -179,12 +218,20 @@ export async function readBadgeManifest(packDir) {
     }
   }
 
+  const playerFaces = [];
+  if (Array.isArray(value.playerFaces)) {
+    for (const [index, entry] of value.playerFaces.entries()) {
+      playerFaces.push(readPlayerFaceEntry(entry, index));
+    }
+  }
+
   return {
     version: value.version ?? null,
     source: value.source ?? "",
     licence: value.licence ?? "",
     badges,
     competitionLogos,
+    playerFaces,
   };
 }
 
@@ -219,7 +266,7 @@ const verifyEntryFile = async (packDir, entry, kind) => {
  * silently produces wrong artwork.
  */
 export async function verifyBadgePack(packDir) {
-  const { badges, competitionLogos } = await readBadgeManifest(packDir);
+  const { badges, competitionLogos, playerFaces } = await readBadgeManifest(packDir);
   const verifiedBadges = [];
   for (const entry of badges) {
     verifiedBadges.push(await verifyEntryFile(packDir, entry, "badge"));
@@ -228,7 +275,15 @@ export async function verifyBadgePack(packDir) {
   for (const entry of competitionLogos) {
     verifiedCompetitionLogos.push(await verifyEntryFile(packDir, entry, "competition logo"));
   }
-  return { badges: verifiedBadges, competitionLogos: verifiedCompetitionLogos };
+  const verifiedPlayerFaces = [];
+  for (const entry of playerFaces) {
+    verifiedPlayerFaces.push(await verifyEntryFile(packDir, entry, "player face"));
+  }
+  return {
+    badges: verifiedBadges,
+    competitionLogos: verifiedCompetitionLogos,
+    playerFaces: verifiedPlayerFaces,
+  };
 }
 
 /** Relative package-internal path of one verified badge's image file. */
@@ -241,6 +296,12 @@ export function badgeAssetPath(entry) {
 export function competitionLogoAssetPath(entry) {
   const extension = path.extname(entry.file) || ".png";
   return `${PACKAGE_COMPETITION_DIR}/${entry.competitionId}${extension}`;
+}
+
+/** Relative package-internal path of one verified player face's image file. */
+export function playerFaceAssetPath(entry) {
+  const extension = path.extname(entry.file) || ".png";
+  return `${PLAYER_ASSET_DIR}/${entry.eaPlayerId}${extension}`;
 }
 
 /** The manifest that travels inside the packed `.ofm` next to the images. */
@@ -261,6 +322,15 @@ export function packageManifest(pack, verified) {
     competitionLogos: verified.competitionLogos.map((entry) => ({
       competitionId: entry.competitionId,
       asset: competitionLogoAssetPath(entry),
+      source: entry.source,
+      licence: entry.licence,
+      attribution: entry.attribution,
+      checksum: entry.checksum,
+    })),
+    playerFaces: verified.playerFaces.map((entry) => ({
+      eaPlayerId: entry.eaPlayerId,
+      ofmPlayerId: entry.ofmPlayerId,
+      asset: playerFaceAssetPath(entry),
       source: entry.source,
       licence: entry.licence,
       attribution: entry.attribution,
