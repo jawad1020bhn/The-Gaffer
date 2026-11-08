@@ -69,7 +69,8 @@ export class BadgePackError extends Error {
 const isPlainObject = (value) =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 
-const isEaTeamId = (value) => Number.isInteger(value) && value > 0;
+const isEaTeamId = (value) =>
+  (Number.isInteger(value) && value > 0) || (typeof value === "string" && value.trim().length > 0);
 const isClubId = (value) => typeof value === "string" && value.trim().length > 0;
 /** A competition slug used as an OFM competition id. */
 const isCompetitionId = (value) => typeof value === "string" && value.trim().length > 0;

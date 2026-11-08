@@ -1,24 +1,24 @@
 {
   "version": 1,
-  "source": "fixture",
-  "licence": "MIT (fixture test data only — not a redistribution-ready graphics pack)",
+  "source": "https://github.com/JoseArroyave/football-logos",
+  "licence": "MIT (repository code); artwork remains the property of each competition — trademarks apply",
   "badges": [],
   "competitionLogos": [
     {
       "competitionId": "uefa-champions-league",
-      "file": "uefa-champions-league.png",
-      "source": "https://example.com/uefa-champions-league.png",
-      "licence": "MIT (fixture test data only)",
-      "attribution": "OFM fixture data",
-      "checksum": "sha256:b7e3a3ce81aced7658ea018c94610827d11ae1b9d461e2892007a994b341fada"
+      "file": "uefa-champions-league.svg",
+      "source": "https://github.com/JoseArroyave/football-logos/raw/main/logos/tournaments/UEFA_Champions_League.svg",
+      "licence": "MIT (repository code); artwork remains the property of UEFA — trademarks apply",
+      "attribution": "JoseArroyave/football-logos via GitHub",
+      "checksum": "sha256:6b1f33e6750e228f1dc354c6288cd16da6d00189630e1ce4d4079c868e6994dc"
     },
     {
       "competitionId": "uefa-europa-league",
-      "file": "uefa-europa-league.png",
-      "source": "https://example.com/uefa-europa-league.png",
-      "licence": "MIT (fixture test data only)",
-      "attribution": "OFM fixture data",
-      "checksum": "sha256:31452ab85df2b1f4bb887858bd8f462b7a414583e55007947108021e9a871529"
+      "file": "uefa-europa-league.svg",
+      "source": "https://github.com/JoseArroyave/football-logos/raw/main/logos/tournaments/UEFA_Europa_League.svg",
+      "licence": "MIT (repository code); artwork remains the property of UEFA — trademarks apply",
+      "attribution": "JoseArroyave/football-logos via GitHub",
+      "checksum": "sha256:bd5e2c3b5b7eb52514f3e013e5e1b6af4242014396d9dac77fafae21f3cd7b9c"
     }
   ]
 }

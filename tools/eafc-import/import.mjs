@@ -559,6 +559,8 @@ async function main() {
     );
   }
   const badgesByTeam = new Map(badges ? badges.map((entry) => [entry.eaTeamId, entry]) : []);
+  // Also index by OFM club id (slug) so packs keyed by club slug match too.
+  const badgesByClubId = new Map(badges ? badges.map((entry) => [entry.ofmClubId, entry]) : []);
   const competitionLogosById = new Map(
     competitionLogos ? competitionLogos.map((entry) => [entry.competitionId, entry]) : [],
   );
@@ -804,7 +806,11 @@ async function main() {
         // A club badge, when the optional graphics pack supplies one for this
         // EA team id. Stored relative to the package root; the loader stamps
         // the package id on the path before the frontend resolves it.
-        logo: badgesByTeam.has(teamId) ? badgeAssetPath(badgesByTeam.get(teamId)) : undefined,
+        logo: badgesByClubId.has(id)
+          ? badgeAssetPath(badgesByClubId.get(id))
+          : badgesByTeam.has(teamId)
+            ? badgeAssetPath(badgesByTeam.get(teamId))
+            : undefined,
       }),
     );
   }
@@ -972,6 +978,14 @@ async function main() {
         ? competitionLogoAssetPath(competitionLogosById.get("uefa-europa-league"))
         : undefined,
     });
+  }
+
+  // Assign competition logos to every competition that has a matching entry
+  // in the logo pack (domestic leagues, CONMEBOL cups, and the two UEFA cups).
+  for (const competition of competitionEntities) {
+    if (competition.logo === undefined && competitionLogosById.has(competition.id)) {
+      competition.logo = competitionLogoAssetPath(competitionLogosById.get(competition.id));
+    }
   }
 
   // "Primera División" is both Spain's and Argentina's; the country disambiguates

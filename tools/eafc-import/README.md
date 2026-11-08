@@ -11,6 +11,12 @@ cd ../eafc-db-kit && npm ci   # builds the kit, which ships the databases
 cd ../the-gaffer-v0.4
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27
 node tools/eafc-import/validate.mjs mods/eafc-fc27
+
+Add club badges and competition logos from separate graphics packs:
+
+```bash
+node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
+  --out mods/eafc-fc27 --badges ../eafc-fc27-badges --competition-logos ../eafc-fc27-competition-logos
 ```
 
 The run writes a package directory and a ready-to-install `mods/eafc-fc27.ofm`
