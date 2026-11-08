@@ -60,11 +60,21 @@ export function CardHeader({ children, action, className = "" }: CardHeaderProps
 interface CardBodyProps {
   children: ReactNode;
   className?: string;
+  /**
+   * The default inset. Off for a body that holds a table or a list running edge to edge — a caller
+   * that wants no padding passes `p-0` and gets `p-0`, not `p-4 p-0` with the winner decided by
+   * the order of the stylesheet.
+   */
+  padded?: boolean;
 }
 
 /** The panel's content. Scrolls on its own once the parent has given the card a height. */
-export function CardBody({ children, className = "" }: CardBodyProps) {
+export function CardBody({ children, className = "", padded = true }: CardBodyProps) {
   return (
-    <div className={`scrollbar-thin min-h-0 flex-1 overflow-auto p-4 ${className}`}>{children}</div>
+    <div
+      className={`scrollbar-thin min-h-0 flex-1 overflow-auto ${padded ? "p-4" : ""} ${className}`}
+    >
+      {children}
+    </div>
   );
 }

@@ -37,7 +37,7 @@ export default function HomeRecentMessagesCard({
       >
         {t("home.recentMessages")}
       </CardHeader>
-      <CardBody className="p-0">
+      <CardBody padded={false}>
         <div className="divide-y divide-line">
           {messages.length === 0 ? (
             <p className="text-fg-muted p-6 text-body">{t("home.noMessages")}</p>
@@ -55,14 +55,14 @@ export default function HomeRecentMessagesCard({
                 <ContextMenu items={contextItems} key={message.id}>
                   <div
                     onClick={() => onNavigate?.("Inbox", { messageId: message.id })}
-                    className={`flex gap-4 px-6 py-3.5 hover:bg-sunken cursor-pointer transition-colors ${
+                    className={`flex gap-4 px-6 py-3.5 hover:bg-sunken cursor-pointer transition-colors [@media(max-height:820px)]:py-2 ${
                       !message.read
                         ? "border-l-4 border-l-selected"
                         : "border-l-4 border-l-transparent"
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-control flex items-center justify-center flex-shrink-0 font-heading font-bold text-body ${
+                      className={`w-9 h-9 [@media(max-height:820px)]:h-7 [@media(max-height:820px)]:w-7 rounded-control flex items-center justify-center flex-shrink-0 font-heading font-bold text-body ${
                         message.read ? "bg-hover text-fg-subtle" : "bg-selected-tint text-selected"
                       }`}
                     >

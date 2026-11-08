@@ -36,7 +36,7 @@ export default function HomeRecentResultsCard({
       >
         {t("home.recentResults")}
       </CardHeader>
-      <CardBody className="p-0">
+      <CardBody padded={false}>
         {recentResults.length === 0 ? (
           <p className="text-fg-muted text-caption p-5">{t("home.noMatches")}</p>
         ) : (

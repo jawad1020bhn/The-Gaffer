@@ -241,6 +241,11 @@
     "quitNoSave": "Esci senza salvare"
   },
   "onboarding": {
+    "reviewSquadShort": "Rosa",
+    "hireStaffShort": "Staff",
+    "setTacticsShort": "Tattica",
+    "configTrainingShort": "Allenamento",
+    "readMessagesShort": "Messaggi",
     "title": "Per iniziare",
     "description": "Completa questi passaggi per preparare la tua squadra alla prossima stagione. Lo staff è particolarmente importante — migliora allenamento e recupero.",
     "reviewSquad": "Rivedi la rosa",

@@ -241,6 +241,11 @@
     "quitNoSave": "Выйти без сохранения"
   },
   "onboarding": {
+    "reviewSquadShort": "Состав",
+    "hireStaffShort": "Тренеры",
+    "setTacticsShort": "Тактика",
+    "configTrainingShort": "Тренировки",
+    "readMessagesShort": "Сообщения",
     "title": "Начало работы",
     "description": "Выполните эти шаги, чтобы подготовить команду к предстоящему сезону. Штаб особенно важен — он улучшает тренировки и восстановление.",
     "reviewSquad": "Проверьте состав",

@@ -241,6 +241,11 @@
     "quitNoSave": "Ukončit bez uložení"
   },
   "onboarding": {
+    "reviewSquadShort": "Kádr",
+    "hireStaffShort": "Trenéři",
+    "setTacticsShort": "Taktika",
+    "configTrainingShort": "Trénink",
+    "readMessagesShort": "Zprávy",
     "title": "Začínáme",
     "description": "Dokončete tyto kroky a připravte svůj tým na nadcházející sezónu. Realizační tým je obzvláště důležitý — zvyšuje efektivitu tréninku a zrychluje regeneraci.",
     "reviewSquad": "Zkontrolovat soupisku",

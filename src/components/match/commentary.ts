@@ -117,9 +117,28 @@ function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
   return detailVariant(evt.detail);
 }
 
+/**
+ * A clause that trails off because its token had no value: "gives away a free kick against ." has
+ * no second player to blame, so the clause goes rather than the sentence ending in a stray word.
+ * The preposition list is the ones the templates use to hang an optional name off a sentence.
+ */
+const TRAILING_CLAUSE = /\s+(?:against|for|by|with|from|to|at|on)\s*([.,;:!?])\s*$/i;
+const EMPTY_CLAUSE = /\s+(?:against|for|by|with|from|to|at|on)\s+([.,;:!?])/gi;
+
 /** Manual interpolation since the variant string is a value, not a key. */
 function interpolate(template: string, tokens: Record<string, string>): string {
-  return template.replace(/\{\{(\w+)\}\}/g, (_, name: string) => tokens[name] ?? "");
+  const filled = template.replace(/\{\{(\w+)\}\}/g, (_, name: string) => tokens[name] ?? "");
+  return tidy(filled);
+}
+
+/** What a sentence looks like once an optional name is missing from it. */
+function tidy(line: string): string {
+  return line
+    .replace(TRAILING_CLAUSE, "$1")
+    .replace(EMPTY_CLAUSE, "$1")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+([.,;:!?])/g, "$1")
+    .trim();
 }
 
 function pickLine(

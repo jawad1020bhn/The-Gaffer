@@ -241,6 +241,11 @@
     "savingMessage": "Aguarda enquanto guardamos o teu progresso e voltamos ao menu principal."
   },
   "onboarding": {
+    "reviewSquadShort": "Ver plantel",
+    "hireStaffShort": "Contratar staff",
+    "setTacticsShort": "Definir tática",
+    "configTrainingShort": "Treino",
+    "readMessagesShort": "Mensagens",
     "title": "Primeiros Passos",
     "description": "Completa estes passos para preparar a tua equipa para a próxima temporada.",
     "reviewSquad": "Revê o teu plantel",

@@ -140,6 +140,26 @@ const HEIGHTS = [
     use: "Home's squad band",
   },
   { token: "--spacing-band-tertiary", className: "h-band-tertiary", use: "Home's news band" },
+  {
+    token: "--spacing-band-hero-compact",
+    className: "h-band-hero-compact",
+    use: "Home's next-fixture band on a short window",
+  },
+  {
+    token: "--spacing-band-secondary-compact",
+    className: "h-band-secondary-compact",
+    use: "Home's squad band on a short window",
+  },
+  {
+    token: "--spacing-band-tertiary-compact",
+    className: "h-band-tertiary-compact",
+    use: "Home's news band on a short window",
+  },
+  {
+    token: "--spacing-band-strip-compact",
+    className: "h-band-strip-compact",
+    use: "Home's form band on a short window: a header, not a panel",
+  },
 ];
 const WIDTHS = [
   { token: "--container-page", use: "the page width (max-w-page)" },

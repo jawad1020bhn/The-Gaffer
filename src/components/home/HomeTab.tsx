@@ -160,6 +160,7 @@ export default function HomeTab({
       id: "squad",
       done: onboardingState.hasVisitedSquadPage,
       label: t("onboarding.reviewSquad"),
+      shortLabel: t("onboarding.reviewSquadShort"),
       description: t("onboarding.reviewSquadDesc"),
       tab: "Squad",
       icon: <Users className="w-4 h-4" />,
@@ -168,6 +169,7 @@ export default function HomeTab({
       id: "staff",
       done: onboardingState.hasVisitedStaffPage,
       label: t("onboarding.hireStaff"),
+      shortLabel: t("onboarding.hireStaffShort"),
       description: t("onboarding.hireStaffDesc"),
       tab: "Staff",
       icon: <UserCog className="w-4 h-4" />,
@@ -176,6 +178,7 @@ export default function HomeTab({
       id: "tactics",
       done: onboardingState.hasVisitedTacticsPage,
       label: t("onboarding.setTactics"),
+      shortLabel: t("onboarding.setTacticsShort"),
       description: t("onboarding.setTacticsDesc"),
       tab: "Tactics",
       icon: <Crosshair className="w-4 h-4" />,
@@ -184,6 +187,7 @@ export default function HomeTab({
       id: "training",
       done: onboardingState.hasVisitedTrainingPage,
       label: t("onboarding.configTraining"),
+      shortLabel: t("onboarding.configTrainingShort"),
       description: t("onboarding.configTrainingDesc"),
       tab: "Training",
       icon: <Dumbbell className="w-4 h-4" />,
@@ -192,6 +196,7 @@ export default function HomeTab({
       id: "inbox",
       done: onboardingState.hasReadInbox,
       label: t("onboarding.readMessages"),
+      shortLabel: t("onboarding.readMessagesShort"),
       description: t("onboarding.readMessagesDesc"),
       tab: "Inbox",
       icon: <Mail className="w-4 h-4" />,
@@ -234,7 +239,7 @@ export default function HomeTab({
   return (
     <div className="scrollbar-thin flex h-full min-h-0 flex-col gap-3 overflow-y-auto">
       {/* Band 1 — the next fixture, the season's state, the table. */}
-      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-hero">
+      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-hero xl:[@media(max-height:820px)]:h-band-hero-compact [@media(max-height:820px)]:gap-y-2">
         <Card accent="primary" className="lg:col-span-6 xl:col-span-4">
           <CardHeader
             action={
@@ -246,7 +251,7 @@ export default function HomeTab({
             <Swords className="h-4 w-4 text-selected" aria-hidden="true" />
             {t("home.nextMatch")}
           </CardHeader>
-          <CardBody className="p-3">
+          <CardBody padded={false} className="p-3">
             <NextMatchDisplay gameState={gameState} onNavigate={onNavigate} />
           </CardBody>
         </Card>
@@ -286,7 +291,7 @@ export default function HomeTab({
       </div>
 
       {/* Band 2 — what to do next, and how the squad is. */}
-      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-secondary">
+      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-secondary xl:[@media(max-height:820px)]:h-band-secondary-compact [@media(max-height:820px)]:gap-y-2">
         {showOnboarding ? (
           <HomeOnboardingChecklistCard
             completedSteps={completedSteps}
@@ -317,7 +322,7 @@ export default function HomeTab({
       </div>
 
       {/* Band 3 — the inbox, the wire, the treatment room, the board. */}
-      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-tertiary">
+      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-tertiary xl:[@media(max-height:820px)]:h-band-tertiary-compact [@media(max-height:820px)]:gap-y-2">
         <HomeRecentMessagesCard
           messages={recentMessages}
           lang={lang}
@@ -348,7 +353,7 @@ export default function HomeTab({
 
       {/* Only when someone's form is worth a word: the fourth band appears and the page scrolls. */}
       {hasMomentum ? (
-        <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-tertiary">
+        <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-tertiary xl:[@media(max-height:820px)]:h-band-strip-compact [@media(max-height:820px)]:gap-y-2">
           <HomePlayerMomentumCard
             hotPlayers={hotPlayers}
             coldPlayers={coldPlayers}

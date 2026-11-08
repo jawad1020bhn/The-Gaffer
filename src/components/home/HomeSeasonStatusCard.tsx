@@ -37,7 +37,8 @@ function Timeline({ stops }: { stops: TimelineStop[] }) {
                   stop.reached ? "bg-selected" : "bg-line ring-1 ring-inset ring-line-strong"
                 }`}
               />
-              <span className="truncate text-caption font-heading font-bold uppercase tracking-label text-fg">
+              {/* Two lines rather than an ellipsis: "WINDOW CLOSED" is a label, "WIND…" is a bug. */}
+              <span className="line-clamp-2 text-caption font-heading font-bold uppercase leading-tight tracking-label text-fg">
                 {stop.label}
               </span>
             </span>

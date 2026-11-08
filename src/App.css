@@ -274,6 +274,17 @@
   --spacing-band-hero: 18rem;
   --spacing-band-secondary: 12.5rem;
   --spacing-band-tertiary: 11rem;
+  /* The same bands on a short window (under ~820px), where three comfortable bands do not fit:
+     the board stays whole and the hero tightens up instead of the page starting to scroll. The
+     hero keeps its height — the next fixture and its two buttons are the point of the page — and
+     the bands below it give the pixels back. */
+  --spacing-band-hero-compact: 13.5rem;
+  --spacing-band-secondary-compact: 9.375rem;
+  --spacing-band-tertiary-compact: 7.75rem;
+  /* The optional fourth band (form and job offers) on a short window: a header, not a panel. At
+     720p four stacked bands do not fit, so the last one reports at a glance and its detail stays
+     a click away. */
+  --spacing-band-strip-compact: 3.25rem;
   /* Legacy sidebar widths retained while the persisted settings schema rolls out. The game shell
      no longer renders the website-like sidebar; new navigation uses the game-* bars above. */
   --spacing-sidebar-rail: 3.5rem;

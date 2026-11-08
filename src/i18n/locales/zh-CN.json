@@ -241,6 +241,11 @@
     "quitNoSave": "不保存直接退出"
   },
   "onboarding": {
+    "reviewSquadShort": "查看阵容",
+    "hireStaffShort": "聘请教练",
+    "setTacticsShort": "设置战术",
+    "configTrainingShort": "训练",
+    "readMessagesShort": "消息",
     "title": "新手入门",
     "description": "完成以下步骤，为您的球队备战新赛季。员工尤为重要 — 他们能提升训练效果和恢复速度。",
     "reviewSquad": "查看您的阵容",

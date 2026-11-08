@@ -64,13 +64,21 @@ if (rootElement && page) {
       console.error("The match preview could not start:", error);
     });
 } else if (rootElement) {
-  void i18nReady.then(() => {
-    ReactDOM.createRoot(rootElement).render(
-      <React.StrictMode>
-        <ThemeProvider>
-          <StyleGuide options={options} />
-        </ThemeProvider>
-      </React.StrictMode>,
-    );
-  });
+  // The guide draws real position badges and rating chips, so the tables they read are stubbed too.
+  void i18nReady
+    .then(async () => {
+      const { mockIPC } = await import("@tauri-apps/api/mocks");
+      const { installStyleGuideIpc } = await import("./styleGuideIpc");
+      installStyleGuideIpc(mockIPC);
+      ReactDOM.createRoot(rootElement).render(
+        <React.StrictMode>
+          <ThemeProvider>
+            <StyleGuide options={options} />
+          </ThemeProvider>
+        </React.StrictMode>,
+      );
+    })
+    .catch((error: unknown) => {
+      console.error("The style guide could not start:", error);
+    });
 }

@@ -241,6 +241,11 @@
     "savingMessage": "Veuillez patienter pendant que nous sauvegardons votre progression et revenons au menu principal."
   },
   "onboarding": {
+    "reviewSquadShort": "Effectif",
+    "hireStaffShort": "Staff",
+    "setTacticsShort": "Tactique",
+    "configTrainingShort": "Entraînement",
+    "readMessagesShort": "Messages",
     "title": "Premiers Pas",
     "description": "Complétez ces étapes pour préparer votre équipe pour la saison à venir.",
     "reviewSquad": "Examinez votre effectif",

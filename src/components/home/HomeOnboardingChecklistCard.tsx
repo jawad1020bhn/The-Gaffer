@@ -7,6 +7,8 @@ export interface HomeOnboardingStep {
   id: string;
   done: boolean;
   label: string;
+  /** What fits under a stop in the stepper; `label` is the sentence used elsewhere. */
+  shortLabel: string;
   description: string;
   tab: string;
   icon: React.ReactNode;
@@ -57,7 +59,7 @@ export default function HomeOnboardingChecklistCard({
                 <button
                   type="button"
                   onClick={() => onNavigate?.(step.tab)}
-                  title={step.description}
+                  title={`${step.label} — ${step.description}`}
                   className={`group flex min-w-0 flex-1 flex-col items-center gap-1 rounded-control px-1 py-1 text-center transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel ${
                     isNext ? "bg-selected-tint" : "hover:bg-hover"
                   }`}
@@ -79,16 +81,16 @@ export default function HomeOnboardingChecklistCard({
                   </span>
                   {/* Two lines, so "Hire coaching staff" reads as itself instead of "HIRE...". */}
                   <span
-                    className={`line-clamp-2 w-full text-caption font-heading font-bold uppercase leading-tight tracking-label ${
+                    className={`line-clamp-2 w-full text-caption font-heading font-bold uppercase leading-tight tracking-label [@media(max-height:820px)]:tracking-normal ${
                       step.done ? "text-fg-subtle line-through" : "text-fg"
                     }`}
                   >
-                    {step.label}
+                    {step.shortLabel}
                   </span>
                 </button>
                 {index < steps.length - 1 ? (
                   <span
-                    className={`mt-3.5 h-0.5 w-4 shrink-0 rounded-full ${
+                    className={`mt-3.5 h-0.5 w-3 shrink-0 rounded-full ${
                       step.done ? "bg-selected" : "bg-line"
                     }`}
                     aria-hidden="true"

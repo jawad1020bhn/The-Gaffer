@@ -241,6 +241,11 @@
     "savingMessage": "Bitte warte, während dein Fortschritt gespeichert wird und du zum Hauptmenü zurückkehrst."
   },
   "onboarding": {
+    "reviewSquadShort": "Kader prüfen",
+    "hireStaffShort": "Trainer holen",
+    "setTacticsShort": "Taktik setzen",
+    "configTrainingShort": "Training",
+    "readMessagesShort": "Nachrichten",
     "title": "Erste Schritte",
     "description": "Schließe diese Schritte ab, um dein Team auf die kommende Saison vorzubereiten.",
     "reviewSquad": "Kader überprüfen",

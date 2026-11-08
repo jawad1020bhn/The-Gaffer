@@ -241,6 +241,11 @@
     "quitNoSave": "Kaydetmeden Çık"
   },
   "onboarding": {
+    "reviewSquadShort": "Kadro",
+    "hireStaffShort": "Antrenör",
+    "setTacticsShort": "Taktik",
+    "configTrainingShort": "Antrenman",
+    "readMessagesShort": "Mesajlar",
     "title": "Başlangıç",
     "description": "Takımını yeni sezona hazırlamak için bu adımları tamamla. Özellikle personel, antrenman ve toparlanma üzerinde etkilidir.",
     "reviewSquad": "Kadroya göz at",

@@ -1,47 +1,13 @@
 import type { mockIPC } from "@tauri-apps/api/mocks";
 import type { PlayerSummary } from "../../services/playersService";
-import type { PlayerTier } from "../../store/generated/PlayerTier";
 import { previewGameState } from "./fixture";
+import { previewPositionGroups, previewRatingTiers } from "../previewTables";
 
 /**
  * The commands the career screens ask the backend for, answered from the preview career. Anything
  * else is declined the way the harness declines it, so a page that starts needing another command
  * says so in the console instead of showing a number nobody computed.
  */
-
-/** One tier per rating, 0-99, the shape the backend's table has. */
-function ratingTiers(): PlayerTier[] {
-  return Array.from({ length: 100 }, (_, rating): PlayerTier => {
-    if (rating >= 85) return "S";
-    if (rating >= 75) return "A";
-    if (rating >= 60) return "B";
-    return "Rest";
-  });
-}
-
-const GROUP_OF: Record<string, string> = {
-  Goalkeeper: "Goalkeeper",
-  CenterBack: "Defender",
-  LeftBack: "Defender",
-  RightBack: "Defender",
-  DefensiveMidfielder: "Midfielder",
-  CentralMidfielder: "Midfielder",
-  AttackingMidfielder: "Midfielder",
-  LeftMidfielder: "Midfielder",
-  RightMidfielder: "Midfielder",
-  LeftWinger: "Attacker",
-  RightWinger: "Attacker",
-  Striker: "Attacker",
-};
-
-/** The grouping the squad list sorts by, in one place per position. */
-function positionGroups(): { position: string; group: string; rank: number }[] {
-  return Object.keys(GROUP_OF).map((position, index) => ({
-    position,
-    group: GROUP_OF[position] ?? "Midfielder",
-    rank: index,
-  }));
-}
 
 function overallFor(attributes: Record<string, number>): number {
   const values = Object.values(attributes);
@@ -125,9 +91,9 @@ export function installShellPreviewIpc(install: typeof mockIPC): void {
           statuses: {},
         };
       case "get_rating_tiers":
-        return ratingTiers();
+        return previewRatingTiers();
       case "get_position_groups":
-        return positionGroups();
+        return previewPositionGroups();
       case "get_players_page":
         return playersPage(args.query as PreviewPlayersQuery | undefined);
       case "get_available_jobs":

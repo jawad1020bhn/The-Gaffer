@@ -241,6 +241,11 @@
     "quitNoSave": "Keluar Tanpa Menyimpan"
   },
   "onboarding": {
+    "reviewSquadShort": "Skuad",
+    "hireStaffShort": "Pelatih",
+    "setTacticsShort": "Taktik",
+    "configTrainingShort": "Latihan",
+    "readMessagesShort": "Pesan",
     "title": "Memulai",
     "description": "Selesaikan langkah-langkah ini untuk menyiapkan timmu menghadapi musim yang akan datang. Staf sangat penting — mereka meningkatkan kualitas latihan dan pemulihan.",
     "reviewSquad": "Tinjau skuad",
