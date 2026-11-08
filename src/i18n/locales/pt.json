@@ -17,7 +17,20 @@
     "noFixture": "Sem próximo jogo",
     "unknownBudget": "Orçamento indisponível",
     "date": "Data",
-    "transferBudget": "Orçamento de transferências"
+    "transferBudget": "Orçamento de transferências",
+    "club": "Clube",
+    "menu": "Menu principal",
+    "search": "Pesquisar"
+  },
+  "gameHint": {
+    "menu": "Menu",
+    "title": "Atalhos de teclado",
+    "select": "Selecionar",
+    "sections": "Seções"
+  },
+  "pause": {
+    "title": "Em pausa",
+    "resume": "Continuar"
   },
   "menu": {
     "newGame": "Novo Jogo",
@@ -228,6 +241,11 @@
     "savingMessage": "Aguarda enquanto guardamos o teu progresso e voltamos ao menu principal."
   },
   "onboarding": {
+    "reviewSquadShort": "Ver plantel",
+    "hireStaffShort": "Contratar staff",
+    "setTacticsShort": "Definir tática",
+    "configTrainingShort": "Treino",
+    "readMessagesShort": "Mensagens",
     "title": "Primeiros Passos",
     "description": "Completa estes passos para preparar a tua equipa para a próxima temporada.",
     "reviewSquad": "Revê o teu plantel",
@@ -239,7 +257,9 @@
     "configTraining": "Configura o treino",
     "configTrainingDesc": "Escolhe um foco e horário para desenvolver os teus jogadores",
     "readMessages": "Lê as tuas mensagens",
-    "readMessagesDesc": "Informações importantes da direção e staff à tua espera"
+    "readMessagesDesc": "Informações importantes da direção e staff à tua espera",
+    "next": "Seguinte",
+    "go": "Ir"
   },
   "home": {
     "nextMatch": "Próximo Jogo",
@@ -280,7 +300,10 @@
     "noLeagueDigest": "Ainda não há resumo da liga.",
     "objectivesMet": "{{done}}/{{total}} objetivos cumpridos — Satisfação da direção: {{pct}}%",
     "unavailablePlayers": "Jogadores indisponíveis",
-    "daysUnavailable": "{{count}} dia(s) restantes"
+    "daysUnavailable": "{{count}} dia(s) restantes",
+    "setTactics": "Definir tática",
+    "fixtures": "Calendário",
+    "form": "Forma"
   },
   "season": {
     "preseasonStatus": "Estado da pré-época",
@@ -308,7 +331,8 @@
       "Closed": "Janela Fechada",
       "Open": "Janela Aberta",
       "DeadlineDay": "Dia Final"
-    }
+    },
+    "today": "Hoje"
   },
   "teamSelect": {
     "title": "Escolhe o Teu Clube",
@@ -2033,6 +2057,13 @@
     "confidence": "Confiança"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "últimos cinco minutos",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}}%, equilibrado {{even}}%, {{awayTeam}} {{away}}%",
+    "leaveTitle": "Sair do jogo?",
+    "leaveBody": "O jogo ainda está a decorrer. Se saíres agora voltas ao painel.",
+    "leaveStay": "Ficar",
+    "leaveConfirm": "Sair do jogo",
     "live": "Ao Vivo",
     "paused": "Pausado",
     "events": "Eventos",

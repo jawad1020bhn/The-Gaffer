@@ -563,6 +563,10 @@ export default function Dashboard({ initialTab = "Home" }: DashboardProps): JSX.
       onNavigate={handleNavClick}
       onBack={handleBack}
       onNavigateSettings={handleNavigateSettings}
+      onSave={handleSave}
+      onContinue={handleContinue}
+      isSaving={isSaving}
+      saveFlash={saveFlash}
       onExitClick={() => {
         if (!isExitingToMenu) setShowExitConfirm(true);
       }}

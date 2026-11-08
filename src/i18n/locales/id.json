@@ -17,7 +17,20 @@
     "noFixture": "Tidak ada pertandingan mendatang",
     "unknownBudget": "Anggaran tidak tersedia",
     "date": "Tanggal",
-    "transferBudget": "Anggaran transfer"
+    "transferBudget": "Anggaran transfer",
+    "club": "Klub",
+    "menu": "Menu utama",
+    "search": "Cari"
+  },
+  "gameHint": {
+    "menu": "Menu",
+    "title": "Pintasan papan tombol",
+    "select": "Pilih",
+    "sections": "Bagian"
+  },
+  "pause": {
+    "title": "Jeda",
+    "resume": "Lanjutkan"
   },
   "menu": {
     "newGame": "Permainan Baru",
@@ -228,6 +241,11 @@
     "quitNoSave": "Keluar Tanpa Menyimpan"
   },
   "onboarding": {
+    "reviewSquadShort": "Skuad",
+    "hireStaffShort": "Pelatih",
+    "setTacticsShort": "Taktik",
+    "configTrainingShort": "Latihan",
+    "readMessagesShort": "Pesan",
     "title": "Memulai",
     "description": "Selesaikan langkah-langkah ini untuk menyiapkan timmu menghadapi musim yang akan datang. Staf sangat penting — mereka meningkatkan kualitas latihan dan pemulihan.",
     "reviewSquad": "Tinjau skuad",
@@ -239,7 +257,9 @@
     "configTraining": "Atur latihan",
     "configTrainingDesc": "Pilih fokus dan jadwal untuk mengembangkan para pemainmu",
     "readMessages": "Baca pesan-pesanmu",
-    "readMessagesDesc": "Informasi penting dari manajemen dan staf menantimu"
+    "readMessagesDesc": "Informasi penting dari manajemen dan staf menantimu",
+    "next": "Berikutnya",
+    "go": "Buka"
   },
   "home": {
     "nextMatch": "Pertandingan Berikutnya",
@@ -280,7 +300,10 @@
     "inProgress": "Berlangsung",
     "objectivesMet": "{{done}}/{{total}} target tercapai — Kepuasan Manajemen: {{pct}}%",
     "unavailablePlayers": "Pemain Tidak Tersedia",
-    "daysUnavailable": "{{count}} hari tersisa"
+    "daysUnavailable": "{{count}} hari tersisa",
+    "setTactics": "Atur taktik",
+    "fixtures": "Jadwal",
+    "form": "Performa"
   },
   "season": {
     "preseasonStatus": "Status Pramusim",
@@ -308,7 +331,8 @@
       "Closed": "Jendela Ditutup",
       "Open": "Jendela Terbuka",
       "DeadlineDay": "Hari Penutupan"
-    }
+    },
+    "today": "Hari ini"
   },
   "teamSelect": {
     "title": "Pilih Klub",
@@ -2033,6 +2057,13 @@
     "confidence": "Keyakinan"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "lima menit terakhir",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}}%, imbang {{even}}%, {{awayTeam}} {{away}}%",
+    "leaveTitle": "Tinggalkan pertandingan?",
+    "leaveBody": "Pertandingan masih berlangsung. Jika keluar sekarang, kamu kembali ke dasbor.",
+    "leaveStay": "Tetap di sini",
+    "leaveConfirm": "Tinggalkan pertandingan",
     "live": "Langsung",
     "paused": "Dijeda",
     "events": "Peristiwa",

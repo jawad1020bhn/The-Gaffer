@@ -17,7 +17,20 @@
     "noFixture": "Žádný nadcházející zápas",
     "unknownBudget": "Rozpočet nedostupný",
     "date": "Datum",
-    "transferBudget": "Přestupový rozpočet"
+    "transferBudget": "Přestupový rozpočet",
+    "club": "Klub",
+    "menu": "Nabídka",
+    "search": "Hledat"
+  },
+  "gameHint": {
+    "menu": "Menu",
+    "title": "Klávesové zkratky",
+    "select": "Vybrat",
+    "sections": "Sekce"
+  },
+  "pause": {
+    "title": "Pozastaveno",
+    "resume": "Pokračovat"
   },
   "menu": {
     "newGame": "Nová hra",
@@ -228,6 +241,11 @@
     "quitNoSave": "Ukončit bez uložení"
   },
   "onboarding": {
+    "reviewSquadShort": "Kádr",
+    "hireStaffShort": "Trenéři",
+    "setTacticsShort": "Taktika",
+    "configTrainingShort": "Trénink",
+    "readMessagesShort": "Zprávy",
     "title": "Začínáme",
     "description": "Dokončete tyto kroky a připravte svůj tým na nadcházející sezónu. Realizační tým je obzvláště důležitý — zvyšuje efektivitu tréninku a zrychluje regeneraci.",
     "reviewSquad": "Zkontrolovat soupisku",
@@ -239,7 +257,9 @@
     "configTraining": "Konfigurovat trénink",
     "configTrainingDesc": "Vyberte zaměření a plán pro rozvoj svých hráčů",
     "readMessages": "Přečíst si zprávy",
-    "readMessagesDesc": "Čekají na vás důležité informace od vedení a realizačního týmu"
+    "readMessagesDesc": "Čekají na vás důležité informace od vedení a realizačního týmu",
+    "next": "Další",
+    "go": "Přejít"
   },
   "home": {
     "nextMatch": "Příští zápas",
@@ -280,7 +300,10 @@
     "inProgress": "Probíhá",
     "objectivesMet": "Splněné cíle: {{done}}/{{total}} — Spokojenost vedení: {{pct}} %",
     "unavailablePlayers": "Nedostupní hráči",
-    "daysUnavailable": "Zbývá dní: {{count}}"
+    "daysUnavailable": "Zbývá dní: {{count}}",
+    "setTactics": "Nastavit taktiku",
+    "fixtures": "Rozpis",
+    "form": "Forma"
   },
   "season": {
     "preseasonStatus": "Přípravné období",
@@ -308,7 +331,8 @@
       "Closed": "Okno uzavřeno",
       "Open": "Okno otevřeno",
       "DeadlineDay": "Uzávěrka přestupů"
-    }
+    },
+    "today": "Dnes"
   },
   "teamSelect": {
     "title": "Vyberte si klub",
@@ -2033,6 +2057,13 @@
     "confidence": "Spolehlivost odhadu"
   },
   "match": {
+    "momentum": "Převaha",
+    "momentumWindow": "posledních pět minut",
+    "momentumLabel": "Převaha: {{homeTeam}} {{home}} %, vyrovnané {{even}} %, {{awayTeam}} {{away}} %",
+    "leaveTitle": "Opustit zápas?",
+    "leaveBody": "Zápas stále probíhá. Pokud nyní odejdete, vrátíte se na nástěnku.",
+    "leaveStay": "Zůstat",
+    "leaveConfirm": "Opustit zápas",
     "live": "Živě",
     "paused": "Pozastaveno",
     "events": "Události",

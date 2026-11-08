@@ -17,7 +17,20 @@
     "noFixture": "Нет ближайшего матча",
     "unknownBudget": "Бюджет недоступен",
     "date": "Дата",
-    "transferBudget": "Трансферный бюджет"
+    "transferBudget": "Трансферный бюджет",
+    "club": "Клуб",
+    "menu": "Меню",
+    "search": "Поиск"
+  },
+  "gameHint": {
+    "menu": "Меню",
+    "title": "Горячие клавиши",
+    "select": "Выбрать",
+    "sections": "Разделы"
+  },
+  "pause": {
+    "title": "Пауза",
+    "resume": "Продолжить"
   },
   "menu": {
     "newGame": "Новая игра",
@@ -228,6 +241,11 @@
     "quitNoSave": "Выйти без сохранения"
   },
   "onboarding": {
+    "reviewSquadShort": "Состав",
+    "hireStaffShort": "Тренеры",
+    "setTacticsShort": "Тактика",
+    "configTrainingShort": "Тренировки",
+    "readMessagesShort": "Сообщения",
     "title": "Начало работы",
     "description": "Выполните эти шаги, чтобы подготовить команду к предстоящему сезону. Штаб особенно важен — он улучшает тренировки и восстановление.",
     "reviewSquad": "Проверьте состав",
@@ -239,7 +257,9 @@
     "configTraining": "Настройте тренировки",
     "configTrainingDesc": "Выберите фокус и расписание для развития игроков",
     "readMessages": "Прочитайте сообщения",
-    "readMessagesDesc": "Важная информация от совета директоров и штаба уже ждёт"
+    "readMessagesDesc": "Важная информация от совета директоров и штаба уже ждёт",
+    "next": "Далее",
+    "go": "Перейти"
   },
   "home": {
     "nextMatch": "Следующий матч",
@@ -280,7 +300,10 @@
     "inProgress": "Идёт",
     "objectivesMet": "Выполнено целей: {{done}}/{{total}} — удовлетворённость совета: {{pct}}%",
     "unavailablePlayers": "Недоступные игроки",
-    "daysUnavailable": "Осталось {{count}} дн."
+    "daysUnavailable": "Осталось {{count}} дн.",
+    "setTactics": "Настроить тактику",
+    "fixtures": "Календарь",
+    "form": "Форма"
   },
   "season": {
     "preseasonStatus": "Статус предсезонки",
@@ -308,7 +331,8 @@
       "Closed": "Окно закрыто",
       "Open": "Окно открыто",
       "DeadlineDay": "День дедлайна"
-    }
+    },
+    "today": "Сегодня"
   },
   "teamSelect": {
     "title": "Выберите клуб",
@@ -2033,6 +2057,13 @@
     "confidence": "Надёжность"
   },
   "match": {
+    "momentum": "Импульс",
+    "momentumWindow": "последние пять минут",
+    "momentumLabel": "Импульс: {{homeTeam}} {{home}} %, равно {{even}} %, {{awayTeam}} {{away}} %",
+    "leaveTitle": "Выйти из матча?",
+    "leaveBody": "Матч ещё идёт. Если выйти сейчас, вы вернётесь на главный экран.",
+    "leaveStay": "Остаться",
+    "leaveConfirm": "Выйти из матча",
     "live": "Матч",
     "paused": "Пауза",
     "events": "События",

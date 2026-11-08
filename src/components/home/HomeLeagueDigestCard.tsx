@@ -8,17 +8,19 @@ interface HomeLeagueDigestCardProps {
   articles: NewsArticle[];
   lang: string;
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomeLeagueDigestCard({
   articles,
   lang,
   onNavigate,
+  className = "",
 }: HomeLeagueDigestCardProps) {
   const { t } = useTranslation();
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button
@@ -32,7 +34,7 @@ export default function HomeLeagueDigestCard({
       >
         {t("home.leagueDigest")}
       </CardHeader>
-      <CardBody className="p-0">
+      <CardBody padded={false}>
         {articles.length === 0 ? (
           <p className="text-body text-fg-muted p-6 text-center">{t("home.noLeagueDigest")}</p>
         ) : (
@@ -42,7 +44,7 @@ export default function HomeLeagueDigestCard({
                 type="button"
                 key={article.id}
                 onClick={() => onNavigate?.("News")}
-                className="w-full text-left px-4 py-3 hover:bg-hover/50 transition-colors"
+                className="w-full text-left px-4 py-3 hover:bg-hover/50 transition-colors [@media(max-height:820px)]:py-2"
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   <Badge variant="neutral" size="sm">

@@ -17,7 +17,20 @@
     "noFixture": "No upcoming fixture",
     "unknownBudget": "Budget unavailable",
     "date": "Date",
-    "transferBudget": "Transfer budget"
+    "transferBudget": "Transfer budget",
+    "club": "Club",
+    "menu": "Menu",
+    "search": "Search"
+  },
+  "gameHint": {
+    "menu": "Menu",
+    "title": "Keyboard shortcuts",
+    "select": "Select",
+    "sections": "Sections"
+  },
+  "pause": {
+    "title": "Paused",
+    "resume": "Resume"
   },
   "menu": {
     "newGame": "New Game",
@@ -228,6 +241,11 @@
     "quitNoSave": "Quit Without Saving"
   },
   "onboarding": {
+    "reviewSquadShort": "Review squad",
+    "hireStaffShort": "Hire staff",
+    "setTacticsShort": "Set tactics",
+    "configTrainingShort": "Training",
+    "readMessagesShort": "Messages",
     "title": "Getting Started",
     "description": "Complete these steps to prepare your team for the upcoming season. Staff are especially important — they boost training and recovery.",
     "reviewSquad": "Review your squad",
@@ -239,7 +257,9 @@
     "configTraining": "Configure training",
     "configTrainingDesc": "Pick a focus and schedule to develop your players",
     "readMessages": "Read your messages",
-    "readMessagesDesc": "Important info from the board and staff awaits"
+    "readMessagesDesc": "Important info from the board and staff awaits",
+    "next": "Next",
+    "go": "Go"
   },
   "home": {
     "nextMatch": "Next Match",
@@ -280,7 +300,10 @@
     "inProgress": "In Progress",
     "objectivesMet": "{{done}}/{{total}} objectives met — Board satisfaction: {{pct}}%",
     "unavailablePlayers": "Unavailable Players",
-    "daysUnavailable": "{{count}} day(s) remaining"
+    "daysUnavailable": "{{count}} day(s) remaining",
+    "setTactics": "Set tactics",
+    "fixtures": "Fixtures",
+    "form": "Form"
   },
   "season": {
     "preseasonStatus": "Preseason Status",
@@ -308,7 +331,8 @@
       "Closed": "Window Closed",
       "Open": "Window Open",
       "DeadlineDay": "Deadline Day"
-    }
+    },
+    "today": "Today"
   },
   "teamSelect": {
     "title": "Choose Your Club",
@@ -2033,6 +2057,13 @@
     "confidence": "Confidence"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "last five minutes",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}}%, even {{even}}%, {{awayTeam}} {{away}}%",
+    "leaveTitle": "Leave the match?",
+    "leaveBody": "The match is still being played. Leaving now takes you back to the dashboard.",
+    "leaveStay": "Stay",
+    "leaveConfirm": "Leave match",
     "live": "Live",
     "paused": "Paused",
     "events": "Events",

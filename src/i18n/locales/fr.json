@@ -17,7 +17,20 @@
     "noFixture": "Aucun match à venir",
     "unknownBudget": "Budget indisponible",
     "date": "Jour",
-    "transferBudget": "Budget des transferts"
+    "transferBudget": "Budget des transferts",
+    "club": "Mon club",
+    "menu": "Menu principal",
+    "search": "Rechercher"
+  },
+  "gameHint": {
+    "menu": "Menu",
+    "title": "Raccourcis clavier",
+    "select": "Sélectionner",
+    "sections": "Rubriques"
+  },
+  "pause": {
+    "title": "En pause",
+    "resume": "Reprendre"
   },
   "menu": {
     "newGame": "Nouvelle Partie",
@@ -228,6 +241,11 @@
     "savingMessage": "Veuillez patienter pendant que nous sauvegardons votre progression et revenons au menu principal."
   },
   "onboarding": {
+    "reviewSquadShort": "Effectif",
+    "hireStaffShort": "Staff",
+    "setTacticsShort": "Tactique",
+    "configTrainingShort": "Entraînement",
+    "readMessagesShort": "Messages",
     "title": "Premiers Pas",
     "description": "Complétez ces étapes pour préparer votre équipe pour la saison à venir.",
     "reviewSquad": "Examinez votre effectif",
@@ -239,7 +257,9 @@
     "configTraining": "Configurez l'entraînement",
     "configTrainingDesc": "Choisissez un focus et un planning pour développer vos joueurs",
     "readMessages": "Lisez vos messages",
-    "readMessagesDesc": "Des informations importantes de la direction et du staff vous attendent"
+    "readMessagesDesc": "Des informations importantes de la direction et du staff vous attendent",
+    "next": "Suivant",
+    "go": "Aller"
   },
   "home": {
     "nextMatch": "Prochain Match",
@@ -280,7 +300,10 @@
     "noLeagueDigest": "Aucun résumé du championnat pour le moment.",
     "objectivesMet": "{{done}}/{{total}} objectifs atteints — Satisfaction du conseil : {{pct}}%",
     "unavailablePlayers": "Joueurs indisponibles",
-    "daysUnavailable": "{{count}} jour(s) restant(s)"
+    "daysUnavailable": "{{count}} jour(s) restant(s)",
+    "setTactics": "Définir la tactique",
+    "fixtures": "Calendrier",
+    "form": "Forme"
   },
   "season": {
     "preseasonStatus": "État de la présaison",
@@ -308,7 +331,8 @@
       "Closed": "Mercato Fermé",
       "Open": "Mercato Ouvert",
       "DeadlineDay": "Dernier Jour"
-    }
+    },
+    "today": "Aujourd'hui"
   },
   "teamSelect": {
     "title": "Choisissez Votre Club",
@@ -2033,6 +2057,13 @@
     "confidence": "Confiance"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "cinq dernières minutes",
+    "momentumLabel": "Momentum : {{homeTeam}} {{home}} %, équilibré {{even}} %, {{awayTeam}} {{away}} %",
+    "leaveTitle": "Quitter le match ?",
+    "leaveBody": "Le match est toujours en cours. En quittant maintenant, vous revenez au tableau de bord.",
+    "leaveStay": "Rester",
+    "leaveConfirm": "Quitter le match",
     "live": "En Direct",
     "paused": "En Pause",
     "events": "Événements",

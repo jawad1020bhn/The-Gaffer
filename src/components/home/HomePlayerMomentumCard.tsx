@@ -10,12 +10,14 @@ interface HomePlayerMomentumCardProps {
   hotPlayers: PlayerData[];
   coldPlayers: PlayerData[];
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomePlayerMomentumCard({
   hotPlayers,
   coldPlayers,
   onNavigate,
+  className = "",
 }: HomePlayerMomentumCardProps) {
   const { t } = useTranslation();
 
@@ -23,8 +25,37 @@ export default function HomePlayerMomentumCard({
     return null;
   }
 
+  // On a short window the band is a strip: the header reports who is up and who is down, and the
+  // rows below it are a click away on the squad screen.
+  const compactLine = (
+    <span className="hidden min-w-0 items-center gap-3 [@media(max-height:820px)]:flex">
+      {hotPlayers.length > 0 ? (
+        <span className="flex min-w-0 items-center gap-1 text-caption font-medium normal-case tracking-normal text-fg">
+          <TrendingUp className="h-3 w-3 shrink-0 text-positive" aria-hidden="true" />
+          <span className="truncate">
+            {hotPlayers
+              .slice(0, 2)
+              .map((player) => `${player.full_name} ${player.morale}`)
+              .join(" · ")}
+          </span>
+        </span>
+      ) : null}
+      {coldPlayers.length > 0 ? (
+        <span className="flex min-w-0 items-center gap-1 text-caption font-medium normal-case tracking-normal text-fg">
+          <TrendingDown className="h-3 w-3 shrink-0 text-danger" aria-hidden="true" />
+          <span className="truncate">
+            {coldPlayers
+              .slice(0, 2)
+              .map((player) => `${player.full_name} ${player.morale}`)
+              .join(" · ")}
+          </span>
+        </span>
+      ) : null}
+    </span>
+  );
+
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button
@@ -37,8 +68,9 @@ export default function HomePlayerMomentumCard({
         }
       >
         {t("home.playerMomentum")}
+        {compactLine}
       </CardHeader>
-      <CardBody>
+      <CardBody className="[@media(max-height:820px)]:hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {hotPlayers.length > 0 && (
             <div>

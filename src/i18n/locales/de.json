@@ -17,7 +17,20 @@
     "noFixture": "Kein anstehendes Spiel",
     "unknownBudget": "Budget nicht verfügbar",
     "date": "Datum",
-    "transferBudget": "Transferbudget"
+    "transferBudget": "Transferbudget",
+    "club": "Verein",
+    "menu": "Menü",
+    "search": "Suchen"
+  },
+  "gameHint": {
+    "menu": "Menü",
+    "title": "Tastenkürzel",
+    "select": "Auswählen",
+    "sections": "Bereiche"
+  },
+  "pause": {
+    "title": "Pausiert",
+    "resume": "Fortsetzen"
   },
   "menu": {
     "newGame": "Neues Spiel",
@@ -228,6 +241,11 @@
     "savingMessage": "Bitte warte, während dein Fortschritt gespeichert wird und du zum Hauptmenü zurückkehrst."
   },
   "onboarding": {
+    "reviewSquadShort": "Kader prüfen",
+    "hireStaffShort": "Trainer holen",
+    "setTacticsShort": "Taktik setzen",
+    "configTrainingShort": "Training",
+    "readMessagesShort": "Nachrichten",
     "title": "Erste Schritte",
     "description": "Schließe diese Schritte ab, um dein Team auf die kommende Saison vorzubereiten.",
     "reviewSquad": "Kader überprüfen",
@@ -239,7 +257,9 @@
     "configTraining": "Training konfigurieren",
     "configTrainingDesc": "Wähle einen Fokus und Zeitplan zur Spielerentwicklung",
     "readMessages": "Nachrichten lesen",
-    "readMessagesDesc": "Wichtige Informationen vom Vorstand und Staff warten auf dich"
+    "readMessagesDesc": "Wichtige Informationen vom Vorstand und Staff warten auf dich",
+    "next": "Weiter",
+    "go": "Los"
   },
   "home": {
     "nextMatch": "Nächstes Spiel",
@@ -280,7 +300,10 @@
     "noLeagueDigest": "Noch kein Liga-Überblick verfügbar.",
     "objectivesMet": "{{done}}/{{total}} Ziele erreicht — Zufriedenheit des Vorstands: {{pct}}%",
     "unavailablePlayers": "Nicht verfügbare Spieler",
-    "daysUnavailable": "Noch {{count}} Tag(e)"
+    "daysUnavailable": "Noch {{count}} Tag(e)",
+    "setTactics": "Taktik festlegen",
+    "fixtures": "Spielplan",
+    "form": "Formkurve"
   },
   "season": {
     "preseasonStatus": "Status der Vorbereitung",
@@ -308,7 +331,8 @@
       "Closed": "Fenster Geschlossen",
       "Open": "Fenster Offen",
       "DeadlineDay": "Stichtag"
-    }
+    },
+    "today": "Heute"
   },
   "teamSelect": {
     "title": "Wähle Deinen Verein",
@@ -2033,6 +2057,13 @@
     "confidence": "Zuverlässigkeit"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "letzte fünf Minuten",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}} %, ausgeglichen {{even}} %, {{awayTeam}} {{away}} %",
+    "leaveTitle": "Spiel verlassen?",
+    "leaveBody": "Das Spiel läuft noch. Wenn du jetzt gehst, kehrst du zum Dashboard zurück.",
+    "leaveStay": "Bleiben",
+    "leaveConfirm": "Spiel verlassen",
     "live": "Live",
     "paused": "Pausiert",
     "events": "Ereignisse",

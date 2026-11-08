@@ -19,6 +19,8 @@ import { TeamLogo } from "../ui";
 import { useSettingsStore } from "../../store/settingsStore";
 import { EventFeed, MatchStats, Lineups } from "./MatchPanels";
 import MatchScreenLayout from "./MatchScreenLayout";
+import MomentumBar from "./MomentumBar";
+import { momentumFor } from "./momentum";
 import { SubPanel } from "./SubPanel";
 import { applyRoleChange } from "./applyRoleChange";
 import { sendMatchCommand } from "./matchCommands";
@@ -26,7 +28,7 @@ import { applySubstitutions } from "./applySubstitutions";
 import { type MatchPace, MatchSpeedControl } from "./MatchSpeedControl";
 import { useMatchPace } from "./useMatchPace";
 import {
-  Clock,
+  Menu as MenuIcon,
   Users,
   BarChart3,
   MessageSquare,
@@ -54,6 +56,8 @@ interface MatchLiveProps {
   onHalfTime: (phase: "HalfTime" | "ExtraTimeHalfTime") => void;
   onFullTime: () => void;
   onPenaltyShootout?: () => void;
+  /** Leave the match (Esc, or the menu button): the orchestrator asks before abandoning it. */
+  onRequestLeave?: () => void;
 }
 
 export default function MatchLive({
@@ -69,6 +73,7 @@ export default function MatchLive({
   onHalfTime,
   onFullTime,
   onPenaltyShootout,
+  onRequestLeave,
 }: MatchLiveProps) {
   const { t } = useTranslation();
   const { settings } = useSettingsStore();
@@ -267,7 +272,7 @@ export default function MatchLive({
 
   return (
     <MatchScreenLayout
-      headerClassName="bg-linear-to-r from-hover via-panel to-hover to-panel"
+      headerClassName="bg-chrome"
       headerContentClassName="max-w-7xl py-3"
       contentClassName="overflow-hidden"
       header={
@@ -275,6 +280,17 @@ export default function MatchLive({
           <div className="flex items-center justify-between gap-4">
             {/* Live indicator */}
             <div className="flex items-center gap-2">
+              {onRequestLeave && (
+                <button
+                  type="button"
+                  onClick={onRequestLeave}
+                  aria-label={t("gameNav.menu")}
+                  title={`${t("gameNav.menu")} (Esc)`}
+                  className="rounded-control p-1.5 text-fg-muted transition-colors hover:bg-hover hover:text-fg motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-chrome"
+                >
+                  <MenuIcon className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
               {isRunning && (
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger-solid opacity-75" />
@@ -344,13 +360,15 @@ export default function MatchLive({
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-fg-muted" />
-              <span className="text-body font-heading text-fg-muted tabular-nums w-8">
-                {snapshot.current_minute}'
-              </span>
-            </div>
+            {/* The clock is already in the scoreline: the header states it once. */}
           </div>
+
+          {/* Momentum: the last few minutes of pressure, under the scoreline. */}
+          <MomentumBar
+            {...momentumFor(snapshot.events, snapshot.current_minute)}
+            homeTeam={snapshot.home_team.name}
+            awayTeam={snapshot.away_team.name}
+          />
 
           {/* Possession bar */}
           <div className="mt-2">

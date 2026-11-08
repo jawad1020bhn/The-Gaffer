@@ -30,13 +30,13 @@ const FOCUS_RING =
   "focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-chrome";
 const MENU_FOCUS =
   "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus";
-const FORWARD_ACTION = `flex items-center gap-2 rounded-control bg-selected py-2.5 font-heading text-body font-bold uppercase tracking-label text-on-brand transition-colors hover:cursor-pointer hover:bg-selected/90 motion-reduce:transition-none ${FOCUS_RING}`;
+const FORWARD_ACTION = `flex h-10 items-center gap-2 bg-selected font-heading text-body font-bold uppercase tracking-label text-on-brand transition-colors hover:cursor-pointer hover:bg-selected/90 motion-reduce:transition-none ${FOCUS_RING}`;
 
 function saveButtonClassName(saveFlash: boolean, isSaving: boolean): string {
   const state = saveFlash
     ? "bg-positive-tint text-positive"
     : "bg-sunken text-fg-muted ring-1 ring-inset ring-line hover:bg-hover hover:text-fg";
-  return `flex shrink-0 items-center gap-1.5 rounded-control px-3 py-2.5 font-heading text-body font-bold uppercase tracking-label transition-colors hover:cursor-pointer motion-reduce:transition-none ${FOCUS_RING} ${state} ${
+  return `flex h-10 shrink-0 items-center gap-1.5 rounded-control px-2.5 font-heading text-body font-bold uppercase tracking-label transition-colors hover:cursor-pointer motion-reduce:transition-none ${FOCUS_RING} ${state} ${
     isSaving ? "cursor-wait opacity-70" : ""
   }`;
 }
@@ -70,7 +70,10 @@ function continueContent(
   );
 }
 
-/** The single bottom command surface. It reuses the Dashboard's existing advance/save handlers. */
+/**
+ * Continue and Save, in the top bar where the player can always reach them. It reuses the
+ * Dashboard's advance/save handlers; the old bottom command footer is gone.
+ */
 export default function GameCommandBar({
   hasMatchToday,
   isAdvancing,
@@ -89,6 +92,7 @@ export default function GameCommandBar({
 }: GameCommandBarProps): JSX.Element {
   const { t } = useTranslation();
   const currentModeMeta = modeMeta[matchMode];
+  const saveLabel = saveButtonLabel(t, saveFlash, isSaving);
 
   return (
     <>
@@ -97,17 +101,18 @@ export default function GameCommandBar({
         onClick={onSave}
         disabled={isSaving}
         className={saveButtonClassName(saveFlash, isSaving)}
-        title={t("dashboard.saveGame")}
+        title={`${t("dashboard.saveGame")} (F5)`}
+        aria-label={saveLabel}
       >
         {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-        {saveButtonLabel(t, saveFlash, isSaving)}
+        <span>{saveLabel}</span>
       </button>
       {isUnemployed ? (
         <button
           type="button"
           onClick={onContinue}
           disabled={isAdvancing}
-          className={`${FORWARD_ACTION} px-4 disabled:cursor-wait disabled:opacity-70`}
+          className={`${FORWARD_ACTION} gap-1.5 rounded-control px-4 disabled:cursor-wait disabled:opacity-70`}
         >
           <span>{isAdvancing ? t("dashboard.simulating") : t("dashboard.continue")}</span>
           <ChevronRight className={`h-4 w-4 ${isAdvancing ? "animate-pulse" : ""}`} />
@@ -135,7 +140,7 @@ export default function GameCommandBar({
             </button>
           </div>
           {showContinueMenu && (
-            <div className="absolute bottom-full right-0 z-20 mb-2 w-64 rounded-panel border border-line bg-panel py-1 shadow-lg">
+            <div className="absolute right-0 top-full z-20 mt-2 w-72 rounded-panel border border-line bg-panel py-1 shadow-2xl">
               {(["live", "spectator", "delegate"] as const).map((mode) => {
                 const isActive = matchMode === mode;
                 const optionMeta = modeMeta[mode];

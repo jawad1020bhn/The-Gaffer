@@ -17,7 +17,20 @@
     "noFixture": "Sem próximo jogo",
     "unknownBudget": "Orçamento indisponível",
     "date": "Data",
-    "transferBudget": "Orçamento de transferências"
+    "transferBudget": "Orçamento de transferências",
+    "club": "Clube",
+    "menu": "Menu principal",
+    "search": "Pesquisar"
+  },
+  "gameHint": {
+    "menu": "Menu",
+    "title": "Atalhos de teclado",
+    "select": "Selecionar",
+    "sections": "Seções"
+  },
+  "pause": {
+    "title": "Em pausa",
+    "resume": "Continuar"
   },
   "menu": {
     "newGame": "Novo Jogo",
@@ -228,6 +241,11 @@
     "savingMessage": "Aguarde enquanto salvamos seu progresso e retornamos ao menu principal."
   },
   "onboarding": {
+    "reviewSquadShort": "Ver elenco",
+    "hireStaffShort": "Contratar comissão",
+    "setTacticsShort": "Definir tática",
+    "configTrainingShort": "Treino",
+    "readMessagesShort": "Mensagens",
     "title": "Primeiros Passos",
     "description": "Complete estas etapas para preparar seu time para a próxima temporada. A comissão técnica é especialmente importante — ela potencializa o treino e a recuperação.",
     "reviewSquad": "Avalie seu elenco",
@@ -239,7 +257,9 @@
     "configTraining": "Configure o treinamento",
     "configTrainingDesc": "Escolha um foco e calendário para desenvolver seus jogadores",
     "readMessages": "Leia suas mensagens",
-    "readMessagesDesc": "Informações importantes da diretoria e comissão técnica aguardam"
+    "readMessagesDesc": "Informações importantes da diretoria e comissão técnica aguardam",
+    "next": "Próximo",
+    "go": "Ir"
   },
   "home": {
     "nextMatch": "Próxima Partida",
@@ -280,7 +300,10 @@
     "inProgress": "Em Andamento",
     "objectivesMet": "{{done}}/{{total}} objetivos cumpridos — Satisfação da diretoria: {{pct}}%",
     "unavailablePlayers": "Jogadores indisponíveis",
-    "daysUnavailable": "{{count}} dia(s) restante(s)"
+    "daysUnavailable": "{{count}} dia(s) restante(s)",
+    "setTactics": "Definir tática",
+    "fixtures": "Calendário",
+    "form": "Forma"
   },
   "season": {
     "preseasonStatus": "Status da pré-temporada",
@@ -308,7 +331,8 @@
       "Closed": "Janela Fechada",
       "Open": "Janela Aberta",
       "DeadlineDay": "Dia Final"
-    }
+    },
+    "today": "Hoje"
   },
   "teamSelect": {
     "title": "Escolha Seu Clube",
@@ -1976,6 +2000,13 @@
     "keyStats": "Estatísticas-Chave"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "últimos cinco minutos",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}}%, equilibrado {{even}}%, {{awayTeam}} {{away}}%",
+    "leaveTitle": "Sair da partida?",
+    "leaveBody": "A partida ainda está em andamento. Se sair agora, volta ao painel.",
+    "leaveStay": "Ficar",
+    "leaveConfirm": "Sair da partida",
     "live": "Ao Vivo",
     "paused": "Pausado",
     "events": "Eventos",

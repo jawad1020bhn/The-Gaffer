@@ -142,4 +142,21 @@ describe("getCommentary", () => {
     expect(result!.line.length).toBeGreaterThan(0);
     expect(result!.line).not.toMatch(/\{\{.*?\}\}/);
   });
+
+  it("drops a clause whose player is missing rather than ending on a stray word", () => {
+    // A foul with nobody recorded as the victim still has to read as a sentence:
+    // "gives away a free kick against ." was what the line used to say.
+    const evt: MatchEvent = {
+      minute: 18,
+      event_type: "Foul",
+      side: "Away",
+      zone: "MiddleThird",
+      player_id: "p2",
+      secondary_player_id: null,
+    };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result).not.toBeNull();
+    expect(result!.line).not.toMatch(/\s+[.,;:!?]/);
+    expect(result!.line).not.toMatch(/\b(against|for|by|with)\s*[.!?]/i);
+  });
 });

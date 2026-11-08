@@ -9,18 +9,20 @@ interface HomeRecentResultsCardProps {
   recentResults: HomeRecentResult[];
   teams: TeamData[];
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomeRecentResultsCard({
   recentResults,
   teams,
   onNavigate,
+  className = "",
 }: HomeRecentResultsCardProps) {
   const { t } = useTranslation();
   const teamsById = useMemo(() => new Map(teams.map((team) => [team.id, team])), [teams]);
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button
@@ -34,7 +36,7 @@ export default function HomeRecentResultsCard({
       >
         {t("home.recentResults")}
       </CardHeader>
-      <CardBody className="p-0">
+      <CardBody padded={false}>
         {recentResults.length === 0 ? (
           <p className="text-fg-muted text-caption p-5">{t("home.noMatches")}</p>
         ) : (

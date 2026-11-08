@@ -123,6 +123,13 @@ export const DASHBOARD_DESTINATIONS = [
   },
 ] as const satisfies readonly DashboardDestination[];
 
+/** The primary sections that still have a page, in top-bar order. Alt+1…5 counts these. */
+export function sectionsWithDestinations(isUnemployed: boolean): (typeof GAME_SECTIONS)[number][] {
+  return GAME_SECTIONS.filter(
+    (section) => destinationsForSection(section.id, isUnemployed).length > 0,
+  );
+}
+
 export function destinationsForSection(section: GameSectionId, isUnemployed: boolean): string[] {
   return DASHBOARD_DESTINATIONS.filter(
     (entry) => entry.section === section && (!isUnemployed || !entry.clubOnly),

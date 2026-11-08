@@ -22,6 +22,7 @@ interface HomeLeaguePositionCardProps {
   myStandingData: LeagueStandingSnapshot | null;
   teamForm: string[];
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomeLeaguePositionCard({
@@ -32,6 +33,7 @@ export default function HomeLeaguePositionCard({
   myStandingData,
   teamForm,
   onNavigate,
+  className = "",
 }: HomeLeaguePositionCardProps) {
   const { t } = useTranslation();
 
@@ -43,7 +45,7 @@ export default function HomeLeaguePositionCard({
   const unbeaten = teamForm.length >= 4 && teamForm.every((result) => result !== "L");
 
   return (
-    <Card accent="accent">
+    <Card accent="accent" className={className}>
       <CardHeader
         action={
           <button

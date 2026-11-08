@@ -15,6 +15,7 @@ vi.mock("react-i18next", () => ({
       if (key === "season.startsInDays") return `Starts in ${params?.count} days`;
       if (key === "transfers.centre") return "Transfer Centre";
       if (key === "season.windowClosesOn") return `Closes on ${params?.date}`;
+      if (key === "season.today") return "Today";
       return key;
     },
   }),
@@ -38,7 +39,7 @@ describe("HomeSeasonStatusCard", () => {
 
     expect(screen.getByText("Preseason Status")).toBeInTheDocument();
     expect(screen.getByText("Preseason")).toBeInTheDocument();
-    expect(screen.getByText("Window Open")).toBeInTheDocument();
+    expect(screen.getAllByText("Window Open").length).toBeGreaterThan(0);
     expect(screen.getByText("Starts on Jan 12")).toBeInTheDocument();
     expect(screen.getByText("Starts in 5 days")).toBeInTheDocument();
     expect(screen.getByText("Window closes in 3 days")).toBeInTheDocument();
@@ -66,7 +67,7 @@ describe("HomeSeasonStatusCard", () => {
       />,
     );
 
-    const tiles = screen.getByText("Opener").closest("[data-season-tiles]");
+    const tiles = document.querySelector("[data-season-tiles]");
     expect(tiles).not.toBeNull();
     expect(tiles?.className).not.toMatch(/(^|\s)md:/);
     expect(tiles?.className).not.toMatch(/min-w-\[/);

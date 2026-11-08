@@ -669,4 +669,94 @@ describe("MatchSimulation", (): void => {
       );
     });
   });
+  /** Given a match still being played, when the manager presses Escape, then leaving is asked for first. */
+  it("asks before leaving a match that is still being played", async (): Promise<void> => {
+    mockedInvoke.mockResolvedValueOnce(makeSnapshot());
+
+    render(<MatchSimulation />);
+
+    await waitFor((): void => {
+      expect(screen.getByTestId("prematch-start")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("prematch-start"));
+
+    await waitFor((): void => {
+      expect(screen.getByTestId("match-live-container")).toBeInTheDocument();
+    });
+
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    await waitFor((): void => {
+      expect(screen.getByText("match.leaveTitle")).toBeInTheDocument();
+    });
+    expect(screen.getByRole("button", { name: "match.leaveStay" })).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  /** Given the leave prompt is open, when the manager stays, then the match keeps its place. */
+  it("keeps the match when the manager decides to stay", async (): Promise<void> => {
+    mockedInvoke.mockResolvedValueOnce(makeSnapshot());
+
+    render(<MatchSimulation />);
+
+    await waitFor((): void => {
+      expect(screen.getByTestId("prematch-start")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("prematch-start"));
+    await waitFor((): void => {
+      expect(screen.getByTestId("match-live-container")).toBeInTheDocument();
+    });
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor((): void => {
+      expect(screen.getByText("match.leaveTitle")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "match.leaveStay" }));
+
+    await waitFor((): void => {
+      expect(screen.queryByText("match.leaveTitle")).not.toBeInTheDocument();
+    });
+    expect(screen.getByTestId("match-live-container")).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  /** Given the manager confirms, when they leave, then the dashboard is where they land. */
+  it("returns to the dashboard once leaving is confirmed", async (): Promise<void> => {
+    mockedInvoke.mockResolvedValueOnce(makeSnapshot());
+
+    render(<MatchSimulation />);
+
+    await waitFor((): void => {
+      expect(screen.getByTestId("prematch-start")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("prematch-start"));
+    await waitFor((): void => {
+      expect(screen.getByTestId("match-live-container")).toBeInTheDocument();
+    });
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor((): void => {
+      expect(screen.getByText("match.leaveTitle")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "match.leaveConfirm" }));
+
+    expect(navigateMock).toHaveBeenCalledWith("/dashboard");
+  });
+
+  /** Given kick-off has not happened, when Escape is pressed, then there is nothing to abandon. */
+  it("does not ask to leave before kick-off", async (): Promise<void> => {
+    mockedInvoke.mockResolvedValueOnce(makeSnapshot());
+
+    render(<MatchSimulation />);
+
+    await waitFor((): void => {
+      expect(screen.getByTestId("prematch-start")).toBeInTheDocument();
+    });
+
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(screen.queryByText("match.leaveTitle")).not.toBeInTheDocument();
+  });
 });

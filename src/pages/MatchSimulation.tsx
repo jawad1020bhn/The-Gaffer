@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { type JSX, useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
@@ -21,6 +21,7 @@ import RoundDigestScreen from "../components/match/RoundDigestScreen";
 import PressConference from "../components/match/PressConference";
 import PenaltyShootoutScreen from "../components/match/PenaltyShootoutScreen";
 import { invokeForCareer } from "../services/careerInvoke";
+import { Button, Dialog } from "../components/ui";
 
 // ---------------------------------------------------------------------------
 // Multi-stage Match Day Orchestrator
@@ -58,6 +59,37 @@ export default function MatchSimulation() {
   const [hasFinalizedMatch, setHasFinalizedMatch] = useState(false);
   const [preferredSpeed, setPreferredSpeed] = useState<"slow" | "normal" | "fast">("normal");
   const [hasUserOverriddenSpeed, setHasUserOverriddenSpeed] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
+
+  /**
+   * A match in progress can be walked away from, but not by accident: Escape asks first. Before
+   * kick-off and after the whistle there is nothing to abandon, so Escape stays inert there.
+   */
+  const isLiveStage =
+    stage === "first_half" ||
+    stage === "second_half" ||
+    stage === "extra_time_second_half" ||
+    stage === "halftime" ||
+    stage === "extra_time_halftime" ||
+    stage === "penalty_shootout";
+
+  useEffect(() => {
+    if (!isLiveStage) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      // An open dialog owns Escape; the substitution panel closes on it rather than this opening.
+      if (document.querySelector("[data-open-dialog]")) return;
+      event.preventDefault();
+      setLeaveOpen(true);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isLiveStage]);
+
+  const handleLeaveMatch = useCallback(() => {
+    setLeaveOpen(false);
+    navigate("/dashboard");
+  }, [navigate]);
 
   // Each match screen is a new live session; commands from an earlier one must not hold it up.
   useEffect(() => {
@@ -320,113 +352,153 @@ export default function MatchSimulation() {
 
   const currentFixture = resolveMatchFixture(gameState, snapshot, routeState ?? undefined);
 
-  // Render the current stage
-  switch (stage) {
-    case "prematch":
-      if (!userSide) return null;
-      return (
-        <PreMatchSetup
-          snapshot={snapshot}
-          gameState={gameState}
-          currentFixture={currentFixture}
-          userSide={userSide}
-          onStart={handleStartMatch}
-          onUpdateSnapshot={handleSnapshotUpdate}
-        />
-      );
+  // Narrowed copies, so the stage renderer sees a match and a career, not maybe-nulls.
+  function renderStage(snapshot: MatchSnapshot, gameState: GameStateData): JSX.Element | null {
+    switch (stage) {
+      case "prematch":
+        if (!userSide) return null;
+        return (
+          <PreMatchSetup
+            snapshot={snapshot}
+            gameState={gameState}
+            currentFixture={currentFixture}
+            userSide={userSide}
+            onStart={handleStartMatch}
+            onUpdateSnapshot={handleSnapshotUpdate}
+          />
+        );
 
-    case "first_half":
-    case "second_half":
-    case "extra_time_second_half":
-      return (
-        <MatchLive
-          key={stage}
-          snapshot={snapshot}
-          gameState={gameState}
-          userSide={userSide}
-          isSpectator={isSpectator}
-          importantEvents={importantEvents}
-          preferredSpeed={preferredSpeed}
-          onPreferredSpeedChange={handlePreferredSpeedChange}
-          onSnapshotUpdate={handleSnapshotUpdate}
-          onImportantEvent={handleImportantEvent}
-          onHalfTime={handleHalfTime}
-          onFullTime={handleFullTime}
-          onPenaltyShootout={handlePenaltyShootout}
-        />
-      );
+      case "first_half":
+      case "second_half":
+      case "extra_time_second_half":
+        return (
+          <MatchLive
+            key={stage}
+            snapshot={snapshot}
+            gameState={gameState}
+            userSide={userSide}
+            isSpectator={isSpectator}
+            importantEvents={importantEvents}
+            preferredSpeed={preferredSpeed}
+            onPreferredSpeedChange={handlePreferredSpeedChange}
+            onSnapshotUpdate={handleSnapshotUpdate}
+            onImportantEvent={handleImportantEvent}
+            onHalfTime={handleHalfTime}
+            onFullTime={handleFullTime}
+            onPenaltyShootout={handlePenaltyShootout}
+            onRequestLeave={() => setLeaveOpen(true)}
+          />
+        );
 
-    case "halftime":
-    case "extra_time_halftime":
-      if (!userSide) return null;
-      return (
-        <HalfTimeBreak
-          key={stage}
-          snapshot={snapshot}
-          gameState={gameState}
-          userSide={userSide}
-          isSpectator={isSpectator}
-          importantEvents={importantEvents}
-          onResume={handleResumeFromHalfTime}
-          onUpdateSnapshot={handleSnapshotUpdate}
-        />
-      );
+      case "halftime":
+      case "extra_time_halftime":
+        if (!userSide) return null;
+        return (
+          <HalfTimeBreak
+            key={stage}
+            snapshot={snapshot}
+            gameState={gameState}
+            userSide={userSide}
+            isSpectator={isSpectator}
+            importantEvents={importantEvents}
+            onResume={handleResumeFromHalfTime}
+            onUpdateSnapshot={handleSnapshotUpdate}
+          />
+        );
 
-    case "penalty_shootout":
-      return (
-        <PenaltyShootoutScreen
-          snapshot={snapshot}
-          gameState={gameState}
-          userSide={userSide}
-          isSpectator={isSpectator}
-          importantEvents={importantEvents}
-          onSnapshotUpdate={handleSnapshotUpdate}
-          onImportantEvent={handleImportantEvent}
-          onFullTime={handleFullTime}
-        />
-      );
+      case "penalty_shootout":
+        return (
+          <PenaltyShootoutScreen
+            snapshot={snapshot}
+            gameState={gameState}
+            userSide={userSide}
+            isSpectator={isSpectator}
+            importantEvents={importantEvents}
+            onSnapshotUpdate={handleSnapshotUpdate}
+            onImportantEvent={handleImportantEvent}
+            onFullTime={handleFullTime}
+          />
+        );
 
-    case "postmatch":
-      return (
-        <PostMatchScreen
-          snapshot={snapshot}
-          gameState={gameState}
-          userSide={userSide}
-          isSpectator={isSpectator}
-          importantEvents={importantEvents}
-          onContinue={handlePostMatchContinue}
-          onFinish={handleFinishMatch}
-        />
-      );
+      case "postmatch":
+        return (
+          <PostMatchScreen
+            snapshot={snapshot}
+            gameState={gameState}
+            userSide={userSide}
+            isSpectator={isSpectator}
+            importantEvents={importantEvents}
+            onContinue={handlePostMatchContinue}
+            onFinish={handleFinishMatch}
+          />
+        );
 
-    case "digest": {
-      return (
-        <RoundDigestScreen
-          snapshot={snapshot}
-          gameState={gameState}
-          currentFixture={currentFixture}
-          userSide={userSide}
-          roundSummary={roundSummary}
-          cupRoundSummaries={cupRoundSummaries}
-          onPressConference={handlePressConference}
-          onFinish={handleFinishMatch}
-        />
-      );
+      case "digest": {
+        return (
+          <RoundDigestScreen
+            snapshot={snapshot}
+            gameState={gameState}
+            currentFixture={currentFixture}
+            userSide={userSide}
+            roundSummary={roundSummary}
+            cupRoundSummaries={cupRoundSummaries}
+            onPressConference={handlePressConference}
+            onFinish={handleFinishMatch}
+          />
+        );
+      }
+
+      case "press":
+        if (!userSide) return null;
+        return (
+          <PressConference
+            snapshot={snapshot}
+            gameState={gameState}
+            userSide={userSide}
+            onFinish={handleFinishMatch}
+            onGameUpdate={setGameState}
+          />
+        );
+
+      default:
+        return null;
     }
-
-    case "press":
-      if (!userSide) return null;
-      return (
-        <PressConference
-          snapshot={snapshot}
-          gameState={gameState}
-          userSide={userSide}
-          onFinish={handleFinishMatch}
-          onGameUpdate={setGameState}
-        />
-      );
-
-    default:
-      return null;
   }
+
+  return (
+    <>
+      {/* The live screen is an event: it enters once, and only the stage's own panels move. */}
+      <div key={stage} className="match-stage-in">
+        {renderStage(snapshot, gameState)}
+      </div>
+
+      {leaveOpen && (
+        <Dialog
+          labelledBy="leave-match-title"
+          describedBy="leave-match-body"
+          onClose={() => setLeaveOpen(false)}
+        >
+          <div className="flex flex-col gap-3">
+            <h2
+              id="leave-match-title"
+              className="font-heading text-heading font-bold uppercase tracking-label text-fg"
+            >
+              {t("match.leaveTitle")}
+            </h2>
+            <p id="leave-match-body" className="text-body text-fg-muted">
+              {t("match.leaveBody")}
+            </p>
+            <div className="mt-1 flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setLeaveOpen(false)}>
+                {t("match.leaveStay")}
+              </Button>
+              <Button variant="outline" onClick={handleLeaveMatch}>
+                {t("match.leaveConfirm")}
+              </Button>
+            </div>
+          </div>
+        </Dialog>
+      )}
+    </>
+  );
 }

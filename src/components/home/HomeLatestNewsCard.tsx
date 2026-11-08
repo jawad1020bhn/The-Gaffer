@@ -10,6 +10,7 @@ interface HomeLatestNewsCardProps {
   teams: TeamData[];
   lang: string;
   onNavigate?: (tab: string) => void;
+  className?: string;
 }
 
 export default function HomeLatestNewsCard({
@@ -17,11 +18,12 @@ export default function HomeLatestNewsCard({
   teams,
   lang,
   onNavigate,
+  className = "",
 }: HomeLatestNewsCardProps) {
   const { t } = useTranslation();
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         action={
           <button
@@ -35,7 +37,7 @@ export default function HomeLatestNewsCard({
       >
         {t("home.latestNews")}
       </CardHeader>
-      <CardBody className="p-0">
+      <CardBody padded={false}>
         {articles.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-6">
             <Newspaper className="w-8 h-8 text-fg-subtle" />
@@ -48,7 +50,7 @@ export default function HomeLatestNewsCard({
                 type="button"
                 key={article.id}
                 onClick={() => onNavigate?.("News")}
-                className="w-full text-left px-4 py-3 hover:bg-hover/50 transition-colors"
+                className="w-full text-left px-4 py-3 hover:bg-hover/50 transition-colors [@media(max-height:820px)]:py-2"
               >
                 <p className="text-caption text-fg-subtle mb-0.5">
                   {formatDateShort(article.date, lang)} - {article.source}
