@@ -194,7 +194,11 @@ fn packages_dir(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, Str
 /// Only a portable build does. With no installer in play `resource_dir()` is the
 /// executable's own directory, which is exactly where the portable zip puts the world.
 fn bundled_packages_dir(app_handle: &tauri::AppHandle) -> Option<std::path::PathBuf> {
-    app_handle.path().resource_dir().ok().map(|dir| dir.join("packages"))
+    app_handle
+        .path()
+        .resource_dir()
+        .ok()
+        .map(|dir| dir.join("packages"))
 }
 
 /// Whether this installed file is one the build shipped rather than one the player chose.
@@ -202,7 +206,8 @@ fn is_bundled_package(app_handle: &tauri::AppHandle, path: &std::path::Path) -> 
     let Some(dir) = bundled_packages_dir(app_handle) else {
         return false;
     };
-    path.file_name().is_some_and(|name| dir.join(name).is_file())
+    path.file_name()
+        .is_some_and(|name| dir.join(name).is_file())
 }
 
 fn package_info_from_path(
