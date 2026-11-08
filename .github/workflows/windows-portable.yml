@@ -118,8 +118,10 @@ jobs:
           https://developer.microsoft.com/microsoft-edge/webview2/
 
           Real players: packages/eafc-fc27.ofm holds 685 clubs, 18,893 players and 38
-          competitions imported from EA FC 27. Install it from the game's package screen
-          ("Open .ofm file"), then start a new game choosing that world.
+          competitions imported from EA FC 27. The game installs it the first time it lists
+          packages and pre-selects it, so a new career starts on that world — you should see
+          Arsenal, Real Madrid and the rest, not generated clubs. If you ever want the
+          generated world instead, untick the package on the new game screen.
 
           data/ holds the name and nation pools the game generates its procedurally created
           players from. They are optional — the same files are compiled into the executable —
@@ -146,7 +148,7 @@ jobs:
             --latest=false \
             --notes "A Windows build with nothing to install: unzip, run \`OpenfootManager.exe\`.
 
-          Baked from \`${GITHUB_SHA:0:7}\`. Real players included — \`packages/eafc-fc27.ofm\` holds 685 clubs, 18,893 players and 38 competitions from EA FC 27, installed from the game's package screen.
+          Baked from \`${GITHUB_SHA:0:7}\`. Real players included — \`packages/eafc-fc27.ofm\` holds 685 clubs, 18,893 players and 38 competitions from EA FC 27, installed and pre-selected on first run, so a new career starts on the real world.
 
           Not code-signed, so SmartScreen will ask once. Needs WebView2, which Windows 10 and 11 already have." \
             "OpenfootManager-portable-windows-x64.zip"

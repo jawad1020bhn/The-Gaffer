@@ -189,7 +189,26 @@ fn packages_dir(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, Str
     Ok(app_data_dir.join("packages"))
 }
 
-fn package_info_from_path(path: &std::path::Path) -> Option<ofm_core::generator::PackageInfo> {
+/// The `packages/` directory a build ships beside its executable, if it has one.
+///
+/// Only a portable build does. With no installer in play `resource_dir()` is the
+/// executable's own directory, which is exactly where the portable zip puts the world.
+fn bundled_packages_dir(app_handle: &tauri::AppHandle) -> Option<std::path::PathBuf> {
+    app_handle.path().resource_dir().ok().map(|dir| dir.join("packages"))
+}
+
+/// Whether this installed file is one the build shipped rather than one the player chose.
+fn is_bundled_package(app_handle: &tauri::AppHandle, path: &std::path::Path) -> bool {
+    let Some(dir) = bundled_packages_dir(app_handle) else {
+        return false;
+    };
+    path.file_name().is_some_and(|name| dir.join(name).is_file())
+}
+
+fn package_info_from_path(
+    path: &std::path::Path,
+    bundled: bool,
+) -> Option<ofm_core::generator::PackageInfo> {
     let meta = ofm_core::generator::read_package_manifest_from_ofm(path)?;
     let id = if meta.id.is_empty() {
         path.file_stem()
@@ -224,6 +243,7 @@ fn package_info_from_path(path: &std::path::Path) -> Option<ofm_core::generator:
         country_count: package.countries.len(),
         confederation_count: package.confederations.len(),
         installed_path: path.to_string_lossy().to_string(),
+        bundled,
         logo_data_url,
     })
 }
@@ -320,6 +340,7 @@ pub fn install_package(
         country_count: package.countries.len(),
         confederation_count: package.confederations.len(),
         installed_path: dest.to_string_lossy().to_string(),
+        bundled: is_bundled_package(&app_handle, &dest),
         logo_data_url,
     })
 }
@@ -331,6 +352,22 @@ pub fn list_installed_packages(
 ) -> Result<Vec<ofm_core::generator::PackageInfo>, String> {
     info!("[cmd] list_installed_packages");
     let packages_dir = packages_dir(&app_handle)?;
+
+    // A portable build carries its world in `packages/` beside the executable, and the game
+    // reads only this directory. Copying it in on first sight is what makes "unzip and play"
+    // true; without it the new-game screen lists nothing and quietly generates a fictional
+    // world, which reads as "this download has no real data".
+    if let Some(bundled) = bundled_packages_dir(&app_handle) {
+        match ofm_core::generator::install_bundled_packages(&bundled, &packages_dir) {
+            Ok(copied) => {
+                if !copied.is_empty() {
+                    info!("[cmd] list_installed_packages: installed {copied:?}");
+                }
+            }
+            Err(e) => warn!("[cmd] list_installed_packages: bundled copy failed: {e}"),
+        }
+    }
+
     if !packages_dir.exists() {
         return Ok(Vec::new());
     }
@@ -341,7 +378,8 @@ pub fn list_installed_packages(
     for entry in entries.flatten() {
         let path = entry.path();
         if path.extension().and_then(|e| e.to_str()) == Some("ofm") {
-            if let Some(info) = package_info_from_path(&path) {
+            let bundled = is_bundled_package(&app_handle, &path);
+            if let Some(info) = package_info_from_path(&path, bundled) {
                 result.push(info);
             }
         }
