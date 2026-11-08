@@ -3,6 +3,7 @@
     "app.name",
     "app.publisher",
     "date.day",
+    "match.momentum",
     "match.pen",
     "squad.jerseyNumber",
     "common.posAbbr.Goalkeeper",

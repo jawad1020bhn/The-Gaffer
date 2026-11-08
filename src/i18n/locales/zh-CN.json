@@ -2051,6 +2051,13 @@
     "confidence": "置信度"
   },
   "match": {
+    "momentum": "势头",
+    "momentumWindow": "最近五分钟",
+    "momentumLabel": "势头：{{homeTeam}} {{home}}%，持平 {{even}}%，{{awayTeam}} {{away}}%",
+    "leaveTitle": "离开比赛？",
+    "leaveBody": "比赛仍在进行。现在离开会返回主面板。",
+    "leaveStay": "留下",
+    "leaveConfirm": "离开比赛",
     "live": "直播中",
     "paused": "已暂停",
     "events": "事件",

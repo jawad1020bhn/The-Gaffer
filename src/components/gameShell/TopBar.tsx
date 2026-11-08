@@ -1,5 +1,5 @@
 import { CalendarDays, Menu, Search, Shield, Trophy, Wallet } from "lucide-react";
-import { type JSX, type KeyboardEvent, type ReactNode, useRef } from "react";
+import { type JSX, type KeyboardEvent, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { sectionsWithDestinations, type GameSectionId } from "../dashboard/dashboardDestinations";
 import { rovingTarget } from "../ui/roving";
@@ -27,8 +27,6 @@ interface TopBarProps {
   onNavigate: (tab: string) => void;
   onOpenSearch: () => void;
   onOpenMenu: () => void;
-  /** Continue and Save, rendered by the dashboard from its own advance/save handlers. */
-  commands?: ReactNode;
   /** The budget changed, so its chip flashes. */
   budgetHighlight?: boolean;
 }
@@ -150,7 +148,7 @@ function ContextChips({
   );
 }
 
-/** The single game bar: brand, the five sections, the career's facts, search, commands, menu. */
+/** The single game bar: brand, the five sections, the career's facts, search and menu. */
 export default function TopBar({
   activeSection,
   isUnemployed,
@@ -159,7 +157,6 @@ export default function TopBar({
   onNavigate,
   onOpenSearch,
   onOpenMenu,
-  commands,
   budgetHighlight = false,
 }: TopBarProps): JSX.Element {
   const { t } = useTranslation();
@@ -183,7 +180,6 @@ export default function TopBar({
         >
           <Search className="h-4 w-4" aria-hidden="true" />
         </button>
-        {commands}
         <button
           type="button"
           onClick={onOpenMenu}

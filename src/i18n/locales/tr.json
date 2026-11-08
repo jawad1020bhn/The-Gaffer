@@ -2051,6 +2051,13 @@
     "confidence": "Güven"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "son beş dakika",
+    "momentumLabel": "Momentum: {{homeTeam}} %{{home}}, dengede %{{even}}, {{awayTeam}} %{{away}}",
+    "leaveTitle": "Maçtan ayrılmak istiyor musun?",
+    "leaveBody": "Maç hâlâ oynanıyor. Şimdi ayrılırsan panele dönersin.",
+    "leaveStay": "Kal",
+    "leaveConfirm": "Maçtan ayrıl",
     "live": "Canlı",
     "paused": "Duraklatıldı",
     "events": "Olaylar",

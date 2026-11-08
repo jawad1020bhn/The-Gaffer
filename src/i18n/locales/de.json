@@ -2051,6 +2051,13 @@
     "confidence": "Zuverlässigkeit"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "letzte fünf Minuten",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}} %, ausgeglichen {{even}} %, {{awayTeam}} {{away}} %",
+    "leaveTitle": "Spiel verlassen?",
+    "leaveBody": "Das Spiel läuft noch. Wenn du jetzt gehst, kehrst du zum Dashboard zurück.",
+    "leaveStay": "Bleiben",
+    "leaveConfirm": "Spiel verlassen",
     "live": "Live",
     "paused": "Pausiert",
     "events": "Ereignisse",

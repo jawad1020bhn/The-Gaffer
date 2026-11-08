@@ -2051,6 +2051,13 @@
     "confidence": "Надёжность"
   },
   "match": {
+    "momentum": "Импульс",
+    "momentumWindow": "последние пять минут",
+    "momentumLabel": "Импульс: {{homeTeam}} {{home}} %, равно {{even}} %, {{awayTeam}} {{away}} %",
+    "leaveTitle": "Выйти из матча?",
+    "leaveBody": "Матч ещё идёт. Если выйти сейчас, вы вернётесь на главный экран.",
+    "leaveStay": "Остаться",
+    "leaveConfirm": "Выйти из матча",
     "live": "Матч",
     "paused": "Пауза",
     "events": "События",

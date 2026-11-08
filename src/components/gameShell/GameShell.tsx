@@ -9,6 +9,7 @@ import {
   type GameSectionId,
 } from "../dashboard/dashboardDestinations";
 import CommandPalette from "./CommandPalette";
+import GameActionDock from "./GameActionDock";
 import HintBar from "./HintBar";
 import PauseMenu from "./PauseMenu";
 import SideRail from "./SideRail";
@@ -66,8 +67,9 @@ function useValueFlash(value: string | null): boolean {
 
 /**
  * The game frame. One 56px bar across the top, a 72px rail of the section's pages down the left, a
- * 28px hint strip at the bottom, and the workspace filling everything between them. The screen is a
- * fixed canvas: the window never scrolls, and each panel scrolls inside itself.
+ * 28px hint strip at the bottom, and the workspace filling everything between them, with the
+ * career's primary actions floating in the bottom-right corner like a HUD. The screen is a fixed
+ * canvas: the window never scrolls, and each panel scrolls inside itself.
  */
 export default function GameShell({
   activeTab,
@@ -144,7 +146,6 @@ export default function GameShell({
         onNavigate={onNavigate}
         onOpenSearch={() => setSearchOpen(true)}
         onOpenMenu={() => setPauseOpen(true)}
-        commands={commands}
         budgetHighlight={budgetFlash}
       />
       <SideRail
@@ -154,7 +155,7 @@ export default function GameShell({
         unreadMessagesCount={unreadMessagesCount}
         onNavigate={onNavigate}
       />
-      <main className="flex min-h-0 min-w-0 flex-col overflow-hidden">
+      <main className="relative flex min-h-0 min-w-0 flex-col overflow-hidden">
         {hasProfileHistory ? (
           <section
             aria-labelledby={titleId}
@@ -181,6 +182,7 @@ export default function GameShell({
           </section>
         ) : null}
         {children}
+        <GameActionDock>{commands}</GameActionDock>
         <HintBar />
       </main>
 

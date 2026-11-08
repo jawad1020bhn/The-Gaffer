@@ -1994,6 +1994,13 @@
     "keyStats": "Estatísticas-Chave"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "últimos cinco minutos",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}}%, equilibrado {{even}}%, {{awayTeam}} {{away}}%",
+    "leaveTitle": "Sair da partida?",
+    "leaveBody": "A partida ainda está em andamento. Se sair agora, volta ao painel.",
+    "leaveStay": "Ficar",
+    "leaveConfirm": "Sair da partida",
     "live": "Ao Vivo",
     "paused": "Pausado",
     "events": "Eventos",

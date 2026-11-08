@@ -2051,6 +2051,13 @@
     "confidence": "Confidence"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "last five minutes",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}}%, even {{even}}%, {{awayTeam}} {{away}}%",
+    "leaveTitle": "Leave the match?",
+    "leaveBody": "The match is still being played. Leaving now takes you back to the dashboard.",
+    "leaveStay": "Stay",
+    "leaveConfirm": "Leave match",
     "live": "Live",
     "paused": "Paused",
     "events": "Events",

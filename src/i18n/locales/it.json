@@ -2070,6 +2070,13 @@
     "confidence": "Affidabilità"
   },
   "match": {
+    "momentum": "Momento",
+    "momentumWindow": "ultimi cinque minuti",
+    "momentumLabel": "Momento: {{homeTeam}} {{home}}%, in equilibrio {{even}}%, {{awayTeam}} {{away}}%",
+    "leaveTitle": "Lasciare la partita?",
+    "leaveBody": "La partita è ancora in corso. Se esci ora torni alla dashboard.",
+    "leaveStay": "Resta",
+    "leaveConfirm": "Lascia la partita",
     "live": "Diretta",
     "paused": "In pausa",
     "events": "Eventi",

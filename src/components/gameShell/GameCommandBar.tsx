@@ -105,7 +105,7 @@ export default function GameCommandBar({
         aria-label={saveLabel}
       >
         {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-        <span className="hidden min-[1600px]:inline">{saveLabel}</span>
+        <span>{saveLabel}</span>
       </button>
       {isUnemployed ? (
         <button

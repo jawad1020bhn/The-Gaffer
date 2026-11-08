@@ -2051,6 +2051,13 @@
     "confidence": "Keyakinan"
   },
   "match": {
+    "momentum": "Momentum",
+    "momentumWindow": "lima menit terakhir",
+    "momentumLabel": "Momentum: {{homeTeam}} {{home}}%, imbang {{even}}%, {{awayTeam}} {{away}}%",
+    "leaveTitle": "Tinggalkan pertandingan?",
+    "leaveBody": "Pertandingan masih berlangsung. Jika keluar sekarang, kamu kembali ke dasbor.",
+    "leaveStay": "Tetap di sini",
+    "leaveConfirm": "Tinggalkan pertandingan",
     "live": "Langsung",
     "paused": "Dijeda",
     "events": "Peristiwa",

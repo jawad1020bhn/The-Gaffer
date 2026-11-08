@@ -2051,6 +2051,13 @@
     "confidence": "Confianza"
   },
   "match": {
+    "momentum": "Impulso",
+    "momentumWindow": "últimos cinco minutos",
+    "momentumLabel": "Impulso: {{homeTeam}} {{home}} %, igualado {{even}} %, {{awayTeam}} {{away}} %",
+    "leaveTitle": "¿Salir del partido?",
+    "leaveBody": "El partido sigue en juego. Si sales ahora volverás al panel.",
+    "leaveStay": "Quedarme",
+    "leaveConfirm": "Salir del partido",
     "live": "En Vivo",
     "paused": "Pausado",
     "events": "Eventos",

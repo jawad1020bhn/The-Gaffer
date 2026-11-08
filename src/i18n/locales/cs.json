@@ -2051,6 +2051,13 @@
     "confidence": "Spolehlivost odhadu"
   },
   "match": {
+    "momentum": "Převaha",
+    "momentumWindow": "posledních pět minut",
+    "momentumLabel": "Převaha: {{homeTeam}} {{home}} %, vyrovnané {{even}} %, {{awayTeam}} {{away}} %",
+    "leaveTitle": "Opustit zápas?",
+    "leaveBody": "Zápas stále probíhá. Pokud nyní odejdete, vrátíte se na nástěnku.",
+    "leaveStay": "Zůstat",
+    "leaveConfirm": "Opustit zápas",
     "live": "Živě",
     "paused": "Pozastaveno",
     "events": "Události",
