@@ -18,6 +18,75 @@ The run writes a package directory and a ready-to-install `mods/eafc-fc27.ofm`
 the only dependency is the kit checkout itself. The audit and importer unit
 tests can also run without a kit checkout.
 
+## Club badges (optional graphics pack)
+
+`import.mjs --badges <pack>` points the importer at a separate graphics pack: a
+folder of badge images plus a `manifest.json` that records, per asset, its
+source, licence, attribution and sha256 checksum.
+
+```bash
+node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
+  --out mods/eafc-fc27 --badges ../eafc-fc27-badges
+```
+
+The pack is **not** fetched live and is **not** embedded in the game's code:
+it lives beside the package and is versioned and distributed separately. The
+importer verifies every checksum before packing, so a corrupted or swapped
+badge never reaches the archive, and the manifest travels inside the `.ofm`
+so an installed package still documents where each badge came from.
+
+### Pack format
+
+```
+<pack>/
+  manifest.json
+  <eaTeamId>.png           one badge file per EA team id
+```
+
+`manifest.json`:
+
+```json
+{
+  "version": 1,
+  "source": "https://example.com/badge-pack",
+  "licence": "CC-BY-4.0",
+  "badges": [
+    {
+      "eaTeamId": 1,
+      "ofmClubId": "arsenal",
+      "file": "1.png",
+      "source": "https://example.com/1.png",
+      "licence": "CC-BY-4.0",
+      "attribution": "Example Pack",
+      "checksum": "sha256:<64 hex>"
+    }
+  ]
+}
+```
+
+- `eaTeamId` is the EA FC team id — the crosswalk key. Badges are matched on
+  EA id, never on club name, so a badge survives club-name changes and
+  re-imports from another database vintage.
+- `ofmClubId` is the club id this badge was matched to in the package
+  (informational).
+- `file` is the badge file name inside the pack folder; inside the package it
+  lands at `assets/clubs/<eaTeamId><ext>`.
+- `checksum` is `sha256:<hex>` of the file bytes, verified on import.
+
+Clubs without a badge keep the generated crest fallback, so a partial pack is
+safe to ship.
+
+### Licensing
+
+The database holds no image assets — only ids into EA's own CDN — and having
+the database (or owning FC) does not grant redistribution rights for its
+graphics. A badge pack may only contain art you have the right to redistribute
+(permitted pack, licensed provider, openly licensed art, or assets extracted
+under terms that allow your intended use). Check each asset's licence and
+trademark considerations: club crests remain their clubs' trademarks. This
+tool's checked-in fixtures (`test/fixtures/badges/`) hold five verified seeds
+for the pipeline tests only and are not a redistribution-ready graphics pack.
+
 ## What comes out
 
 From the bundled **FC 27** database:
@@ -185,8 +254,9 @@ leagues. Generated wages, stadium labels and staff are not real imported data.
 - **Unresolved grounds stay unnamed.** Placeholder names starting with `_` are
   not imported. Only reviewed source-backed mappings can fill these gaps; 453
   clubs still have no named ground.
-- **No badge, kit or photo.** The database holds no image assets, only ids into
-  EA's own CDN.
+- **Badges need a separate pack.** The database holds no image assets, only ids
+  into EA's own CDN; club badges are imported only when `--badges <pack>` is
+  given. Kits and player photos are not imported.
 - **No managers, tactic dials, shirt numbers, captains or rivals.** Not a gap in
   this tool: the package format has no field for any of them. `staff` roles are
   AssistantManager, Coach, Scout and Physio (`StaffRole` in `domain/staff.rs`), and

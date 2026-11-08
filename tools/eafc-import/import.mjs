@@ -50,6 +50,12 @@ import {
   selectPlayerClub,
 } from "./lib/corrections.mjs";
 import { verifySourceLock } from "./lib/source.mjs";
+import {
+  badgeAssetPath,
+  packageManifest as badgePackageManifest,
+  readBadgeManifest,
+  verifyBadgePack,
+} from "./lib/badges.mjs";
 
 const PACKAGE_ID = "eafc-fc27";
 const PACKAGE_NAME = "EA FC 27 Clubs & Players";
@@ -473,6 +479,7 @@ function parseArgs(argv) {
     if (arg === "--kit") args.kit = next();
     else if (arg === "--version") args.version = next();
     else if (arg === "--out") args.out = next();
+    else if (arg === "--badges") args.badges = next();
     else if (arg === "--no-pack") args.pack = false;
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new Error(`unknown argument: ${arg}`);
@@ -525,6 +532,15 @@ async function main() {
     );
     corrections = supplement.clubs;
   }
+
+  // A badge pack is optional and separate from the database: without it the
+  // package is unchanged and every club falls back to a generated crest.
+  let badges = null;
+  if (args.badges) {
+    badges = await verifyBadgePack(args.badges);
+    console.log(`  badge pack  ${badges.length} verified club badges`);
+  }
+  const badgesByTeam = new Map(badges ? badges.map((entry) => [entry.eaTeamId, entry]) : []);
 
   console.log(`reading ${args.version} databases...`);
   const main_ = await kit.readTemplateDatabase({
@@ -764,6 +780,10 @@ async function main() {
           Number.isFinite(team.foundationyear) && team.foundationyear > 1800
             ? team.foundationyear
             : null,
+        // A club badge, when the optional graphics pack supplies one for this
+        // EA team id. Stored relative to the package root; the loader stamps
+        // the package id on the path before the frontend resolves it.
+        logo: badgesByTeam.has(teamId) ? badgeAssetPath(badgesByTeam.get(teamId)) : undefined,
       }),
     );
   }
@@ -965,15 +985,37 @@ async function main() {
   await write("players.json", "player", playerEntities);
   await write("competitions.json", "competition", competitionEntities);
 
+  const zipEntries = await Promise.all(
+    ["package.json", "teams.json", "players.json", "competitions.json"].map(async (file) => ({
+      name: file,
+      data: await readFile(path.join(outDir, file)),
+    })),
+  );
+
+  // The optional graphics pack's verified badge images and their provenance
+  // manifest travel inside the package so an installed club can resolve its
+  // badge, and anyone inspecting the archive can see where it came from.
+  if (badges) {
+    const assetsDir = path.join(outDir, "assets/clubs");
+    await mkdir(assetsDir, { recursive: true });
+    for (const entry of badges) {
+      const data = await readFile(entry.path);
+      const assetPath = badgeAssetPath(entry);
+      await writeFile(path.join(outDir, assetPath), data);
+      zipEntries.push({ name: assetPath, data });
+    }
+    const badgePack = await readBadgeManifest(args.badges);
+    const provenance = JSON.stringify(badgePackageManifest(badgePack, badges), null, 2);
+    await writeFile(path.join(outDir, "assets/clubs/manifest.json"), `${provenance}\n`);
+    zipEntries.push({
+      name: "assets/clubs/manifest.json",
+      data: Buffer.from(`${provenance}\n`),
+    });
+    console.log(`  badges      ${badges.length} club badges packed`);
+  }
+
   if (args.pack) {
-    const archive = createZip(
-      await Promise.all(
-        ["package.json", "teams.json", "players.json", "competitions.json"].map(async (file) => ({
-          name: file,
-          data: await readFile(path.join(outDir, file)),
-        })),
-      ),
-    );
+    const archive = createZip(zipEntries);
     const archivePath = `${outDir}.ofm`;
     await writeFile(archivePath, archive);
     const { size } = await stat(archivePath);

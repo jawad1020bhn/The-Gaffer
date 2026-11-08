@@ -49,6 +49,14 @@ cargo test --manifest-path src-tauri/Cargo.toml -p ofm-cli --test eafc_package
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27
 ```
 
+Add badges from a separate graphics pack with `--badges` (packs are versioned
+and distributed outside Git):
+
+```bash
+node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
+  --out mods/eafc-fc27 --badges ../eafc-fc27-badges
+```
+
 ## What is in it
 
 **34 domestic leagues** across 26 countries (the clubs span 46 countries), from the Premier League and its
@@ -102,8 +110,12 @@ scope — including the South American ones.
 
 - **453 clubs have no stadium name.** Unresolved grounds retain the city-based
   fallback; generic EA placeholder names are not presented as real grounds.
-- **No badges, kits or photos** — the database holds no image assets, only ids
-  into EA's own CDN.
+- **Badges are a separate optional pack** — the database holds no image assets,
+  only ids into EA's own CDN, so the checked-in package ships without badges and
+  clubs draw generated crests. `tools/eafc-import --badges <pack>` packs a
+  separate, versioned graphics pack into the `.ofm`; per-asset source, licence,
+  attribution and checksum travel inside it (see its README). Kits and photos
+  are not imported.
 - **No imported managers or backroom staff.** Verified staff can be authored for
   supported roles, but there is no club-manager schema. The game generates
   managers; an assistant-manager record is not a substitute for a real manager.
