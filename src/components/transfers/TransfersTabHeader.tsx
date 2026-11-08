@@ -31,49 +31,47 @@ export function TransfersBudgetHeader({ state }: TransfersBudgetHeaderProps) {
   return (
     myTeam && (
       <Card accent="primary" className="mb-5">
-        <div className="bg-gradient-to-r from-navy-700 to-navy-800 p-5 rounded-t-xl flex items-center gap-6">
+        <div className="bg-panel p-5 rounded-t-xl flex items-center gap-6">
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-lead font-heading font-bold text-white uppercase tracking-label flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-accent-400" />
+              <h2 className="text-lead font-heading font-bold text-fg uppercase tracking-label flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-warning" />
                 {t("transfers.centre")}
               </h2>
               <Badge variant={transferWindowVariant} size="sm">
                 {t(`season.transferWindowStatus.${transferWindow.status}`)}
               </Badge>
             </div>
-            <p className="text-gray-300 dark:text-gray-300 text-caption mt-0.5">
+            <p className="text-fg-subtle text-caption mt-0.5">
               {t("transfers.transferWindow", { team: myTeam.name })}
             </p>
-            <p className="text-gray-500 text-caption mt-1">{transferWindowSummary}</p>
+            <p className="text-fg-muted text-caption mt-1">{transferWindowSummary}</p>
           </div>
           <div className="hidden md:flex gap-4">
-            <div className="bg-white/5 rounded-panel px-4 py-2 text-center">
-              <p className="text-caption text-gray-300 dark:text-gray-300 font-heading uppercase tracking-label">
+            <div className="bg-panel/5 rounded-panel px-4 py-2 text-center">
+              <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">
                 {t("finances.transferBudget")}
               </p>
-              <p className="font-heading font-bold text-lead text-accent-400">
+              <p className="font-heading font-bold text-lead text-warning">
                 {formatVal(myTeam.transfer_budget)}
               </p>
             </div>
             <div
               data-testid="wage-budget-card"
-              className="bg-white/5 rounded-panel px-4 py-2 text-center"
+              className="bg-panel/5 rounded-panel px-4 py-2 text-center"
             >
-              <p className="text-caption text-gray-300 dark:text-gray-300 font-heading uppercase tracking-label">
+              <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">
                 {t("finances.wageBudget")}
               </p>
-              <p className="font-heading font-bold text-lead text-white">
+              <p className="font-heading font-bold text-lead text-fg">
                 {formatWeeklyWage(weeklyWageBudget, "compact")}
               </p>
             </div>
-            <div className="bg-white/5 rounded-panel px-4 py-2 text-center">
-              <p className="text-caption text-gray-300 dark:text-gray-300 font-heading uppercase tracking-label">
+            <div className="bg-panel/5 rounded-panel px-4 py-2 text-center">
+              <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">
                 {t("transfers.listed")}
               </p>
-              <p className="font-heading font-bold text-lead text-white">
-                {myListedPlayers.length}
-              </p>
+              <p className="font-heading font-bold text-lead text-fg">{myListedPlayers.length}</p>
             </div>
           </div>
         </div>
@@ -91,9 +89,9 @@ export function TransfersTabNavigation({ state }: TransfersTabNavigationProps) {
           type="button"
           key={tab.id}
           onClick={() => setView(tab.id)}
-          className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none px-4 py-2 rounded-control font-heading font-bold text-body uppercase tracking-label transition-all flex items-center gap-1.5 ${
+          className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none px-4 py-2 rounded-control font-heading font-bold text-body uppercase tracking-label transition-all flex items-center gap-1.5 ${
             view === tab.id
-              ? "bg-primary-700 text-white shadow-md shadow-primary-700/20"
+              ? "bg-selected-fill text-on-brand shadow-md shadow-card"
               : "bg-panel text-fg-muted border border-line hover:text-fg"
           }`}
         >

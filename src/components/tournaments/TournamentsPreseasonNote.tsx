@@ -14,7 +14,7 @@ export default function TournamentsPreseasonNote({
 
   return (
     <div className={`flex flex-col items-center gap-2 text-center ${className}`}>
-      <Trophy className="w-8 h-8 text-gray-300 dark:text-navy-600" />
+      <Trophy className="w-8 h-8 text-fg-subtle" />
       <p className="text-body font-heading font-bold text-fg">{t("season.standingsLocked")}</p>
       <p className="text-caption text-fg-muted max-w-md">{t("season.tournamentsPreseasonHint")}</p>
     </div>

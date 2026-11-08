@@ -207,7 +207,13 @@ pub(crate) fn start_new_game_internal(
             dob
         }
         None => {
-            let birth_date = clock.current_date.date_naive() - chrono::Duration::days(45 * 365);
+            // Exactly 45 whole years before the career opens, by calendar rather than a day count:
+            // 45 * 365 days lands a leap-day short and reads as 44. `bootstrap.rs` settles the same
+            // age for a manager it creates without a form, so the two paths agree.
+            let opening = clock.current_date.date_naive();
+            let birth_date = opening
+                .checked_sub_months(chrono::Months::new(45 * 12))
+                .ok_or_else(|| "be.error.createManager.invalidDob".to_string())?;
             birth_date.format("%Y-%m-%d").to_string()
         }
     };

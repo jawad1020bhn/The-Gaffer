@@ -79,7 +79,7 @@ function MatchSlot({
     userTeamId && (fixture.home_team_id === userTeamId || fixture.away_team_id === userTeamId);
 
   const baseRow = "flex items-center gap-1.5 rounded px-2 py-1 text-caption transition-colors";
-  const winnerRow = "font-bold text-fg bg-primary-50 dark:bg-primary-900/20";
+  const winnerRow = "font-bold text-fg bg-selected-tint/20";
   const loserRow = "text-fg-muted";
   const neutralRow = "text-fg";
 
@@ -102,7 +102,7 @@ function MatchSlot({
     <div
       data-testid={`tournaments-bracket-${fixtureId}`}
       className={`rounded-control border overflow-hidden ${
-        userInvolved ? "border-primary-400/50 dark:border-primary-500/40" : "border-line"
+        userInvolved ? "border-selected/40" : "border-line"
       }`}
     >
       {/* Home team row */}
@@ -112,7 +112,7 @@ function MatchSlot({
         {result && <ScoreBadge score={result.home_goals} />}
       </div>
       {/* Divider */}
-      <div className="h-px bg-gray-100 dark:bg-navy-700" />
+      <div className="h-px bg-hover" />
       {/* Away team row */}
       <div className={`${baseRow} ${awayRowStyle}`}>
         <span className="flex-1 truncate max-w-[9rem]">{awayName}</span>

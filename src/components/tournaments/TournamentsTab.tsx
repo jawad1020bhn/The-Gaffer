@@ -64,7 +64,7 @@ export default function TournamentsTab({
   if (!league) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
-        <Trophy className="w-12 h-12 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
+        <Trophy className="w-12 h-12 text-fg-subtle mx-auto mb-3" />
         <p className="text-fg-muted text-body">{t("tournaments.noActive")}</p>
       </div>
     );

@@ -30,14 +30,14 @@ export default function HomeUnavailablePlayersCard({
           <button
             type="button"
             onClick={() => onNavigate?.("Squad")}
-            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-selected text-caption font-heading font-bold uppercase tracking-label hover:text-selected transition-colors"
           >
             {t("dashboard.squad")}
           </button>
         }
       >
         <div className="flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-red-500" />
+          <AlertTriangle className="w-4 h-4 text-danger" />
           {t("home.unavailablePlayers")}
         </div>
       </CardHeader>
@@ -46,7 +46,7 @@ export default function HomeUnavailablePlayersCard({
           {players.map((player) => (
             <div
               key={player.id}
-              className="flex flex-col gap-2 rounded-control border border-gray-100 px-3 py-2.5 dark:border-navy-700 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-2 rounded-control border border-line px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="min-w-0 flex items-center gap-3">
                 <PlayerAvatar player={player} />

@@ -48,12 +48,12 @@ export default function PlayerProfileAttributesCard({
       <CardHeader
         action={
           attributesVisible ? (
-            <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-navy-600 text-[10px] font-heading font-bold uppercase tracking-wider">
+            <div className="flex rounded-control overflow-hidden border border-line text-caption font-heading font-bold uppercase tracking-label">
               <button
                 type="button"
                 aria-pressed={view === "list"}
                 onClick={() => setView("list")}
-                className={`px-3 py-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 ${view === "list" ? "bg-primary-500 text-white" : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-700"}`}
+                className={`px-3 py-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus ${view === "list" ? "bg-selected-fill text-on-brand" : "text-fg-muted hover:bg-hover"}`}
               >
                 {listLabel}
               </button>
@@ -61,7 +61,7 @@ export default function PlayerProfileAttributesCard({
                 type="button"
                 aria-pressed={view === "radar"}
                 onClick={() => setView("radar")}
-                className={`px-3 py-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 ${view === "radar" ? "bg-primary-500 text-white" : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-700"}`}
+                className={`px-3 py-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus ${view === "radar" ? "bg-selected-fill text-on-brand" : "text-fg-muted hover:bg-hover"}`}
               >
                 {radarLabel}
               </button>
@@ -74,10 +74,10 @@ export default function PlayerProfileAttributesCard({
       <CardBody>
         {potentialOpinion}
         {attributesVisible && scoutNote ? (
-          <p className="mb-3 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mb-3 flex flex-wrap items-center gap-2 text-caption text-fg-muted">
             <span>{scoutNote.scoutedLabel}</span>
             {scoutNote.outOfDate ? (
-              <span className="rounded-full bg-accent-100 px-2 py-0.5 font-heading text-[10px] font-bold uppercase tracking-wider text-accent-800 dark:bg-accent-500/20 dark:text-accent-300">
+              <span className="rounded-full bg-warning-solid px-2 py-0.5 font-heading text-caption font-bold uppercase tracking-label text-warning bg-warning-tint">
                 {scoutNote.outOfDateLabel}
               </span>
             ) : null}
@@ -94,7 +94,7 @@ export default function PlayerProfileAttributesCard({
                 headerRight={
                   <span
                     title={averageLabel}
-                    className={`font-heading font-bold text-sm tabular-nums ${getAttributeColorClass(group.average)}`}
+                    className={`font-heading font-bold text-body tabular-nums ${getAttributeColorClass(group.average)}`}
                   >
                     {group.average}
                   </span>
@@ -103,7 +103,7 @@ export default function PlayerProfileAttributesCard({
                 <div className="grid grid-cols-[auto_1fr_1.75rem] items-center gap-x-3 gap-y-2.5">
                   {group.attrs.map((attr) => (
                     <Fragment key={attr.name}>
-                      <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                      <span className="text-caption text-fg-muted whitespace-nowrap">
                         {attr.name}
                       </span>
                       <ProgressBar
@@ -113,7 +113,7 @@ export default function PlayerProfileAttributesCard({
                         className="min-w-0"
                       />
                       <span
-                        className={`font-heading font-bold text-xs text-right tabular-nums ${getAttributeColorClass(attr.value)}`}
+                        className={`font-heading font-bold text-caption text-right tabular-nums ${getAttributeColorClass(attr.value)}`}
                       >
                         {attr.value}
                       </span>
@@ -125,13 +125,11 @@ export default function PlayerProfileAttributesCard({
           </div>
         ) : (
           <div className="text-center py-8">
-            <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-navy-700 flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-7 h-7 text-gray-400 dark:text-gray-500" />
+            <div className="w-14 h-14 rounded-full bg-hover flex items-center justify-center mx-auto mb-4">
+              <Shield className="w-7 h-7 text-fg-subtle" />
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{hiddenTitle}</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 max-w-xs mx-auto">
-              {hiddenBody}
-            </p>
+            <p className="text-body text-fg-muted font-medium">{hiddenTitle}</p>
+            <p className="text-caption text-fg-subtle mt-1 max-w-xs mx-auto">{hiddenBody}</p>
           </div>
         )}
         {attributesVisible ? positionRatings : null}

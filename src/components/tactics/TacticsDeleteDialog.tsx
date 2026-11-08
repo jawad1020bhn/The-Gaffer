@@ -33,7 +33,7 @@ export default function TacticsDeleteDialog({
     >
       <h2
         id="delete-tactic-title"
-        className="font-heading font-bold uppercase tracking-label text-title text-gray-900 dark:text-gray-100"
+        className="font-heading font-bold uppercase tracking-label text-title text-fg"
       >
         {t("tactics.deleteTacticTitle")}
       </h2>

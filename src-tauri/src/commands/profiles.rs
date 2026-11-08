@@ -15,7 +15,6 @@ fn profiles_path(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, St
     Ok(dir.join("profiles.json"))
 }
 
-
 /// A new profile may omit the birth date. Reuse an existing identity's date when the name and
 /// nationality already exist, so the old dedup rule still finds it; otherwise store a placeholder.
 fn resolve_new_profile_dob(

@@ -17,17 +17,13 @@ export default function NextMatchDisplay({ gameState }: { gameState: GameStateDa
   const league = getUserCompetition(gameState);
 
   if (!userTeamId || !league) {
-    return (
-      <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">
-        {t("home.noLeagueSchedule")}
-      </p>
-    );
+    return <p className="text-fg-muted text-body text-center py-4">{t("home.noLeagueSchedule")}</p>;
   }
 
   const nextFixture = getUserNextFixture(gameState);
   if (!nextFixture) {
     return (
-      <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">
+      <p className="text-fg-muted text-body text-center py-4">
         {t(isSeasonComplete(gameState) ? "home.seasonComplete" : "home.noUpcomingOpponent")}
       </p>
     );
@@ -44,25 +40,25 @@ export default function NextMatchDisplay({ gameState }: { gameState: GameStateDa
   );
 
   return (
-    <div className="flex items-center justify-between py-6 px-4 bg-gray-50 dark:bg-navy-800 rounded-lg border border-gray-100 dark:border-navy-600 transition-colors">
+    <div className="flex items-center justify-between py-6 px-4 bg-sunken rounded-control border border-line transition-colors">
       <div className="text-center flex-1">
         {userTeam && (
           <TeamLogo
             team={userTeam}
-            className="w-16 h-16 rounded-full mx-auto mb-2 flex items-center justify-center overflow-hidden border-2 border-primary-200 dark:border-primary-800"
+            className="w-16 h-16 rounded-full mx-auto mb-2 flex items-center justify-center overflow-hidden border-2 border-selected/40"
             imageClassName="h-12 w-12 object-contain drop-shadow"
             style={{ backgroundColor: userTeam.colors.primary }}
           />
         )}
-        <p className="font-heading font-bold uppercase tracking-wide text-sm text-primary-600 dark:text-primary-400">
+        <p className="font-heading font-bold uppercase tracking-label text-body text-selected">
           {getTeamName(gameState.teams, userTeamId)}
         </p>
       </div>
 
       <div className="text-center px-4 flex flex-col items-center gap-1.5">
-        <span className="font-heading font-bold text-2xl text-gray-300 dark:text-navy-600">VS</span>
+        <span className="font-heading font-bold text-title text-fg-subtle">VS</span>
         <Badge variant="neutral">{formatMatchDate(nextFixture.date)}</Badge>
-        <span className="text-xs text-gray-400 dark:text-gray-500">{fixtureLabel}</span>
+        <span className="text-caption text-fg-subtle">{fixtureLabel}</span>
         <Badge variant={isHome ? "success" : "accent"} size="sm">
           {isHome ? t("home.home") : t("home.away")}
         </Badge>
@@ -72,12 +68,12 @@ export default function NextMatchDisplay({ gameState }: { gameState: GameStateDa
         {opponentTeam && (
           <TeamLogo
             team={opponentTeam}
-            className="w-16 h-16 rounded-full mx-auto mb-2 flex items-center justify-center overflow-hidden border-2 border-gray-300 dark:border-navy-600"
+            className="w-16 h-16 rounded-full mx-auto mb-2 flex items-center justify-center overflow-hidden border-2 border-line-strong"
             imageClassName="h-12 w-12 object-contain drop-shadow"
             style={{ backgroundColor: opponentTeam.colors.primary }}
           />
         )}
-        <p className="font-heading font-bold uppercase tracking-wide text-sm text-gray-500 dark:text-gray-400">
+        <p className="font-heading font-bold uppercase tracking-label text-body text-fg-muted">
           {getTeamName(gameState.teams, opponentId)}
         </p>
       </div>

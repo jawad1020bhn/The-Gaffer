@@ -63,7 +63,7 @@ export function TransferOfferRecord({ state, offer, player }: TransferOfferRecor
               e.stopPropagation();
               handleRespondOffer(player.id, offer.id, true);
             }}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none p-1 rounded bg-success-500/20 hover:bg-success-500/30 text-primary-700 dark:text-success-400"
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none p-1 rounded bg-positive-tint hover:bg-positive-tint text-selected text-positive"
             title={t("transfers.acceptOffer")}
           >
             <Check className="w-3 h-3" />
@@ -74,7 +74,7 @@ export function TransferOfferRecord({ state, offer, player }: TransferOfferRecor
               e.stopPropagation();
               handleRespondOffer(player.id, offer.id, false);
             }}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none p-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-500"
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none p-1 rounded bg-danger-tint hover:bg-danger-solid/30 text-danger"
             title={t("transfers.rejectOffer")}
           >
             <X className="w-3 h-3" />
@@ -86,7 +86,7 @@ export function TransferOfferRecord({ state, offer, player }: TransferOfferRecor
               openCounterNegotiation(player, offer);
             }}
             aria-label={t("transfers.counterOffer")}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-accent-500/20 hover:bg-accent-500/30 text-accent-700 dark:text-accent-400 text-caption font-heading font-bold uppercase tracking-label"
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-warning-tint hover:bg-warning-tint text-warning text-caption font-heading font-bold uppercase tracking-label"
             title={t("transfers.counterOffer")}
           >
             <Gavel className="w-3 h-3" /> {t("transfers.counter")}
@@ -146,7 +146,7 @@ export function LoanOfferRecord({ state, offer, player }: LoanOfferRecordProps) 
                 e.stopPropagation();
                 handleRespondLoanOffer(player.id, offer.id, true);
               }}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none p-1 rounded bg-success-500/20 hover:bg-success-500/30 text-primary-700 dark:text-success-400"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none p-1 rounded bg-positive-tint hover:bg-positive-tint text-selected text-positive"
               title={t("transfers.acceptLoanOffer")}
             >
               <Check className="w-3 h-3" />
@@ -157,7 +157,7 @@ export function LoanOfferRecord({ state, offer, player }: LoanOfferRecordProps) 
                 e.stopPropagation();
                 handleRespondLoanOffer(player.id, offer.id, false);
               }}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none p-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-500"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none p-1 rounded bg-danger-tint hover:bg-danger-solid/30 text-danger"
               title={t("transfers.rejectLoanOffer")}
             >
               <X className="w-3 h-3" />
@@ -169,7 +169,7 @@ export function LoanOfferRecord({ state, offer, player }: LoanOfferRecordProps) 
                 openLoanCounterOffer(player, offer);
               }}
               aria-label={t("transfers.counterLoanOffer")}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-accent-500/20 hover:bg-accent-500/30 text-accent-700 dark:text-accent-400 text-caption font-heading font-bold uppercase tracking-label"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-warning-tint hover:bg-warning-tint text-warning text-caption font-heading font-bold uppercase tracking-label"
               title={t("transfers.counterLoanOffer")}
             >
               <Gavel className="w-3 h-3" /> {t("transfers.counter")}
@@ -183,7 +183,7 @@ export function LoanOfferRecord({ state, offer, player }: LoanOfferRecordProps) 
             e.stopPropagation();
             void handleExerciseLoanBuyOption(player.id);
           }}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-primary-500/10 hover:bg-primary-500/20 text-primary-700 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none flex items-center gap-1 px-2 py-1 rounded bg-selected-tint hover:bg-selected-tint text-selected text-caption font-heading font-bold uppercase tracking-label"
           title={t("transfers.exerciseBuyOption")}
         >
           <ShoppingCart className="w-3 h-3" /> {t("transfers.exerciseBuyOption")}
@@ -205,7 +205,7 @@ export function PlayerOffersList({
   return (
     <div className="flex flex-col gap-1">
       {!hasOffersForThisPlayer ? (
-        <span className="text-caption text-gray-500 dark:text-gray-300">{t("transfers.none")}</span>
+        <span className="text-caption text-fg-muted">{t("transfers.none")}</span>
       ) : (
         <>
           {transferOffersForThisPlayer.map((offer) => (

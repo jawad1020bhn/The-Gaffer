@@ -92,17 +92,19 @@ export default function PlayerProfileHeroCard({
 
   return (
     <Card accent="primary" className="mb-5">
-      <div className="bg-linear-to-r from-navy-700 to-navy-800 p-8 rounded-t-xl">
+      <div className="bg-panel p-8 rounded-t-xl">
         <div className="flex flex-wrap items-start gap-6">
           <PlayerAvatar
             player={player}
-            className="w-24 h-24 shrink-0 rounded-2xl flex items-center justify-center font-heading font-bold text-3xl border-2 border-white/10 bg-white/5 text-gray-300 overflow-hidden"
+            className="w-24 h-24 shrink-0 rounded-panel flex items-center justify-center font-heading font-bold text-display border-2 border-line/10 bg-panel/5 text-fg-subtle overflow-hidden"
           />
           <div
-            className={`flex h-24 w-20 shrink-0 flex-col items-center justify-center rounded-2xl border-2 font-heading ${ovr === null ? "border-white/10 bg-white/5 text-chrome-fg-muted" : ratingTierClass(tierOf(ovr), "hero")}`}
+            className={`flex h-24 w-20 shrink-0 flex-col items-center justify-center rounded-panel border-2 font-heading ${ovr === null ? "border-line/10 bg-panel/5 text-chrome-fg-muted" : ratingTierClass(tierOf(ovr), "hero")}`}
           >
-            <span className="text-xs font-bold uppercase tracking-wider">{t("common.ovr")}</span>
-            <span className="text-4xl font-bold leading-none">{visibleRatingText(ovr)}</span>
+            <span className="text-caption font-bold uppercase tracking-label">
+              {t("common.ovr")}
+            </span>
+            <span className="text-display font-bold leading-none">{visibleRatingText(ovr)}</span>
           </div>
           {player.jersey_number != null && team != null && (
             <JerseyIcon
@@ -115,7 +117,7 @@ export default function PlayerProfileHeroCard({
             />
           )}
           <div className="min-w-0 flex-1 basis-64">
-            <h2 className="text-3xl font-heading font-bold text-white uppercase tracking-wide break-words">
+            <h2 className="text-display font-heading font-bold text-fg uppercase tracking-label break-words">
               {player.full_name}
             </h2>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
@@ -125,28 +127,28 @@ export default function PlayerProfileHeroCard({
                   {translatePositionLabel(t, alternatePosition)}
                 </Badge>
               ))}
-              <span className="whitespace-nowrap text-gray-400 text-sm">
+              <span className="whitespace-nowrap text-fg-subtle text-body">
                 <CountryFlag
                   code={player.nationality}
                   locale={language}
-                  className="mr-1 text-sm leading-none"
+                  className="mr-1 text-body leading-none"
                 />
                 {countryName(player.nationality, language)}
               </span>
-              <span className="text-gray-500">•</span>
-              <span className="whitespace-nowrap text-gray-400 text-sm">
+              <span className="text-fg-muted">•</span>
+              <span className="whitespace-nowrap text-fg-subtle text-body">
                 {t("common.age")} {age}
               </span>
-              <span className="text-gray-500">•</span>
-              <span className="whitespace-nowrap text-gray-400 text-sm">
+              <span className="text-fg-muted">•</span>
+              <span className="whitespace-nowrap text-fg-subtle text-body">
                 {t("common.footednessLabel")}: {footednessLabel}
               </span>
-              <span className="text-gray-500">•</span>
-              <span className="whitespace-nowrap text-gray-400 text-sm">
+              <span className="text-fg-muted">•</span>
+              <span className="whitespace-nowrap text-fg-subtle text-body">
                 {t("common.weakFoot")}: {weakFootValue}/5
               </span>
             </div>
-            <p className="text-gray-400 text-sm mt-2 flex items-center gap-1.5">
+            <p className="text-fg-subtle text-body mt-2 flex items-center gap-1.5">
               <Shield className="w-4 h-4" />
               {player.team_id && onSelectTeam ? (
                 <ContextMenu items={teamContextItems}>
@@ -154,7 +156,7 @@ export default function PlayerProfileHeroCard({
                     type="button"
                     data-testid="player-profile-team-link"
                     onClick={() => onSelectTeam(player.team_id!)}
-                    className="hover:text-primary-400 transition-colors underline underline-offset-2"
+                    className="hover:text-selected transition-colors underline underline-offset-2"
                   >
                     {teamName}
                   </button>
@@ -189,8 +191,8 @@ export default function PlayerProfileHeroCard({
                 !showsPrivateState
                   ? "text-chrome-fg-muted"
                   : player.condition >= 70
-                    ? "text-primary-400"
-                    : "text-red-400"
+                    ? "text-selected"
+                    : "text-danger"
               }
             />
             <QuickStat
@@ -200,25 +202,25 @@ export default function PlayerProfileHeroCard({
                 !showsPrivateState
                   ? "text-chrome-fg-muted"
                   : player.morale >= 70
-                    ? "text-primary-400"
-                    : "text-accent-400"
+                    ? "text-selected"
+                    : "text-warning"
               }
             />
             <QuickStat
               label={t("common.value")}
               value={formatPlayerMarketValue(player.market_value)}
-              color="text-white"
+              color="text-fg"
             />
             <QuickStat
               label={t("common.wage")}
               value={wageValue("chrome")}
-              color={wageText === NO_DATA || wageRetry ? "text-chrome-fg-muted" : "text-white"}
+              color={wageText === NO_DATA || wageRetry ? "text-chrome-fg-muted" : "text-fg"}
             />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-px bg-gray-200 dark:bg-navy-600 md:hidden">
+      <div className="grid grid-cols-4 gap-px bg-hover md:hidden">
         <MobileQuickStat
           label={t("common.condition")}
           value={showsPrivateState ? `${player.condition}%` : NO_DATA}
@@ -226,8 +228,8 @@ export default function PlayerProfileHeroCard({
             !showsPrivateState
               ? "text-fg-muted"
               : player.condition >= 70
-                ? "text-primary-500"
-                : "text-red-500"
+                ? "text-selected"
+                : "text-danger"
           }
         />
         <MobileQuickStat
@@ -237,21 +239,19 @@ export default function PlayerProfileHeroCard({
             !showsPrivateState
               ? "text-fg-muted"
               : player.morale >= 70
-                ? "text-primary-500"
-                : "text-accent-500"
+                ? "text-selected"
+                : "text-warning"
           }
         />
         <MobileQuickStat
           label={t("common.value")}
           value={formatPlayerMarketValue(player.market_value)}
-          color="text-gray-700 dark:text-gray-200"
+          color="text-fg"
         />
         <MobileQuickStat
           label={t("common.wage")}
           value={wageValue("page")}
-          color={
-            wageText === NO_DATA || wageRetry ? "text-fg-muted" : "text-gray-700 dark:text-gray-200"
-          }
+          color={wageText === NO_DATA || wageRetry ? "text-fg-muted" : "text-fg"}
         />
       </div>
     </Card>
@@ -260,9 +260,9 @@ export default function PlayerProfileHeroCard({
 
 function QuickStat({ label, value, color }: { label: string; value: ReactNode; color: string }) {
   return (
-    <div className="bg-white/5 rounded-xl px-5 py-3 text-center min-w-25">
-      <p className="text-xs text-gray-400 font-heading uppercase tracking-wider">{label}</p>
-      <p className={`font-heading font-bold text-xl mt-0.5 ${color}`}>{value}</p>
+    <div className="bg-panel/5 rounded-panel px-5 py-3 text-center min-w-25">
+      <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">{label}</p>
+      <p className={`font-heading font-bold text-heading mt-0.5 ${color}`}>{value}</p>
     </div>
   );
 }
@@ -277,11 +277,9 @@ function MobileQuickStat({
   color: string;
 }) {
   return (
-    <div className="bg-white dark:bg-navy-800 p-3 text-center">
-      <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase tracking-wider">
-        {label}
-      </p>
-      <p className={`font-heading font-bold text-lg mt-0.5 ${color}`}>{value}</p>
+    <div className="bg-panel p-3 text-center">
+      <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">{label}</p>
+      <p className={`font-heading font-bold text-heading mt-0.5 ${color}`}>{value}</p>
     </div>
   );
 }

@@ -44,7 +44,7 @@ export default function FinancesPayrollTable({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+            <tbody className="divide-y divide-line">
               {[...roster]
                 .sort((a, b) => b.wage - a.wage)
                 .slice(0, 10)
@@ -78,7 +78,7 @@ export default function FinancesPayrollTable({
                       className={`hover:bg-hover/50 transition-colors ${onSelectPlayer ? "cursor-pointer group" : ""}`}
                     >
                       <td className="py-3 px-5 font-semibold text-body text-fg">
-                        <span className="group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                        <span className="group-hover:text-selected transition-colors">
                           {p.full_name}
                         </span>
                       </td>

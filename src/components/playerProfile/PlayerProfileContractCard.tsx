@@ -171,7 +171,7 @@ export default function PlayerProfileContractCard({
               size="sm"
               variant="outline"
               icon={<Trash2 />}
-              className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+              className="text-danger hover:text-danger"
               disabled={actionSubmitting || contractEnd === null}
               onClick={onOpenTermination}
             >
@@ -205,10 +205,10 @@ function InfoRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3 py-2 border-b border-gray-100 dark:border-navy-600 last:border-0">
-      <div className="text-gray-400 dark:text-gray-500">{icon}</div>
-      <span className="text-sm text-gray-500 dark:text-gray-400 flex-1">{label}</span>
-      <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{value}</span>
+    <div className="flex items-center gap-3 py-2 border-b border-line last:border-0">
+      <div className="text-fg-subtle">{icon}</div>
+      <span className="text-body text-fg-muted flex-1">{label}</span>
+      <span className="text-body font-semibold text-fg">{value}</span>
     </div>
   );
 }

@@ -267,7 +267,7 @@ export default function MatchLive({
 
   return (
     <MatchScreenLayout
-      headerClassName="bg-linear-to-r from-gray-200 via-white to-gray-200 dark:from-navy-800 dark:via-navy-900 dark:to-navy-800"
+      headerClassName="bg-linear-to-r from-hover via-panel to-hover to-panel"
       headerContentClassName="max-w-7xl py-3"
       contentClassName="overflow-hidden"
       header={
@@ -277,8 +277,8 @@ export default function MatchLive({
             <div className="flex items-center gap-2">
               {isRunning && (
                 <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger-solid opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-danger-solid" />
                 </span>
               )}
               <span className="text-caption font-heading uppercase tracking-labelst text-fg-muted">
@@ -308,18 +308,18 @@ export default function MatchLive({
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-4xl font-heading font-bold text-fg tabular-nums">
+                <span className="text-display font-heading font-bold text-fg tabular-nums">
                   {snapshot.home_score}
                 </span>
                 <div className="flex flex-col items-center">
-                  <span className="text-caption font-heading uppercase tracking-labelst text-accent-700 dark:text-accent-400">
+                  <span className="text-caption font-heading uppercase tracking-labelst text-warning">
                     {phaseLabel(snapshot.phase, t)}
                   </span>
                   <span className="text-title font-heading font-bold text-fg-muted">
                     {snapshot.current_minute}'
                   </span>
                 </div>
-                <span className="text-4xl font-heading font-bold text-fg tabular-nums">
+                <span className="text-display font-heading font-bold text-fg tabular-nums">
                   {snapshot.away_score}
                 </span>
               </div>
@@ -355,20 +355,20 @@ export default function MatchLive({
           {/* Possession bar */}
           <div className="mt-2">
             <div className="flex items-center gap-2 text-caption">
-              <span className="font-heading font-bold text-primary-400 w-12 text-right">
+              <span className="font-heading font-bold text-selected w-12 text-right">
                 {snapshot.home_possession_pct.toFixed(0)}%
               </span>
-              <div className="flex-1 h-1.5 bg-gray-300 dark:bg-navy-700 rounded-full overflow-hidden flex transition-colors duration-300">
+              <div className="flex-1 h-1.5 bg-line-strong rounded-full overflow-hidden flex transition-colors duration-300">
                 <div
-                  className="h-full bg-primary-500 transition-all duration-500"
+                  className="h-full bg-selected-fill transition-all duration-500"
                   style={{ width: `${snapshot.home_possession_pct}%` }}
                 />
                 <div
-                  className="h-full bg-indigo-500 transition-all duration-500"
+                  className="h-full bg-info-solid transition-all duration-500"
                   style={{ width: `${snapshot.away_possession_pct}%` }}
                 />
               </div>
-              <span className="font-heading font-bold text-indigo-400 w-12">
+              <span className="font-heading font-bold text-info w-12">
                 {snapshot.away_possession_pct.toFixed(0)}%
               </span>
             </div>
@@ -404,8 +404,8 @@ export default function MatchLive({
                 onClick={() => setActivePanel(tab.id)}
                 className={`flex items-center gap-2 px-5 py-3 font-heading font-bold text-caption uppercase tracking-label transition-colors border-b-2 ${
                   activePanel === tab.id
-                    ? "text-primary-500 dark:text-primary-400 border-primary-500 bg-primary-50 dark:bg-navy-700/50"
-                    : "text-fg-muted border-transparent hover:text-gray-700 dark:hover:text-gray-300"
+                    ? "text-selected border-selected bg-selected-tint"
+                    : "text-fg-muted border-transparent hover:text-fg"
                 }`}
               >
                 {tab.icon}
@@ -454,7 +454,7 @@ export default function MatchLive({
                 onClick={() => setShowSubPanel(!showSubPanel)}
                 disabled={subsClosed}
                 aria-describedby={subsClosed ? "subs-closed-reason" : undefined}
-                className="flex items-center gap-2 px-3 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-navy-700 dark:hover:bg-navy-600 rounded-control text-body font-heading uppercase tracking-label text-fg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex items-center gap-2 px-3 py-2 bg-hover hover:bg-line-strong rounded-control text-body font-heading uppercase tracking-label text-fg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <RefreshCw className="w-4 h-4" />
                 {t("match.subs")} (
@@ -467,7 +467,7 @@ export default function MatchLive({
                 </p>
               )}
               <div>
-                <p className="text-[10px] font-heading uppercase tracking-labelst text-gray-600 dark:text-gray-500 mb-1">
+                <p className="text-caption font-heading uppercase tracking-labelst text-fg-muted mb-1">
                   {t("match.formation")}
                 </p>
                 <div className="flex flex-wrap gap-1">
@@ -481,7 +481,7 @@ export default function MatchLive({
                         type="button"
                         key={f}
                         onClick={() => handleFormationChange(f)}
-                        className={`px-2 py-1 rounded text-caption font-heading transition-colors ${cur === f ? "bg-primary-500/20 text-primary-500 dark:text-primary-400 ring-1 ring-primary-500/50" : "bg-gray-100 text-gray-600 hover:text-gray-900 dark:bg-navy-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
+                        className={`px-2 py-1 rounded text-caption font-heading transition-colors ${cur === f ? "bg-selected-tint text-selected ring-1 ring-selected/50" : "bg-hover text-fg-muted hover:text-fg"}`}
                       >
                         {f}
                       </button>
@@ -490,7 +490,7 @@ export default function MatchLive({
                 </div>
               </div>
               <div>
-                <p className="text-[10px] font-heading uppercase tracking-labelst text-gray-600 dark:text-gray-500 mb-1">
+                <p className="text-caption font-heading uppercase tracking-labelst text-fg-muted mb-1">
                   {t("match.playStyle")}
                 </p>
                 <div className="flex flex-wrap gap-1">
@@ -511,7 +511,7 @@ export default function MatchLive({
                         type="button"
                         key={s.id}
                         onClick={() => handlePlayStyleChange(s.id)}
-                        className={`flex items-center gap-1 px-2 py-1 rounded text-caption font-heading transition-colors ${cur === s.id ? "bg-primary-500/20 text-primary-500 dark:text-primary-400 ring-1 ring-primary-500/50" : "bg-gray-100 text-gray-600 hover:text-gray-900 dark:bg-navy-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
+                        className={`flex items-center gap-1 px-2 py-1 rounded text-caption font-heading transition-colors ${cur === s.id ? "bg-selected-tint text-selected ring-1 ring-selected/50" : "bg-hover text-fg-muted hover:text-fg"}`}
                       >
                         {s.icon}
                         {t(`common.playStyles.${s.id}`, s.id)}
@@ -548,7 +548,7 @@ export default function MatchLive({
                   const display = getEventDisplay(evt);
                   return (
                     <div key={i} className="flex items-center gap-2 text-caption">
-                      <span className="text-gray-600 dark:text-gray-500 tabular-nums w-6 text-right font-heading">
+                      <span className="text-fg-muted tabular-nums w-6 text-right font-heading">
                         {evt.minute}'
                       </span>
                       <span>{display.icon}</span>
@@ -564,9 +564,7 @@ export default function MatchLive({
                   );
                 })}
               {importantEvents.length === 0 && (
-                <p className="text-gray-600 dark:text-gray-500 text-caption">
-                  {t("match.noEventsYet")}
-                </p>
+                <p className="text-fg-muted text-caption">{t("match.noEventsYet")}</p>
               )}
             </div>
           </div>

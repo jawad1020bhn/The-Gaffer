@@ -86,7 +86,7 @@ export function TransferBidForm({
           <PlayerPositionBadge position={naturalPositionOf(bidTarget)} />
           <div>
             <p className="font-semibold text-body text-fg">{bidTarget.full_name}</p>
-            <p className="text-caption text-gray-400">
+            <p className="text-caption text-fg-subtle">
               {getTeamName(teams, bidTarget.team_id)} •{" "}
               {t("transfers.playerValue", {
                 value: formatVal(bidTarget.market_value),
@@ -98,7 +98,7 @@ export function TransferBidForm({
       {blockingTitle ? (
         <div
           role="alert"
-          className="mb-4 flex gap-2 rounded-control border border-red-200 bg-red-50 px-3 py-2 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
+          className="mb-4 flex gap-2 rounded-control border border-danger/40 bg-danger-tint px-3 py-2 text-danger"
         >
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div className="text-caption">
@@ -110,7 +110,7 @@ export function TransferBidForm({
       {pendingRegistration ? (
         <div
           role="alert"
-          className="mb-4 flex gap-2 rounded-control border border-amber-200 bg-amber-50 px-3 py-2 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200"
+          className="mb-4 flex gap-2 rounded-control border border-warning/40 bg-warning-tint px-3 py-2 text-warning"
         >
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <p className="text-caption">{t("transfers.bidBlockedPendingRegistration")}</p>
@@ -120,7 +120,7 @@ export function TransferBidForm({
         <p className="text-caption text-fg-muted mb-3">{t("transfers.resumeNegotiationHint")}</p>
       ) : null}
       {talksResumeOn ? (
-        <p role="status" className="text-caption text-amber-700 dark:text-amber-200 mb-3">
+        <p role="status" className="text-caption text-warning mb-3">
           {t("transfers.talksResumeOn", { date: formatDateFull(talksResumeOn, i18n.language) })}
         </p>
       ) : (
@@ -138,11 +138,11 @@ export function TransferBidForm({
             min="0"
             value={bidAmount}
             onChange={(event) => onBidAmountChange(event.target.value)}
-            className="w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="w-full px-3 py-2 rounded-control bg-sunken border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-selected/50"
           />
           {myTeam && bidFee !== null && bidProjection ? (
-            <div className="rounded-control border border-line bg-white/70 dark:bg-navy-900/40 p-3 mb-3 space-y-2">
-              <p className="text-[11px] font-heading font-bold uppercase tracking-label text-fg-muted">
+            <div className="rounded-control border border-line bg-panel/70 p-3 mb-3 space-y-2">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {t("transfers.bidImpactTitle")}
               </p>
               <p className="text-caption text-fg-muted">
@@ -191,19 +191,15 @@ export function TransferBidForm({
                 })}
               </p>
               {bidProjection.exceeds_transfer_budget ? (
-                <p className="text-caption text-red-600 dark:text-red-300">
+                <p className="text-caption text-danger">
                   {t("transfers.bidImpactOverTransferBudget")}
                 </p>
               ) : null}
               {bidProjection.blocked_by_wage_policy ? (
-                <p className="text-caption text-red-600 dark:text-red-300">
-                  {t("transfers.bidImpactOverWagePolicy")}
-                </p>
+                <p className="text-caption text-danger">{t("transfers.bidImpactOverWagePolicy")}</p>
               ) : null}
               {bidProjection.exceeds_finance ? (
-                <p className="text-caption text-red-600 dark:text-red-300">
-                  {t("transfers.bidImpactOverBalance")}
-                </p>
+                <p className="text-caption text-danger">{t("transfers.bidImpactOverBalance")}</p>
               ) : null}
             </div>
           ) : null}
@@ -220,7 +216,7 @@ export function TransferBidForm({
       <TransferNegotiationHistory offer={activeBidOffer} mode="outgoing" />
       {bidResult ? (
         <div
-          className={`text-caption font-heading font-bold uppercase tracking-label mb-3 ${bidResult === "accepted" ? "text-green-500" : bidResult === "rejected" ? "text-red-600 dark:text-red-300" : "text-amber-500"}`}
+          className={`text-caption font-heading font-bold uppercase tracking-label mb-3 ${bidResult === "accepted" ? "text-positive" : bidResult === "rejected" ? "text-danger" : "text-warning"}`}
         >
           {bidResult === "accepted"
             ? t("transfers.bidAccepted")
@@ -237,7 +233,7 @@ export function TransferBidForm({
             type="button"
             onClick={onSubmit}
             disabled={bidSubmitDisabled || pendingRegistration}
-            className="flex-1 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
+            className="flex-1 py-2 bg-selected-fill hover:bg-selected text-on-brand rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
           >
             {bidLoading ? t("transfers.submitting") : t("transfers.submitBid")}
           </button>
@@ -245,7 +241,7 @@ export function TransferBidForm({
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-gray-300 dark:hover:bg-navy-600 transition-colors"
+          className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-line-strong transition-colors"
         >
           {t("transfers.close")}
         </button>

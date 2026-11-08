@@ -43,8 +43,8 @@ describe("WorldEditorTopBar findings", () => {
   it("shows separate error and warning counts on Validate", () => {
     renderTopBar(3, 2);
 
-    expect(screen.getByText("3").className).toContain("red");
-    expect(screen.getByText("2").className).toContain("amber");
+    expect(screen.getByText("3").className).toContain("danger");
+    expect(screen.getByText("2").className).toContain("warning");
   });
 
   // Given only warnings
@@ -53,7 +53,7 @@ describe("WorldEditorTopBar findings", () => {
   it("shows only the amber count for warnings alone", () => {
     renderTopBar(0, 2);
 
-    expect(screen.getByText("2").className).toContain("amber");
-    expect(document.querySelector(".bg-red-500")).toBeNull();
+    expect(screen.getByText("2").className).toContain("warning");
+    expect(document.querySelector(".bg-danger-tint")).toBeNull();
   });
 });

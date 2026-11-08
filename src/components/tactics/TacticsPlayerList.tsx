@@ -103,9 +103,9 @@ function PlayerRow({
 
   const rowClassName = `flex w-full items-center gap-2 rounded-control px-2 py-1.5 text-left transition-colors ${
     isSelected
-      ? "bg-accent-500/15 ring-1 ring-accent-300/40"
+      ? "bg-warning-tint ring-1 ring-focus"
       : isCompare
-        ? "bg-primary-500/10 ring-1 ring-primary-300/30"
+        ? "bg-selected-tint ring-1 ring-selected/40"
         : "hover:bg-hover/50"
   }`;
 
@@ -121,10 +121,10 @@ function PlayerRow({
           <Badge variant="neutral" size="sm">
             {position}
           </Badge>
-          <span className="w-6 shrink-0 rounded-md bg-gray-100 py-0.5 text-center text-[11px] font-heading font-bold tabular-nums text-gray-600 dark:bg-navy-700 dark:text-gray-300">
+          <span className="w-6 shrink-0 rounded-md bg-hover py-0.5 text-center text-caption font-heading font-bold tabular-nums text-fg-muted">
             {player.jersey_number ?? "–"}
           </span>
-          <span className="min-w-0 flex-1 truncate text-body font-medium text-gray-900 dark:text-gray-100">
+          <span className="min-w-0 flex-1 truncate text-body font-medium text-fg">
             {player.match_name || player.full_name}
           </span>
           <span
@@ -156,10 +156,10 @@ function PlayerRow({
           <Badge variant="neutral" size="sm">
             {position}
           </Badge>
-          <span className="w-6 shrink-0 rounded-md bg-gray-100 py-0.5 text-center text-[11px] font-heading font-bold tabular-nums text-gray-600 dark:bg-navy-700 dark:text-gray-300">
+          <span className="w-6 shrink-0 rounded-md bg-hover py-0.5 text-center text-caption font-heading font-bold tabular-nums text-fg-muted">
             {player.jersey_number ?? "–"}
           </span>
-          <span className="min-w-0 flex-1 truncate text-body font-medium text-gray-900 dark:text-gray-100">
+          <span className="min-w-0 flex-1 truncate text-body font-medium text-fg">
             {player.match_name || player.full_name}
           </span>
           {player.injury ? (
@@ -223,9 +223,9 @@ export default function TacticsPlayerList({
         positionFilter={positionFilter}
       />
 
-      <div className="rounded-panel border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800">
-        <div className="border-b border-gray-100 px-3 py-2 dark:border-navy-700">
-          <span className="text-[11px] font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
+      <div className="rounded-panel border border-line bg-panel">
+        <div className="border-b border-line px-3 py-2">
+          <span className="text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
             {t("preMatch.startingXI")} · {starters.length}
           </span>
         </div>
@@ -253,9 +253,9 @@ export default function TacticsPlayerList({
         </div>
       </div>
 
-      <div className="rounded-panel border border-gray-200 bg-white dark:border-navy-600 dark:bg-navy-800">
-        <div className="border-b border-gray-100 px-3 py-2 dark:border-navy-700">
-          <span className="text-[11px] font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
+      <div className="rounded-panel border border-line bg-panel">
+        <div className="border-b border-line px-3 py-2">
+          <span className="text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
             {t("preMatch.substitutes")} · {bench.length}
           </span>
         </div>

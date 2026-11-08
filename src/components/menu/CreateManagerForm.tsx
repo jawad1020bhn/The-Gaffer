@@ -39,7 +39,7 @@ function NationalityFieldFallback({ error }: { error?: string }) {
     <div id="create-manager-field-nationality">
       <label
         htmlFor="create-manager-nationality-trigger"
-        className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+        className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
       >
         {t("createManager.countryOfOrigin")}
       </label>
@@ -48,20 +48,18 @@ function NationalityFieldFallback({ error }: { error?: string }) {
           id="create-manager-nationality-trigger"
           type="button"
           disabled
-          className={`w-full rounded-lg border bg-gray-50 p-3 text-left transition-all dark:bg-navy-900 ${
-            error ? "border-red-400 dark:border-red-500" : "border-gray-300 dark:border-navy-600"
+          className={`w-full rounded-control border bg-sunken p-3 text-left transition-all ${
+            error ? "border-danger" : "border-line-strong"
           }`}
         >
-          <span className="text-gray-400 dark:text-gray-500">
-            {t("createManager.selectCountry")}
-          </span>
+          <span className="text-fg-subtle">{t("createManager.selectCountry")}</span>
         </button>
         <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-selected border-t-transparent" />
         </div>
       </div>
       {error ? (
-        <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+        <p className="mt-1 flex items-center gap-1 text-caption text-danger">
           <AlertCircle className="h-3 w-3" />
           {error}
         </p>
@@ -87,13 +85,13 @@ export default function CreateManagerForm({
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-xl font-heading font-bold uppercase tracking-wide text-gray-900 transition-colors dark:text-white">
+        <h2 className="text-heading font-heading font-bold uppercase tracking-label text-fg transition-colors">
           {t("createManager.title")}
         </h2>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-navy-600 dark:hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
+          className="rounded-control p-1 text-fg-subtle transition-colors hover:bg-hover hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
           aria-label={t("common.close")}
         >
           <X className="h-5 w-5" aria-hidden="true" />
@@ -101,11 +99,11 @@ export default function CreateManagerForm({
       </div>
 
       <div className="mb-1 flex items-center gap-2">
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-500 text-xs font-bold text-white">
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-selected-fill text-caption font-bold text-on-brand">
           1
         </div>
-        <div className="h-0.5 flex-1 bg-gray-200 dark:bg-navy-600" />
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-400 dark:bg-navy-600 dark:text-gray-500">
+        <div className="h-0.5 flex-1 bg-hover" />
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-hover text-caption font-bold text-fg-subtle">
           2
         </div>
       </div>
@@ -121,17 +119,17 @@ export default function CreateManagerForm({
         <div className="flex-1" id="create-manager-field-firstName">
           <label
             htmlFor="create-manager-first-name"
-            className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
           >
             {t("createManager.firstName")}
           </label>
           <input
             id="create-manager-first-name"
             maxLength={30}
-            className={`w-full rounded-lg border bg-gray-50 p-3 text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:ring-2 dark:bg-navy-900 dark:text-white dark:placeholder:text-gray-500 ${
+            className={`w-full rounded-control border bg-sunken p-3 text-fg outline-none transition-all placeholder:text-fg-subtle focus:ring-2 placeholder:text-fg-muted ${
               formErrors.firstName
-                ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500"
-                : "border-gray-300 focus:border-primary-500 focus:ring-primary-500/20 dark:border-navy-600"
+                ? "border-danger focus:border-danger focus-visible:ring-focus"
+                : "border-line-strong focus:border-selected focus:ring-selected/20"
             }`}
             placeholder={t("createManager.placeholderFirst")}
             value={formData.firstName}
@@ -141,7 +139,7 @@ export default function CreateManagerForm({
             }}
           />
           {formErrors.firstName ? (
-            <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+            <p className="mt-1 flex items-center gap-1 text-caption text-danger">
               <AlertCircle className="h-3 w-3" />
               {formErrors.firstName}
             </p>
@@ -151,17 +149,17 @@ export default function CreateManagerForm({
         <div className="flex-1" id="create-manager-field-lastName">
           <label
             htmlFor="create-manager-last-name"
-            className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
           >
             {t("createManager.lastName")}
           </label>
           <input
             id="create-manager-last-name"
             maxLength={30}
-            className={`w-full rounded-lg border bg-gray-50 p-3 text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:ring-2 dark:bg-navy-900 dark:text-white dark:placeholder:text-gray-500 ${
+            className={`w-full rounded-control border bg-sunken p-3 text-fg outline-none transition-all placeholder:text-fg-subtle focus:ring-2 placeholder:text-fg-muted ${
               formErrors.lastName
-                ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500"
-                : "border-gray-300 focus:border-primary-500 focus:ring-primary-500/20 dark:border-navy-600"
+                ? "border-danger focus:border-danger focus-visible:ring-focus"
+                : "border-line-strong focus:border-selected focus:ring-selected/20"
             }`}
             placeholder={t("createManager.placeholderLast")}
             value={formData.lastName}
@@ -171,7 +169,7 @@ export default function CreateManagerForm({
             }}
           />
           {formErrors.lastName ? (
-            <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+            <p className="mt-1 flex items-center gap-1 text-caption text-danger">
               <AlertCircle className="h-3 w-3" />
               {formErrors.lastName}
             </p>
@@ -183,7 +181,7 @@ export default function CreateManagerForm({
         <div className="flex-1" id="create-manager-field-startYear">
           <label
             htmlFor="create-manager-start-year"
-            className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
           >
             {t("createManager.startYear")}
           </label>
@@ -193,10 +191,10 @@ export default function CreateManagerForm({
             type="text"
             pattern="[0-9]*"
             inputMode="numeric"
-            className={`w-full rounded-lg border bg-gray-50 p-3 text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:ring-2 dark:bg-navy-900 dark:text-white dark:placeholder:text-gray-500 ${
+            className={`w-full rounded-control border bg-sunken p-3 text-fg outline-none transition-all placeholder:text-fg-subtle focus:ring-2 placeholder:text-fg-muted ${
               formErrors.startYear
-                ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500"
-                : "border-gray-300 focus:border-primary-500 focus:ring-primary-500/20 dark:border-navy-600"
+                ? "border-danger focus:border-danger focus-visible:ring-focus"
+                : "border-line-strong focus:border-selected focus:ring-selected/20"
             }`}
             value={formData.startYear}
             onChange={(event) => {
@@ -205,7 +203,7 @@ export default function CreateManagerForm({
             }}
           />
           {formErrors.startYear ? (
-            <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+            <p className="mt-1 flex items-center gap-1 text-caption text-danger">
               <AlertCircle className="h-3 w-3" />
               {formErrors.startYear}
             </p>
@@ -215,7 +213,7 @@ export default function CreateManagerForm({
         <div className="flex-1" id="create-manager-field-startPhase">
           <label
             htmlFor="create-manager-start-phase"
-            className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
           >
             {t("createManager.startPhase")}
           </label>
@@ -226,7 +224,7 @@ export default function CreateManagerForm({
             value={formData.startPhase}
             className={
               formErrors.startPhase
-                ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500"
+                ? "border-danger focus:border-danger focus-visible:ring-focus"
                 : ""
             }
             onChange={(event) => {
@@ -238,7 +236,7 @@ export default function CreateManagerForm({
             <option value="midSeason">{t("createManager.phaseMidSeason")}</option>
           </Select>
           {formErrors.startPhase ? (
-            <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+            <p className="mt-1 flex items-center gap-1 text-caption text-danger">
               <AlertCircle className="h-3 w-3" />
               {formErrors.startPhase}
             </p>

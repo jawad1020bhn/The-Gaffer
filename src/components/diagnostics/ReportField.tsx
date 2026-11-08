@@ -27,13 +27,11 @@ export function ReportField({
     <div>
       <label
         htmlFor={`report-${fieldKey}`}
-        className="block text-[11px] font-heading font-bold uppercase tracking-label text-fg-muted mb-1.5"
+        className="block text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1.5"
       >
         {t(`reportBug.${fieldKey}`)}
         {required && (
-          <span className="ml-2 text-accent-600 dark:text-accent-400 tracking-normal">
-            {t("reportBug.required")}
-          </span>
+          <span className="ml-2 text-warning tracking-normal">{t("reportBug.required")}</span>
         )}
       </label>
       <textarea
@@ -45,8 +43,8 @@ export function ReportField({
         aria-describedby={invalid ? REQUIRED_ERROR_ID : undefined}
         onChange={(event) => onChange(event.target.value)}
         placeholder={t(`reportBug.${fieldKey}Placeholder`)}
-        className={`w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border text-body text-fg focus:outline-none focus:ring-2 focus:ring-primary-500/50 ${
-          invalid ? "border-red-500 dark:border-red-500" : "border-line"
+        className={`w-full px-3 py-2 rounded-control bg-sunken border text-body text-fg focus:outline-none focus:ring-2 focus:ring-selected/50 ${
+          invalid ? "border-danger" : "border-line"
         }`}
       />
     </div>

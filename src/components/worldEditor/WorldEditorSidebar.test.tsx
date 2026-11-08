@@ -39,7 +39,7 @@ describe("WorldEditorSidebar findings", () => {
     renderSidebar(0, 2);
 
     const badge = screen.getByText("worldEditor.warningsBadge:2");
-    expect(badge.closest("button")?.className).toContain("amber");
+    expect(badge.closest("button")?.className).toContain("warning");
     expect(screen.queryByText("worldEditor.noIssues")).toBeNull();
   });
 

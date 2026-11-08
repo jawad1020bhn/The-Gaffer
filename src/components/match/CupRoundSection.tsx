@@ -38,7 +38,7 @@ export default function CupRoundSection({ summary }: CupRoundSectionProps) {
               </span>
             )}
             {tie.advancing_team_name && (
-              <span className="ml-2 text-caption font-heading font-bold uppercase tracking-label text-primary-700 dark:text-primary-400">
+              <span className="ml-2 text-caption font-heading font-bold uppercase tracking-label text-selected">
                 {t("match.cupAdvances", { team: tie.advancing_team_name })}
               </span>
             )}

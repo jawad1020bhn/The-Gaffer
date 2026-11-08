@@ -49,12 +49,12 @@ export default function InboxMessageListPane({
 
   return (
     <div className={getListPaneClassName(hasSelectedMessage)}>
-      <div className="bg-linear-to-r from-navy-700 to-navy-800 shrink-0 border-b border-gray-100 p-4 dark:border-navy-600">
-        <h3 className="text-body font-heading font-bold text-white flex items-center gap-2 uppercase tracking-label">
-          <Mail className="w-4 h-4 text-accent-400" />
+      <div className="bg-panel shrink-0 border-b border-line p-4">
+        <h3 className="text-body font-heading font-bold text-fg flex items-center gap-2 uppercase tracking-label">
+          <Mail className="w-4 h-4 text-warning" />
           {t("inbox.title")}
         </h3>
-        <p className="text-caption text-gray-400 mt-0.5 font-heading uppercase tracking-label">
+        <p className="text-caption text-fg-subtle mt-0.5 font-heading uppercase tracking-label">
           {t("inbox.nMessages", { count: filteredMessages.length })}
         </p>
       </div>
@@ -62,7 +62,7 @@ export default function InboxMessageListPane({
       <div className="flex-1 overflow-y-auto">
         {filteredMessages.length === 0 ? (
           <div className="p-6 text-center">
-            <MailOpen className="w-8 h-8 text-gray-300 dark:text-navy-600 mx-auto mb-2" />
+            <MailOpen className="w-8 h-8 text-fg-subtle mx-auto mb-2" />
             <p className="text-body text-fg-subtle">{t("inbox.noMessages")}</p>
           </div>
         ) : (
@@ -109,7 +109,7 @@ export default function InboxMessageListPane({
                         {message.subject}
                       </h4>
                       {!message.read ? (
-                        <span className="w-2 h-2 rounded-full bg-primary-500 shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-selected-fill shrink-0" />
                       ) : null}
                     </div>
                     <p className="text-caption text-fg-subtle truncate mt-0.5">{message.sender}</p>

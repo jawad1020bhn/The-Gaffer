@@ -119,29 +119,29 @@ export default function EndOfSeasonScreen({
           {/* Hero */}
           <div className="text-center mb-8">
             <div
-              className={`w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-4 ${
+              className={`w-20 h-20 mx-auto rounded-panel flex items-center justify-center mb-4 ${
                 isChampion
-                  ? "bg-gradient-to-br from-accent-400 to-accent-600 shadow-lg shadow-accent-500/30"
-                  : "bg-gradient-to-br from-navy-700 to-navy-800"
+                  ? "bg-gradient-to-br from-warning-solid to-warning-solid shadow-lg shadow-accent-500/30"
+                  : "bg-panel"
               }`}
             >
               {isChampion ? (
-                <Crown className="w-10 h-10 text-white" />
+                <Crown className="w-10 h-10 text-fg" />
               ) : (
-                <Trophy className="w-10 h-10 text-gray-300" />
+                <Trophy className="w-10 h-10 text-fg-subtle" />
               )}
             </div>
-            <h1 className="text-3xl font-heading font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+            <h1 className="text-display font-heading font-bold text-fg uppercase tracking-label">
               {t("endOfSeason.seasonComplete")}
             </h1>
-            <p className="text-lg text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-heading text-fg-muted mt-1">
               {t("endOfSeason.seasonLine", {
                 league: league ? competitionDisplayName(league, t) : "",
                 season: league?.season ?? "",
               })}
             </p>
             {isChampion && (
-              <p className="text-xl font-heading font-bold text-accent-500 mt-2 uppercase tracking-wider animate-pulse">
+              <p className="text-heading font-heading font-bold text-warning mt-2 uppercase tracking-label animate-pulse">
                 {t("endOfSeason.champions")}
               </p>
             )}
@@ -152,42 +152,42 @@ export default function EndOfSeasonScreen({
             <Card accent={isChampion ? "accent" : "primary"} className="mb-6">
               <CardBody>
                 <div className="text-center">
-                  <p className="text-xs font-heading font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">
+                  <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle mb-1">
                     {userTeam?.name}
                   </p>
                   <div className="flex items-center justify-center gap-6 mb-4">
                     <div>
-                      <p className="text-4xl font-heading font-bold text-gray-900 dark:text-gray-100">
+                      <p className="text-display font-heading font-bold text-fg">
                         {posLabel(userPosition)}
                       </p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase">
+                      <p className="text-caption text-fg-subtle font-heading uppercase">
                         {t("endOfSeason.position")}
                       </p>
                     </div>
-                    <div className="w-px h-12 bg-gray-200 dark:bg-navy-600" />
+                    <div className="w-px h-12 bg-hover" />
                     <div>
-                      <p className="text-4xl font-heading font-bold text-primary-500">
+                      <p className="text-display font-heading font-bold text-selected">
                         {userStanding?.points || 0}
                       </p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 font-heading uppercase">
+                      <p className="text-caption text-fg-subtle font-heading uppercase">
                         {t("endOfSeason.points")}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center justify-center gap-8 text-sm">
-                    <span className="text-green-500 font-heading font-bold">
+                  <div className="flex items-center justify-center gap-8 text-body">
+                    <span className="text-positive font-heading font-bold">
                       {userStanding?.won || 0}
                       {t("common.won")}
                     </span>
-                    <span className="text-gray-500 font-heading font-bold">
+                    <span className="text-fg-muted font-heading font-bold">
                       {userStanding?.drawn || 0}
                       {t("common.drawn")}
                     </span>
-                    <span className="text-red-500 font-heading font-bold">
+                    <span className="text-danger font-heading font-bold">
                       {userStanding?.lost || 0}
                       {t("common.lost")}
                     </span>
-                    <span className="text-gray-400">
+                    <span className="text-fg-subtle">
                       {userStanding?.goals_for || 0} {t("common.gf")} —{" "}
                       {userStanding?.goals_against || 0} {t("common.ga")}
                     </span>
@@ -200,10 +200,10 @@ export default function EndOfSeasonScreen({
           {/* Final top 5 standings */}
           <Card className="mb-6">
             <CardBody>
-              <h3 className="font-heading font-bold text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-accent-500" /> {t("endOfSeason.finalStandings")}
+              <h3 className="font-heading font-bold text-body uppercase tracking-label text-fg-muted mb-3 flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-warning" /> {t("endOfSeason.finalStandings")}
               </h3>
-              <div className="divide-y divide-gray-100 dark:divide-navy-600">
+              <div className="divide-y divide-line">
                 {standings.slice(0, 5).map((entry, idx) => {
                   const teamName = gameState.teams.find((t) => t.id === entry.team_id)?.name || "";
                   const isUser = entry.team_id === userTeamId;
@@ -211,27 +211,27 @@ export default function EndOfSeasonScreen({
                   return (
                     <div
                       key={entry.team_id}
-                      className={`flex items-center py-2.5 gap-3 ${isUser ? "bg-primary-50/50 dark:bg-primary-500/5 -mx-2 px-2 rounded-lg" : ""}`}
+                      className={`flex items-center py-2.5 gap-3 ${isUser ? "bg-selected-tint -mx-2 px-2 rounded-control" : ""}`}
                     >
                       <span
-                        className={`font-heading font-bold text-sm w-6 text-center ${idx === 0 ? "text-accent-500" : "text-gray-400"}`}
+                        className={`font-heading font-bold text-body w-6 text-center ${idx === 0 ? "text-warning" : "text-fg-subtle"}`}
                       >
                         {idx + 1}
                       </span>
                       <span
-                        className={`flex-1 text-sm font-semibold ${isUser ? "text-primary-600 dark:text-primary-400" : "text-gray-800 dark:text-gray-200"}`}
+                        className={`flex-1 text-body font-semibold ${isUser ? "text-selected" : "text-fg"}`}
                       >
                         {teamName}
                       </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 tabular-nums w-16 text-center">
+                      <span className="text-caption text-fg-muted tabular-nums w-16 text-center">
                         {entry.won}W {entry.drawn}D {entry.lost}L
                       </span>
                       <span
-                        className={`text-xs font-semibold tabular-nums w-8 text-center ${gd > 0 ? "text-primary-500" : gd < 0 ? "text-red-500" : "text-gray-500"}`}
+                        className={`text-caption font-semibold tabular-nums w-8 text-center ${gd > 0 ? "text-selected" : gd < 0 ? "text-danger" : "text-fg-muted"}`}
                       >
                         {gd > 0 ? `+${gd}` : gd}
                       </span>
-                      <span className="font-heading font-bold text-sm text-gray-800 dark:text-gray-100 tabular-nums w-8 text-right">
+                      <span className="font-heading font-bold text-body text-fg tabular-nums w-8 text-right">
                         {entry.points}
                       </span>
                     </div>
@@ -246,12 +246,14 @@ export default function EndOfSeasonScreen({
             <Card className="mb-6">
               <CardBody>
                 <div className="flex items-center gap-3">
-                  <Crown className="w-6 h-6 text-accent-500" />
+                  <Crown className="w-6 h-6 text-warning" />
                   <div>
-                    <p className="text-sm font-heading font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider">
+                    <p className="text-body font-heading font-bold text-fg uppercase tracking-label">
                       {t("endOfSeason.leagueChampions")}
                     </p>
-                    <p className="text-lg font-heading font-bold text-accent-500">{championName}</p>
+                    <p className="text-heading font-heading font-bold text-warning">
+                      {championName}
+                    </p>
                   </div>
                 </div>
               </CardBody>
@@ -264,14 +266,12 @@ export default function EndOfSeasonScreen({
               type="button"
               onClick={handleAdvance}
               disabled={loading}
-              className="px-8 py-4 bg-primary-500 text-white rounded-xl font-heading font-bold text-lg uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-primary-500/20 hover:shadow-xl hover:shadow-primary-500/30 disabled:opacity-50 flex items-center gap-3 mx-auto"
+              className="px-8 py-4 bg-selected-fill text-on-brand rounded-panel font-heading font-bold text-heading uppercase tracking-label hover:bg-selected-fill transition-all shadow-lg shadow-card hover:shadow-xl hover:shadow-card disabled:opacity-50 flex items-center gap-3 mx-auto"
             >
               {loading ? t("endOfSeason.processing") : t("endOfSeason.startNextSeason")}
               <ArrowRight className="w-5 h-5" />
             </button>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
-              {t("endOfSeason.statsArchived")}
-            </p>
+            <p className="text-caption text-fg-subtle mt-3">{t("endOfSeason.statsArchived")}</p>
           </div>
         </>
       )}
@@ -288,20 +288,18 @@ export default function EndOfSeasonScreen({
 
       {step === "done" && summary && (
         <div className="text-center">
-          <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center mb-4 shadow-lg shadow-primary-500/30">
-            <Star className="w-10 h-10 text-white" />
+          <div className="w-20 h-20 mx-auto rounded-panel bg-gradient-to-br from-selected-fill to-selected-fill flex items-center justify-center mb-4 shadow-lg shadow-card">
+            <Star className="w-10 h-10 text-on-brand" />
           </div>
-          <h1 className="text-3xl font-heading font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide mb-2">
+          <h1 className="text-display font-heading font-bold text-fg uppercase tracking-label mb-2">
             {t("endOfSeason.newSeason", { n: summary.season + 1 })}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mb-8">
-            {t("endOfSeason.newScheduleReleased")}
-          </p>
+          <p className="text-fg-muted mb-8">{t("endOfSeason.newScheduleReleased")}</p>
 
           <button
             type="button"
             onClick={() => onTransitionChange(null)}
-            className="px-8 py-3 bg-primary-500 text-white rounded-xl font-heading font-bold uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-primary-500/20"
+            className="px-8 py-3 bg-selected-fill text-on-brand rounded-panel font-heading font-bold uppercase tracking-label hover:bg-selected-fill transition-all shadow-lg shadow-card"
           >
             {t("endOfSeason.continueDashboard")}
           </button>

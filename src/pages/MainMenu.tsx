@@ -151,7 +151,7 @@ function focusFirstCreateManagerError(
 function MenuPanelFallback() {
   return (
     <div className="flex min-h-64 items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-selected border-t-transparent" />
     </div>
   );
 }
@@ -611,12 +611,12 @@ export default function MainMenu() {
                 className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-selected hover:bg-hover"
               >
                 <div className="flex items-center gap-3">
-                  <FolderOpen className="w-6 h-6 text-accent-500 dark:text-accent-400" />
+                  <FolderOpen className="w-6 h-6 text-warning" />
                   <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.loadGame")}
                   </span>
                 </div>
-                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-accent-500" />
+                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-warning" />
               </button>
 
               <button
@@ -625,12 +625,12 @@ export default function MainMenu() {
                 className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-selected hover:bg-hover"
               >
                 <div className="flex items-center gap-3">
-                  <Package className="w-6 h-6 text-accent-500 dark:text-accent-400" />
+                  <Package className="w-6 h-6 text-warning" />
                   <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.worldEditor")}
                   </span>
                 </div>
-                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-accent-500" />
+                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-warning" />
               </button>
 
               <button
@@ -639,12 +639,12 @@ export default function MainMenu() {
                 className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-line-strong hover:bg-hover"
               >
                 <div className="flex items-center gap-3">
-                  <Settings className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                  <Settings className="w-6 h-6 text-fg-subtle" />
                   <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.settings")}
                   </span>
                 </div>
-                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-gray-400" />
+                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-fg-subtle" />
               </button>
 
               <button
@@ -652,10 +652,10 @@ export default function MainMenu() {
                 onClick={() => {
                   void handleExitApp();
                 }}
-                className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-red-200 dark:hover:border-red-500/30 shadow-sm"
+                className="group flex items-center justify-between w-full p-4 bg-panel hover:bg-danger-tint text-fg rounded-panel transition-all duration-300 border border-line hover:border-danger/40 shadow-sm"
               >
                 <div className="flex items-center gap-3">
-                  <Power className="w-6 h-6 text-red-500 dark:text-red-400" />
+                  <Power className="w-6 h-6 text-danger" />
                   <span className="font-heading text-lead font-bold uppercase tracking-label">
                     {t("menu.exitGame")}
                   </span>
@@ -759,7 +759,7 @@ export default function MainMenu() {
       </div>
 
       {/* Version */}
-      <div className="absolute bottom-4 right-4 text-gray-400 dark:text-gray-600 text-xs font-heading uppercase tracking-widest transition-colors">
+      <div className="absolute bottom-4 right-4 text-fg-subtle text-caption font-heading uppercase tracking-label transition-colors">
         {formatAppVersion()}
       </div>
 

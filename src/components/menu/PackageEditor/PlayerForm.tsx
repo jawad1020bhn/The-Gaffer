@@ -73,7 +73,7 @@ export function PlayerForm({
   });
 
   const inputClass =
-    "w-full rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-400 transition";
+    "w-full rounded-control border border-line bg-panel px-3 py-2 text-body text-fg focus:outline-none focus:ring-2 focus-visible:ring-focus transition";
 
   function toggleAttributes(checked: boolean) {
     setUseAttributes(checked);
@@ -155,11 +155,11 @@ export function PlayerForm({
                   <img
                     src={photoDataUrl}
                     alt=""
-                    className="w-12 h-12 rounded-full object-cover border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 flex-shrink-0"
+                    className="w-12 h-12 rounded-full object-cover border border-line bg-panel flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full border border-dashed border-gray-300 dark:border-navy-600 bg-gray-50 dark:bg-navy-700 flex items-center justify-center flex-shrink-0">
-                    <ImagePlus className="w-5 h-5 text-gray-300 dark:text-navy-500" />
+                  <div className="w-12 h-12 rounded-full border border-dashed border-line-strong bg-sunken flex items-center justify-center flex-shrink-0">
+                    <ImagePlus className="w-5 h-5 text-fg-subtle" />
                   </div>
                 )}
                 <div className="flex gap-2">
@@ -168,7 +168,7 @@ export function PlayerForm({
                     onClick={() => {
                       void pickPhoto();
                     }}
-                    className="px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-navy-600 transition"
+                    className="px-3 py-1.5 text-caption font-heading font-bold uppercase tracking-label rounded-control border border-line bg-panel text-fg hover:bg-sunken transition"
                   >
                     {t("worldEditor.chooseLogo")}
                   </button>
@@ -178,7 +178,7 @@ export function PlayerForm({
                       onClick={() => {
                         clearPhoto();
                       }}
-                      className="px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-navy-600 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition"
+                      className="px-2 py-1.5 text-caption rounded-control border border-line text-fg-subtle hover:text-danger transition"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -299,7 +299,7 @@ export function PlayerForm({
                   <div className="grid grid-cols-2 gap-2">
                     {keys.map((key) => (
                       <div key={key} className="flex flex-col gap-0.5">
-                        <label className="text-[10px] font-heading uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                        <label className="text-caption font-heading uppercase tracking-label text-fg-subtle">
                           {t(`common.attributes.${key}`)}
                         </label>
                         <div className="flex items-center gap-1.5">
@@ -311,9 +311,9 @@ export function PlayerForm({
                             onChange={(e) =>
                               updateAttr(key as PlayerAttrKey, parseInt(e.target.value, 10))
                             }
-                            className="flex-1 accent-primary-500"
+                            className="flex-1 accent-selected-fill"
                           />
-                          <span className="text-xs font-mono text-gray-600 dark:text-gray-300 w-5 text-right">
+                          <span className="text-caption font-mono text-fg-muted w-5 text-right">
                             {attrs[key as keyof typeof attrs]}
                           </span>
                         </div>

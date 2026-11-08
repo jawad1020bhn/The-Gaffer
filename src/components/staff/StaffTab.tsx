@@ -37,10 +37,10 @@ const ROLE_ICONS: Record<string, React.ReactNode> = {
   Physio: <Stethoscope className="w-4 h-4" />,
 };
 const ROLE_COLORS: Record<string, string> = {
-  AssistantManager: "text-blue-500",
-  Coach: "text-primary-500",
-  Scout: "text-accent-500",
-  Physio: "text-red-400",
+  AssistantManager: "text-info",
+  Coach: "text-selected",
+  Scout: "text-warning",
+  Physio: "text-danger",
 };
 
 function bestAttr(s: StaffData): { key: string; value: number } {
@@ -168,7 +168,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
             onClick={() => setView("mystaff")}
             className={`px-4 py-2 rounded-control font-heading font-bold text-body uppercase tracking-label transition-all flex items-center gap-1.5 ${
               view === "mystaff"
-                ? "bg-primary-500 text-white shadow-md shadow-primary-500/20"
+                ? "bg-selected-fill text-on-brand shadow-md shadow-card"
                 : "bg-panel text-fg-muted border border-line"
             }`}
           >
@@ -179,7 +179,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
             onClick={() => setView("available")}
             className={`px-4 py-2 rounded-control font-heading font-bold text-body uppercase tracking-label transition-all flex items-center gap-1.5 ${
               view === "available"
-                ? "bg-primary-500 text-white shadow-md shadow-primary-500/20"
+                ? "bg-selected-fill text-on-brand shadow-md shadow-card"
                 : "bg-panel text-fg-muted border border-line"
             }`}
           >
@@ -196,7 +196,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
             aria-label={t("staff.searchStaff")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-control bg-panel border border-line text-body text-fg placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="w-full pl-9 pr-3 py-2 rounded-control bg-panel border border-line text-body text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-selected/50"
           />
         </div>
 
@@ -206,7 +206,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
             onClick={() => setRoleFilter(null)}
             className={`px-3 py-1.5 rounded-control text-caption font-heading font-bold uppercase tracking-label transition-all ${
               !roleFilter
-                ? "bg-primary-500 text-white shadow-sm"
+                ? "bg-selected-fill text-on-brand shadow-sm"
                 : "bg-panel text-fg-muted border border-line"
             }`}
           >
@@ -219,7 +219,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
               onClick={() => setRoleFilter(roleFilter === r ? null : r)}
               className={`px-3 py-1.5 rounded-control text-caption font-heading font-bold uppercase tracking-label transition-all flex items-center gap-1 ${
                 roleFilter === r
-                  ? "bg-primary-500 text-white shadow-sm"
+                  ? "bg-selected-fill text-on-brand shadow-sm"
                   : "bg-panel text-fg-muted border border-line"
               }`}
             >
@@ -233,7 +233,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
       {/* Staff grid */}
       {filtered.length === 0 ? (
         <div className="py-12 text-center">
-          <UserCog className="w-12 h-12 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
+          <UserCog className="w-12 h-12 text-fg-subtle mx-auto mb-3" />
           <p className="text-body text-fg-subtle">
             {view === "mystaff" ? t("staff.noStaffMatch") : t("staff.noAvailableStaff")}
           </p>
@@ -275,7 +275,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                     <div className="flex items-start gap-4">
                       {/* Avatar */}
                       <div
-                        className={`w-12 h-12 rounded-panel flex items-center justify-center ${roleColor} bg-gray-100 dark:bg-navy-700`}
+                        className={`w-12 h-12 rounded-panel flex items-center justify-center ${roleColor} bg-hover`}
                       >
                         {roleIcon}
                       </div>
@@ -314,23 +314,23 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                         {/* Specialization + Wage */}
                         <div className="flex flex-wrap gap-1.5 mt-1.5">
                           {staff.specialization && (
-                            <span className="inline-flex items-center gap-1 text-caption bg-accent-50 dark:bg-accent-500/10 text-accent-600 dark:text-accent-400 px-1.5 py-0.5 rounded font-heading uppercase tracking-label">
+                            <span className="inline-flex items-center gap-1 text-caption bg-warning-solid bg-warning-tint text-warning px-1.5 py-0.5 rounded font-heading uppercase tracking-label">
                               <Star className="w-3 h-3" />{" "}
                               {t(`staff.specializations.${staff.specialization}`)}
                             </span>
                           )}
                           {staff.wage > 0 && (
-                            <span className="text-caption bg-gray-100 dark:bg-navy-700 text-fg-muted px-1.5 py-0.5 rounded font-heading uppercase tracking-label">
+                            <span className="text-caption bg-hover text-fg-muted px-1.5 py-0.5 rounded font-heading uppercase tracking-label">
                               {formatWeeklyWage(staff.wage, "compact")}
                             </span>
                           )}
                           {staff.role === "Scout" ? (
-                            <span className="text-caption bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 px-1.5 py-0.5 rounded font-heading uppercase tracking-label">
+                            <span className="text-caption bg-selected-tint text-selected px-1.5 py-0.5 rounded font-heading uppercase tracking-label">
                               {scoutingLoadLabel}
                             </span>
                           ) : null}
                           {staff.role === "Scout" && youthLoad > 0 ? (
-                            <span className="text-caption bg-accent-50 dark:bg-accent-500/10 text-accent-600 dark:text-accent-400 px-1.5 py-0.5 rounded font-heading uppercase tracking-label">
+                            <span className="text-caption bg-warning-solid bg-warning-tint text-warning px-1.5 py-0.5 rounded font-heading uppercase tracking-label">
                               {youthLoadLabel}
                             </span>
                           ) : null}
@@ -366,7 +366,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                         {staff.role === "Scout" && onNavigate ? (
                           <button
                             type="button"
-                            className="mt-3 text-caption font-heading font-bold uppercase tracking-label text-primary-500 hover:text-primary-600"
+                            className="mt-3 text-caption font-heading font-bold uppercase tracking-label text-selected hover:text-selected"
                             onClick={() => onNavigate("Scouting")}
                           >
                             {openScoutingWorkflowLabel}
@@ -380,7 +380,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                           type="button"
                           disabled={isLoading}
                           onClick={() => handleRelease(staff.id)}
-                          className={`p-2 rounded-control bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+                          className={`p-2 rounded-control bg-danger-tint text-danger hover:bg-danger-tint transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
                           title={t("staff.releaseStaff")}
                         >
                           <UserMinus className="w-4 h-4" />
@@ -391,7 +391,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                           type="button"
                           disabled={isLoading}
                           onClick={() => handleHire(staff.id)}
-                          className={`p-2 rounded-control bg-primary-50 dark:bg-primary-500/10 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-500/20 transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+                          className={`p-2 rounded-control bg-selected-tint text-selected hover:bg-selected-tint transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
                           title={t("staff.hireStaff")}
                         >
                           <UserPlus className="w-4 h-4" />
@@ -421,7 +421,7 @@ function AttrBar({ label, value }: { label: string; value: number }) {
       <div className="flex justify-between text-caption mb-0.5">
         <span className="text-fg-muted">{label}</span>
         <span
-          className={`font-heading font-bold tabular-nums ${value >= 70 ? "text-primary-500" : value >= 50 ? "text-accent-500" : "text-gray-400"}`}
+          className={`font-heading font-bold tabular-nums ${value >= 70 ? "text-selected" : value >= 50 ? "text-warning" : "text-fg-subtle"}`}
         >
           {value}
         </span>

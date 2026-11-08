@@ -98,14 +98,14 @@ describe("TournamentsFixtureRow", () => {
   it("picks out a fixture the managed club is playing in", () => {
     const { container } = renderRow();
 
-    expect(screen.getByTestId("row").className).toContain("bg-primary-50/50");
+    expect(screen.getByTestId("row").className).toContain("bg-selected-tint");
     expect(container).toBeTruthy();
   });
 
   it("leaves a fixture between other clubs unhighlighted", () => {
     renderRow({ teams: teamLookup({ userTeamId: "someone-else" }) });
 
-    expect(screen.getByTestId("row").className).not.toContain("bg-primary-50/50");
+    expect(screen.getByTestId("row").className).not.toContain("bg-selected-tint");
   });
 
   // The names used to be clickable spans, which keyboard users could not reach.

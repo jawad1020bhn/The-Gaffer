@@ -54,7 +54,7 @@ export function PlayerRolesPanel({
 
   return (
     <details
-      className="rounded-control border border-gray-200 bg-white px-3 py-2 dark:border-navy-600 dark:bg-navy-800"
+      className="rounded-control border border-line bg-panel px-3 py-2"
       // A refusal is about the last change made; once the section is put away it is stale, and so is
       // any change still in flight, whose answer must not bring it back.
       onToggle={(event) => {
@@ -63,7 +63,7 @@ export function PlayerRolesPanel({
         setRefusal(null);
       }}
     >
-      <summary className="cursor-pointer rounded font-heading text-caption font-bold uppercase tracking-labelst text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-gray-200">
+      <summary className="cursor-pointer rounded font-heading text-caption font-bold uppercase tracking-labelst text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-selected">
         {t("match.playerRoles")}
       </summary>
       <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
@@ -92,12 +92,7 @@ export function PlayerRolesPanel({
         ))}
       </ul>
       {refusal && (
-        <p
-          key={refusal.count}
-          id={alertId}
-          role="alert"
-          className="mt-2 text-caption text-red-600 dark:text-red-400"
-        >
+        <p key={refusal.count} id={alertId} role="alert" className="mt-2 text-caption text-danger">
           {t("match.roleChangeRefused", {
             player: refusal.player,
             reason: resolveBackendError(refusal.reason),

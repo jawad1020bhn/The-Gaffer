@@ -133,7 +133,7 @@ export default function SetPieceSelector({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-3 p-3 rounded-control bg-gray-100 hover:bg-hover/50 dark:hover:bg-navy-700 transition-colors"
+        className="w-full flex items-center gap-3 p-3 rounded-control bg-hover hover:bg-hover/50 transition-colors"
       >
         {icon}
         <div className="flex-1 text-left">
@@ -150,7 +150,7 @@ export default function SetPieceSelector({
               <span
                 key={s.label}
                 title={getTranslatedStatLabel(s.label)}
-                className="inline-flex items-center gap-1 rounded-md border border-gray-200 dark:border-white/10 bg-panel px-2 py-1 text-caption font-heading font-bold text-fg"
+                className="inline-flex items-center gap-1 rounded-md border border-line bg-panel px-2 py-1 text-caption font-heading font-bold text-fg"
               >
                 <span className="text-fg-muted">{getTranslatedStatLabel(s.label)}</span>
                 <span className={getAttributeValueClassName(s.value)}>{s.value}</span>
@@ -174,13 +174,11 @@ export default function SetPieceSelector({
                   setExpanded(false);
                 }}
                 className={`flex items-center gap-2 px-2 py-1.5 rounded text-left transition-colors ${
-                  isCurrent
-                    ? "bg-primary-500/20 text-primary-500 dark:text-primary-400"
-                    : "hover:bg-gray-100 dark:hover:bg-navy-600 text-fg"
+                  isCurrent ? "bg-selected-tint text-selected" : "hover:bg-hover text-fg"
                 }`}
               >
                 <span className="w-3 shrink-0">
-                  {isCurrent && <Check className="w-3 h-3 text-primary-400" />}
+                  {isCurrent && <Check className="w-3 h-3 text-selected" />}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-body font-medium">{p.name}</span>
                 <Badge variant="neutral" size="sm">

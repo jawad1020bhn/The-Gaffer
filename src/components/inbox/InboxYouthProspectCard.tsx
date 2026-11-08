@@ -56,9 +56,7 @@ export default function InboxYouthProspectCard({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="font-heading font-bold text-base text-gray-900 dark:text-gray-100">
-                {prospect.full_name}
-              </p>
+              <p className="font-heading font-bold text-body text-fg">{prospect.full_name}</p>
               <PlayerPositionBadge position={prospectPosition} />
               {signedToAcademy ? (
                 <Badge variant="success" size="sm">
@@ -112,7 +110,7 @@ export default function InboxYouthProspectCard({
 
         {signedToAcademy ? (
           <div className="flex flex-wrap items-center gap-2">
-            <div className="text-caption font-heading font-bold uppercase tracking-label text-primary-500">
+            <div className="text-caption font-heading font-bold uppercase tracking-label text-selected">
               {t("inbox.youthProspectSigned")}
             </div>
             <Button
@@ -125,7 +123,7 @@ export default function InboxYouthProspectCard({
             </Button>
           </div>
         ) : action?.resolved ? (
-          <div className="mt-3 text-caption font-heading font-bold uppercase tracking-label text-primary-500">
+          <div className="mt-3 text-caption font-heading font-bold uppercase tracking-label text-selected">
             {t("inbox.responded")}
           </div>
         ) : chooseOptionActionId && options.length > 0 ? (

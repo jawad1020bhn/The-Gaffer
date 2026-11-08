@@ -42,7 +42,7 @@ export default function TransfersTab(props: TransfersTabProps) {
       {marketError && isScoutingView ? (
         <p
           role="alert"
-          className="mb-4 text-caption font-heading font-bold uppercase tracking-label text-red-500"
+          className="mb-4 text-caption font-heading font-bold uppercase tracking-label text-danger"
         >
           {marketError}
         </p>
@@ -50,7 +50,7 @@ export default function TransfersTab(props: TransfersTabProps) {
       {scoutError && isScoutingView ? (
         <p
           role="alert"
-          className="mb-4 text-caption font-heading font-bold uppercase tracking-label text-red-500"
+          className="mb-4 text-caption font-heading font-bold uppercase tracking-label text-danger"
         >
           {scoutError}
         </p>
@@ -58,7 +58,7 @@ export default function TransfersTab(props: TransfersTabProps) {
       {listingError && view === "my_list" ? (
         <p
           role="alert"
-          className="mb-4 text-caption font-heading font-bold uppercase tracking-label text-red-500"
+          className="mb-4 text-caption font-heading font-bold uppercase tracking-label text-danger"
         >
           {listingError}
         </p>
@@ -67,7 +67,7 @@ export default function TransfersTab(props: TransfersTabProps) {
       {responseError && view === "offers" ? (
         <p
           role="alert"
-          className="mb-4 text-caption font-heading font-bold uppercase tracking-label text-red-500"
+          className="mb-4 text-caption font-heading font-bold uppercase tracking-label text-danger"
         >
           {responseError}
         </p>
@@ -78,7 +78,7 @@ export default function TransfersTab(props: TransfersTabProps) {
         <Card>
           <CardBody>
             <div className="text-center py-8">
-              <ShoppingCart className="w-10 h-10 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
+              <ShoppingCart className="w-10 h-10 text-fg-subtle mx-auto mb-3" />
               <p className="text-body text-fg-muted">
                 {marketFiltered ? t("players.noMatch") : t("transfers.noPlayersListed")}
               </p>
@@ -94,7 +94,7 @@ export default function TransfersTab(props: TransfersTabProps) {
         <Card>
           <CardBody>
             <div className="text-center py-8">
-              <Handshake className="w-10 h-10 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
+              <Handshake className="w-10 h-10 text-fg-subtle mx-auto mb-3" />
               <p className="text-body text-fg-muted">
                 {marketFiltered ? t("players.noMatch") : t("transfers.noOffers")}
               </p>
@@ -109,7 +109,7 @@ export default function TransfersTab(props: TransfersTabProps) {
         <Card>
           <CardBody>
             <div className="text-center py-8">
-              <TrendingUp className="w-10 h-10 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
+              <TrendingUp className="w-10 h-10 text-fg-subtle mx-auto mb-3" />
               <p className="text-body text-fg-muted">
                 {marketQuery.status === "transfer"
                   ? t("transfers.noTransferMarket")

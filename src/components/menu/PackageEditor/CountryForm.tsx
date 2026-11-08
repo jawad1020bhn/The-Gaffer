@@ -106,7 +106,7 @@ export function CountryForm({
   }
 
   const switchClass =
-    "inline-flex items-center gap-1.5 self-start rounded-lg px-2 py-1 text-[11px] font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 dark:focus:ring-offset-navy-800 transition";
+    "inline-flex items-center gap-1.5 self-start rounded-control px-2 py-1 text-caption font-medium text-selected hover:bg-selected-tint focus:outline-none focus:ring-2 focus-visible:ring-focus focus:ring-offset-2 focus-visible:ring-offset-panel transition";
 
   return (
     <EntityFormShell
@@ -120,7 +120,7 @@ export function CountryForm({
       {mode === null ? (
         <div className="flex min-h-[62px] items-center justify-center" aria-live="polite">
           <span className="sr-only">{t("worldEditor.countryLoadingNations")}</span>
-          <div className="h-5 w-5 motion-safe:animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+          <div className="h-5 w-5 motion-safe:animate-spin rounded-full border-2 border-selected border-t-transparent" />
         </div>
       ) : mode === "builtin" ? (
         <>

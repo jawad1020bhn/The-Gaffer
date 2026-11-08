@@ -59,11 +59,11 @@ function ArchivedMessagesOfCareer(): JSX.Element {
       </h3>
 
       {messages.length > 0 && (
-        <ul className="mb-3 divide-y divide-gray-100 rounded-panel border border-gray-200 bg-white dark:divide-navy-600 dark:border-navy-600 dark:bg-navy-800">
+        <ul className="mb-3 divide-y divide-line rounded-panel border border-line bg-panel">
           {messages.map((message) => (
             <li key={message.id}>
               <details className="group px-4 py-3">
-                <summary className="cursor-pointer text-body text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:text-gray-100 dark:focus-visible:ring-offset-navy-800">
+                <summary className="cursor-pointer text-body text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel">
                   <span className="mr-2 text-caption text-fg-muted">
                     {formatDateShort(message.date, i18n.language)}
                   </span>
@@ -79,7 +79,7 @@ function ArchivedMessagesOfCareer(): JSX.Element {
       )}
 
       {state === "failed" && (
-        <p role="alert" className="mb-2 text-body text-red-600 dark:text-red-400">
+        <p role="alert" className="mb-2 text-body text-danger">
           {t("inbox.archive.error")}
         </p>
       )}

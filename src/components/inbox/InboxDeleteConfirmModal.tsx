@@ -43,10 +43,7 @@ export default function InboxDeleteConfirmModal({
     >
       <div className="space-y-4" data-testid="inbox-delete-confirm-modal">
         <div>
-          <h3
-            id={titleId}
-            className="text-lead font-heading font-bold text-gray-900 dark:text-gray-100"
-          >
+          <h3 id={titleId} className="text-lead font-heading font-bold text-fg">
             {title}
           </h3>
           <p className="mt-2 text-body text-fg-muted">{message}</p>
@@ -66,7 +63,7 @@ export default function InboxDeleteConfirmModal({
             size="sm"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500"
+            className="bg-danger-solid hover:bg-danger-solid active:bg-danger-solid focus-visible:ring-focus"
             data-testid="inbox-confirm-delete"
           >
             {t("inbox.deleteAction")}

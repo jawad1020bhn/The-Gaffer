@@ -978,7 +978,11 @@ mod tests {
         let game = started.unwrap();
         let dob = game.manager.date_of_birth.clone();
         assert!(!dob.is_empty());
-        assert!(domain::age::age_on(game.clock.current_date.date_naive(), &dob) >= 30);
+        assert_eq!(
+            domain::age::age_on(game.clock.current_date.date_naive(), &dob),
+            Some(45),
+            "the derived birth date must clear the age rule on the clock the world sets"
+        );
         assert!(state.get_game(|_| ()).is_some());
     }
 

@@ -205,7 +205,7 @@ export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProp
       </div>
 
       {fetchError && (
-        <p role="alert" className="mb-4 text-body text-red-500">
+        <p role="alert" className="mb-4 text-body text-danger">
           {fetchError}
         </p>
       )}
@@ -279,8 +279,8 @@ function ViewButton({
       onClick={onClick}
       className={`rounded-control px-4 py-2 font-heading text-body font-bold uppercase tracking-label transition-all ${
         active
-          ? "bg-primary-500 text-white shadow-md shadow-primary-500/20"
-          : "border border-gray-200 bg-white text-gray-500 hover:text-gray-700 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-400 dark:hover:text-gray-200"
+          ? "bg-selected-fill text-on-brand shadow-md shadow-card"
+          : "border border-line bg-panel text-fg-muted hover:text-fg"
       }`}
     >
       {children}
@@ -377,7 +377,7 @@ function CalendarView({
             <button
               type="button"
               onClick={onShowMorePast}
-              className="mx-auto mt-1 rounded-control border border-gray-200 bg-white px-4 py-2 font-heading text-body font-bold uppercase tracking-label text-gray-500 transition-all hover:text-gray-700 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-400 dark:hover:text-gray-200"
+              className="mx-auto mt-1 rounded-control border border-line bg-panel px-4 py-2 font-heading text-body font-bold uppercase tracking-label text-fg-muted transition-all hover:text-fg"
             >
               {t("schedule.loadMore")}
             </button>
@@ -478,7 +478,7 @@ function MatchdayGroupCard({
   return (
     <div ref={setRef} data-group-key={group.key}>
       <Card className={dimmed ? "opacity-70" : undefined}>
-        <div className="rounded-t-xl border-b border-gray-100 bg-gray-50 px-5 py-3 dark:border-navy-600 dark:bg-navy-800">
+        <div className="rounded-t-xl border-b border-line bg-sunken px-5 py-3">
           <div className="flex items-center gap-2">
             {group.is_next_user_match && (
               <Badge variant="primary" size="sm">
@@ -491,7 +491,7 @@ function MatchdayGroupCard({
           </div>
         </div>
         <CardBody className="p-0">
-          <div className="divide-y divide-gray-100 dark:divide-navy-600">
+          <div className="divide-y divide-line">
             {group.fixtures.map((fixture) => {
               const isUserMatch =
                 fixture.home_team_id === userTeamId || fixture.away_team_id === userTeamId;
@@ -511,16 +511,14 @@ function MatchdayGroupCard({
                 <ContextMenu items={contextItems} key={fixture.id}>
                   <div
                     className={`flex items-center px-5 py-3 transition-colors ${
-                      isUserMatch ? "bg-primary-50/50 dark:bg-primary-500/5" : ""
+                      isUserMatch ? "bg-selected-tint" : ""
                     }`}
                     data-testid={`schedule-fixture-${fixture.id}`}
                   >
                     <span
                       onClick={() => onSelectTeam(fixture.home_team_id)}
                       className={`flex-1 cursor-pointer text-right text-body font-semibold hover:underline ${
-                        fixture.home_team_id === userTeamId
-                          ? "text-primary-600 dark:text-primary-400"
-                          : "text-fg"
+                        fixture.home_team_id === userTeamId ? "text-selected" : "text-fg"
                       }`}
                     >
                       {fixture.home_team_name}
@@ -545,9 +543,7 @@ function MatchdayGroupCard({
                     <span
                       onClick={() => onSelectTeam(fixture.away_team_id)}
                       className={`flex-1 cursor-pointer text-left text-body font-semibold hover:underline ${
-                        fixture.away_team_id === userTeamId
-                          ? "text-primary-600 dark:text-primary-400"
-                          : "text-fg"
+                        fixture.away_team_id === userTeamId ? "text-selected" : "text-fg"
                       }`}
                     >
                       {fixture.away_team_name}
@@ -587,14 +583,14 @@ function InternationalView({
     <div className="flex flex-col gap-4">
       {calledUpPlayers.length > 0 && (
         <Card accent="accent">
-          <div className="rounded-t-xl border-b border-gray-100 bg-gray-50 px-5 py-3 dark:border-navy-600 dark:bg-navy-800">
+          <div className="rounded-t-xl border-b border-line bg-sunken px-5 py-3">
             <h4 className="flex items-center gap-2 font-heading text-body font-bold uppercase tracking-label text-fg-muted">
-              <Globe className="h-4 w-4 text-accent-500" />
+              <Globe className="h-4 w-4 text-warning" />
               {t("schedule.internationalDuty")}
             </h4>
           </div>
           <CardBody className="p-0">
-            <div className="divide-y divide-gray-100 dark:divide-navy-600">
+            <div className="divide-y divide-line">
               {calledUpPlayers.map(
                 ({ player, nationalTeamId, nationalTeamName, nationalTeamNameKey }) => (
                   <div
@@ -616,13 +612,13 @@ function InternationalView({
 
       {Array.from(internationalByDate.entries()).map(([date, fixtures]) => (
         <Card key={date}>
-          <div className="rounded-t-xl border-b border-gray-100 bg-gray-50 px-5 py-3 dark:border-navy-600 dark:bg-navy-800">
+          <div className="rounded-t-xl border-b border-line bg-sunken px-5 py-3">
             <h4 className="font-heading text-body font-bold uppercase tracking-label text-fg-muted">
               {t("schedule.international")} - {formatMatchDate(date)}
             </h4>
           </div>
           <CardBody className="p-0">
-            <div className="divide-y divide-gray-100 dark:divide-navy-600">
+            <div className="divide-y divide-line">
               {fixtures.map((fixture) => {
                 const completed = fixture.status === "Completed";
                 return (
@@ -688,7 +684,7 @@ function StandingsView({
       <Card>
         <CardBody>
           <div className="flex flex-col items-center gap-2 py-6 text-center">
-            <Trophy className="h-8 w-8 text-gray-300 dark:text-navy-600" />
+            <Trophy className="h-8 w-8 text-fg-subtle" />
             <p className="text-body font-heading font-bold text-fg">
               {t("season.standingsLocked")}
             </p>
@@ -705,9 +701,9 @@ function StandingsView({
 
   return (
     <Card>
-      <div className="rounded-t-xl border-b border-gray-100 bg-gradient-to-r from-navy-700 to-navy-800 p-5 dark:border-navy-600">
-        <h3 className="flex items-center gap-2 font-heading text-lead font-bold uppercase tracking-label text-white">
-          <Trophy className="h-5 w-5 text-accent-400" />
+      <div className="rounded-t-xl border-b border-line bg-panel p-5">
+        <h3 className="flex items-center gap-2 font-heading text-lead font-bold uppercase tracking-label text-fg">
+          <Trophy className="h-5 w-5 text-warning" />
           {(competition && competitionDisplayName(competition, t)) || t("schedule.fixtures")} –{" "}
           {t("schedule.season", { number: competition?.season ?? 0 })}
         </h3>
@@ -722,7 +718,7 @@ function StandingsView({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50 text-caption dark:border-navy-600 dark:bg-navy-800">
+              <tr className="border-b border-line bg-sunken text-caption">
                 {[
                   "#",
                   t("common.team"),
@@ -744,7 +740,7 @@ function StandingsView({
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+            <tbody className="divide-y divide-line">
               {standings.map((entry, index) => {
                 const isUser = entry.team_id === userTeamId;
                 const gd = entry.goals_for - entry.goals_against;
@@ -757,16 +753,16 @@ function StandingsView({
                   <ContextMenu items={contextItems} key={entry.team_id}>
                     <tr
                       className={`transition-colors ${
-                        isUser ? "bg-primary-50 dark:bg-primary-500/10" : "hover:bg-hover/50"
+                        isUser ? "bg-selected-tint" : "hover:bg-hover/50"
                       }`}
                       data-testid={`schedule-standings-row-${entry.team_id}`}
                     >
                       <td
                         className={`px-4 py-3 font-heading text-body font-bold ${
                           inPromotionZone
-                            ? "border-l-2 border-primary-500 text-primary-500"
+                            ? "border-l-2 border-selected text-selected"
                             : inRelegationZone
-                              ? "border-l-2 border-red-500 text-red-500"
+                              ? "border-l-2 border-danger text-danger"
                               : "text-fg-subtle"
                         }`}
                         data-testid={
@@ -782,7 +778,7 @@ function StandingsView({
                       <td
                         onClick={() => onSelectTeam(entry.team_id)}
                         className={`cursor-pointer px-4 py-3 text-body font-semibold hover:underline ${
-                          isUser ? "text-primary-600 dark:text-primary-400" : "text-fg"
+                          isUser ? "text-selected" : "text-fg"
                         }`}
                       >
                         {getTeamName(gameState.teams, entry.team_id)}
@@ -804,7 +800,7 @@ function StandingsView({
                       ))}
                       <td
                         className={`px-4 py-3 text-center text-body font-semibold tabular-nums ${
-                          gd > 0 ? "text-primary-500" : gd < 0 ? "text-red-500" : "text-fg-muted"
+                          gd > 0 ? "text-selected" : gd < 0 ? "text-danger" : "text-fg-muted"
                         }`}
                       >
                         {gd > 0 ? `+${gd}` : gd}
@@ -819,16 +815,16 @@ function StandingsView({
             </tbody>
           </table>
           {(zones.promotionSlots > 0 || zones.relegationSlots > 0) && (
-            <div className="flex gap-5 border-t border-gray-100 px-4 py-2.5 text-caption text-gray-500 dark:border-navy-600 dark:text-gray-400">
+            <div className="flex gap-5 border-t border-line px-4 py-2.5 text-caption text-fg-muted">
               {zones.promotionSlots > 0 && (
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-primary-500" />
+                  <span className="h-2 w-2 rounded-full bg-selected-fill" />
                   {t("schedule.promotionZone")}
                 </span>
               )}
               {zones.relegationSlots > 0 && (
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-red-500" />
+                  <span className="h-2 w-2 rounded-full bg-danger-solid" />
                   {t("schedule.relegationZone")}
                 </span>
               )}
@@ -844,7 +840,7 @@ function LoadingPlaceholder() {
   return (
     <div className="flex flex-col gap-4">
       {[1, 2, 3].map((n) => (
-        <div key={n} className="h-32 rounded-panel bg-gray-100 dark:bg-navy-800 animate-pulse" />
+        <div key={n} className="h-32 rounded-panel bg-hover animate-pulse" />
       ))}
     </div>
   );

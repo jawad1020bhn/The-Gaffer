@@ -120,7 +120,7 @@ export function WorldEditorSidebar({
   const itemClass = (active: boolean) =>
     `flex items-center gap-2 w-full px-3 py-2 rounded-control text-body transition-colors text-left ${
       active
-        ? "bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 font-semibold"
+        ? "bg-selected-tint/15 text-selected font-semibold"
         : "text-fg-muted hover:bg-hover hover:text-fg"
     }`;
 
@@ -145,7 +145,7 @@ export function WorldEditorSidebar({
                   <span
                     className={`text-caption rounded-full px-1.5 py-0.5 min-w-[20px] text-center leading-none ${
                       selectedSection === item.key && !showingIssues
-                        ? "bg-primary-200 dark:bg-primary-500/30 text-primary-700 dark:text-primary-300"
+                        ? "bg-selected-tint text-selected"
                         : "bg-line text-fg-muted"
                     }`}
                   >
@@ -166,12 +166,12 @@ export function WorldEditorSidebar({
           className={`flex flex-col items-start gap-0.5 w-full px-3 py-2 rounded-control text-body transition-colors ${
             showingIssues
               ? issueCount > 0
-                ? "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400"
-                : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                ? "bg-danger-tint text-danger"
+                : "bg-warning-tint text-warning"
               : issueCount > 0
-                ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
+                ? "text-danger hover:bg-danger-tint"
                 : warningCount > 0
-                  ? "text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10"
+                  ? "text-warning hover:bg-warning-tint"
                   : "text-fg-subtle hover:bg-hover"
           }`}
         >
@@ -182,7 +182,7 @@ export function WorldEditorSidebar({
             </span>
           )}
           {warningCount > 0 && (
-            <span className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+            <span className="flex items-center gap-2 text-warning">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               {t("worldEditor.warningsBadge", { count: warningCount })}
             </span>

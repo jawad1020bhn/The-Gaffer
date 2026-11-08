@@ -86,7 +86,7 @@ export default function TeamSelectionGrid({
                       onClick={() => onSelectTeam(team.id)}
                       className={`rounded-panel text-left transition-all duration-200 ${
                         isSelected
-                          ? "scale-[1.01] ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-navy-900"
+                          ? "scale-[1.01] ring-2 ring-selected ring-offset-2"
                           : "hover:scale-[1.01]"
                       }`}
                     >
@@ -94,8 +94,8 @@ export default function TeamSelectionGrid({
                         <div
                           className={`rounded-t-xl p-4 ${
                             isSelected
-                              ? "bg-gradient-to-r from-primary-600 to-primary-700"
-                              : "bg-gradient-to-r from-navy-700 to-navy-800"
+                              ? "bg-gradient-to-r from-selected-fill to-selected-fill"
+                              : "bg-panel"
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -103,28 +103,24 @@ export default function TeamSelectionGrid({
                               <TeamLogo
                                 team={team}
                                 className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-control font-heading text-lead font-bold ${
-                                  isSelected
-                                    ? "bg-white/20 text-white"
-                                    : "bg-white/10 text-gray-300"
+                                  isSelected ? "bg-panel/20 text-fg" : "bg-panel/10 text-fg-subtle"
                                 }`}
                               />
                               <div>
-                                <h3 className="font-heading text-body font-bold uppercase tracking-label text-white">
+                                <h3 className="font-heading text-body font-bold uppercase tracking-label text-fg">
                                   {team.name}
                                 </h3>
                                 <TeamLocation
                                   city={team.city}
                                   countryCode={team.country}
                                   locale={i18n.language}
-                                  className="mt-0.5 text-caption text-gray-300"
+                                  className="mt-0.5 text-caption text-fg-subtle"
                                   iconClassName="w-3 h-3"
                                   flagClassName="text-caption leading-none"
                                 />
                               </div>
                             </div>
-                            {isSelected && (
-                              <Star className="h-5 w-5 fill-current text-accent-400" />
-                            )}
+                            {isSelected && <Star className="h-5 w-5 fill-current text-warning" />}
                           </div>
                         </div>
 
@@ -161,7 +157,7 @@ export default function TeamSelectionGrid({
                               icon={<Star className="h-3.5 w-3.5" />}
                               label={t("teamSelect.avgOvr")}
                               value={
-                                <span className="font-heading text-lead font-bold text-primary-500">
+                                <span className="font-heading text-lead font-bold text-selected">
                                   {visibleRatingText(avgOvr)}
                                 </span>
                               }

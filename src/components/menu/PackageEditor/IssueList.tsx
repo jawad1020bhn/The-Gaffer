@@ -18,15 +18,15 @@ export function IssueList({
     <div
       className={
         isWarning
-          ? "rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 p-3 text-xs"
-          : "rounded-xl border border-red-300 dark:border-red-500/40 bg-red-50 dark:bg-red-500/10 p-3 text-xs"
+          ? "rounded-panel border border-warning/40 bg-warning-tint p-3 text-caption"
+          : "rounded-panel border border-danger/40 bg-danger-tint p-3 text-caption"
       }
     >
       <p
         className={
           isWarning
-            ? "font-heading font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1 flex items-center gap-1"
-            : "font-heading font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mb-1 flex items-center gap-1"
+            ? "font-heading font-bold uppercase tracking-label text-warning mb-1 flex items-center gap-1"
+            : "font-heading font-bold uppercase tracking-label text-danger mb-1 flex items-center gap-1"
         }
       >
         <Icon className="w-3.5 h-3.5" aria-hidden="true" />
@@ -35,8 +35,8 @@ export function IssueList({
       <ul
         className={
           isWarning
-            ? "list-disc pl-4 space-y-0.5 text-amber-700 dark:text-amber-300"
-            : "list-disc pl-4 space-y-0.5 text-red-600 dark:text-red-300"
+            ? "list-disc pl-4 space-y-0.5 text-warning"
+            : "list-disc pl-4 space-y-0.5 text-danger"
         }
       >
         {issues.map((issue, i) => (

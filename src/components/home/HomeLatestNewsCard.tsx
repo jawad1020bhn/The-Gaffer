@@ -27,7 +27,7 @@ export default function HomeLatestNewsCard({
           <button
             type="button"
             onClick={() => onNavigate?.("News")}
-            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-selected text-caption font-heading font-bold uppercase tracking-label hover:text-selected transition-colors"
           >
             {t("home.allNews")}
           </button>
@@ -38,11 +38,11 @@ export default function HomeLatestNewsCard({
       <CardBody className="p-0">
         {articles.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-6">
-            <Newspaper className="w-8 h-8 text-gray-300 dark:text-navy-600" />
+            <Newspaper className="w-8 h-8 text-fg-subtle" />
             <p className="text-caption text-fg-muted">{t("home.noNews")}</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-navy-600">
+          <div className="divide-y divide-line">
             {articles.map((article) => (
               <button
                 type="button"
@@ -61,7 +61,7 @@ export default function HomeLatestNewsCard({
                     <span className="text-caption text-fg-muted">
                       {getTeamName(teams, article.match_score.home_team_id)}
                     </span>
-                    <span className="text-caption font-heading font-bold text-primary-500">
+                    <span className="text-caption font-heading font-bold text-selected">
                       {article.match_score.home_goals}-{article.match_score.away_goals}
                     </span>
                     <span className="text-caption text-fg-muted">

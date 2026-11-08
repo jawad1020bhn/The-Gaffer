@@ -51,7 +51,7 @@ export default function TournamentsOverview({
   );
 
   const roundProgress = (
-    <div className="divide-y divide-gray-100 dark:divide-navy-600">
+    <div className="divide-y divide-line">
       {knockoutRounds.map((round) => (
         <div
           key={round.id}

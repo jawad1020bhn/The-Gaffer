@@ -82,10 +82,10 @@ describe("TournamentsGroupTable", () => {
     renderGroup();
 
     expect(screen.getByTestId("tournaments-group-standing-second").className).toContain(
-      "bg-primary-50",
+      "bg-selected-tint",
     );
     expect(screen.getByTestId("tournaments-group-standing-first").className).not.toContain(
-      "bg-primary-50",
+      "bg-selected-tint",
     );
   });
 

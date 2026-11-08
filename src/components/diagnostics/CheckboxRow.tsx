@@ -29,7 +29,7 @@ export function CheckboxRow({
 }: CheckboxRowProps) {
   const descriptionId = `${id}-desc`;
   return (
-    <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-control bg-gray-50 dark:bg-navy-700 border border-line">
+    <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-control bg-sunken border border-line">
       <Checkbox
         id={id}
         checked={checked}
@@ -46,7 +46,7 @@ export function CheckboxRow({
         >
           {label}
         </label>
-        <p id={descriptionId} className="text-[11px] text-fg-muted mt-0.5">
+        <p id={descriptionId} className="text-caption text-fg-muted mt-0.5">
           {description}
         </p>
       </div>

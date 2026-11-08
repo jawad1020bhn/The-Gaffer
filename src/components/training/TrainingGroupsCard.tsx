@@ -119,7 +119,7 @@ export default function TrainingGroupsCard({
               type="button"
               onClick={addGroup}
               disabled={isSaving}
-              className="flex items-center gap-1.5 text-caption font-heading font-bold uppercase tracking-label text-primary-500 hover:text-primary-400 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 text-caption font-heading font-bold uppercase tracking-label text-selected hover:text-selected transition-colors disabled:opacity-50"
             >
               <Plus className="w-4 h-4" /> {t("training.groups.addGroup")}
             </button>
@@ -137,7 +137,7 @@ export default function TrainingGroupsCard({
               return (
                 <div
                   key={group.id}
-                  className="flex items-center gap-2 bg-gray-50 dark:bg-navy-700/50 border border-line rounded-control px-3 py-1.5"
+                  className="flex items-center gap-2 bg-sunken border border-line rounded-control px-3 py-1.5"
                 >
                   <div className="text-fg-subtle">
                     {trainingFocusIcons[group.focus] ? (
@@ -168,12 +168,12 @@ export default function TrainingGroupsCard({
                       </option>
                     ))}
                   </Select>
-                  <span className="text-caption text-gray-400 tabular-nums">{count}</span>
+                  <span className="text-caption text-fg-subtle tabular-nums">{count}</span>
                   <button
                     type="button"
                     onClick={() => removeGroup(group.id)}
                     disabled={isSaving}
-                    className="text-red-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                    className="text-danger hover:text-danger transition-colors disabled:opacity-50"
                     title={t("training.groups.removeGroup")}
                   >
                     <Trash2 className="w-3 h-3" />
@@ -190,7 +190,7 @@ export default function TrainingGroupsCard({
           <div className="overflow-x-auto rounded-control border border-line">
             <table className="w-full text-left text-body">
               <thead>
-                <tr className="bg-gray-50 dark:bg-navy-700/50">
+                <tr className="bg-sunken">
                   <th className="py-2 px-3 text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
                     {t("common.player")}
                   </th>
@@ -208,7 +208,7 @@ export default function TrainingGroupsCard({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+              <tbody className="divide-y divide-line">
                 {sortedRoster.map((player) => {
                   const playerGroup = playerGroupMap.get(player.id);
                   const hasIndividualFocus = !!player.training_focus;

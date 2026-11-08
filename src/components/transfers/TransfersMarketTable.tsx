@@ -72,8 +72,8 @@ export function TransfersMarketPagination({ state }: TransfersMarketPaginationPr
     marketTotalPages,
   } = state;
   return showMarketPagination ? (
-    <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3 dark:border-navy-600">
-      <p className="text-caption font-heading text-gray-500 dark:text-gray-300">
+    <div className="flex items-center justify-between border-t border-line px-4 py-3">
+      <p className="text-caption font-heading text-fg-muted">
         {t("players.showingRange", {
           from: marketRangeFrom,
           to: marketRangeTo,
@@ -86,7 +86,7 @@ export function TransfersMarketPagination({ state }: TransfersMarketPaginationPr
           onClick={() => setMarketPage(Math.max(1, safeMarketPage - 1))}
           disabled={safeMarketPage === 1}
           aria-label={t("scouting.previousPage")}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none rounded-control p-1.5 text-gray-500 dark:text-gray-300 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:pointer-events-none disabled:opacity-30 dark:hover:bg-navy-700 dark:hover:text-white"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none rounded-control p-1.5 text-fg-muted transition-colors hover:bg-hover hover:text-fg disabled:pointer-events-none disabled:opacity-30"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -98,7 +98,7 @@ export function TransfersMarketPagination({ state }: TransfersMarketPaginationPr
           onClick={() => setMarketPage(Math.min(marketTotalPages, safeMarketPage + 1))}
           disabled={safeMarketPage === marketTotalPages}
           aria-label={t("scouting.nextPage")}
-          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none rounded-control p-1.5 text-gray-500 dark:text-gray-300 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:pointer-events-none disabled:opacity-30 dark:hover:bg-navy-700 dark:hover:text-white"
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel motion-reduce:transition-none rounded-control p-1.5 text-fg-muted transition-colors hover:bg-hover hover:text-fg disabled:pointer-events-none disabled:opacity-30"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
@@ -172,7 +172,7 @@ export function TransfersMarketTable({ state }: TransfersMarketTableProps) {
                           : "none"
                     }
                     tabIndex={0}
-                    className={`py-3 px-4 font-heading font-bold uppercase tracking-label cursor-pointer select-none hover:text-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 transition-colors ${ovrSortDir !== "none" ? "text-primary-700 dark:text-primary-400" : "text-fg-muted"}`}
+                    className={`py-3 px-4 font-heading font-bold uppercase tracking-label cursor-pointer select-none hover:text-selected focus:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-colors ${ovrSortDir !== "none" ? "text-selected" : "text-fg-muted"}`}
                     onClick={cycleOvrSort}
                     onKeyDown={(event) => {
                       if (event.key === "Enter" || event.key === " ") {
@@ -205,7 +205,7 @@ export function TransfersMarketTable({ state }: TransfersMarketTableProps) {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+              <tbody className="divide-y divide-line">
                 {visibleList.map((player) => (
                   <TransferPlayerRow key={player.id} state={state} player={player} />
                 ))}

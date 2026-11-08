@@ -105,9 +105,9 @@ export default function TournamentsStandingsView({
 
   return (
     <Card>
-      <div className="p-5 border-b border-gray-100 dark:border-navy-600 bg-gradient-to-r from-navy-700 to-navy-800 rounded-t-xl">
-        <h3 className="text-lead font-heading font-bold text-white flex items-center gap-2 uppercase tracking-label">
-          <Trophy className="text-accent-400 w-5 h-5" />
+      <div className="p-5 border-b border-line bg-panel rounded-t-xl">
+        <h3 className="text-lead font-heading font-bold text-fg flex items-center gap-2 uppercase tracking-label">
+          <Trophy className="text-warning w-5 h-5" />
           {competitionDisplayName(league, t)} — {t("schedule.season", { number: league.season })}
         </h3>
       </div>
@@ -120,16 +120,16 @@ export default function TournamentsStandingsView({
           zones={zones}
         />
         {(zones.promotionSlots > 0 || zones.relegationSlots > 0) && (
-          <div className="flex gap-5 border-t border-gray-100 px-4 py-2.5 text-caption text-gray-500 dark:border-navy-600 dark:text-gray-400">
+          <div className="flex gap-5 border-t border-line px-4 py-2.5 text-caption text-fg-muted">
             {zones.promotionSlots > 0 && (
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-primary-500" />
+                <span className="h-2 w-2 rounded-full bg-selected-fill" />
                 {t("schedule.promotionZone")}
               </span>
             )}
             {zones.relegationSlots > 0 && (
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-red-500" />
+                <span className="h-2 w-2 rounded-full bg-danger-solid" />
                 {t("schedule.relegationZone")}
               </span>
             )}

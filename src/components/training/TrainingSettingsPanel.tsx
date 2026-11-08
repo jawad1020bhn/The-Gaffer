@@ -51,7 +51,7 @@ function FocusAttributeChips({
       {attributes.map((attribute) => (
         <span
           key={attribute}
-          className="text-caption bg-gray-100 dark:bg-navy-700 text-fg-muted px-1.5 py-0.5 rounded font-heading uppercase tracking-label"
+          className="text-caption bg-hover text-fg-muted px-1.5 py-0.5 rounded font-heading uppercase tracking-label"
         >
           {t(`common.attributes.${attribute}`)}
         </span>
@@ -99,8 +99,8 @@ export default function TrainingSettingsPanel({
                 onClick={() => onSetSchedule(scheduleId)}
                 className={`flex-1 p-3 rounded-panel text-left transition-all border-2 ${
                   currentSchedule === scheduleId
-                    ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 shadow-md shadow-primary-500/10"
-                    : "border-line hover:border-gray-300 dark:hover:border-navy-500"
+                    ? "border-selected bg-selected-tint shadow-md shadow-card"
+                    : "border-line hover:border-line-strong"
                 } ${isSaving ? "opacity-60 pointer-events-none" : ""}`}
               >
                 <div className={`mb-1.5 ${scheduleColors[scheduleId]}`}>
@@ -109,7 +109,7 @@ export default function TrainingSettingsPanel({
                 <p className="font-heading font-bold text-body uppercase tracking-label text-fg">
                   {t(`training.schedules.${scheduleId}.label`)}
                 </p>
-                <p className="text-[11px] text-fg-muted mt-1">
+                <p className="text-caption text-fg-muted mt-1">
                   {t(`training.schedules.${scheduleId}.desc`)}
                 </p>
               </button>
@@ -142,8 +142,8 @@ export default function TrainingSettingsPanel({
                 onClick={() => onSetTraining(focusId, currentIntensity)}
                 className={`p-4 rounded-panel text-left transition-all border-2 ${
                   currentFocus === focusId
-                    ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10 shadow-md shadow-primary-500/10"
-                    : "border-line hover:border-gray-300 dark:hover:border-navy-500"
+                    ? "border-selected bg-selected-tint shadow-md shadow-card"
+                    : "border-line hover:border-line-strong"
                 } ${isSaving ? "opacity-60 pointer-events-none" : ""}`}
               >
                 <div className="mb-2 text-fg-muted">{trainingFocusIcons[focusId]}</div>
@@ -181,8 +181,8 @@ export default function TrainingSettingsPanel({
                   onClick={() => onSetTraining(currentFocus, intensityId)}
                   className={`flex-1 p-3 rounded-control text-left transition-all border-2 ${
                     currentIntensity === intensityId
-                      ? "border-primary-500 bg-primary-50 dark:bg-primary-500/10"
-                      : "border-line hover:border-gray-300 dark:hover:border-navy-500"
+                      ? "border-selected bg-selected-tint"
+                      : "border-line hover:border-line-strong"
                   } ${isSaving ? "opacity-60 pointer-events-none" : ""}`}
                 >
                   <p

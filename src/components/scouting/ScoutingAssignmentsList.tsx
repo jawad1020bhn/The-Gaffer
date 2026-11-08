@@ -63,7 +63,7 @@ export default function ScoutingAssignmentsList({
 
             const row = (
               <div
-                className="flex items-center gap-4 p-3 rounded-control bg-gray-50 dark:bg-navy-700/50"
+                className="flex items-center gap-4 p-3 rounded-control bg-sunken"
                 data-testid={`scouting-assignment-${assignment.id}`}
                 key={assignment.id}
               >
@@ -71,7 +71,7 @@ export default function ScoutingAssignmentsList({
                   <button
                     type="button"
                     onClick={() => onSelectPlayer?.(player.id)}
-                    className="font-heading font-bold text-body text-fg hover:text-primary-500 transition-colors truncate block"
+                    className="font-heading font-bold text-body text-fg hover:text-selected transition-colors truncate block"
                   >
                     {player.full_name}
                   </button>
@@ -86,8 +86,8 @@ export default function ScoutingAssignmentsList({
                     })}
                   </p>
                   <div className="flex items-center gap-1.5 justify-end mt-0.5">
-                    <Clock className="w-3 h-3 text-accent-500" />
-                    <span className="text-caption font-heading font-bold text-accent-500">
+                    <Clock className="w-3 h-3 text-warning" />
+                    <span className="text-caption font-heading font-bold text-warning">
                       {t("scouting.daysLeft", { days: assignment.days_remaining })}
                     </span>
                   </div>

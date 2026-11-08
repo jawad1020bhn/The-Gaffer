@@ -44,7 +44,7 @@ export function ReportPreviewStep({
   const { t, i18n } = useTranslation();
   const saveSize =
     canAttachSave && diagnostics !== null && diagnostics.save_bytes !== null ? (
-      <span className="text-[11px] font-mono text-fg-muted shrink-0">
+      <span className="text-caption font-mono text-fg-muted shrink-0">
         {formatBytes(diagnostics.save_bytes, i18n.language)}
       </span>
     ) : undefined;
@@ -79,7 +79,7 @@ export function ReportPreviewStep({
       )}
 
       <div className="h-px bg-hover my-1.5" />
-      <p className="text-[11px] font-heading font-bold uppercase tracking-label text-fg-muted">
+      <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
         {t("reportBug.optionalHeading")}
       </p>
       <CheckboxRow
@@ -112,22 +112,19 @@ export function ReportPreviewStep({
         </>
       )}
 
-      <p className="text-[11px] text-fg-muted mt-2">
+      <p className="text-caption text-fg-muted mt-2">
         {canUpload ? t("reportBug.nothingSentYetUpload") : t("reportBug.nothingSentYet")}
       </p>
       {failure && (
-        <div
-          role="alert"
-          className="flex flex-col gap-1 text-caption text-red-600 dark:text-red-400"
-        >
+        <div role="alert" className="flex flex-col gap-1 text-caption text-danger">
           <p>{failure}</p>
           {failureKind === "tooLarge" && canAttachSave && includeSave && (
             <p>{t("reportBug.tooLargeUntickSave")}</p>
           )}
           {failureKind !== null && <p>{t("reportBug.uploadFailedFallback")}</p>}
           {failureDetail !== null && (
-            <details className="text-[11px] text-fg-muted">
-              <summary className="cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 dark:focus-visible:ring-primary-400 dark:focus-visible:ring-offset-navy-800">
+            <details className="text-caption text-fg-muted">
+              <summary className="cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel">
                 {t("reportBug.technicalDetails")}
               </summary>
               <p className="mt-1 font-mono break-words select-text">{failureDetail}</p>

@@ -140,7 +140,7 @@ export default function ScoutingPlayerSearchCard({
         {errorMessage ? (
           <p
             role="alert"
-            className="mb-3 text-caption font-heading font-bold uppercase tracking-label text-red-500"
+            className="mb-3 text-caption font-heading font-bold uppercase tracking-label text-danger"
           >
             {errorMessage}
           </p>
@@ -199,23 +199,23 @@ export default function ScoutingPlayerSearchCard({
                   const row = (
                     <tr
                       key={player.id}
-                      className="border-b border-gray-50 dark:border-navy-700/50 hover:bg-hover/30 transition-colors"
+                      className="border-b border-line hover:bg-hover/30 transition-colors"
                     >
                       <td className="py-2 px-2">
                         <div className="flex items-center gap-2">
                           <PlayerAvatar
                             player={player}
-                            className="h-8 w-8 shrink-0 overflow-hidden rounded-control bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-caption font-heading font-bold text-gray-500 dark:text-gray-300"
+                            className="h-8 w-8 shrink-0 overflow-hidden rounded-control bg-hover flex items-center justify-center text-caption font-heading font-bold text-fg-muted"
                           />
                           <div className="min-w-0">
                             <button
                               type="button"
                               onClick={() => onSelectPlayer?.(player.id)}
-                              className="font-heading font-bold text-fg hover:text-primary-500 transition-colors text-left"
+                              className="font-heading font-bold text-fg hover:text-selected transition-colors text-left"
                             >
                               {player.full_name}
                             </button>
-                            <div className="text-caption text-gray-400 mt-0.5 flex items-center gap-1">
+                            <div className="text-caption text-fg-subtle mt-0.5 flex items-center gap-1">
                               <CountryFlag
                                 code={player.nationality}
                                 locale={i18n.language}
@@ -260,7 +260,9 @@ export default function ScoutingPlayerSearchCard({
           </div>
         ) : null}
         {players.length === 0 && (
-          <p className="text-center text-body text-gray-400 py-4">{t("scouting.noPlayersFound")}</p>
+          <p className="text-center text-body text-fg-subtle py-4">
+            {t("scouting.noPlayersFound")}
+          </p>
         )}
 
         {totalPages > 1 && (
@@ -278,7 +280,7 @@ export default function ScoutingPlayerSearchCard({
                 aria-label={t("scouting.previousPage")}
                 disabled={safePage === 0}
                 onClick={onPreviousPage}
-                className="p-1.5 rounded-control bg-gray-100 dark:bg-navy-700 text-fg-muted hover:bg-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-control bg-hover text-fg-muted hover:bg-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -290,7 +292,7 @@ export default function ScoutingPlayerSearchCard({
                 aria-label={t("scouting.nextPage")}
                 disabled={safePage >= totalPages - 1}
                 onClick={onNextPage}
-                className="p-1.5 rounded-control bg-gray-100 dark:bg-navy-700 text-fg-muted hover:bg-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-control bg-hover text-fg-muted hover:bg-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

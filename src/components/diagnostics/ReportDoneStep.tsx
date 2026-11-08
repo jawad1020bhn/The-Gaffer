@@ -13,12 +13,12 @@ export function ReportDoneStep({ summary, browserFailed }: ReportDoneStepProps) 
   return (
     <div className="flex flex-col gap-3">
       <p className="text-body text-fg">{t("reportBug.savedTo")}</p>
-      <code className="block px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-[11px] font-mono text-fg break-all">
+      <code className="block px-3 py-2 rounded-control bg-sunken border border-line text-caption font-mono text-fg break-all">
         {describeBundle(summary, i18n.language)}
       </code>
       {/* What is actually in the file: the screen asked the player to decide about the save, and
           not saying afterwards whether it went in leaves that question unanswered. */}
-      <p className="text-[11px] text-fg-muted">
+      <p className="text-caption text-fg-muted">
         {[
           t("reportBug.itemLogs"),
           summary.included_save ? t("reportBug.includeSave") : null,

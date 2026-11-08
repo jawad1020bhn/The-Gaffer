@@ -118,11 +118,11 @@ export function WorldEditorTopBar({
           className="flex items-center gap-1 text-caption text-fg-muted hover:text-fg transition-colors"
         >
           {autoSave ? (
-            <ToggleRight className="w-4 h-4 text-primary-500" />
+            <ToggleRight className="w-4 h-4 text-selected" />
           ) : (
             <ToggleLeft className="w-4 h-4" />
           )}
-          <span className="hidden sm:inline text-[11px]">{t("worldEditor.autoSave")}</span>
+          <span className="hidden sm:inline text-caption">{t("worldEditor.autoSave")}</span>
         </button>
 
         {/* Save indicator + manual save */}
@@ -131,23 +131,23 @@ export function WorldEditorTopBar({
           onClick={onSave}
           disabled={isBusy}
           title={t("worldEditor.save")}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-control border border-line bg-panel text-caption font-heading font-bold uppercase tracking-label text-fg hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-all disabled:opacity-40"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-control border border-line bg-panel text-caption font-heading font-bold uppercase tracking-label text-fg hover:border-selected hover:text-selected transition-all disabled:opacity-40"
         >
           {saveState === "saving" ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
           ) : saveState === "saved" ? (
-            <Save className="w-3.5 h-3.5 text-green-500" />
+            <Save className="w-3.5 h-3.5 text-positive" />
           ) : saveState === "error" ? (
-            <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+            <AlertCircle className="w-3.5 h-3.5 text-danger" />
           ) : (
             <Save className="w-3.5 h-3.5" />
           )}
           {saveState === "saving" ? (
             <span>{t("worldEditor.saving")}</span>
           ) : saveState === "saved" ? (
-            <span className="text-green-600 dark:text-green-400">{t("worldEditor.saved")}</span>
+            <span className="text-positive">{t("worldEditor.saved")}</span>
           ) : saveState === "error" ? (
-            <span className="text-red-500">{t("worldEditor.unsaved")}</span>
+            <span className="text-danger">{t("worldEditor.unsaved")}</span>
           ) : (
             <span>{t("worldEditor.save")}</span>
           )}
@@ -159,25 +159,25 @@ export function WorldEditorTopBar({
           type="button"
           onClick={onValidate}
           disabled={isBusy}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-control border border-line bg-panel text-caption font-heading font-bold uppercase tracking-label text-fg hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-all disabled:opacity-50"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-control border border-line bg-panel text-caption font-heading font-bold uppercase tracking-label text-fg hover:border-selected hover:text-selected transition-all disabled:opacity-50"
         >
           {isBusy ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
           ) : issueCount > 0 ? (
-            <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+            <AlertCircle className="w-3.5 h-3.5 text-danger" />
           ) : warningCount > 0 ? (
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+            <AlertTriangle className="w-3.5 h-3.5 text-warning" />
           ) : (
             <CheckCircle className="w-3.5 h-3.5" />
           )}
           {t("worldEditor.validate")}
           {issueCount > 0 && (
-            <span className="ml-0.5 bg-red-500 text-white text-caption rounded-full px-1.5 py-0.5 leading-none">
+            <span className="ml-0.5 bg-danger-tint text-danger text-caption rounded-full px-1.5 py-0.5 leading-none">
               {issueCount}
             </span>
           )}
           {warningCount > 0 && (
-            <span className="ml-0.5 bg-amber-500 text-white text-caption rounded-full px-1.5 py-0.5 leading-none">
+            <span className="ml-0.5 bg-warning-tint text-warning text-caption rounded-full px-1.5 py-0.5 leading-none">
               {warningCount}
             </span>
           )}
@@ -187,7 +187,7 @@ export function WorldEditorTopBar({
           type="button"
           onClick={onBuild}
           disabled={isBusy}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-control bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white text-caption font-heading font-bold uppercase tracking-label transition-all disabled:opacity-50"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-control bg-gradient-to-r from-warning-solid to-warning-solid hover:from-warning-solid hover:to-warning-solid text-on-brand text-caption font-heading font-bold uppercase tracking-label transition-all disabled:opacity-50"
         >
           {isBusy ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />

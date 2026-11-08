@@ -55,7 +55,7 @@ export default function FinancesFacilitiesCard({
                 className="rounded-panel border border-line bg-sunken p-4 flex flex-col gap-4"
               >
                 <div className="space-y-1">
-                  <h3 className="font-heading font-bold text-base text-gray-900 dark:text-gray-100 uppercase tracking-label">
+                  <h3 className="font-heading font-bold text-body text-fg uppercase tracking-label">
                     {t(facility.titleKey)}
                   </h3>
                   <p className="text-body text-fg-muted">
@@ -80,13 +80,9 @@ export default function FinancesFacilitiesCard({
                     {t("finances.upgradeFacility")}
                   </Button>
                   {previewsCurrent && !canAffordUpgrade && !upgradeReason && (
-                    <p className="text-caption text-red-500 dark:text-red-400">
-                      {t("finances.insufficientFunds")}
-                    </p>
+                    <p className="text-caption text-danger">{t("finances.insufficientFunds")}</p>
                   )}
-                  {upgradeReason && (
-                    <p className="text-caption text-red-500 dark:text-red-400">{upgradeReason}</p>
-                  )}
+                  {upgradeReason && <p className="text-caption text-danger">{upgradeReason}</p>}
                 </div>
               </div>
             );

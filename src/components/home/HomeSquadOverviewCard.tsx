@@ -38,7 +38,7 @@ export default function HomeSquadOverviewCard({
           <button
             type="button"
             onClick={() => onNavigate?.("Training")}
-            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-selected text-caption font-heading font-bold uppercase tracking-label hover:text-selected transition-colors"
           >
             {t("dashboard.training")}
           </button>
@@ -69,7 +69,7 @@ export default function HomeSquadOverviewCard({
           </div>
 
           {exhaustedCount > 0 && (
-            <div className="flex items-center gap-1.5 mt-1 text-amber-500 dark:text-amber-400">
+            <div className="flex items-center gap-1.5 mt-1 text-warning">
               <AlertTriangle className="w-3.5 h-3.5" />
               <span className="text-caption font-heading">
                 {t("home.exhaustedPlayers", { count: exhaustedCount })}

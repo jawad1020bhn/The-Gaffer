@@ -39,8 +39,8 @@ export default function ScoutingScoutDetailsCard({
             return (
               <div key={scout.id} className="p-3 rounded-control border border-line">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-control bg-accent-500/10 flex items-center justify-center">
-                    <Eye className="w-4 h-4 text-accent-500" />
+                  <div className="w-9 h-9 rounded-control bg-warning-tint flex items-center justify-center">
+                    <Eye className="w-4 h-4 text-warning" />
                   </div>
                   <div className="flex-1">
                     <p className="font-heading font-bold text-body text-fg">{scout.display_name}</p>

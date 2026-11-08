@@ -28,7 +28,7 @@ function NameChipList({ label, names, addPlaceholder, addLabel, onChange }: Name
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const labelClass =
-    "text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400";
+    "text-caption font-heading font-bold uppercase tracking-[0.18em] text-fg-muted";
 
   function add() {
     const trimmed = input.trim();
@@ -50,13 +50,13 @@ function NameChipList({ label, names, addPlaceholder, addLabel, onChange }: Name
           {names.map((name) => (
             <span
               key={name}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-500/20 text-primary-700 dark:text-primary-300 text-xs font-medium"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-selected-tint text-selected text-caption font-medium"
             >
               {name}
               <button
                 type="button"
                 onClick={() => remove(name)}
-                className="text-primary-400 hover:text-primary-700 dark:hover:text-primary-200 transition-colors"
+                className="text-selected hover:text-selected transition-colors"
                 aria-label={`Remove ${name}`}
               >
                 <X className="w-3 h-3" />
@@ -78,13 +78,13 @@ function NameChipList({ label, names, addPlaceholder, addLabel, onChange }: Name
             }
           }}
           placeholder={addPlaceholder}
-          className="flex-1 rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-400 transition"
+          className="flex-1 rounded-control border border-line bg-panel px-3 py-2 text-body text-fg focus:outline-none focus:ring-2 focus-visible:ring-focus transition"
         />
         <button
           type="button"
           onClick={add}
           disabled={!input.trim()}
-          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-navy-600 transition disabled:opacity-40"
+          className="flex items-center gap-1 px-3 py-2 rounded-control border border-line bg-panel text-body text-fg hover:bg-sunken transition disabled:opacity-40"
         >
           <Plus className="w-4 h-4" />
           {addLabel}
@@ -134,7 +134,9 @@ export function NamesPoolForm({
           onChange={setKey}
           placeholder="ENG"
         />
-        {keyCollision && <p className="text-xs text-red-500">{t("worldEditor.poolKeyTaken")}</p>}
+        {keyCollision && (
+          <p className="text-caption text-danger">{t("worldEditor.poolKeyTaken")}</p>
+        )}
       </div>
       <NameChipList
         label={t("worldEditor.poolFirstNames")}

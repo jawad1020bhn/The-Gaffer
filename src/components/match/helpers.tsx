@@ -26,114 +26,114 @@ export const EVENT_ICONS: Record<
 > = {
   Goal: {
     icon: <Circle className="w-4 h-4 fill-current" />,
-    color: "text-accent-700 dark:text-accent-400",
+    color: "text-warning",
     important: true,
   },
   PenaltyGoal: {
     icon: <CircleDot className="w-4 h-4" />,
-    color: "text-accent-700 dark:text-accent-400",
+    color: "text-warning",
     important: true,
   },
   PenaltyMiss: {
     icon: <CircleOff className="w-4 h-4" />,
-    color: "text-red-400",
+    color: "text-danger",
     important: true,
   },
   ShootoutGoal: {
     icon: <CircleDot className="w-4 h-4" />,
-    color: "text-accent-700 dark:text-accent-400",
+    color: "text-warning",
     important: true,
   },
   ShootoutMiss: {
     icon: <CircleOff className="w-4 h-4" />,
-    color: "text-red-400",
+    color: "text-danger",
     important: true,
   },
   YellowCard: {
-    icon: <Square className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />,
-    color: "text-yellow-400",
+    icon: <Square className="w-3.5 h-3.5 fill-warning-solid text-warning" />,
+    color: "text-warning",
     important: true,
   },
   RedCard: {
-    icon: <Square className="w-3.5 h-3.5 fill-red-500 text-red-500" />,
-    color: "text-red-500",
+    icon: <Square className="w-3.5 h-3.5 fill-danger-solid text-danger" />,
+    color: "text-danger",
     important: true,
   },
   SecondYellow: {
-    icon: <Square className="w-3.5 h-3.5 fill-red-500 text-red-500" />,
-    color: "text-red-500",
+    icon: <Square className="w-3.5 h-3.5 fill-danger-solid text-danger" />,
+    color: "text-danger",
     important: true,
   },
   Substitution: {
     icon: <ArrowLeftRight className="w-4 h-4" />,
-    color: "text-blue-400",
+    color: "text-info",
     important: true,
   },
   Injury: {
     icon: <Cross className="w-4 h-4" />,
-    color: "text-red-400",
+    color: "text-danger",
     important: true,
   },
   KickOff: {
     icon: <Play className="w-3.5 h-3.5 fill-current" />,
-    color: "text-gray-700 dark:text-gray-400",
+    color: "text-fg",
     important: true,
   },
   HalfTime: {
     icon: <Pause className="w-3.5 h-3.5" />,
-    color: "text-gray-700 dark:text-gray-400",
+    color: "text-fg",
     important: true,
   },
   SecondHalfStart: {
     icon: <Play className="w-3.5 h-3.5 fill-current" />,
-    color: "text-gray-700 dark:text-gray-400",
+    color: "text-fg",
     important: true,
   },
   FullTime: {
     icon: <Flag className="w-4 h-4" />,
-    color: "text-gray-700 dark:text-gray-400",
+    color: "text-fg",
     important: true,
   },
   ShotSaved: {
     icon: <Hand className="w-4 h-4" />,
-    color: "text-green-700 dark:text-green-400",
+    color: "text-positive",
     important: false,
   },
   ShotOffTarget: {
     icon: <ArrowUpRight className="w-4 h-4" />,
-    color: "text-gray-700 dark:text-gray-500",
+    color: "text-fg",
     important: false,
   },
   ShotBlocked: {
     icon: <Shield className="w-4 h-4" />,
-    color: "text-gray-700 dark:text-gray-500",
+    color: "text-fg",
     important: false,
   },
   Corner: {
     icon: <CornerDownRight className="w-4 h-4" />,
-    color: "text-gray-700 dark:text-gray-500",
+    color: "text-fg",
     important: false,
   },
   FreeKick: {
     icon: <Ruler className="w-4 h-4" />,
-    color: "text-gray-700 dark:text-gray-500",
+    color: "text-fg",
     important: false,
   },
   Foul: {
     icon: <AlertTriangle className="w-4 h-4" />,
-    color: "text-yellow-700 dark:text-yellow-500",
+    color: "text-warning",
     important: false,
   },
   PenaltyAwarded: {
     icon: <Zap className="w-4 h-4" />,
-    color: "text-accent-700 dark:text-accent-400",
+    color: "text-warning",
     important: true,
   },
 };
 
 const DEFAULT_DISPLAY = {
   icon: <Circle className="w-3 h-3" />,
-  color: "text-gray-700 dark:text-gray-400",
+  color: "text-fg",
   important: false,
 };
 

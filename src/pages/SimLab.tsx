@@ -149,7 +149,7 @@ export default function SimLab() {
 
   return (
     <div
-      className="min-h-screen bg-sunken text-slate-100 flex flex-col"
+      className="min-h-screen bg-sunken text-fg flex flex-col"
       style={{ fontFamily: "system-ui, sans-serif" }}
     >
       {/* Header */}
@@ -197,9 +197,7 @@ export default function SimLab() {
               className={inputCls}
             />
             {cfg.games > 10000 && (
-              <p className="text-caption text-amber-400 mt-1">
-                Large runs may take several seconds.
-              </p>
+              <p className="text-caption text-warning mt-1">Large runs may take several seconds.</p>
             )}
             <Label htmlFor="seed-input">Seed (blank = random)</Label>
             <input
@@ -314,7 +312,7 @@ export default function SimLab() {
 
           {running && (
             <div className="flex items-center gap-3 text-fg-muted">
-              <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-info border-t-transparent rounded-full animate-spin" />
               Simulating {cfg.games.toLocaleString()} games…
             </div>
           )}
@@ -330,7 +328,7 @@ export default function SimLab() {
                     onClick={() => setActiveTab(t)}
                     className={`px-4 py-2 text-body font-medium transition-colors border-b-2 -mb-px ${
                       activeTab === t
-                        ? "border-blue-400 text-selected"
+                        ? "border-info text-selected"
                         : "border-transparent text-fg-muted hover:text-fg"
                     }`}
                   >
@@ -403,7 +401,7 @@ function TeamConfig({
         max={95}
         value={cfg[`${prefix}_rating`]}
         onChange={(e) => onChange(`${prefix}_rating`, Number(e.target.value))}
-        className="w-full accent-blue-400"
+        className="w-full accent-info-solid"
       />
     </div>
   );
@@ -442,7 +440,7 @@ function ConfigSlider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-blue-400"
+        className="w-full accent-info-solid"
       />
     </div>
   );
@@ -521,7 +519,7 @@ function OverviewTab({ r }: { r: SimBatchResults }) {
               const v = getVal(label);
               const ok = v >= lo && v <= hi;
               return (
-                <tr key={label} className="border-b border-navy-800">
+                <tr key={label} className="border-b border-line">
                   <td className="py-1.5 text-fg-muted">{label}</td>
                   <td className="py-1.5 text-right font-mono font-semibold">{v.toFixed(2)}</td>
                   <td className="py-1.5 text-right text-fg-muted text-caption">{target}</td>
@@ -734,7 +732,7 @@ function TimelineTab({ r }: { r: SimBatchResults }) {
               <span className="text-caption text-fg-muted w-12 text-right">{BUCKET_LABELS[i]}</span>
               <div className="flex-1 h-5 bg-panel rounded overflow-hidden">
                 <div
-                  className="h-full rounded bg-blue-500 transition-all"
+                  className="h-full rounded bg-info-solid transition-all"
                   style={{ width: `${(frac / max) * 100}%` }}
                 />
               </div>
@@ -757,13 +755,13 @@ function TimelineTab({ r }: { r: SimBatchResults }) {
         </div>
         <div className="flex h-7 rounded overflow-hidden gap-px">
           <div
-            className="flex items-center justify-center text-caption font-bold text-white"
+            className="flex items-center justify-center text-caption font-bold text-fg"
             style={{ width: `${r.home_possession_avg}%`, background: "#4f8ef7" }}
           >
             {r.home_possession_avg.toFixed(1)}%
           </div>
           <div
-            className="flex items-center justify-center text-caption font-bold text-white"
+            className="flex items-center justify-center text-caption font-bold text-fg"
             style={{ width: `${r.away_possession_avg}%`, background: "#f472b6" }}
           >
             {r.away_possession_avg.toFixed(1)}%
@@ -854,7 +852,7 @@ function StatCard({
   return (
     <div className="bg-panel rounded-control p-4">
       <p className="text-caption text-fg-muted mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${valueClass ?? "text-slate-100"}`}>{value}</p>
+      <p className={`text-title font-bold ${valueClass ?? "text-fg"}`}>{value}</p>
       {sub && <p className="text-caption text-fg-muted mt-1">{sub}</p>}
     </div>
   );
@@ -936,7 +934,7 @@ function FunnelRow({
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-center text-fg-muted">
-      <div className="text-4xl mb-3">⚽</div>
+      <div className="text-display mb-3">⚽</div>
       <p className="font-semibold">Configure and run a simulation</p>
       <p className="text-body mt-1">Adjust the parameters on the left, then press Run.</p>
     </div>
@@ -946,7 +944,7 @@ function EmptyState() {
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
 const inputCls =
-  "w-full bg-panel border border-navy-600 rounded-md px-2.5 py-1.5 text-body text-slate-200 focus:outline-none focus:border-selected";
+  "w-full bg-panel border border-line rounded-md px-2.5 py-1.5 text-body text-fg focus:outline-none focus:border-selected";
 
 function inRange(value: number, lo: number, hi: number): string {
   return value >= lo && value <= hi ? "text-positive" : "text-danger";

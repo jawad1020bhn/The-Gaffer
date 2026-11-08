@@ -159,8 +159,8 @@ const allSquad = [
 
 describe("SetPieceSelector component", () => {
   it("uses readable shared stat value classes for selector chips", () => {
-    expect(getAttributeValueClassName(75)).toContain("text-success-600");
-    expect(getAttributeValueClassName(48)).toContain("text-accent-700");
+    expect(getAttributeValueClassName(75)).toContain("text-positive");
+    expect(getAttributeValueClassName(48)).toContain("text-warning");
   });
 
   it("renders the label and 'not assigned' when no currentId", () => {
@@ -289,7 +289,7 @@ describe("SetPieceSelector component", () => {
     // The current player's row should have the highlight class
     const buttons = screen.getAllByRole("button");
     const p1Button = buttons.find((b) => b.textContent?.includes("John Smith") && b !== buttons[0]);
-    expect(p1Button?.className).toContain("bg-primary-500/20");
+    expect(p1Button?.className).toContain("bg-selected-tint");
   });
 
   it("includes goalkeepers for vice captain assignments", () => {

@@ -95,7 +95,7 @@ export default function InboxMessageDetailPane({
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
-          <MailOpen className="w-12 h-12 text-gray-300 dark:text-navy-600 mx-auto mb-3" />
+          <MailOpen className="w-12 h-12 text-fg-subtle mx-auto mb-3" />
           <p className="text-body text-fg-subtle font-heading uppercase tracking-label">
             {t("inbox.selectMessage")}
           </p>
@@ -106,23 +106,23 @@ export default function InboxMessageDetailPane({
 
   return (
     <>
-      <div className="shrink-0 border-b border-gray-100 p-5 dark:border-navy-600">
+      <div className="shrink-0 border-b border-line p-5">
         <button
           type="button"
           onClick={onCloseSelectedMessage}
-          className="md:hidden flex items-center gap-1.5 text-caption text-fg-muted hover:text-gray-800 dark:hover:text-gray-200 mb-3"
+          className="md:hidden flex items-center gap-1.5 text-caption text-fg-muted hover:text-fg mb-3"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> {t("inbox.backToInbox")}
         </button>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0 flex-1">
             <div
-              className={`w-10 h-10 rounded-control flex items-center justify-center shrink-0 ${getCategoryColor(selectedMessage.category)} bg-primary-500/10 dark:bg-primary-500/20`}
+              className={`w-10 h-10 rounded-control flex items-center justify-center shrink-0 ${getCategoryColor(selectedMessage.category)} bg-selected-tint`}
             >
               {getCategoryIcon(selectedMessage.category)}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-heading font-bold text-lead text-gray-900 dark:text-gray-100">
+              <h3 className="font-heading font-bold text-lead text-fg">
                 {selectedMessage.subject}
               </h3>
               <div className="flex items-center gap-3 mt-1">
@@ -156,7 +156,7 @@ export default function InboxMessageDetailPane({
             size="sm"
             onClick={onRequestDelete}
             icon={<Trash2 className="w-4 h-4" />}
-            className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500"
+            className="bg-danger-solid hover:bg-danger-solid active:bg-danger-solid focus-visible:ring-focus"
             data-testid="inbox-delete-message"
           >
             {t("inbox.deleteMessage")}
@@ -200,7 +200,7 @@ export default function InboxMessageDetailPane({
 
           {selectedMessage.category === "ScoutReport" && !selectedMessage.context?.scout_report ? (
             <div className="mt-6 flex flex-col gap-3">
-              <div className="flex flex-wrap items-center gap-2 rounded-panel border border-gray-100 bg-gray-50 px-4 py-3 dark:border-navy-600 dark:bg-navy-700/60">
+              <div className="flex flex-wrap items-center gap-2 rounded-panel border border-line bg-sunken px-4 py-3">
                 <span className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                   {t("scouting.youthTargetLabel")}
                 </span>
@@ -248,7 +248,7 @@ export default function InboxMessageDetailPane({
           ) : null}
 
           {selectedMessage.context?.match_result ? (
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-navy-700 rounded-panel flex items-center justify-center gap-8 border border-gray-100 dark:border-navy-600">
+            <div className="mt-6 p-4 bg-sunken rounded-panel flex items-center justify-center gap-8 border border-line">
               <span className="font-heading font-bold text-body text-fg">
                 {selectedMessage.context.match_result.home_team_name ||
                   selectedMessage.context.match_result.home_team_id}
@@ -265,9 +265,9 @@ export default function InboxMessageDetailPane({
           ) : null}
 
           {effectFeedback ? (
-            <div className="mt-4 p-3 bg-primary-50 dark:bg-primary-500/10 border border-primary-200 dark:border-primary-500/30 rounded-panel flex items-center gap-2 animate-pulse">
-              <CheckCircle2 className="w-4 h-4 text-primary-500 shrink-0" />
-              <span className="text-body font-medium text-primary-700 dark:text-primary-300">
+            <div className="mt-4 p-3 bg-selected-tint border border-selected/40 rounded-panel flex items-center gap-2 animate-pulse">
+              <CheckCircle2 className="w-4 h-4 text-selected shrink-0" />
+              <span className="text-body font-medium text-selected">
                 {t("inbox.effectOutcomeLabel")}: {effectFeedback}
               </span>
             </div>
@@ -285,7 +285,7 @@ export default function InboxMessageDetailPane({
                         key={action.id}
                         className="flex items-center gap-2 text-body text-fg-subtle mt-2"
                       >
-                        <CheckCircle2 className="w-4 h-4 text-primary-500" />
+                        <CheckCircle2 className="w-4 h-4 text-selected" />
                         <span className="font-heading font-bold uppercase tracking-label text-caption">
                           {t("inbox.responded")}
                         </span>
@@ -308,9 +308,9 @@ export default function InboxMessageDetailPane({
                           onClick={() =>
                             handleOptionClick(selectedMessage.id, action.id, option.id)
                           }
-                          className="w-full text-left p-4 rounded-panel border border-line hover:border-primary-400 dark:hover:border-primary-500 hover:bg-primary-50/50 dark:hover:bg-primary-500/5 transition-all group"
+                          className="w-full text-left p-4 rounded-panel border border-line hover:border-selected hover:bg-selected-tint transition-all group"
                         >
-                          <p className="text-body font-heading font-bold text-fg group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                          <p className="text-body font-heading font-bold text-fg group-hover:text-selected transition-colors">
                             {option.label}
                           </p>
                           <p className="text-caption text-fg-muted mt-1">{option.description}</p>

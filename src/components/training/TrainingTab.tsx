@@ -52,9 +52,9 @@ const TRAINING_FOCUS_ICONS: Record<string, ReactNode> = {
 const INTENSITY_IDS = ["Low", "Medium", "High"] as const;
 
 const INTENSITY_COLORS: Record<string, string> = {
-  Low: "text-blue-500",
-  Medium: "text-accent-500",
-  High: "text-red-500",
+  Low: "text-info",
+  Medium: "text-warning",
+  High: "text-danger",
 };
 
 const SCHEDULE_IDS = ["Intense", "Balanced", "Light"] as const;
@@ -66,9 +66,9 @@ const SCHEDULE_ICONS: Record<string, ReactNode> = {
 };
 
 const SCHEDULE_COLORS: Record<string, string> = {
-  Intense: "text-red-500",
-  Balanced: "text-primary-500",
-  Light: "text-blue-500",
+  Intense: "text-danger",
+  Balanced: "text-selected",
+  Light: "text-info",
 };
 
 const SCHEDULE_TRAINING_DAYS: Record<string, number[]> = {
@@ -169,27 +169,27 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
           <div
             className={`flex items-start gap-3 p-4 rounded-panel border-2 ${
               staffAdvice.level === "critical"
-                ? "bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/40"
+                ? "bg-danger-tint border-danger/40"
                 : staffAdvice.level === "warn"
-                  ? "bg-amber-50 dark:bg-amber-500/10 border-amber-300 dark:border-amber-500/40"
-                  : "bg-blue-50 dark:bg-blue-500/10 border-blue-300 dark:border-blue-500/40"
+                  ? "bg-warning-tint border-warning/40"
+                  : "bg-info-tint border-info/40"
             }`}
           >
             {staffAdvice.level === "critical" ? (
-              <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-danger flex-shrink-0 mt-0.5" />
             ) : staffAdvice.level === "warn" ? (
-              <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
             ) : (
-              <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-info flex-shrink-0 mt-0.5" />
             )}
             <div>
               <p
                 className={`text-caption font-heading font-bold uppercase tracking-label mb-0.5 ${
                   staffAdvice.level === "critical"
-                    ? "text-red-600 dark:text-red-400"
+                    ? "text-danger"
                     : staffAdvice.level === "warn"
-                      ? "text-amber-600 dark:text-amber-400"
-                      : "text-blue-600 dark:text-blue-400"
+                      ? "text-warning"
+                      : "text-info"
                 }`}
               >
                 {staffAdvice.level === "critical"
@@ -275,13 +275,13 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
               {exhaustedCount > 0 || criticalCount > 0 ? (
                 <div className="mt-1 pt-2 border-t border-line">
                   {criticalCount > 0 ? (
-                    <p className="text-caption text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <p className="text-caption text-danger flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />{" "}
                       {t("training.criticalCondition", { count: criticalCount })}
                     </p>
                   ) : null}
                   {exhaustedCount > 0 ? (
-                    <p className="text-caption text-amber-500 dark:text-amber-400 flex items-center gap-1 mt-0.5">
+                    <p className="text-caption text-warning flex items-center gap-1 mt-0.5">
                       <AlertTriangle className="w-3 h-3" />{" "}
                       {t("training.exhaustedPlayers", { count: exhaustedCount })}
                     </p>
@@ -295,7 +295,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
         <Card>
           <CardHeader>{t("training.playerFitness")}</CardHeader>
           <CardBody className="p-0 max-h-64 overflow-y-auto">
-            <ul className="divide-y divide-gray-100 dark:divide-navy-600">
+            <ul className="divide-y divide-line">
               {[...roster]
                 .sort((left, right) => left.condition - right.condition)
                 .map((player) => {

@@ -74,7 +74,7 @@ export default function TeamSelectionScopePanel({
             </span>
           )}
           <ChevronRight
-            className={`h-4 w-4 text-gray-400 transition-transform ${
+            className={`h-4 w-4 text-fg-subtle transition-transform ${
               scopeExpanded ? "rotate-90" : ""
             }`}
           />
@@ -147,7 +147,7 @@ export default function TeamSelectionScopePanel({
                     className={`flex items-center justify-between rounded-control border border-line bg-sunken px-3 py-2 text-body ${!isLocked ? "cursor-pointer" : ""}`}
                   >
                     <span className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 text-primary-500" />
+                      <Globe className="h-4 w-4 text-selected" />
                       <span>{buildRegionLabel(t, region.id, region.name)}</span>
                       {isLocked && (
                         <Badge variant="primary" size="sm">
@@ -205,7 +205,7 @@ export default function TeamSelectionScopePanel({
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="flex min-w-0 items-center gap-2">
-                        <Trophy className="h-4 w-4 shrink-0 text-accent-500" />
+                        <Trophy className="h-4 w-4 shrink-0 text-warning" />
                         <span className="truncate">{compName(competition)}</span>
                       </span>
                       <span
@@ -240,7 +240,7 @@ export default function TeamSelectionScopePanel({
                       )}
                     </div>
                     {missingRegions.length > 0 && (
-                      <p className="mt-2 text-[11px] text-amber-600 dark:text-amber-400">
+                      <p className="mt-2 text-caption text-warning">
                         {t("teamSelect.requiresRegions", {
                           regions: missingRegions
                             .map((regionId) => buildRegionLabel(t, regionId))

@@ -8,36 +8,32 @@ import { describe, expect, it } from "vitest";
  * checks cover all of `src/`. The rules themselves are in src/CLAUDE.md §2.
  */
 const FINISHED_FOLDERS = [
-  "./components/ui/",
-  // The game shell and the dashboard pieces migrated with it. The rest of components/dashboard
-  // (its modals) joins when it is redrawn.
+  // Whole screen folders that satisfy every rule below.
+  "./components/dashboard/",
   "./components/gameShell/",
-  "./components/dashboard/DashboardAlerts.tsx",
-  "./components/dashboard/DashboardSearch.tsx",
-  "./components/dashboard/DashboardWorkspaceContent.tsx",
-  "./pages/Dashboard.tsx",
-  // Settings and the shared match frame moved onto the dark HUD tokens.
-  "./pages/Settings.tsx",
-  "./pages/Settings.components.tsx",
-  "./components/match/MatchScreenLayout.tsx",
-  // The Managers directory's table view. Its cards join when they move onto EntityCard.
-  "./components/manager/ManagersTables.tsx",
-  // The Teams directory: its search, accordion, table and cards.
-  "./components/teams/",
-  // The penalty shootout's kick sheet (shootout redesign B, approved 31 Oct 2026).
-  "./components/match/KickSheet.tsx",
-  "./components/match/PenaltyShootoutScreen.tsx",
-  // Its order picker, step 1 of the same redesign.
-  "./components/match/ShootoutOrderPicker.tsx",
-  "./components/match/shootoutOrder.ts",
-  // The Staff list's table view. Its cards join when they move onto EntityCard.
-  "./components/staff/StaffTable.tsx",
-  // The Players list: its table, cards, filters, pager and alerts.
+  "./components/hallOfFame/",
+  "./components/home/",
+  "./components/news/",
+  "./components/playerActions/",
   "./components/players/",
-  // The Squad roster's cards view. The rest of components/squad joins when its table and filters
-  // are redrawn.
-  "./components/squad/SquadCardsView.tsx",
-  "./components/squad/SquadCardGrid.tsx",
+  "./components/schedule/",
+  "./components/scouting/",
+  "./components/season/",
+  "./components/teams/",
+  "./components/training/",
+  "./components/ui/",
+  "./components/ui/charts/",
+  "./components/youthAcademy/",
+  // The shared components at the root of components/.
+  "./components/ContextMenu.tsx",
+  "./components/EndOfSeasonScreen.tsx",
+  "./components/NegotiationFeedbackPanel.tsx",
+  "./components/NextMatchDisplay.tsx",
+  "./components/PlayerCard.tsx",
+  "./components/PlayerPositionBadge.tsx",
+  "./components/ScoutPlayerCard.tsx",
+  "./components/SwitchClubConfirmModal.tsx",
+  "./components/TraitBadge.tsx",
 ];
 
 /**
@@ -260,6 +256,55 @@ function report(check: (path: string, source: string) => string[]): string[] {
     check(path, source).map((hit) => `${path}:${hit}`),
   );
 }
+
+/**
+ * The token migration is repo-wide, so this rule is too: every screen folder is checked, not only
+ * the finished ones. A folder still waiting on its charts or focus rings has already given up its
+ * raw palette, and this keeps it from coming back.
+ */
+const SCREEN_FOLDERS = ["./components/", "./pages/", "./layouts/"];
+
+/** The legacy navy bridge and the primary ramp are brand-only now, like rule 8's brand green. */
+const LEGACY_RAMP =
+  /(?<![\w-])(?:[a-z-]+:)*(?:bg|text|border|ring|ring-offset|outline|fill|stroke|from|via|to|divide|placeholder|decoration|shadow|accent|caret)-(?:navy|primary)-\d{2,3}(?:\/\d+)?/g;
+
+describe("design system rules across every screen", () => {
+  function screenFiles(): Array<[string, string]> {
+    return Object.entries(SOURCES).filter(([path]) =>
+      SCREEN_FOLDERS.some((folder) => path.startsWith(folder)),
+    );
+  }
+
+  function screenReport(check: (path: string, source: string) => string[]): string[] {
+    return screenFiles().flatMap(([path, source]) =>
+      check(path, source).map((hit) => `${path}:${hit}`),
+    );
+  }
+
+  /**
+   * Given any screen component,
+   * when its source is read,
+   * then it uses no raw Tailwind palette colour, so the dark tokens are the only source of colour
+   * and a theme or contrast change moves every screen at once.
+   */
+  it("uses no raw palette colours on any screen", () => {
+    expect(screenReport((_, source) => paletteClasses(source))).toEqual([]);
+  });
+
+  /**
+   * Given a screen that is not a brand owner,
+   * when its source is read,
+   * then it uses neither the legacy navy bridge nor the primary ramp: surfaces are role tokens and
+   * a chosen row is `selected`, so the brand green stays in BRAND_FILES.
+   */
+  it("keeps the legacy ramps to the brand owners", () => {
+    expect(
+      screenReport((path, source) =>
+        path in BRAND_FILES || path in ARTWORK_FILES ? [] : linesMatching(source, LEGACY_RAMP),
+      ),
+    ).toEqual([]);
+  });
+});
 
 describe("design system rules in finished folders", () => {
   /**

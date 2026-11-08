@@ -146,7 +146,7 @@ export default function PreMatchSetup({
     return (
       <div
         className={`flex w-24 flex-col items-center gap-0.5 rounded-panel px-1 py-1 ${
-          isSelected ? "bg-accent-500/25 ring-2 ring-accent-300/70" : ""
+          isSelected ? "bg-warning-tint ring-2 ring-focus" : ""
         }`}
       >
         <PitchToken
@@ -394,13 +394,13 @@ export default function PreMatchSetup({
   const renderSetPieces = () => (
     <div className="rounded-panel border border-line bg-panel p-4 shadow-sm transition-colors duration-300">
       <div className="flex items-center justify-between mb-2.5">
-        <p className="text-[10px] font-heading font-bold uppercase tracking-labelst text-fg-muted">
+        <p className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
           {t("match.setPiecesCaptain")}
         </p>
         <button
           type="button"
           onClick={handleAutoSelectSetPieces}
-          className="flex items-center gap-1.5 rounded-control border border-accent-200 dark:border-accent-500/20 bg-accent-50 hover:bg-accent-100 dark:bg-accent-500/10 dark:hover:bg-accent-500/20 px-3 py-1.5 font-heading font-bold text-[10px] uppercase tracking-label text-accent-700 dark:text-accent-400 transition-colors"
+          className="flex items-center gap-1.5 rounded-control border border-warning border-warning/20 bg-warning-solid hover:bg-warning-solid bg-warning-tint hover:bg-warning-tint px-3 py-1.5 font-heading font-bold text-caption uppercase tracking-label text-warning transition-colors"
         >
           <Wand2 className="h-3 w-3" />
           {t("match.autoSelectTakers")}
@@ -409,7 +409,7 @@ export default function PreMatchSetup({
       <div className="grid grid-cols-2 gap-3">
         {setPieceItems.map(({ role, label, Icon, current }) => (
           <div key={role}>
-            <label className="mb-1.5 flex items-center gap-1 text-[10px] font-heading uppercase tracking-labelst text-fg-muted">
+            <label className="mb-1.5 flex items-center gap-1 text-caption font-heading uppercase tracking-labelst text-fg-muted">
               <Icon className="h-3 w-3" />
               {label}
             </label>
@@ -502,7 +502,7 @@ export default function PreMatchSetup({
         {renderSetPieces()}
         <div className="rounded-panel border border-line bg-panel shadow-sm transition-colors duration-300">
           <div className="border-b border-line px-3 py-2.5">
-            <p className="text-[10px] font-heading font-bold uppercase tracking-labelst text-fg-muted">
+            <p className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
               {t("tactics.phaseBlueprint")}
             </p>
           </div>
@@ -518,10 +518,10 @@ export default function PreMatchSetup({
       {/* Left: opponent shape */}
       <div className="flex min-h-0 flex-col gap-2 overflow-hidden">
         <div>
-          <p className="text-[10px] font-heading font-bold uppercase tracking-labelst text-fg-muted">
+          <p className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
             {oppTeam.name}
           </p>
-          <p className="text-[10px] text-fg-muted font-heading mt-0.5">
+          <p className="text-caption text-fg-muted font-heading mt-0.5">
             {oppTeam.formation} · {t(`common.playStyles.${oppTeam.play_style}`, oppTeam.play_style)}
           </p>
         </div>
@@ -543,22 +543,22 @@ export default function PreMatchSetup({
           return (
             <div key={pos} className="mb-3">
               <div className="flex items-center justify-between mb-1 px-2">
-                <p className="text-[10px] font-heading uppercase tracking-labelst text-fg-muted">
+                <p className="text-caption font-heading uppercase tracking-labelst text-fg-muted">
                   {t(`common.positionGroups.${pos}`)}
                 </p>
                 <div className="flex items-center">
-                  <span className="text-[8px] font-heading uppercase tracking-labelst text-gray-400 dark:text-gray-600 w-7 text-center">
+                  <span className="text-caption font-heading uppercase tracking-labelst text-fg-subtle w-7 text-center">
                     OVR
                   </span>
                   {keyStats.map((s) => (
                     <span
                       key={s.label}
-                      className="text-[8px] font-heading uppercase tracking-labelst text-gray-400 dark:text-gray-600 w-7 text-center"
+                      className="text-caption font-heading uppercase tracking-labelst text-fg-subtle w-7 text-center"
                     >
                       {s.label}
                     </span>
                   ))}
-                  <span className="text-[8px] font-heading uppercase tracking-labelst text-gray-400 dark:text-gray-600 w-8 text-right">
+                  <span className="text-caption font-heading uppercase tracking-labelst text-fg-subtle w-8 text-right">
                     COND
                   </span>
                 </div>
@@ -568,20 +568,20 @@ export default function PreMatchSetup({
                   key={p.id}
                   className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-hover/30 transition-colors"
                 >
-                  <div className="h-7 w-7 shrink-0 rounded-full bg-hover flex items-center justify-center text-[10px] font-heading font-bold text-fg-muted transition-colors duration-300">
+                  <div className="h-7 w-7 shrink-0 rounded-full bg-hover flex items-center justify-center text-caption font-heading font-bold text-fg-muted transition-colors duration-300">
                     {p.ovr}
                   </div>
                   <span className="flex-1 truncate text-body text-fg">{p.name}</span>
                   <div className="flex items-center">
                     <span
-                      className={`text-[10px] font-heading font-bold tabular-nums w-7 text-center ${ratingTierClass(tierOf(p.ovr), "text")}`}
+                      className={`text-caption font-heading font-bold tabular-nums w-7 text-center ${ratingTierClass(tierOf(p.ovr), "text")}`}
                     >
                       {p.ovr}
                     </span>
                     {keyStats.map((s) => (
                       <span
                         key={s.label}
-                        className={`text-[10px] font-heading tabular-nums w-7 text-center ${ratingTierClass(tierOf(getStatVal(p, s.key)), "text")}`}
+                        className={`text-caption font-heading tabular-nums w-7 text-center ${ratingTierClass(tierOf(getStatVal(p, s.key)), "text")}`}
                       >
                         {getStatVal(p, s.key)}
                       </span>
@@ -657,17 +657,15 @@ export default function PreMatchSetup({
           {/* Center: fixture label + VS + Start */}
           <div className="shrink-0 flex flex-col items-center gap-3">
             <div className="text-center">
-              <p className="text-[10px] font-heading uppercase tracking-labelst text-accent-600 dark:text-accent-400">
+              <p className="text-caption font-heading uppercase tracking-labelst text-warning">
                 {fixtureLabel}
               </p>
-              <p className="text-title font-heading font-bold text-gray-400 dark:text-gray-600">
-                VS
-              </p>
+              <p className="text-title font-heading font-bold text-fg-subtle">VS</p>
             </div>
             <button
               type="button"
               onClick={onStart}
-              className="flex items-center gap-2 rounded-panel bg-gradient-to-r from-primary-500 to-primary-600 px-8 py-3 font-heading font-bold uppercase tracking-label text-body text-white shadow-lg shadow-primary-500/20 transition-all hover:from-primary-600 hover:to-primary-700 hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center gap-2 rounded-panel bg-gradient-to-r from-selected-fill to-selected-fill px-8 py-3 font-heading font-bold uppercase tracking-label text-body text-on-brand shadow-lg shadow-card transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               {t("match.startMatch")}
               <ChevronRight className="h-4 w-4" />
@@ -700,7 +698,7 @@ export default function PreMatchSetup({
       </header>
 
       {/* Your Team / Opponent tabs */}
-      <div className="shrink-0 flex items-center gap-1 border-b border-line bg-gray-50/80 dark:bg-navy-800/50 px-4">
+      <div className="shrink-0 flex items-center gap-1 border-b border-line bg-sunken px-4">
         {[
           { id: "team" as const, label: userTeam.name },
           { id: "opponent" as const, label: `${t("match.opponent")} · ${oppTeam.name}` },
@@ -709,10 +707,10 @@ export default function PreMatchSetup({
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`-mb-px border-b-2 px-4 py-2.5 text-[11px] font-heading font-bold uppercase tracking-labelst transition-colors ${
+            className={`-mb-px border-b-2 px-4 py-2.5 text-caption font-heading font-bold uppercase tracking-labelst transition-colors ${
               activeTab === tab.id
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                ? "border-selected text-selected"
+                : "border-transparent text-fg-muted hover:text-fg"
             }`}
           >
             {tab.label}

@@ -130,11 +130,11 @@ export default function CreateManagerNationalityField({
     : null;
   const Flag = resources?.CountryFlag;
   const triggerBorderClassName = error
-    ? "border-red-400 dark:border-red-500"
+    ? "border-danger"
     : isOpen
-      ? "border-primary-500 ring-2 ring-primary-500/20"
-      : "border-gray-300 dark:border-navy-600";
-  const triggerClassName = `w-full rounded-lg border bg-gray-50 p-3 text-left transition-all dark:bg-navy-900 ${triggerBorderClassName}`;
+      ? "border-selected ring-2 ring-selected/20"
+      : "border-line-strong";
+  const triggerClassName = `w-full rounded-control border bg-sunken p-3 text-left transition-all ${triggerBorderClassName}`;
 
   const toggleDropdown = () => {
     if (!isOpen && !resources) {
@@ -151,7 +151,7 @@ export default function CreateManagerNationalityField({
       ref={nationalityRef}
       className={isOpen ? "relative z-50" : undefined}
     >
-      <label className="mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+      <label className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
         {t("createManager.countryOfOrigin")}
       </label>
       <div className="relative">
@@ -169,15 +169,11 @@ export default function CreateManagerNationalityField({
           }}
           className={triggerClassName}
         >
-          <span
-            className={
-              nationality ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"
-            }
-          >
+          <span className={nationality ? "text-fg" : "text-fg-subtle"}>
             {selectedNationalityLabel ? (
               <span className="flex items-center gap-2">
                 {Flag ? (
-                  <Flag code={nationality} locale={locale} className="text-lg leading-none" />
+                  <Flag code={nationality} locale={locale} className="text-heading leading-none" />
                 ) : null}
                 <span>{selectedNationalityLabel}</span>
               </span>
@@ -186,15 +182,15 @@ export default function CreateManagerNationalityField({
             )}
           </span>
           <ChevronDown
-            className={`absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+            className={`absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-subtle transition-transform ${isOpen ? "rotate-180" : ""}`}
           />
         </button>
 
         {isOpen ? (
-          <div className="absolute bottom-full left-0 right-0 z-50 mb-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-navy-600 dark:bg-navy-700">
+          <div className="absolute bottom-full left-0 right-0 z-50 mb-1 overflow-hidden rounded-control border border-line bg-panel shadow-xl">
             {resources ? (
               <>
-                <div className="border-b border-gray-100 p-2 dark:border-navy-600">
+                <div className="border-b border-line p-2">
                   <input
                     type="text"
                     // biome-ignore lint/a11y/noAutofocus: the search field only exists while the nationality dropdown is open.
@@ -202,15 +198,13 @@ export default function CreateManagerNationalityField({
                     placeholder={t("createManager.searchNationalities")}
                     value={searchValue}
                     onChange={(event) => setSearchValue(event.target.value)}
-                    className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-primary-500 dark:border-navy-600 dark:bg-navy-800 dark:text-white dark:placeholder:text-gray-500"
+                    className="w-full rounded-md border border-line bg-sunken px-3 py-2 text-body text-fg outline-none transition-colors placeholder:text-fg-subtle focus:border-selected placeholder:text-fg-muted"
                   />
                 </div>
 
                 <div className="max-h-[min(20rem,calc(100vh-9rem))] overflow-y-auto overscroll-contain">
                   {filteredNationalities.length === 0 ? (
-                    <p className="px-3 py-2 text-xs text-gray-400 dark:text-gray-500">
-                      {t("menu.noResults")}
-                    </p>
+                    <p className="px-3 py-2 text-caption text-fg-subtle">{t("menu.noResults")}</p>
                   ) : (
                     filteredNationalities.map((entry) => (
                       <button
@@ -224,22 +218,22 @@ export default function CreateManagerNationalityField({
                           setIsOpen(false);
                           setSearchValue("");
                         }}
-                        className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors ${
+                        className={`flex w-full items-center justify-between px-3 py-2 text-left text-body transition-colors ${
                           nationality === entry.code
-                            ? "bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"
-                            : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-navy-600"
+                            ? "bg-selected-tint text-selected"
+                            : "text-fg hover:bg-sunken"
                         }`}
                       >
                         <span className="flex items-center gap-2">
                           <resources.CountryFlag
                             code={entry.code}
                             locale={locale}
-                            className="text-lg leading-none"
+                            className="text-heading leading-none"
                           />
                           <span>{entry.name}</span>
                         </span>
                         {nationality === entry.code ? (
-                          <Check className="h-4 w-4 text-primary-500" />
+                          <Check className="h-4 w-4 text-selected" />
                         ) : null}
                       </button>
                     ))
@@ -248,7 +242,7 @@ export default function CreateManagerNationalityField({
               </>
             ) : (
               <div className="flex min-h-24 items-center justify-center p-3">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-selected border-t-transparent" />
               </div>
             )}
           </div>
@@ -256,7 +250,7 @@ export default function CreateManagerNationalityField({
       </div>
 
       {error ? (
-        <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+        <p className="mt-1 flex items-center gap-1 text-caption text-danger">
           <AlertCircle className="h-3 w-3" />
           {error}
         </p>

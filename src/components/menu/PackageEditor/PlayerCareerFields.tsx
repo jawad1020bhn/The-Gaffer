@@ -64,7 +64,7 @@ export function PlayerCareerFields({
           key={index}
           role="group"
           aria-label={t("worldEditor.careerEntryRow")}
-          className="flex flex-col gap-2 rounded-lg border border-gray-200 dark:border-navy-600 p-3"
+          className="flex flex-col gap-2 rounded-control border border-line p-3"
         >
           <div className="grid grid-cols-2 gap-3">
             <LabeledInput
@@ -113,7 +113,7 @@ export function PlayerCareerFields({
             type="button"
             aria-label={t("worldEditor.removeCareerEntry")}
             onClick={() => onChange(entries.filter((_, i) => i !== index))}
-            className="self-end p-1.5 rounded-lg border border-gray-200 dark:border-navy-600 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition focus:outline-none focus:ring-2 focus:ring-primary-400"
+            className="self-end p-1.5 rounded-control border border-line text-fg-subtle hover:text-danger transition focus:outline-none focus:ring-2 focus-visible:ring-focus"
           >
             <X className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
@@ -122,7 +122,7 @@ export function PlayerCareerFields({
       <button
         type="button"
         onClick={() => onChange([...entries, emptyCareerEntry()])}
-        className="self-start inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-heading font-bold uppercase tracking-wide rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-navy-600 transition focus:outline-none focus:ring-2 focus:ring-primary-400"
+        className="self-start inline-flex items-center gap-1.5 px-3 py-1.5 text-caption font-heading font-bold uppercase tracking-label rounded-control border border-line bg-panel text-fg hover:bg-sunken transition focus:outline-none focus:ring-2 focus-visible:ring-focus"
       >
         <Plus className="w-3.5 h-3.5" aria-hidden="true" />
         {t("worldEditor.addCareerEntry")}

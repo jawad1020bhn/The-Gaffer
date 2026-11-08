@@ -136,7 +136,7 @@ export function WorldEditorFormPanel({
           type="button"
           onClick={onSaveMetadata}
           disabled={isBusy}
-          className="mt-6 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-panel font-heading font-bold uppercase tracking-label text-body transition-all disabled:opacity-60"
+          className="mt-6 px-5 py-2.5 bg-gradient-to-r from-selected-fill to-selected-fill text-on-brand rounded-panel font-heading font-bold uppercase tracking-label text-body transition-all disabled:opacity-60"
         >
           {t("common.save")}
         </button>
@@ -309,7 +309,7 @@ export function WorldEditorFormPanel({
 
   return (
     <div className="flex flex-col items-center justify-center h-full text-center gap-3">
-      <MousePointerClick className="w-10 h-10 text-gray-300 dark:text-navy-600" />
+      <MousePointerClick className="w-10 h-10 text-fg-subtle" />
       <p className="text-body text-fg-subtle">{t("worldEditor.noItemSelected")}</p>
     </div>
   );

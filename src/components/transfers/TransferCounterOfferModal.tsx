@@ -74,7 +74,7 @@ export default function TransferCounterOfferModal({
           <PlayerPositionBadge position={naturalPositionOf(counterTarget.player)} />
           <div>
             <p className="font-semibold text-body text-fg">{counterTarget.player.full_name}</p>
-            <p className="text-caption text-gray-400">
+            <p className="text-caption text-fg-subtle">
               {getTeamName(teams, counterTarget.fromTeamId)} •
               {t("transfers.currentOffer", {
                 fee: formatExactMoney(counterTarget.fee),
@@ -85,7 +85,7 @@ export default function TransferCounterOfferModal({
         {blockingTitle ? (
           <div
             role="alert"
-            className="mb-4 flex gap-2 rounded-control border border-red-200 bg-red-50 px-3 py-2 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
+            className="mb-4 flex gap-2 rounded-control border border-danger/40 bg-danger-tint px-3 py-2 text-danger"
           >
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <div className="text-caption">
@@ -110,7 +110,7 @@ export default function TransferCounterOfferModal({
           pattern="[0-9]*"
           value={counterAmount}
           onChange={(event) => onCounterAmountChange(event.target.value)}
-          className="w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+          className="w-full px-3 py-2 rounded-control bg-sunken border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-selected/50"
         />
         {parsedCounterAmount !== null ? (
           <p className="text-caption text-fg-muted mb-3">{formatExactMoney(parsedCounterAmount)}</p>
@@ -126,7 +126,7 @@ export default function TransferCounterOfferModal({
         <TransferNegotiationHistory offer={activeCounterOffer} mode="incoming" />
         {counterResult ? (
           <div
-            className={`text-caption font-heading font-bold uppercase tracking-label mb-3 ${counterResult === "accepted" ? "text-green-500" : counterResult === "rejected" ? "text-red-500" : "text-amber-500"}`}
+            className={`text-caption font-heading font-bold uppercase tracking-label mb-3 ${counterResult === "accepted" ? "text-positive" : counterResult === "rejected" ? "text-danger" : "text-warning"}`}
           >
             {counterResult === "accepted"
               ? t("transfers.counterAccepted")
@@ -136,7 +136,7 @@ export default function TransferCounterOfferModal({
           </div>
         ) : null}
         {counterError ? (
-          <div className="text-caption font-heading font-bold uppercase tracking-label mb-3 text-red-500">
+          <div className="text-caption font-heading font-bold uppercase tracking-label mb-3 text-danger">
             {counterError}
           </div>
         ) : null}
@@ -145,14 +145,14 @@ export default function TransferCounterOfferModal({
             type="button"
             onClick={onSubmit}
             disabled={submitDisabled || counterLoading || counterResult === "accepted"}
-            className="flex-1 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
+            className="flex-1 py-2 bg-selected-fill hover:bg-selected text-on-brand rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
           >
             {counterLoading ? t("transfers.submitting") : t("transfers.submitCounter")}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-gray-300 dark:hover:bg-navy-600 transition-colors"
+            className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-line-strong transition-colors"
           >
             {t("transfers.close")}
           </button>

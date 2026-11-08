@@ -37,13 +37,13 @@ interface PackageBuildStepProps {
 
 function StepIndicator({ current }: { current: 2 | 3 }) {
   const active =
-    "flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-white text-xs font-bold";
+    "flex items-center justify-center w-6 h-6 rounded-full bg-selected-fill text-on-brand text-caption font-bold";
   const done =
-    "flex items-center justify-center w-6 h-6 rounded-full bg-primary-500/30 text-primary-400 text-xs font-bold";
+    "flex items-center justify-center w-6 h-6 rounded-full bg-selected-tint text-selected text-caption font-bold";
   const future =
-    "flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 dark:bg-navy-600 text-gray-400 dark:text-gray-500 text-xs font-bold";
-  const filledLine = "h-0.5 flex-1 bg-primary-500";
-  const emptyLine = "h-0.5 flex-1 bg-gray-200 dark:bg-navy-600";
+    "flex items-center justify-center w-6 h-6 rounded-full bg-hover text-fg-subtle text-caption font-bold";
+  const filledLine = "h-0.5 flex-1 bg-selected-fill";
+  const emptyLine = "h-0.5 flex-1 bg-hover";
 
   return (
     <div className="flex items-center gap-2 mb-1">
@@ -69,20 +69,20 @@ function PackageCard({ pkg, isActive, onToggle, onUninstall }: PackageCardProps)
     <button
       type="button"
       onClick={onToggle}
-      className={`flex items-start gap-3 w-full p-3 rounded-xl border transition-all duration-200 text-left ${
+      className={`flex items-start gap-3 w-full p-3 rounded-panel border transition-all duration-200 text-left ${
         isActive
-          ? "bg-accent-50 dark:bg-accent-500/10 border-accent-400 dark:border-accent-500 ring-1 ring-accent-400/30"
-          : "bg-white dark:bg-navy-700 border-gray-200 dark:border-navy-600 hover:border-gray-300 dark:hover:border-navy-500"
+          ? "bg-warning-solid bg-warning-tint border-warning ring-1 ring-focus"
+          : "bg-panel border-line hover:border-line-strong"
       }`}
     >
       {/* Toggle indicator */}
       <span
         className={`w-5 h-5 rounded border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-colors pointer-events-none ${
-          isActive ? "bg-accent-500 border-accent-500" : "border-gray-300 dark:border-navy-500"
+          isActive ? "bg-warning-solid border-warning" : "border-line-strong"
         }`}
         aria-hidden
       >
-        {isActive && <span className="w-2 h-2 rounded-sm bg-white" />}
+        {isActive && <span className="w-2 h-2 rounded-sm bg-panel" />}
       </span>
 
       {/* Logo or icon */}
@@ -90,37 +90,37 @@ function PackageCard({ pkg, isActive, onToggle, onUninstall }: PackageCardProps)
         <img
           src={pkg.logoDataUrl}
           alt=""
-          className="w-8 h-8 rounded object-contain flex-shrink-0 mt-0.5 border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800"
+          className="w-8 h-8 rounded object-contain flex-shrink-0 mt-0.5 border border-line bg-panel"
         />
       ) : (
-        <div className="w-8 h-8 rounded bg-primary-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <Package className="w-4 h-4 text-primary-500" />
+        <div className="w-8 h-8 rounded bg-selected-tint flex items-center justify-center flex-shrink-0 mt-0.5">
+          <Package className="w-4 h-4 text-selected" />
         </div>
       )}
 
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <p className="font-heading font-bold text-sm uppercase tracking-wide text-gray-800 dark:text-gray-200 truncate">
+          <p className="font-heading font-bold text-body uppercase tracking-label text-fg truncate">
             {pkg.name || pkg.id}
           </p>
         </div>
-        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+        <p className="text-caption text-fg-subtle mt-0.5">
           {pkg.author && t("worldSelect.packageAuthor", { author: pkg.author })}
           {pkg.author && pkg.version && " · "}
           {pkg.version && t("worldSelect.packageVersion", { version: pkg.version })}
           {pkg.license && ` · ${pkg.license}`}
         </p>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
-          <span className="text-[10px] font-heading uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-1">
+          <span className="text-caption font-heading uppercase tracking-label text-fg-subtle flex items-center gap-1">
             <Globe className="w-3 h-3" />
             {t("worldSelect.teams", { count: pkg.teamCount })}
           </span>
-          <span className="text-[10px] font-heading uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-1">
+          <span className="text-caption font-heading uppercase tracking-label text-fg-subtle flex items-center gap-1">
             <Users className="w-3 h-3" />
             {t("worldSelect.players", { count: pkg.playerCount })}
           </span>
-          <span className="text-[10px] font-heading uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-1">
+          <span className="text-caption font-heading uppercase tracking-label text-fg-subtle flex items-center gap-1">
             <Trophy className="w-3 h-3" />
             {t("worldSelect.competitions", { count: pkg.competitionCount })}
           </span>
@@ -129,19 +129,19 @@ function PackageCard({ pkg, isActive, onToggle, onUninstall }: PackageCardProps)
               bury the three that always matter — while a package that ships
               name pools still stops looking identical to one that does not. */}
           {pkg.namePoolCount > 0 && (
-            <span className="text-[10px] font-heading uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-1">
+            <span className="text-caption font-heading uppercase tracking-label text-fg-subtle flex items-center gap-1">
               <Type className="w-3 h-3" />
               {t("worldSelect.namePools", { count: pkg.namePoolCount })}
             </span>
           )}
           {pkg.countryCount > 0 && (
-            <span className="text-[10px] font-heading uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-1">
+            <span className="text-caption font-heading uppercase tracking-label text-fg-subtle flex items-center gap-1">
               <Flag className="w-3 h-3" />
               {t("worldSelect.countries", { count: pkg.countryCount })}
             </span>
           )}
           {pkg.confederationCount > 0 && (
-            <span className="text-[10px] font-heading uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-1">
+            <span className="text-caption font-heading uppercase tracking-label text-fg-subtle flex items-center gap-1">
               <Layers className="w-3 h-3" />
               {t("worldSelect.confederations", { count: pkg.confederationCount })}
             </span>
@@ -163,7 +163,7 @@ function PackageCard({ pkg, isActive, onToggle, onUninstall }: PackageCardProps)
             onUninstall();
           }
         }}
-        className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0 mt-0.5 p-0.5 rounded"
+        className="text-fg-subtle hover:text-danger transition-colors flex-shrink-0 mt-0.5 p-0.5 rounded"
         title={t("worldSelect.removePackage")}
         aria-label={t("worldSelect.removePackage")}
       >
@@ -240,18 +240,18 @@ export default function PackageBuildStep({
           <button
             type="button"
             onClick={onBack}
-            className="text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-600"
+            className="text-fg-subtle hover:text-fg transition-colors p-1 rounded-control hover:bg-hover"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h2 className="text-xl font-heading font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+          <h2 className="text-heading font-heading font-bold uppercase tracking-label text-fg">
             {t("packageBuild.title")}
           </h2>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
+          className="text-fg-subtle hover:text-fg transition-colors p-1 rounded-control hover:bg-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
           aria-label={t("common.close")}
         >
           <X className="w-5 h-5" aria-hidden="true" />
@@ -265,7 +265,7 @@ export default function PackageBuildStep({
         {/* Databases section */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <p className="font-heading font-bold uppercase tracking-[0.18em] text-sm text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+            <p className="font-heading font-bold uppercase tracking-[0.18em] text-body text-fg flex items-center gap-1.5">
               <Package className="w-4 h-4" />
               {t("packageBuild.databases")}
             </p>
@@ -273,7 +273,7 @@ export default function PackageBuildStep({
               type="button"
               onClick={onInstallPackage}
               disabled={isInstallingPackage}
-              className="flex items-center gap-1 text-xs font-heading font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 disabled:opacity-50 transition-colors"
+              className="flex items-center gap-1 text-caption font-heading font-bold uppercase tracking-label text-selected hover:text-selected disabled:opacity-50 transition-colors"
             >
               {isInstallingPackage ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -285,7 +285,7 @@ export default function PackageBuildStep({
           </div>
 
           {dbPackages.length === 0 ? (
-            <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-2">
+            <p className="text-caption text-fg-subtle text-center py-2">
               {t("packageBuild.noPackages")}
             </p>
           ) : (
@@ -304,7 +304,7 @@ export default function PackageBuildStep({
         {/* Patches section */}
         {showPatches && (
           <div className="space-y-2">
-            <p className="font-heading font-bold uppercase tracking-[0.18em] text-sm text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+            <p className="font-heading font-bold uppercase tracking-[0.18em] text-body text-fg flex items-center gap-1.5">
               <Package className="w-4 h-4" />
               {t("packageBuild.patches")}
             </p>
@@ -322,18 +322,16 @@ export default function PackageBuildStep({
 
         {/* Random world fallback notice */}
         {!hasActiveDatabase && (
-          <div className="flex items-start gap-2.5 rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-700/60 p-3">
-            <Shuffle className="w-4 h-4 text-accent-500 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {t("packageBuild.randomFallback")}
-            </p>
+          <div className="flex items-start gap-2.5 rounded-panel border border-line bg-sunken p-3">
+            <Shuffle className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" />
+            <p className="text-caption text-fg-muted">{t("packageBuild.randomFallback")}</p>
           </div>
         )}
 
         {/* Patch-only error */}
         {hasPatchOnly && (
-          <div className="rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 p-3 text-xs">
-            <p className="font-heading font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-1">
+          <div className="rounded-panel border border-warning/40 bg-warning-tint p-3 text-caption">
+            <p className="font-heading font-bold uppercase tracking-label text-warning flex items-center gap-1">
               <AlertCircle className="w-3.5 h-3.5" />
               {t("packageBuild.patchOnlyError")}
             </p>
@@ -342,12 +340,12 @@ export default function PackageBuildStep({
 
         {/* Stack conflict warnings */}
         {stackConflictWarnings.length > 0 && (
-          <div className="rounded-xl border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 p-3 text-xs">
-            <p className="font-heading font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1 flex items-center gap-1">
+          <div className="rounded-panel border border-warning/40 bg-warning-tint p-3 text-caption">
+            <p className="font-heading font-bold uppercase tracking-label text-warning mb-1 flex items-center gap-1">
               <AlertTriangle className="w-3.5 h-3.5" />
               {t("worldSelect.stackConflictWarnings", { count: stackConflictWarnings.length })}
             </p>
-            <ul className="list-disc pl-4 space-y-0.5 text-amber-700 dark:text-amber-300">
+            <ul className="list-disc pl-4 space-y-0.5 text-warning">
               {stackConflictWarnings.map((c, i) => (
                 <li key={i}>
                   {t(c.code, {
@@ -363,12 +361,12 @@ export default function PackageBuildStep({
 
         {/* Stack errors */}
         {(hasPackageErrors || hasStackErrors) && (
-          <div className="rounded-xl border border-red-300 dark:border-red-500/40 bg-red-50 dark:bg-red-500/10 p-3 text-xs">
-            <p className="font-heading font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mb-1 flex items-center gap-1">
+          <div className="rounded-panel border border-danger/40 bg-danger-tint p-3 text-caption">
+            <p className="font-heading font-bold uppercase tracking-label text-danger mb-1 flex items-center gap-1">
               <AlertCircle className="w-3.5 h-3.5" />
               {t("worldSelect.packageStackErrors")}
             </p>
-            <ul className="list-disc pl-4 space-y-0.5 text-red-600 dark:text-red-300">
+            <ul className="list-disc pl-4 space-y-0.5 text-danger">
               {packageStackErrors?.map((issue, i) => (
                 <li key={`issue-${i}`}>
                   {issue.file ? `[${issue.file}] ` : ""}

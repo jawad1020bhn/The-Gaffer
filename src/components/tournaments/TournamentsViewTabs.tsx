@@ -57,9 +57,9 @@ export default function TournamentsViewTabs({
           type="button"
           aria-pressed={view === tab.id}
           onClick={() => onSelectView(tab.id)}
-          className={`px-4 py-2 rounded-control font-heading font-bold text-body uppercase tracking-label transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900 ${
+          className={`px-4 py-2 rounded-control font-heading font-bold text-body uppercase tracking-label transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel ${
             view === tab.id
-              ? "bg-primary-500 text-white shadow-md shadow-primary-500/20"
+              ? "bg-selected-fill text-on-brand shadow-md shadow-card"
               : "bg-panel text-fg-muted hover:text-fg border border-line"
           }`}
         >

@@ -219,7 +219,7 @@ export default function YouthAcademyTab({
     <div className="flex flex-col gap-5">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <GraduationCap className="w-5 h-5 text-primary-500" />
+        <GraduationCap className="w-5 h-5 text-selected" />
         <h2 className="text-lead font-heading font-bold text-fg uppercase tracking-label">
           {t("youthAcademy.title")}
         </h2>
@@ -244,7 +244,7 @@ export default function YouthAcademyTab({
         <Card>
           <CardBody>
             <div className="text-center">
-              <Star className="w-5 h-5 text-accent-400 mx-auto mb-1" />
+              <Star className="w-5 h-5 text-warning mx-auto mb-1" />
               <p className="font-heading font-bold text-title text-fg">{avgOvr}</p>
               <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">
                 {t("youthAcademy.avgOvr")}
@@ -255,7 +255,7 @@ export default function YouthAcademyTab({
         <Card>
           <CardBody>
             <div className="text-center">
-              <TrendingUp className="w-5 h-5 text-green-500 mx-auto mb-1" />
+              <TrendingUp className="w-5 h-5 text-positive mx-auto mb-1" />
               <p className="font-heading font-bold text-title text-fg">{avgPotential}</p>
               <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">
                 {t("youthAcademy.avgPotential")}
@@ -266,8 +266,8 @@ export default function YouthAcademyTab({
         <Card>
           <CardBody>
             <div className="text-center">
-              <Sparkles className="w-5 h-5 text-accent-400 mx-auto mb-1" />
-              <p className="font-heading font-bold text-title text-accent-500">{highPotential}</p>
+              <Sparkles className="w-5 h-5 text-warning mx-auto mb-1" />
+              <p className="font-heading font-bold text-title text-warning">{highPotential}</p>
               <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">
                 {t("youthAcademy.highPotential")}
               </p>
@@ -316,7 +316,7 @@ export default function YouthAcademyTab({
                         <button
                           type="button"
                           onClick={() => onSelectPlayer?.(player.id)}
-                          className="text-left font-heading font-bold text-body text-fg hover:text-primary-500 transition-colors truncate block"
+                          className="text-left font-heading font-bold text-body text-fg hover:text-selected transition-colors truncate block"
                         >
                           {player.full_name}
                         </button>
@@ -379,7 +379,7 @@ export default function YouthAcademyTab({
         <Card>
           <CardBody>
             <div className="flex items-center gap-2 text-caption">
-              <GraduationCap className="w-3.5 h-3.5 text-primary-500" />
+              <GraduationCap className="w-3.5 h-3.5 text-selected" />
               <span className="text-fg-muted">{t("youthAcademy.youthCoach")}</span>
               {youthCoach.map((s) => (
                 <Badge key={s.id} variant="primary" size="sm">
@@ -397,7 +397,7 @@ export default function YouthAcademyTab({
         <CardBody className="p-0">
           {youthPlayers.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-12">
-              <GraduationCap className="w-10 h-10 text-gray-300 dark:text-navy-600" />
+              <GraduationCap className="w-10 h-10 text-fg-subtle" />
               <p className="text-body text-fg-muted">{t("youthAcademy.noYouthPlayers")}</p>
             </div>
           ) : (
@@ -433,7 +433,7 @@ export default function YouthAcademyTab({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+              <tbody className="divide-y divide-line">
                 {youthPlayers.map((player) => {
                   const potTier = tierOf(player.potential);
                   const potLetterKey = ratingTierLetterKey(potTier);
@@ -518,7 +518,7 @@ export default function YouthAcademyTab({
                               }
                               size="sm"
                             />
-                            <span className="text-caption font-heading font-bold text-gray-500 tabular-nums w-6">
+                            <span className="text-caption font-heading font-bold text-fg-muted tabular-nums w-6">
                               +{growthRoom}
                             </span>
                           </div>
@@ -530,10 +530,10 @@ export default function YouthAcademyTab({
                           <span
                             className={`text-caption font-heading font-bold tabular-nums ${
                               player.condition >= 70
-                                ? "text-green-500"
+                                ? "text-positive"
                                 : player.condition >= 40
-                                  ? "text-yellow-500"
-                                  : "text-red-500"
+                                  ? "text-warning"
+                                  : "text-danger"
                             }`}
                           >
                             {player.condition}%
@@ -550,7 +550,7 @@ export default function YouthAcademyTab({
                             aria-label={t("common.playerActions", { name: player.match_name })}
                             aria-haspopup="menu"
                             aria-expanded={openMenuPlayerId === player.id}
-                            className="rounded-md p-1.5 text-gray-400 hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 transition-colors"
+                            className="rounded-md p-1.5 text-fg-subtle hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-colors"
                           >
                             <MoreVertical className="h-4 w-4" />
                           </button>

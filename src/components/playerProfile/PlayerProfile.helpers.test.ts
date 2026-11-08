@@ -182,12 +182,12 @@ describe("PlayerProfile.helpers", (): void => {
   });
 
   it("maps attribute values to readable shared color classes", (): void => {
-    expect(getAttributeColorClass(85)).toContain("text-success-600");
-    expect(getAttributeColorClass(70)).toContain("text-success-600");
-    expect(getAttributeColorClass(65)).toContain("text-accent-700");
-    expect(getAttributeColorClass(45)).toContain("text-accent-700");
-    expect(getAttributeColorClass(39)).toContain("text-red-600");
-    expect(getAttributeColorClass(20)).toContain("text-red-600");
+    expect(getAttributeColorClass(85)).toContain("text-positive");
+    expect(getAttributeColorClass(70)).toContain("text-positive");
+    expect(getAttributeColorClass(65)).toContain("text-warning");
+    expect(getAttributeColorClass(45)).toContain("text-warning");
+    expect(getAttributeColorClass(39)).toContain("text-danger");
+    expect(getAttributeColorClass(20)).toContain("text-danger");
   });
 
   it("resolves injury names for explicit keys and plain injuries", (): void => {

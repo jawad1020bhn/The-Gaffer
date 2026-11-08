@@ -38,7 +38,7 @@ function SavedOfferEntry({ entry, teams }: { entry: SavedOffer; teams: TeamData[
   const { t, i18n } = useTranslation();
   const { offer } = entry;
   return (
-    <li className="rounded-control border border-gray-200 bg-gray-50 p-3 text-body text-gray-900 dark:border-navy-600 dark:bg-navy-900 dark:text-gray-100">
+    <li className="rounded-control border border-line bg-sunken p-3 text-body text-fg">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-heading font-bold uppercase tracking-label">
           {entry.kind === "transfer" ? t("transfers.transfer") : t("transfers.loan")}

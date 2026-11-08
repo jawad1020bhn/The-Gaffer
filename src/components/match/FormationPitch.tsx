@@ -158,7 +158,7 @@ export function FormationPitch({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-panel bg-gradient-to-b from-primary-500 to-primary-700 ${className ?? ""}`}
+      className={`relative overflow-hidden rounded-panel bg-gradient-to-b from-selected-fill to-selected-fill ${className ?? ""}`}
     >
       {/* Decorative: this is the pitch markings, and everything a screen reader needs is in the
           player tokens rendered on top of it. A <title> here would announce "football pitch"
@@ -272,12 +272,12 @@ export function FormationPitch({
         ) : (
           <>
             <div
-              className={`flex h-7 w-7 items-center justify-center rounded-full border-2 font-heading text-[9px] font-bold text-white shadow-md transition-all ${
+              className={`flex h-7 w-7 items-center justify-center rounded-full border-2 font-heading text-caption font-bold text-fg shadow-md transition-all ${
                 isSelected
-                  ? "border-red-300 bg-red-500/80 ring-2 ring-red-500/50"
+                  ? "border-danger/40 bg-danger-solid/80 ring-2 ring-danger/50"
                   : p.condition < 50
-                    ? "border-yellow-400/80 bg-yellow-600/70"
-                    : "border-white/30 bg-navy-800/80"
+                    ? "border-warning/80 bg-warning-solid/70"
+                    : "border-line/30 bg-panel/80"
               }`}
             >
               {isSubOn ? (
@@ -289,7 +289,7 @@ export function FormationPitch({
               )}
             </div>
             <span
-              className={`max-w-[44px] truncate text-center font-heading text-[8px] font-bold drop-shadow ${isSelected ? "text-red-300" : "text-white/80"}`}
+              className={`max-w-[44px] truncate text-center font-heading text-caption font-bold drop-shadow ${isSelected ? "text-danger" : "text-fg/80"}`}
             >
               {p.name.split(" ").pop()}
             </span>
@@ -310,7 +310,7 @@ export function FormationPitch({
               aria-describedby={renderToken ? descriptionId : undefined}
               onFocus={() => focusToken(p.id)}
               onBlur={blurToken}
-              className={`${sharedClass} rounded-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/70 ${isQueuedOff ? "opacity-50" : ""}`}
+              className={`${sharedClass} rounded-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${isQueuedOff ? "opacity-50" : ""}`}
               style={sharedStyle}
               onClick={() => {
                 if (!isQueuedOff) onPlayerClick(p.id);

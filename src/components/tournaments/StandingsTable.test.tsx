@@ -120,8 +120,8 @@ describe("StandingsTable", () => {
   it("highlights the row belonging to the club being managed", () => {
     renderTable();
 
-    expect(screen.getByTestId("row-mid").className).toContain("bg-primary-50");
-    expect(screen.getByTestId("row-top").className).not.toContain("bg-primary-50");
+    expect(screen.getByTestId("row-mid").className).toContain("bg-selected-tint");
+    expect(screen.getByTestId("row-top").className).not.toContain("bg-selected-tint");
   });
 
   it("opens a team from its row", () => {

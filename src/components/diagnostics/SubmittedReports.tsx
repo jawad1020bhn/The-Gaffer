@@ -46,10 +46,10 @@ export function SubmittedReports({ refreshKey }: SubmittedReportsProps) {
             <li
               // Entries from before ids existed fall back to their position, which is unique.
               key={report.id || `${report.code}-${report.submitted_at}-${index}`}
-              className="flex items-center gap-3 px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line"
+              className="flex items-center gap-3 px-3 py-2 rounded-control bg-sunken border border-line"
             >
               {report.unconfirmed ? (
-                <span className="text-caption text-accent-700 dark:text-accent-400">
+                <span className="text-caption text-warning">
                   {t("settings.reportOutcomeUnknown")}
                 </span>
               ) : (

@@ -40,7 +40,7 @@ export default function CompetitionsOverview({ competitions, userTeamId, onSelec
       <Card>
         <CardBody>
           <div className="flex flex-col items-center gap-2 py-6 text-center">
-            <Trophy className="w-8 h-8 text-gray-300 dark:text-navy-600" />
+            <Trophy className="w-8 h-8 text-fg-subtle" />
             <p className="text-body text-fg-muted">{t("tournaments.noActive")}</p>
           </div>
         </CardBody>
@@ -65,12 +65,12 @@ export default function CompetitionsOverview({ competitions, userTeamId, onSelec
       <CardBody className="p-0">
         {byScope.map(([scope, comps]) => (
           <div key={scope}>
-            <div className="px-4 py-2 border-b border-gray-100 dark:border-navy-600 bg-sunken">
+            <div className="px-4 py-2 border-b border-line bg-sunken">
               <h5 className="font-heading font-bold text-caption uppercase tracking-label text-fg-muted">
                 {t(`teamSelect.scopes.${scope}`)}
               </h5>
             </div>
-            <div className="divide-y divide-gray-100 dark:divide-navy-600">
+            <div className="divide-y divide-line">
               {comps.map((comp) => {
                 const status = getCompetitionStatus(comp);
                 const isParticipating =

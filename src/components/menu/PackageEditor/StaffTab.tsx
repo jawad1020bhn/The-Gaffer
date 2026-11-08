@@ -8,10 +8,10 @@ import type { StaffDef, TeamDef } from "./types";
 import { entityRowKey } from "./helpers";
 
 const ROLE_COLOR: Record<string, string> = {
-  AssistantManager: "bg-purple-600",
-  Coach: "bg-blue-600",
-  Scout: "bg-amber-600",
-  Physio: "bg-green-600",
+  AssistantManager: "bg-info-solid",
+  Coach: "bg-info-solid",
+  Scout: "bg-warning-solid",
+  Physio: "bg-positive-solid",
 };
 
 const ROLE_ABBR: Record<string, string> = {
@@ -91,14 +91,14 @@ export function StaffTab({
       searchSlot={
         staff.length > 0 && (
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 dark:text-gray-500 pointer-events-none" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-fg-subtle pointer-events-none" />
             <input
               type="text"
               value={query}
               onChange={(e) => handleQueryChange(e.target.value)}
               aria-label={t("worldEditor.searchStaff")}
               placeholder={t("worldEditor.searchStaff")}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 transition"
+              className="w-full pl-8 pr-3 py-1.5 text-caption rounded-control border border-line bg-panel text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus-visible:ring-focus transition"
             />
           </div>
         )
@@ -114,7 +114,7 @@ export function StaffTab({
     >
       {visible.map(({ s, i }) => {
         const name = `${s.firstName} ${s.lastName}`.trim() || s.id;
-        const roleColor = ROLE_COLOR[s.role] ?? "bg-gray-500";
+        const roleColor = ROLE_COLOR[s.role] ?? "bg-fg-subtle";
         const roleAbbr = ROLE_ABBR[s.role] ?? s.role.slice(0, 2).toUpperCase();
         const clubName = s.club ? (teamNames.get(s.club) ?? s.club) : null;
         return (
@@ -126,7 +126,7 @@ export function StaffTab({
               .join(" · ")}
             badge={
               <div
-                className={`flex items-center justify-center w-9 h-9 rounded-full text-white text-[10px] font-bold flex-shrink-0 ${roleColor}`}
+                className={`flex items-center justify-center w-9 h-9 rounded-full text-fg text-caption font-bold flex-shrink-0 ${roleColor}`}
               >
                 {roleAbbr}
               </div>

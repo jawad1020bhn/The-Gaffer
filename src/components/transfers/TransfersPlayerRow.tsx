@@ -101,7 +101,7 @@ export function TransferDealButton({ state, player }: TransferDealButtonProps) {
         if (view === "offers") openDealHistory(player);
         else openDealEntry(player);
       }}
-      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page motion-reduce:transition-none flex items-center gap-1 px-3 py-1.5 bg-primary-500/10 hover:bg-primary-500/20 text-primary-700 dark:text-primary-400 rounded-control text-caption font-heading font-bold uppercase tracking-label transition-colors"
+      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page motion-reduce:transition-none flex items-center gap-1 px-3 py-1.5 bg-selected-tint hover:bg-selected-tint text-selected rounded-control text-caption font-heading font-bold uppercase tracking-label transition-colors"
     >
       {view === "offers" ? <History className="w-3 h-3" /> : getDealEntryIcon(player, "w-3 h-3")}
       {view === "offers" ? t("transfers.viewOfferHistory") : getDealEntryLabel(player)}
@@ -135,10 +135,10 @@ export function PlayerRowDetails({
         <div className="flex items-center gap-3">
           <PlayerAvatar player={player} />
           <div className="min-w-0">
-            <span className="block truncate font-semibold text-body text-fg group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+            <span className="block truncate font-semibold text-body text-fg group-hover:text-selected transition-colors">
               {player.full_name}
             </span>
-            <div className="text-caption text-gray-500 dark:text-gray-300 mt-0.5 flex items-center gap-1">
+            <div className="text-caption text-fg-muted mt-0.5 flex items-center gap-1">
               <CountryFlag
                 code={player.nationality}
                 locale={i18n.language}
@@ -158,7 +158,7 @@ export function PlayerRowDetails({
               e.stopPropagation();
               onSelectTeam(player.team_id!);
             }}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 dark:focus-visible:ring-primary-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800 motion-reduce:transition-none text-body text-fg-muted hover:text-primary-500 hover:underline transition-colors"
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 motion-reduce:transition-none text-body text-fg-muted hover:text-selected hover:underline transition-colors"
           >
             {getTeamName(gameState.teams, player.team_id)}
           </button>
@@ -174,7 +174,7 @@ export function PlayerRowDetails({
       </td>
       <td className="py-2.5 px-4">
         <span
-          className={`font-heading font-bold text-base tabular-nums ${ratingTierClass(
+          className={`font-heading font-bold text-body tabular-nums ${ratingTierClass(
             figures.ovr === null ? "Rest" : tierOf(figures.ovr),
             "text",
           )}`}

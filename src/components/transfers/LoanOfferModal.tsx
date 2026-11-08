@@ -96,7 +96,7 @@ export function LoanOfferForm({
           <PlayerPositionBadge position={naturalPositionOf(loanTarget)} />
           <div>
             <p className="font-semibold text-body text-fg">{loanTarget.full_name}</p>
-            <p className="text-caption text-gray-400">
+            <p className="text-caption text-fg-subtle">
               {getTeamName(teams, loanTarget.team_id)} •{" "}
               {t("transfers.playerValue", {
                 value: formatVal(loanTarget.market_value),
@@ -109,7 +109,7 @@ export function LoanOfferForm({
       {noticeTitle ? (
         <div
           role="status"
-          className="mb-4 flex gap-2 rounded-control border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100"
+          className="mb-4 flex gap-2 rounded-control border border-warning/40 bg-warning-tint px-3 py-2 text-warning"
         >
           <CalendarClock className="mt-0.5 h-4 w-4 shrink-0" />
           <div className="text-caption">
@@ -130,7 +130,7 @@ export function LoanOfferForm({
         id="loan-period"
         value={periodId}
         onChange={(event) => onPeriodChange(event.target.value as LoanPeriodOptionId)}
-        className="w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+        className="w-full px-3 py-2 rounded-control bg-sunken border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-selected/50"
       >
         {periodId ? null : (
           <option value="" disabled>
@@ -156,7 +156,7 @@ export function LoanOfferForm({
           })}
         </p>
       ) : (
-        <p role="alert" className="text-caption text-red-600 dark:text-red-300 mb-3">
+        <p role="alert" className="text-caption text-danger mb-3">
           {t("transfers.noLoanPeriodAvailable")}
         </p>
       )}
@@ -181,7 +181,7 @@ export function LoanOfferForm({
             const nextValue = Number(event.target.value);
             onWageContributionChange(Number.isFinite(nextValue) ? nextValue : 0);
           }}
-          className="h-2 flex-1 cursor-pointer accent-primary-500"
+          className="h-2 flex-1 cursor-pointer accent-selected-fill"
         />
         <div className="relative w-24">
           <input
@@ -197,9 +197,9 @@ export function LoanOfferForm({
                 Number.isFinite(nextValue) ? Math.max(0, Math.min(100, nextValue)) : 0,
               );
             }}
-            className="w-full rounded-control border border-gray-200 bg-gray-50 px-3 py-2 pr-7 text-body text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:border-navy-600 dark:bg-navy-700 dark:text-gray-200"
+            className="w-full rounded-control border border-line bg-sunken px-3 py-2 pr-7 text-body text-fg focus:outline-none focus:ring-2 focus:ring-selected/50"
           />
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-caption text-gray-400">
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-caption text-fg-subtle">
             %
           </span>
         </div>
@@ -220,12 +220,12 @@ export function LoanOfferForm({
         })}
       </p>
 
-      <label className="flex items-start gap-2 rounded-control border border-line bg-gray-50 dark:bg-navy-700/60 p-3 mb-3 cursor-pointer">
+      <label className="flex items-start gap-2 rounded-control border border-line bg-sunken p-3 mb-3 cursor-pointer">
         <input
           type="checkbox"
           checked={buyOptionEnabled}
           onChange={(event) => onBuyOptionEnabledChange(event.target.checked)}
-          className="mt-0.5 h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
+          className="mt-0.5 h-4 w-4 rounded border-line-strong text-selected focus:ring-selected"
         />
         <span>
           <span className="block text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
@@ -252,7 +252,7 @@ export function LoanOfferForm({
         value={buyOptionFee}
         disabled={!buyOptionEnabled}
         onChange={(event) => onBuyOptionFeeChange(event.target.value)}
-        className="w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50"
+        className="w-full px-3 py-2 rounded-control bg-sunken border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-selected/50 disabled:opacity-50"
       />
 
       {buyOptionEnabled && Number(buyOptionFee) > 0 ? (
@@ -265,7 +265,7 @@ export function LoanOfferForm({
 
       {result ? (
         <div
-          className={`text-caption font-heading font-bold uppercase tracking-label mb-3 ${result === "accepted" ? "text-green-500" : result === "counter_offer" ? "text-amber-500" : "text-red-600 dark:text-red-300"}`}
+          className={`text-caption font-heading font-bold uppercase tracking-label mb-3 ${result === "accepted" ? "text-positive" : result === "counter_offer" ? "text-warning" : "text-danger"}`}
         >
           {result === "accepted"
             ? (acceptedMessage ?? t(acceptedLabelKey))
@@ -278,7 +278,7 @@ export function LoanOfferForm({
       ) : null}
 
       {suggestedTerms ? (
-        <div className="rounded-control border border-amber-200 bg-amber-50 px-3 py-2 text-caption text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200 mb-3">
+        <div className="rounded-control border border-warning/40 bg-warning-tint px-3 py-2 text-caption text-warning mb-3">
           <p className="font-heading font-bold uppercase tracking-label">
             {t("transfers.loanCounterSuggestedTerms", {
               percent: suggestedTerms.wageContributionPct,
@@ -296,7 +296,7 @@ export function LoanOfferForm({
       ) : null}
 
       {error && !result ? (
-        <p role="alert" className="text-caption text-red-600 dark:text-red-300 mb-3">
+        <p role="alert" className="text-caption text-danger mb-3">
           {error}
         </p>
       ) : null}
@@ -306,14 +306,14 @@ export function LoanOfferForm({
           type="button"
           onClick={onSubmit}
           disabled={submitDisabled}
-          className="flex-1 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
+          className="flex-1 py-2 bg-selected-fill hover:bg-selected text-on-brand rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
         >
           {loading ? t("transfers.submitting") : t(submitLabelKey)}
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-gray-300 dark:hover:bg-navy-600 transition-colors"
+          className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-line-strong transition-colors"
         >
           {t("transfers.close")}
         </button>

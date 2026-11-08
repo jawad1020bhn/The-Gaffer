@@ -42,7 +42,7 @@ export default function TournamentsTopScorers({
         {topScorers.length === 0 ? (
           <p className="p-4 text-body text-fg-subtle text-center">{t("tournaments.noGoals")}</p>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-navy-600">
+          <div className="divide-y divide-line">
             {topScorers.map((entry, i) => (
               <ContextMenu
                 items={menuItems(entry.playerId, entry.playerName!.team_id)}
@@ -63,7 +63,7 @@ export default function TournamentsTopScorers({
                       {entry.playerName!.team_name ?? entry.playerName!.team_id ?? ""}
                     </p>
                   </div>
-                  <span className="font-heading font-bold text-lead text-accent-500 dark:text-accent-400 tabular-nums">
+                  <span className="font-heading font-bold text-lead text-warning tabular-nums">
                     {entry.goals}
                   </span>
                 </div>

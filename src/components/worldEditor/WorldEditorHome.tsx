@@ -146,7 +146,7 @@ export function WorldEditorHome({
             </h2>
 
             {errorMsg && (
-              <div className="mb-4 text-body text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-panel px-4 py-3">
+              <div className="mb-4 text-body text-danger bg-danger-tint border border-danger/40 rounded-panel px-4 py-3">
                 {errorMsg}
               </div>
             )}
@@ -163,7 +163,7 @@ export function WorldEditorHome({
                   placeholder={t("worldEditor.worldNamePlaceholder")}
                   // biome-ignore lint/a11y/noAutofocus: this is the new-world form, reached by clicking through from the home view.
                   autoFocus
-                  className="w-full px-3 py-2 rounded-control border border-line bg-panel text-fg text-body focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 rounded-control border border-line bg-panel text-fg text-body focus:outline-none focus:ring-2 focus:ring-selected"
                 />
               </div>
 
@@ -187,7 +187,7 @@ export function WorldEditorHome({
                   type="text"
                   value={formAuthor}
                   onChange={(e) => setFormAuthor(e.target.value)}
-                  className="w-full px-3 py-2 rounded-control border border-line bg-panel text-fg text-body focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 rounded-control border border-line bg-panel text-fg text-body focus:outline-none focus:ring-2 focus:ring-selected"
                 />
               </div>
 
@@ -199,7 +199,7 @@ export function WorldEditorHome({
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 rounded-control border border-line bg-panel text-fg text-body focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                  className="w-full px-3 py-2 rounded-control border border-line bg-panel text-fg text-body focus:outline-none focus:ring-2 focus:ring-selected resize-none"
                 />
               </div>
             </div>
@@ -217,7 +217,7 @@ export function WorldEditorHome({
                 type="button"
                 onClick={handleCreate}
                 disabled={isBusy || !derivedSlug}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-panel font-heading font-bold uppercase tracking-label text-body transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-selected-fill to-selected-fill text-on-brand rounded-panel font-heading font-bold uppercase tracking-label text-body transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isBusy ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -244,7 +244,7 @@ export function WorldEditorHome({
         <div className="max-w-lg mx-auto px-6 py-10 flex flex-col gap-8">
           {/* Hero */}
           <div className="text-center">
-            <Package className="w-12 h-12 text-primary-500 mx-auto mb-3" />
+            <Package className="w-12 h-12 text-selected mx-auto mb-3" />
             <h1 className="text-title font-heading font-bold uppercase tracking-label text-fg">
               {t("worldEditor.title")}
             </h1>
@@ -252,7 +252,7 @@ export function WorldEditorHome({
           </div>
 
           {errorMsg && (
-            <div className="text-body text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-panel px-4 py-3">
+            <div className="text-body text-danger bg-danger-tint border border-danger/40 rounded-panel px-4 py-3">
               {errorMsg}
             </div>
           )}
@@ -263,16 +263,14 @@ export function WorldEditorHome({
               type="button"
               onClick={() => openNewForm()}
               disabled={isBusy}
-              className="flex items-center gap-4 w-full p-5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-panel transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center gap-4 w-full p-5 bg-gradient-to-r from-selected-fill to-selected-fill text-on-brand rounded-panel transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Package className="w-7 h-7 flex-shrink-0" />
               <div className="text-left">
                 <p className="font-heading font-bold text-lead uppercase tracking-label">
                   {t("worldEditor.newPackage")}
                 </p>
-                <p className="text-body text-primary-100 mt-0.5">
-                  {t("worldEditor.newPackageDesc")}
-                </p>
+                <p className="text-body text-selected mt-0.5">{t("worldEditor.newPackageDesc")}</p>
               </div>
             </button>
 
@@ -280,9 +278,9 @@ export function WorldEditorHome({
               type="button"
               onClick={onOpenPackageFile}
               disabled={isBusy}
-              className="flex items-center gap-4 w-full p-5 bg-panel hover:bg-hover text-fg rounded-panel transition-all duration-200 border border-line hover:border-accent-400 dark:hover:border-accent-400 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center gap-4 w-full p-5 bg-panel hover:bg-hover text-fg rounded-panel transition-all duration-200 border border-line hover:border-warning shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <FolderOpen className="w-7 h-7 text-accent-500 dark:text-accent-400 flex-shrink-0" />
+              <FolderOpen className="w-7 h-7 text-warning flex-shrink-0" />
               <div className="text-left">
                 <p className="font-heading font-bold text-lead uppercase tracking-label">
                   {t("worldEditor.openPackageFile")}
@@ -297,9 +295,9 @@ export function WorldEditorHome({
               type="button"
               onClick={onOpenPackageFolder}
               disabled={isBusy}
-              className="flex items-center gap-4 w-full p-5 bg-panel hover:bg-hover text-fg rounded-panel transition-all duration-200 border border-line hover:border-accent-400 dark:hover:border-accent-400 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center gap-4 w-full p-5 bg-panel hover:bg-hover text-fg rounded-panel transition-all duration-200 border border-line hover:border-warning shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <Folder className="w-7 h-7 text-accent-500 dark:text-accent-400 flex-shrink-0" />
+              <Folder className="w-7 h-7 text-warning flex-shrink-0" />
               <div className="text-left">
                 <p className="font-heading font-bold text-lead uppercase tracking-label">
                   {t("worldEditor.openPackageFolder")}
@@ -312,7 +310,7 @@ export function WorldEditorHome({
 
             <div className="flex flex-col gap-2">
               <p className="text-caption font-heading font-bold uppercase tracking-[0.18em] text-fg-subtle flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-amber-500" />
+                <Zap className="w-3.5 h-3.5 text-warning" />
                 {t("worldEditor.startFromExample")}
               </p>
               {SAMPLE_PACKAGES.map((sample) => (
@@ -321,7 +319,7 @@ export function WorldEditorHome({
                   key={sample.meta.id}
                   onClick={() => openNewForm(sample)}
                   disabled={isBusy}
-                  className="flex items-start gap-3 w-full px-4 py-3 bg-panel hover:bg-amber-50 dark:hover:bg-navy-700 text-fg rounded-panel transition-all duration-200 border border-line hover:border-amber-400 dark:hover:border-amber-500 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed text-left"
+                  className="flex items-start gap-3 w-full px-4 py-3 bg-panel hover:bg-warning-tint text-fg rounded-panel transition-all duration-200 border border-line hover:border-warning/40 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed text-left"
                 >
                   <div className="flex-1 min-w-0">
                     <p className="font-heading font-bold uppercase tracking-label text-body truncate">
@@ -357,7 +355,7 @@ export function WorldEditorHome({
                       <p className="text-body font-medium text-fg truncate">{proj.name}</p>
                       <p className="text-caption text-fg-subtle truncate font-mono">{proj.path}</p>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 flex-shrink-0" />
+                    <ChevronRight className="w-4 h-4 text-fg-subtle flex-shrink-0" />
                   </button>
                 ))}
               </div>
@@ -391,7 +389,7 @@ export function WorldEditorHome({
                       type="button"
                       onClick={() => onOpenInstalled(pkg.installedPath)}
                       disabled={isBusy}
-                      className="text-caption font-semibold text-primary-500 hover:text-primary-700 dark:hover:text-primary-300 transition-colors disabled:opacity-60 flex-shrink-0"
+                      className="text-caption font-semibold text-selected hover:text-selected transition-colors disabled:opacity-60 flex-shrink-0"
                     >
                       {t("worldEditor.openInEditor")}
                     </button>

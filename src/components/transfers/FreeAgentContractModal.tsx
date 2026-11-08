@@ -71,7 +71,7 @@ export function FreeAgentContractForm({
           <PlayerPositionBadge position={naturalPositionOf(player)} />
           <div>
             <p className="font-semibold text-body text-fg">{player.full_name}</p>
-            <p className="text-caption text-gray-400">
+            <p className="text-caption text-fg-subtle">
               {player.team_id ? getTeamName(teams, player.team_id) : t("common.freeAgent")} •{" "}
               {t("transfers.playerValue", {
                 value: formatVal(player.market_value),
@@ -94,7 +94,7 @@ export function FreeAgentContractForm({
         step="1000"
         value={wage}
         onChange={(event) => onWageChange(event.target.value)}
-        className="w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+        className="w-full px-3 py-2 rounded-control bg-sunken border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-selected/50"
       />
 
       <label
@@ -111,12 +111,12 @@ export function FreeAgentContractForm({
         step="1"
         value={contractLength}
         onChange={(event) => onContractLengthChange(event.target.value)}
-        className="w-full px-3 py-2 rounded-control bg-gray-50 dark:bg-navy-700 border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+        className="w-full px-3 py-2 rounded-control bg-sunken border border-line text-body text-fg mb-3 focus:outline-none focus:ring-2 focus:ring-selected/50"
       />
 
       {projection ? (
-        <div className="rounded-control border border-line bg-white/70 dark:bg-navy-900/40 p-3 mb-3 space-y-2">
-          <p className="text-[11px] font-heading font-bold uppercase tracking-label text-fg-muted">
+        <div className="rounded-control border border-line bg-panel/70 p-3 mb-3 space-y-2">
+          <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
             {t("playerProfile.renewalProjectionTitle")}
           </p>
           <p className="text-caption text-fg-muted">
@@ -145,9 +145,7 @@ export function FreeAgentContractForm({
             })}
           </p>
           {!projection.policy_allows ? (
-            <p className="text-caption text-red-600 dark:text-red-300">
-              {t("playerProfile.renewalBudgetWarning")}
-            </p>
+            <p className="text-caption text-danger">{t("playerProfile.renewalBudgetWarning")}</p>
           ) : null}
         </div>
       ) : null}
@@ -174,14 +172,14 @@ export function FreeAgentContractForm({
           type="button"
           onClick={onSubmit}
           disabled={submitDisabled}
-          className="flex-1 py-2 bg-primary-700 hover:bg-primary-800 text-white rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
+          className="flex-1 py-2 bg-selected-fill hover:bg-selected text-on-brand rounded-control font-heading font-bold text-body uppercase tracking-label transition-colors disabled:opacity-50"
         >
           {submitting ? t("transfers.submitting") : t("playerProfile.renewalSubmit")}
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-gray-300 dark:hover:bg-navy-600 transition-colors"
+          className="px-4 py-2 bg-hover text-fg-muted rounded-control font-heading font-bold text-body uppercase tracking-label hover:bg-line-strong transition-colors"
         >
           {t("transfers.close")}
         </button>

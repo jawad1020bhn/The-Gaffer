@@ -55,15 +55,19 @@ High contrast swaps the text and line roles again inside the dark presentation.
 | `fg`, `fg-muted`, `fg-subtle` | text: strong, secondary, quiet (placeholders, disabled) |
 | `line`, `line-strong` | borders and dividers |
 | `focus` | the focus ring |
-| `on-brand` | text and icons on the brand fill (`primary-700`), the selected fill, chrome, the turf |
+| `on-brand` | text and icons on the brand fill (`primary-700`) and the selected fill only. It is near-black: on a panel, a hero painted with a club's own colours, or the turf, use `fg` |
 | `selected-fill` | a control that is on or chosen: a switch that is on, a checked box, a `strong` segmented option, a count badge; it carries `on-brand` text |
 | `selected`, `selected-tint` | the text (and check mark) and background of the chosen option in a list: `Select`, `DatePicker`, the comboboxes; `selected` also draws the selected tab's underline and an `outlined` segmented option's ring |
 | `positive`, `warning`, `danger`, `info` | status text; each also has `-tint` (a background) and `-solid` (a bar or dot) |
 | `tone-top`, `tone-good`, `tone-fair`, `tone-low`, `tone-bad` | the scale for rated values (§4), with `-tint` and `-solid` |
+| `category-1` … `category-5` | a categorical label, each with `-tint`: the five player-trait families (physical, technical, mental, goalkeeper, special) and the news desks. Use it when the families must stay apart, not to rate a value |
 
-Brand palettes (`primary-*`, `accent-*`, `navy-*`) stay for brand moments: the Continue button,
-the selected navigation item, a logo strip. The raw Tailwind palette (`gray-500`, `red-400`,
-`white`, …) isn't used in a finished folder (§7).
+Brand palettes (`primary-*`, `accent-*`, `navy-*`) stay for brand moments in `BRAND_FILES`: the
+Continue button, the `primary` badge and bar, the loading spinner. Every other screen is on the
+role tokens — the raw Tailwind palette (`gray-500`, `red-400`, `white`, …) and the legacy navy
+bridge are gone from all of `components/`, `pages/` and `layouts/`, and two repo-wide tests keep
+them out (§7). The remaining rules in §7 still apply folder by folder as charts and focus rings
+are migrated.
 
 A control that is on or chosen uses the `selected` role, not the brand green: one place to change
 how "chosen" looks (maintainer, 22 Oct). It covers controls inside pages; the sidebar's selected

@@ -24,7 +24,7 @@ export default function HomeNextOpponentCard({
           <button
             type="button"
             onClick={() => onNavigate?.("Schedule")}
-            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-selected text-caption font-heading font-bold uppercase tracking-label hover:text-selected transition-colors"
           >
             {t("dashboard.schedule")}
           </button>
@@ -47,7 +47,7 @@ export default function HomeNextOpponentCard({
                   <div className="min-w-0 flex items-center gap-3">
                     <TeamLogo
                       team={nextOpponent.opponent}
-                      className="h-11 w-11 shrink-0 overflow-hidden rounded-control bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-caption font-heading font-bold text-gray-500 dark:text-gray-300"
+                      className="h-11 w-11 shrink-0 overflow-hidden rounded-control bg-hover flex items-center justify-center text-caption font-heading font-bold text-fg-muted"
                       imageClassName="h-9 w-9 object-contain drop-shadow"
                     />
                     <div className="min-w-0">

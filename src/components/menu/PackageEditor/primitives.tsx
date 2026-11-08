@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 import { Select } from "../../../components/ui/Select";
 
 export const inputClass =
-  "w-full rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-400 transition";
+  "w-full rounded-control border border-line bg-panel px-3 py-2 text-body text-fg focus:outline-none focus:ring-2 focus-visible:ring-focus transition";
 export const labelClass =
-  "text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400";
+  "text-caption font-heading font-bold uppercase tracking-[0.18em] text-fg-muted";
 
 interface LabeledInputProps {
   label: string;
@@ -128,13 +128,13 @@ export function InlineHelp({ text }: InlineHelpProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="text-gray-400 dark:text-gray-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
+        className="text-fg-subtle hover:text-selected transition-colors"
         aria-label={t("worldEditor.helpLabel")}
       >
         <HelpCircle className="w-3.5 h-3.5" />
       </button>
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-50 w-64 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800 shadow-xl p-3 text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+        <div className="absolute left-0 top-full mt-1 z-50 w-64 rounded-panel border border-line bg-panel shadow-xl p-3 text-caption text-fg leading-relaxed">
           {text}
         </div>
       )}

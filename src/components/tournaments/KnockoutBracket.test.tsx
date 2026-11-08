@@ -60,8 +60,8 @@ describe("KnockoutBracket penalty shootouts", () => {
     // leave both rows neutral (the "wrong team advanced" regression).
     const awayRow = within(slot).getByText("France").closest("div");
     const homeRow = within(slot).getByText("Brazil").closest("div");
-    expect(awayRow?.className).toContain("bg-primary-50");
-    expect(homeRow?.className).not.toContain("bg-primary-50");
+    expect(awayRow?.className).toContain("bg-selected-tint");
+    expect(homeRow?.className).not.toContain("bg-selected-tint");
   });
 
   it("does not show a shootout tally when the tie was settled in normal time", () => {
@@ -88,9 +88,11 @@ describe("KnockoutBracket penalty shootouts", () => {
     renderBracket(fixtureWhoseBackendAnswerIsAway());
 
     const slot = screen.getByTestId("tournaments-bracket-ko-1");
-    expect(within(slot).getByText("France").closest("div")?.className).toContain("bg-primary-50");
+    expect(within(slot).getByText("France").closest("div")?.className).toContain(
+      "bg-selected-tint",
+    );
     expect(within(slot).getByText("Brazil").closest("div")?.className).not.toContain(
-      "bg-primary-50",
+      "bg-selected-tint",
     );
   });
 
@@ -107,10 +109,10 @@ describe("KnockoutBracket penalty shootouts", () => {
 
     const slot = screen.getByTestId("tournaments-bracket-ko-1");
     expect(within(slot).getByText("France").closest("div")?.className).not.toContain(
-      "bg-primary-50",
+      "bg-selected-tint",
     );
     expect(within(slot).getByText("Brazil").closest("div")?.className).not.toContain(
-      "bg-primary-50",
+      "bg-selected-tint",
     );
   });
 });

@@ -161,12 +161,12 @@ export default function ScoutingYouthRecruitmentCard({
           {availableScoutCount === 0 ? (
             <span className="text-caption text-fg-muted">{t("scouting.noScoutsFree")}</span>
           ) : null}
-          {errorMessage ? <span className="text-caption text-red-500">{errorMessage}</span> : null}
+          {errorMessage ? <span className="text-caption text-danger">{errorMessage}</span> : null}
         </div>
 
         {youthAssignments.length === 0 ? (
           <div className="flex items-center gap-3 rounded-panel border border-dashed border-line bg-sunken/40 px-4 py-4">
-            <GraduationCap className="w-5 h-5 text-primary-500 shrink-0" />
+            <GraduationCap className="w-5 h-5 text-selected shrink-0" />
             <p className="text-body text-fg-muted">{t("scouting.noYouthSearches")}</p>
           </div>
         ) : (
@@ -210,7 +210,7 @@ export default function ScoutingYouthRecruitmentCard({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-accent-500 shrink-0">
+                    <div className="flex items-center gap-1.5 text-warning shrink-0">
                       <Clock className="w-3.5 h-3.5" />
                       <span className="text-caption font-heading font-bold">
                         {t("scouting.daysLeft", { days: assignment.days_remaining })}

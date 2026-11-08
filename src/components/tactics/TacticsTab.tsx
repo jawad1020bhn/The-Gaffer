@@ -106,7 +106,7 @@ export default function TacticsTab({
       <div
         ref={dragPreviewRef}
         aria-hidden="true"
-        className="pointer-events-none fixed -left-20 top-0 h-8 w-8 rounded-full border border-white/15 bg-navy-900/90 shadow-lg"
+        className="pointer-events-none fixed -left-20 top-0 h-8 w-8 rounded-full border border-line bg-page/90 shadow-lg"
       />
       <TacticsCommandBar
         activeTactic={activeTactic}

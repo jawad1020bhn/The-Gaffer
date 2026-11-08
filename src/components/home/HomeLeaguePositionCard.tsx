@@ -49,7 +49,7 @@ export default function HomeLeaguePositionCard({
           <button
             type="button"
             onClick={() => onNavigate?.("Schedule")}
-            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-selected text-caption font-heading font-bold uppercase tracking-label hover:text-selected transition-colors"
           >
             {t("home.standings")}
           </button>
@@ -73,8 +73,8 @@ export default function HomeLeaguePositionCard({
         ) : myStanding && myStandingData ? (
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-panel bg-accent-500/10 flex items-center justify-center">
-                <span className="text-3xl font-heading font-bold text-accent-500">
+              <div className="w-16 h-16 rounded-panel bg-warning-tint flex items-center justify-center">
+                <span className="text-display font-heading font-bold text-warning">
                   {myStanding}
                 </span>
               </div>
@@ -106,7 +106,7 @@ export default function HomeLeaguePositionCard({
                   <span aria-hidden="true">{t("common.won")}</span>
                   <span className="sr-only">{t("common.wonFull")}</span>
                 </p>
-                <p className="text-body font-heading font-bold text-green-500">
+                <p className="text-body font-heading font-bold text-positive">
                   {myStandingData.won}
                 </p>
               </div>
@@ -115,7 +115,7 @@ export default function HomeLeaguePositionCard({
                   <span aria-hidden="true">{t("common.drawn")}</span>
                   <span className="sr-only">{t("common.drawnFull")}</span>
                 </p>
-                <p className="text-body font-heading font-bold text-gray-500">
+                <p className="text-body font-heading font-bold text-fg-muted">
                   {myStandingData.drawn}
                 </p>
               </div>
@@ -124,7 +124,7 @@ export default function HomeLeaguePositionCard({
                   <span aria-hidden="true">{t("common.lost")}</span>
                   <span className="sr-only">{t("common.lostFull")}</span>
                 </p>
-                <p className="text-body font-heading font-bold text-red-500">
+                <p className="text-body font-heading font-bold text-danger">
                   {myStandingData.lost}
                 </p>
               </div>
@@ -133,17 +133,17 @@ export default function HomeLeaguePositionCard({
               <div className="flex flex-col items-center gap-1.5 mt-1">
                 <FormDots results={teamForm} />
                 {winStreak && (
-                  <span className="text-caption font-heading font-bold text-green-500 uppercase tracking-label">
+                  <span className="text-caption font-heading font-bold text-positive uppercase tracking-label">
                     {t("home.winningStreak")}
                   </span>
                 )}
                 {loseStreak && (
-                  <span className="text-caption font-heading font-bold text-red-500 uppercase tracking-label">
+                  <span className="text-caption font-heading font-bold text-danger uppercase tracking-label">
                     {t("home.losingStreak")}
                   </span>
                 )}
                 {!winStreak && !loseStreak && unbeaten && (
-                  <span className="text-caption font-heading font-bold text-primary-500 uppercase tracking-label">
+                  <span className="text-caption font-heading font-bold text-selected uppercase tracking-label">
                     {t("home.unbeatenRun")}
                   </span>
                 )}
@@ -152,7 +152,7 @@ export default function HomeLeaguePositionCard({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2 py-4">
-            <Trophy className="w-8 h-8 text-gray-300 dark:text-navy-600" />
+            <Trophy className="w-8 h-8 text-fg-subtle" />
             <p className="text-caption text-fg-muted">{t("home.noLeague")}</p>
           </div>
         )}

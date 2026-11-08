@@ -30,10 +30,10 @@ export default function ManagerProfileList({
         return (
           <div
             key={profile.id}
-            className={`group relative flex items-center w-full rounded-xl border transition-all duration-200 ${
+            className={`group relative flex items-center w-full rounded-panel border transition-all duration-200 ${
               isSelected
-                ? "bg-primary-50 dark:bg-primary-500/10 border-primary-400 dark:border-primary-500 ring-1 ring-primary-400/30"
-                : "bg-white dark:bg-navy-700 border-gray-200 dark:border-navy-600 hover:border-primary-400 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-navy-600"
+                ? "bg-selected-tint border-selected ring-1 ring-selected/40"
+                : "bg-panel border-line hover:border-selected hover:bg-hover"
             }`}
           >
             <button
@@ -46,18 +46,18 @@ export default function ManagerProfileList({
             >
               <div className="flex-1 flex items-center justify-between min-w-0">
                 <span
-                  className={`font-heading font-bold text-sm uppercase tracking-wide truncate ${isSelected ? "text-primary-600 dark:text-primary-400" : "text-gray-900 dark:text-white"}`}
+                  className={`font-heading font-bold text-body uppercase tracking-label truncate ${isSelected ? "text-selected" : "text-fg"}`}
                 >
                   {profile.first_name} {profile.last_name}
                 </span>
-                <span className="text-xs text-gray-400 dark:text-gray-500 ml-2 shrink-0">
+                <span className="text-caption text-fg-subtle ml-2 shrink-0">
                   {profile.nationality}
                 </span>
               </div>
               <div
-                className={`w-4 h-4 rounded-full bg-primary-500 flex items-center justify-center shrink-0 ${isSelected ? "visible" : "invisible"}`}
+                className={`w-4 h-4 rounded-full bg-selected-fill flex items-center justify-center shrink-0 ${isSelected ? "visible" : "invisible"}`}
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                <div className="w-1.5 h-1.5 rounded-full bg-panel" />
               </div>
             </button>
 
@@ -65,14 +65,14 @@ export default function ManagerProfileList({
               type="button"
               aria-label={t("menu.delete")}
               onClick={() => setConfirmDeleteId(profile.id)}
-              className="p-1.5 mr-2 rounded-lg text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all shrink-0"
+              className="p-1.5 mr-2 rounded-control text-fg-subtle hover:text-danger hover:bg-danger-tint transition-all shrink-0"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
 
             {confirmDeleteId === profile.id && (
               <div
-                className={`absolute inset-0 flex items-center justify-end gap-1.5 px-3 rounded-xl ${isSelected ? "bg-primary-50 dark:bg-primary-500/10" : "bg-white dark:bg-navy-700"}`}
+                className={`absolute inset-0 flex items-center justify-end gap-1.5 px-3 rounded-panel ${isSelected ? "bg-selected-tint" : "bg-panel"}`}
               >
                 <button
                   type="button"
@@ -80,14 +80,14 @@ export default function ManagerProfileList({
                     onDelete(profile.id);
                     setConfirmDeleteId(null);
                   }}
-                  className="px-2.5 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-heading font-bold uppercase tracking-wider rounded-lg transition-colors"
+                  className="px-2.5 py-1 bg-danger-tint hover:bg-danger-tint text-danger text-caption font-heading font-bold uppercase tracking-label rounded-control transition-colors"
                 >
                   {t("menu.delete")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmDeleteId(null)}
-                  className="px-2.5 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-navy-800 dark:hover:bg-navy-900 text-gray-700 dark:text-gray-300 text-xs font-heading font-bold uppercase tracking-wider rounded-lg transition-colors"
+                  className="px-2.5 py-1 bg-hover hover:bg-page text-fg text-caption font-heading font-bold uppercase tracking-label rounded-control transition-colors"
                 >
                   {t("menu.cancel")}
                 </button>

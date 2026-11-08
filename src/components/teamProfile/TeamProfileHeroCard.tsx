@@ -34,27 +34,27 @@ export default function TeamProfileHeroCard({
         <div className="flex items-start gap-6">
           <TeamLogo
             team={team}
-            className="w-24 h-24 rounded-2xl flex items-center justify-center font-heading font-bold text-3xl text-white border-2 border-white/30 overflow-hidden"
+            className="w-24 h-24 rounded-panel flex items-center justify-center font-heading font-bold text-display text-fg border-2 border-line/30 overflow-hidden"
             imageClassName="h-20 w-20 object-contain drop-shadow"
             style={{ backgroundColor: team.colors.primary }}
           />
           <div className="flex-1">
-            <h2 className="text-3xl font-heading font-bold text-white uppercase tracking-wide drop-shadow">
+            <h2 className="text-display font-heading font-bold text-fg uppercase tracking-label drop-shadow">
               {team.name}
             </h2>
-            <div className="flex items-center gap-4 mt-2 text-white/80 text-sm">
+            <div className="flex items-center gap-4 mt-2 text-fg/80 text-body">
               <TeamLocation
                 city={team.city}
                 countryCode={team.country}
                 locale={locale}
-                className="text-white/80"
+                className="text-fg/80"
               />
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" /> {t("teams.est")} {team.founded_year}
               </span>
             </div>
             {viewModel.manager && (
-              <p className="text-white/70 text-sm mt-1 flex items-center gap-1.5">
+              <p className="text-fg/70 text-body mt-1 flex items-center gap-1.5">
                 <Users className="w-4 h-4" /> {t("teamProfile.managerLabel")}{" "}
                 {viewModel.manager.display_name}
               </p>
@@ -66,7 +66,7 @@ export default function TeamProfileHeroCard({
             <QuickHeroStat
               label={t("manager.reputation")}
               value={String(team.reputation)}
-              valueClassName="text-accent-300"
+              valueClassName="text-warning"
             />
             <QuickHeroStat
               label={t("teamProfile.leaguePos")}
@@ -77,22 +77,22 @@ export default function TeamProfileHeroCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-px bg-gray-200 dark:bg-navy-600 md:hidden">
+      <div className="grid grid-cols-4 gap-px bg-hover md:hidden">
         <QuickStat
           label={t("teams.avgOvr")}
           value={visibleRatingText(averageRating)}
-          color="text-primary-500"
+          color="text-selected"
         />
-        <QuickStat label={t("teams.rep")} value={String(team.reputation)} color="text-accent-500" />
+        <QuickStat label={t("teams.rep")} value={String(team.reputation)} color="text-warning" />
         <QuickStat
           label={t("common.position")}
           value={viewModel.leaguePos > 0 ? `#${viewModel.leaguePos}` : "—"}
-          color="text-gray-700 dark:text-gray-200"
+          color="text-fg"
         />
         <QuickStat
           label={t("teams.squad")}
           value={String(viewModel.roster.length)}
-          color="text-gray-700 dark:text-gray-200"
+          color="text-fg"
         />
       </div>
     </Card>
@@ -102,16 +102,16 @@ export default function TeamProfileHeroCard({
 function QuickHeroStat({
   label,
   value,
-  valueClassName = "text-white",
+  valueClassName = "text-fg",
 }: {
   label: string;
   value: string;
   valueClassName?: string;
 }) {
   return (
-    <div className="bg-black/20 backdrop-blur rounded-xl px-5 py-3 text-center min-w-[100px]">
-      <p className="text-xs text-white/60 font-heading uppercase tracking-wider">{label}</p>
-      <p className={`font-heading font-bold text-2xl mt-0.5 ${valueClassName}`}>{value}</p>
+    <div className="bg-overlay/20 backdrop-blur rounded-panel px-5 py-3 text-center min-w-[100px]">
+      <p className="text-caption text-fg/60 font-heading uppercase tracking-label">{label}</p>
+      <p className={`font-heading font-bold text-title mt-0.5 ${valueClassName}`}>{value}</p>
     </div>
   );
 }

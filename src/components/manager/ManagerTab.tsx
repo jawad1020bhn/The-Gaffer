@@ -50,16 +50,16 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
       {/* Profile card */}
       <Card accent="primary" className="md:col-span-3">
-        <div className="bg-gradient-to-r from-navy-700 to-navy-800 p-6 rounded-t-xl flex items-center gap-6">
-          <div className="w-20 h-20 rounded-panel bg-primary-500/20 flex items-center justify-center font-heading font-bold text-3xl text-primary-400 border-2 border-primary-500/30">
+        <div className="bg-panel p-6 rounded-t-xl flex items-center gap-6">
+          <div className="w-20 h-20 rounded-panel bg-selected-tint flex items-center justify-center font-heading font-bold text-display text-selected border-2 border-selected/40">
             {mgr.first_name.charAt(0)}
             {mgr.last_name.charAt(0)}
           </div>
           <div>
-            <h2 className="text-title font-heading font-bold text-white uppercase tracking-label">
+            <h2 className="text-title font-heading font-bold text-on-brand uppercase tracking-label">
               {mgr.display_name}
             </h2>
-            <p className="text-gray-400 text-body mt-1">
+            <p className="text-fg-subtle text-body mt-1">
               <CountryFlag
                 code={mgr.nationality}
                 locale={i18n.language}
@@ -74,22 +74,22 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
                   type="button"
                   data-testid="manager-current-team"
                   onClick={() => onSelectTeam(myTeam.id)}
-                  className="text-primary-400 text-body font-semibold mt-0.5 hover:text-primary-300 transition-colors"
+                  className="text-selected text-body font-semibold mt-0.5 hover:text-selected transition-colors"
                 >
                   {t("manager.managerOf", { team: myTeam.name })}
                 </button>
               </ContextMenu>
             ) : myTeam ? (
-              <p className="text-primary-400 text-body font-semibold mt-0.5">
+              <p className="text-selected text-body font-semibold mt-0.5">
                 {t("manager.managerOf", { team: myTeam.name })}
               </p>
             ) : null}
           </div>
           <div className="ml-auto text-right">
-            <p className="text-caption text-gray-400 font-heading uppercase tracking-label">
+            <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">
               {t("manager.reputation")}
             </p>
-            <p className="font-heading font-bold text-title text-accent-400">{mgr.reputation}</p>
+            <p className="font-heading font-bold text-title text-warning">{mgr.reputation}</p>
           </div>
         </div>
       </Card>
@@ -124,7 +124,7 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
             {/* Board */}
             <div>
               <div className="text-center mb-2">
-                <p className="font-heading font-bold text-3xl text-fg">{mgr.satisfaction}%</p>
+                <p className="font-heading font-bold text-display text-fg">{mgr.satisfaction}%</p>
                 <p className="text-caption text-fg-subtle font-heading uppercase tracking-label mt-0.5">
                   {t("manager.board")}
                 </p>
@@ -144,7 +144,9 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
             {/* Fans */}
             <div>
               <div className="text-center mb-2">
-                <p className="font-heading font-bold text-3xl text-fg">{mgr.fan_approval ?? 50}%</p>
+                <p className="font-heading font-bold text-display text-fg">
+                  {mgr.fan_approval ?? 50}%
+                </p>
                 <p className="text-caption text-fg-subtle font-heading uppercase tracking-label mt-0.5">
                   {t("manager.fans")}
                 </p>
@@ -194,7 +196,7 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+              <tbody className="divide-y divide-line">
                 {mgr.career_history.map((entry, i) => {
                   const canSelectTeam =
                     !!onSelectTeam && gameState.teams.some((team) => team.id === entry.team_id);
@@ -267,7 +269,7 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
 
 function StatBlock({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-control">
+    <div className="text-center p-3 bg-sunken rounded-control">
       <p className="font-heading font-bold text-title text-fg tabular-nums">{value}</p>
       <p className="text-caption text-fg-subtle font-heading uppercase tracking-label mt-0.5">
         {label}

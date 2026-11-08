@@ -72,7 +72,7 @@ function CrashPromptDialog({
       className="w-full max-w-md rounded-panel p-6"
     >
       <div className="flex items-start gap-3">
-        <span className="text-accent-600 dark:text-accent-400 shrink-0 mt-0.5">
+        <span className="text-warning shrink-0 mt-0.5">
           <AlertTriangle className="w-5 h-5" aria-hidden="true" />
         </span>
         <div className="flex-1 min-w-0">
@@ -80,7 +80,7 @@ function CrashPromptDialog({
             id="crash-prompt-title"
             ref={headingRef}
             tabIndex={-1}
-            className="font-heading font-bold uppercase tracking-label text-title text-gray-900 dark:text-gray-100 focus:outline-none"
+            className="font-heading font-bold uppercase tracking-label text-title text-fg focus:outline-none"
           >
             {t("crashPrompt.title")}
           </h2>

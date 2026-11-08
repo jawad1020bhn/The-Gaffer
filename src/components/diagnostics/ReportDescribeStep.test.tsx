@@ -14,7 +14,7 @@ describe("ReportDescribeStep", () => {
    * When its buttons render
    * Then each has a focus ring with the offset in both themes
    */
-  it("gives the frequency buttons a focus ring offset for light and dark", () => {
+  it("gives the frequency buttons a focus ring offset on the panel", () => {
     render(
       <ReportDescribeStep
         draft={EMPTY_DRAFT}
@@ -26,8 +26,8 @@ describe("ReportDescribeStep", () => {
 
     for (const name of ["everyTime", "sometimes", "once"]) {
       const button = screen.getByRole("button", { name: `reportBug.frequency.${name}` });
-      expect(button.className).toContain("focus:ring-offset-2");
-      expect(button.className).toContain("dark:focus:ring-offset-navy-800");
+      expect(button.className).toContain("focus-visible:ring-offset-2");
+      expect(button.className).toContain("focus-visible:ring-offset-panel");
     }
   });
 });

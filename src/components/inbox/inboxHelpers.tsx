@@ -46,7 +46,7 @@ export const UNREAD_FILTER = "__unread";
 
 const FILTER_BUTTON_BASE_CLASS =
   "px-3 py-1.5 rounded-control text-caption font-heading font-bold uppercase tracking-label transition-all";
-const FILTER_BUTTON_ACTIVE_CLASS = "bg-primary-500 text-white shadow-sm";
+const FILTER_BUTTON_ACTIVE_CLASS = "bg-selected-fill text-on-brand shadow-sm";
 const FILTER_BUTTON_INACTIVE_CLASS = "bg-panel text-fg-muted border border-line hover:text-fg";
 
 const ROUTE_TAB_MAP: Record<string, string> = {
@@ -91,21 +91,21 @@ const CATEGORY_ICONS: Record<string, ReactNode> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Welcome: "text-primary-500",
-  LeagueInfo: "text-blue-500",
-  MatchPreview: "text-accent-500",
-  MatchResult: "text-accent-600",
-  Transfer: "text-purple-500",
-  BoardDirective: "text-red-500",
-  PlayerMorale: "text-yellow-500",
-  Injury: "text-red-400",
-  Training: "text-green-500",
-  Finance: "text-emerald-500",
-  Contract: "text-indigo-500",
-  ScoutReport: "text-cyan-500",
-  Media: "text-orange-500",
-  System: "text-gray-400",
-  JobOffer: "text-blue-500",
+  Welcome: "text-selected",
+  LeagueInfo: "text-info",
+  MatchPreview: "text-warning",
+  MatchResult: "text-warning",
+  Transfer: "text-info",
+  BoardDirective: "text-danger",
+  PlayerMorale: "text-warning",
+  Injury: "text-danger",
+  Training: "text-positive",
+  Finance: "text-positive",
+  Contract: "text-info",
+  ScoutReport: "text-info",
+  Media: "text-warning",
+  System: "text-fg-subtle",
+  JobOffer: "text-info",
 };
 
 export function getCategoryIcon(category: string): ReactNode {
@@ -192,10 +192,10 @@ export function getListPaneClassName(hasSelectedMessage: boolean): string {
 
 export function getMessageRowClassName(isSelected: boolean, isRead: boolean): string {
   const baseClassName =
-    "flex gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-gray-100 dark:border-navy-600/50";
+    "flex gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-line/50";
 
   if (isSelected) {
-    return `${baseClassName} bg-primary-50 dark:bg-primary-500/10 border-l-2 border-l-primary-500`;
+    return `${baseClassName} bg-selected-tint border-l-2 border-l-selected`;
   }
 
   if (!isRead) {
@@ -213,14 +213,14 @@ export function getMessageIconClassName(
   const baseClassName = "w-8 h-8 rounded-control flex items-center justify-center shrink-0";
 
   if (isSelected) {
-    return `${baseClassName} ${categoryColor} bg-primary-500/10`;
+    return `${baseClassName} ${categoryColor} bg-selected-tint`;
   }
 
   if (isRead) {
-    return `${baseClassName} text-gray-400 bg-gray-100 dark:bg-navy-600`;
+    return `${baseClassName} text-fg-subtle bg-hover`;
   }
 
-  return `${baseClassName} ${categoryColor} bg-primary-500/10 dark:bg-primary-500/20`;
+  return `${baseClassName} ${categoryColor} bg-selected-tint`;
 }
 
 export function getMessageSubjectClassName(isRead: boolean): string {
@@ -228,7 +228,7 @@ export function getMessageSubjectClassName(isRead: boolean): string {
     return "text-body truncate flex-1 font-medium text-fg-muted";
   }
 
-  return "text-body truncate flex-1 font-bold text-gray-900 dark:text-gray-100";
+  return "text-body truncate flex-1 font-bold text-fg";
 }
 
 export function getActionButtonClassName(action: MessageAction): string {
@@ -236,14 +236,14 @@ export function getActionButtonClassName(action: MessageAction): string {
     "px-5 py-2.5 rounded-control text-caption font-heading font-bold uppercase tracking-label transition-all mr-2 mb-2";
 
   if (action.resolved) {
-    return `${baseClassName} bg-gray-100 dark:bg-navy-700 text-fg-subtle cursor-default`;
+    return `${baseClassName} bg-hover text-fg-subtle cursor-default`;
   }
 
   if (action.action_type === "Acknowledge" || action.action_type === "Dismiss") {
-    return `${baseClassName} bg-hover text-fg hover:bg-gray-300 dark:hover:bg-navy-500`;
+    return `${baseClassName} bg-hover text-fg hover:bg-line-strong hover:bg-hover`;
   }
 
-  return `${baseClassName} bg-primary-500 text-white hover:bg-primary-600 shadow-sm hover:shadow-md hover:shadow-primary-500/20`;
+  return `${baseClassName} bg-selected-fill text-on-brand hover:bg-selected-fill shadow-sm hover:shadow-md hover:shadow-card`;
 }
 
 export function renderMessageBodyLine(line: string, index: number): JSX.Element {
@@ -261,7 +261,7 @@ export function renderMessageBodyLine(line: string, index: number): JSX.Element 
     return (
       <p key={index} className={`${baseClassName} text-fg`}>
         <span className="flex items-start gap-2">
-          <span className="text-primary-500 mt-0.5">•</span>
+          <span className="text-selected mt-0.5">•</span>
           <span>{line.replace("•", "").trim()}</span>
         </span>
       </p>

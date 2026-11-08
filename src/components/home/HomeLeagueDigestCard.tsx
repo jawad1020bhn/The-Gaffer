@@ -24,7 +24,7 @@ export default function HomeLeagueDigestCard({
           <button
             type="button"
             onClick={() => onNavigate?.("News")}
-            className="text-primary-500 dark:text-primary-400 text-caption font-heading font-bold uppercase tracking-label hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            className="text-selected text-caption font-heading font-bold uppercase tracking-label hover:text-selected transition-colors"
           >
             {t("dashboard.news")}
           </button>
@@ -36,7 +36,7 @@ export default function HomeLeagueDigestCard({
         {articles.length === 0 ? (
           <p className="text-body text-fg-muted p-6 text-center">{t("home.noLeagueDigest")}</p>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-navy-600">
+          <div className="divide-y divide-line">
             {articles.map((article) => (
               <button
                 type="button"

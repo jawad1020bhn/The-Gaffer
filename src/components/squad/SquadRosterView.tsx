@@ -421,7 +421,7 @@ export default function SquadRosterView({
               value={playerSearch}
               onChange={(event) => setPlayerSearch(event.target.value)}
               placeholder={t("squad.filterPlayers")}
-              className="w-full rounded-control border border-line bg-panel px-3 py-2 text-body text-fg placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+              className="w-full rounded-control border border-line bg-panel px-3 py-2 text-body text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-selected/40"
             />
           </div>
           <div>
@@ -481,8 +481,8 @@ export default function SquadRosterView({
             disabled={!hasActiveFilters}
             className={`px-3 py-2 rounded-control text-caption font-heading font-bold uppercase tracking-label transition-all ${
               hasActiveFilters
-                ? "bg-gray-100 dark:bg-navy-700 text-fg-muted hover:bg-hover"
-                : "bg-gray-100 dark:bg-navy-700 text-gray-400 cursor-not-allowed"
+                ? "bg-hover text-fg-muted hover:bg-hover"
+                : "bg-hover text-fg-subtle cursor-not-allowed"
             }`}
           >
             {t("common.clear")}
@@ -528,15 +528,15 @@ export default function SquadRosterView({
       </Card>
 
       <Card>
-        <div className="p-4 border-b border-gray-100 dark:border-navy-600 bg-linear-to-r from-navy-700 to-navy-800 rounded-t-xl">
-          <h3 className="text-body font-heading font-bold text-white uppercase tracking-label flex items-center gap-2">
-            <Users className="w-4 h-4 text-accent-400" />
+        <div className="p-4 border-b border-line bg-panel rounded-t-xl">
+          <h3 className="text-body font-heading font-bold text-fg uppercase tracking-label flex items-center gap-2">
+            <Users className="w-4 h-4 text-warning" />
             {t("squad.title", { team: team.name })}
           </h3>
-          <p className="text-caption text-gray-400 mt-0.5">
+          <p className="text-caption text-fg-subtle mt-0.5">
             {filteredRoster.length} / {roster.length} {t("squad.playersLabel")}
           </p>
-          <p className="text-caption text-gray-400 mt-1">
+          <p className="text-caption text-fg-subtle mt-1">
             {t("squad.currentPlan")}: {formation} /{" "}
             {currentPreset
               ? t(`tactics.presetNames.${currentPreset.id}`, currentPreset.id)
@@ -545,7 +545,7 @@ export default function SquadRosterView({
           {canGradeLineup ? (
             <div className="mt-3 flex flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-caption font-heading font-bold uppercase tracking-label text-gray-300">
+                <span className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle">
                   {t("squad.coverageTitle")}
                 </span>
                 <Badge variant={thinCoverageCount > 0 ? "danger" : "success"} size="sm">

@@ -28,15 +28,15 @@ export function QuickStat({
   return (
     <div className="mb-2 last:mb-0">
       <div className="flex justify-between text-caption mb-0.5">
-        <span className="font-heading font-bold text-primary-400 tabular-nums">{home}</span>
-        <span className="text-gray-600 dark:text-gray-500 font-heading uppercase tracking-label text-[10px]">
+        <span className="font-heading font-bold text-selected tabular-nums">{home}</span>
+        <span className="text-fg-muted font-heading uppercase tracking-label text-caption">
           {label}
         </span>
-        <span className="font-heading font-bold text-indigo-400 tabular-nums">{away}</span>
+        <span className="font-heading font-bold text-info tabular-nums">{away}</span>
       </div>
-      <div className="flex h-1 bg-gray-300 dark:bg-navy-700 rounded-full overflow-hidden transition-colors duration-300">
-        <div className="h-full bg-primary-500" style={{ width: `${pct}%` }} />
-        <div className="h-full bg-indigo-500" style={{ width: `${100 - pct}%` }} />
+      <div className="flex h-1 bg-line-strong rounded-full overflow-hidden transition-colors duration-300">
+        <div className="h-full bg-selected-fill" style={{ width: `${pct}%` }} />
+        <div className="h-full bg-info-solid" style={{ width: `${100 - pct}%` }} />
       </div>
     </div>
   );
@@ -60,18 +60,18 @@ export function renderScorers(
   return (
     <div className="mb-3 last:mb-0">
       <p
-        className={`text-[10px] font-heading uppercase tracking-labelst mb-1 ${
-          side === "Home" ? "text-primary-400" : "text-indigo-400"
+        className={`text-caption font-heading uppercase tracking-labelst mb-1 ${
+          side === "Home" ? "text-selected" : "text-info"
         }`}
       >
         {team.name}
       </p>
       {goals.map((g, i) => (
         <div key={i} className="flex items-center gap-2 text-caption py-0.5">
-          <span className="text-gray-600 dark:text-gray-500 tabular-nums w-6 text-right font-heading">
+          <span className="text-fg-muted tabular-nums w-6 text-right font-heading">
             {g.minute}'
           </span>
-          <Circle className="w-3 h-3 fill-current text-accent-400" />
+          <Circle className="w-3 h-3 fill-current text-warning" />
           <span className="text-fg font-medium">{getPlayerName(snapshot, g.player_id)}</span>
           {g.event_type === "PenaltyGoal" && (
             <Badge variant="accent" size="sm">
@@ -90,11 +90,11 @@ export function renderScorers(
 
 function ratingColour(rating: number | null): string {
   if (rating === null) return "text-fg-subtle";
-  if (rating >= 8) return "text-accent-700 dark:text-accent-400";
-  if (rating >= 7) return "text-green-700 dark:text-green-400";
+  if (rating >= 8) return "text-warning";
+  if (rating >= 7) return "text-positive";
   if (rating >= 6) return "text-fg-muted";
-  if (rating >= 5) return "text-yellow-700 dark:text-yellow-400";
-  return "text-red-700 dark:text-red-400";
+  if (rating >= 5) return "text-warning";
+  return "text-danger";
 }
 
 export function PlayerRatingsPanel({
@@ -123,21 +123,21 @@ export function PlayerRatingsPanel({
   return (
     <div className="bg-panel rounded-panel border border-line shadow-sm p-4 transition-colors duration-300">
       <div className="flex items-center gap-2 mb-3">
-        <Star className="w-4 h-4 text-accent-700 dark:text-accent-400" />
+        <Star className="w-4 h-4 text-warning" />
         <h3 className="text-caption font-heading font-bold uppercase tracking-labelst text-fg-muted">
           {t("match.ratings", { team: team.name })}
         </h3>
         <div className="w-2 h-2 rounded-full ml-auto" style={{ backgroundColor: teamColor }} />
       </div>
       {motm && side === (userSide || "Home") && (
-        <div className="flex items-center gap-3 mb-3 p-2 bg-accent-50 dark:bg-accent-500/10 rounded-control border border-accent-200 dark:border-accent-500/20 transition-colors duration-300">
-          <div className="w-8 h-8 rounded-control bg-accent-100 dark:bg-accent-500/20 flex items-center justify-center transition-colors duration-300">
-            <span className="text-body font-heading font-bold text-accent-700 dark:text-accent-400">
+        <div className="flex items-center gap-3 mb-3 p-2 bg-warning-solid bg-warning-tint rounded-control border border-warning border-warning/20 transition-colors duration-300">
+          <div className="w-8 h-8 rounded-control bg-warning-solid bg-warning-tint flex items-center justify-center transition-colors duration-300">
+            <span className="text-body font-heading font-bold text-warning">
               {motm.rating?.toFixed(1)}
             </span>
           </div>
           <div>
-            <p className="text-caption font-heading font-bold text-accent-700 dark:text-accent-400 uppercase tracking-label">
+            <p className="text-caption font-heading font-bold text-warning uppercase tracking-label">
               {t("match.motm")}
             </p>
             <p className="text-body text-fg font-medium">{motm.name}</p>
@@ -151,7 +151,7 @@ export function PlayerRatingsPanel({
               {p.rating === null ? "–" : p.rating.toFixed(1)}
             </span>
             <span className="text-fg-muted truncate flex-1">{p.name}</span>
-            <span className="text-gray-600 dark:text-gray-500 text-[10px] font-heading uppercase">
+            <span className="text-fg-muted text-caption font-heading uppercase">
               {translatePositionAbbreviation(t, p.position)}
             </span>
           </div>

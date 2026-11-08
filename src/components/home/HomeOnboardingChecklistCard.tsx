@@ -31,7 +31,7 @@ export default function HomeOnboardingChecklistCard({
     <Card accent="accent">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Lightbulb className="w-4 h-4 text-accent-500" />
+          <Lightbulb className="w-4 h-4 text-warning" />
           {t("onboarding.title")}
         </div>
       </CardHeader>
@@ -54,15 +54,13 @@ export default function HomeOnboardingChecklistCard({
               key={step.id}
               onClick={() => onNavigate?.(step.tab)}
               className={`flex items-center gap-3 p-3 rounded-control text-left transition-all ${
-                step.done
-                  ? "bg-primary-50 dark:bg-primary-500/5 opacity-70"
-                  : "bg-gray-50 dark:bg-navy-700/50 hover:bg-hover"
+                step.done ? "bg-selected-tint opacity-70" : "bg-sunken hover:bg-hover"
               }`}
             >
-              <div className={`flex-shrink-0 ${step.done ? "text-primary-500" : "text-fg-subtle"}`}>
+              <div className={`flex-shrink-0 ${step.done ? "text-selected" : "text-fg-subtle"}`}>
                 {step.done ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
               </div>
-              <div className={`flex-shrink-0 ${step.done ? "text-primary-500" : "text-fg-muted"}`}>
+              <div className={`flex-shrink-0 ${step.done ? "text-selected" : "text-fg-muted"}`}>
                 {step.icon}
               </div>
               <div className="min-w-0 flex-1">

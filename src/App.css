@@ -235,6 +235,21 @@
   --color-tone-bad-tint: #fee2e2;
   --color-tone-bad-solid: #ef4444;
 
+  /* Categories: a categorical palette, not a good-to-bad scale. Use it when rows carry a label
+     that belongs to a family and the families must stay apart: player-trait families (physical,
+     technical, mental, goalkeeper, special) and news desk categories. -tint is the badge fill.
+     A value that is rated good-to-bad uses tone-*; a status uses positive/warning/danger/info. */
+  --color-category-1: #c2410c;
+  --color-category-1-tint: #ffedd5;
+  --color-category-2: #0e7490;
+  --color-category-2-tint: #cffafe;
+  --color-category-3: #6d28d9;
+  --color-category-3-tint: #ede9fe;
+  --color-category-4: #1d4ed8;
+  --color-category-4-tint: #dbeafe;
+  --color-category-5: #be185d;
+  --color-category-5-tint: #fce7f3;
+
   /* Match. Kit colours come from the backend; these are only the fallbacks. Turf has no dark mode. */
   --color-kit-home-fallback: #10b981;
   --color-kit-away-fallback: #6366f1;
@@ -333,6 +348,16 @@
     --color-tone-low-tint: rgb(120 53 15 / 0.45);
     --color-tone-bad: #f87171;
     --color-tone-bad-tint: rgb(127 29 29 / 0.45);
+    --color-category-1: #fdba74;
+    --color-category-1-tint: #33200f;
+    --color-category-2: #67e8f9;
+    --color-category-2-tint: #0e2a30;
+    --color-category-3: #c4b5fd;
+    --color-category-3-tint: #241a38;
+    --color-category-4: #93c5fd;
+    --color-category-4-tint: #131f33;
+    --color-category-5: #f9a8d4;
+    --color-category-5-tint: #331726;
 
     /* Compatibility bridge for screens still awaiting token migration. Navy surfaces become the
        graphite scale; primary actions become lime. Semantic green/red/blue/yellow stay distinct. */

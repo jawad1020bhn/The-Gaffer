@@ -31,13 +31,9 @@ function formatPercentage(value: number | null): string {
 
 function SummaryStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-gray-50 dark:bg-navy-700 px-3 py-2.5 text-center">
-      <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
-        {label}
-      </p>
-      <p className="font-heading font-bold text-lg text-gray-800 dark:text-gray-100 tabular-nums">
-        {value}
-      </p>
+    <div className="rounded-control bg-sunken px-3 py-2.5 text-center">
+      <p className="text-caption uppercase tracking-label text-fg-subtle">{label}</p>
+      <p className="font-heading font-bold text-heading text-fg tabular-nums">{value}</p>
     </div>
   );
 }
@@ -54,23 +50,17 @@ function MetricRow({
   secondaryValue: string;
 }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)] gap-3 items-center rounded-lg bg-gray-50 dark:bg-navy-700 px-3 py-2.5">
+    <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)] gap-3 items-center rounded-control bg-sunken px-3 py-2.5">
       <div>
-        <p className="font-heading font-bold text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400">
+        <p className="font-heading font-bold text-body uppercase tracking-label text-fg-muted">
           {label}
         </p>
-        <p className="font-heading font-bold text-lg text-gray-800 dark:text-gray-100 tabular-nums">
-          {primaryValue}
-        </p>
+        <p className="font-heading font-bold text-heading text-fg tabular-nums">{primaryValue}</p>
       </div>
 
       <div className="text-center">
-        <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
-          {secondaryLabel}
-        </p>
-        <p className="font-heading font-bold text-base text-gray-700 dark:text-gray-200 tabular-nums">
-          {secondaryValue}
-        </p>
+        <p className="text-caption uppercase tracking-label text-fg-subtle">{secondaryLabel}</p>
+        <p className="font-heading font-bold text-body text-fg tabular-nums">{secondaryValue}</p>
       </div>
     </div>
   );
@@ -101,12 +91,12 @@ export default function TeamProfileAdvancedStatsCard({
     <Card className="lg:col-span-3">
       <CardHeader
         action={
-          <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-navy-600 text-[10px] font-heading font-bold uppercase tracking-wider">
+          <div className="flex rounded-control overflow-hidden border border-line text-caption font-heading font-bold uppercase tracking-label">
             <button
               type="button"
               aria-pressed={view === "stats"}
               onClick={() => setView("stats")}
-              className={`px-3 py-1 transition-colors ${view === "stats" ? "bg-primary-500 text-white" : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-700"}`}
+              className={`px-3 py-1 transition-colors ${view === "stats" ? "bg-selected-fill text-on-brand" : "text-fg-muted hover:bg-hover"}`}
             >
               {t("common.statsView")}
             </button>
@@ -114,7 +104,7 @@ export default function TeamProfileAdvancedStatsCard({
               type="button"
               aria-pressed={view === "radar"}
               onClick={() => setView("radar")}
-              className={`px-3 py-1 transition-colors ${view === "radar" ? "bg-primary-500 text-white" : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-700"}`}
+              className={`px-3 py-1 transition-colors ${view === "radar" ? "bg-selected-fill text-on-brand" : "text-fg-muted hover:bg-hover"}`}
             >
               {t("teamProfile.teamStyle")}
             </button>

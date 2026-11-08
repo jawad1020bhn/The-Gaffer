@@ -80,7 +80,7 @@ export default function TournamentsAwardCard({
         {entries.length === 0 ? (
           <p className="p-4 text-body text-fg-subtle text-center">{emptyText}</p>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-navy-600">
+          <div className="divide-y divide-line">
             {entries.map((entry, i) => (
               <ContextMenu items={buildAwardMenuItems(entry)} key={entryId(entry)}>
                 <div
@@ -89,7 +89,7 @@ export default function TournamentsAwardCard({
                 >
                   <span
                     className={`font-heading font-bold text-body w-5 text-center ${
-                      i === 0 ? "text-accent-500 dark:text-accent-400" : "text-fg-subtle"
+                      i === 0 ? "text-warning" : "text-fg-subtle"
                     }`}
                   >
                     {i + 1}
@@ -97,7 +97,7 @@ export default function TournamentsAwardCard({
                   <div className="flex-1 min-w-0">
                     <p
                       className={`text-body font-semibold truncate ${
-                        i === 0 ? "text-gray-900 dark:text-gray-100" : "text-fg"
+                        i === 0 ? "text-fg" : "text-fg"
                       }`}
                     >
                       {entryName(entry)}
@@ -106,9 +106,7 @@ export default function TournamentsAwardCard({
                   </div>
                   <span
                     className={`font-heading font-bold tabular-nums ${
-                      i === 0
-                        ? "text-lead text-accent-500 dark:text-accent-400"
-                        : "text-body text-fg-muted"
+                      i === 0 ? "text-lead text-warning" : "text-body text-fg-muted"
                     }`}
                   >
                     {decimal ? entryValue(entry).toFixed(2) : `${Math.round(entryValue(entry))}`}
