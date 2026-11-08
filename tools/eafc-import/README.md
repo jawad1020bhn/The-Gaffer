@@ -5,7 +5,8 @@ played with real clubs, real squads and real leagues.
 
 ```bash
 git clone https://github.com/ViniMacacari/eafc-db-kit ../eafc-db-kit
-cd ../eafc-db-kit && npm install && npm run build   # the kit ships the databases
+git -C ../eafc-db-kit checkout --detach 1464907bf4e726504d8b3ce15ffd0a552990565e
+cd ../eafc-db-kit && npm ci   # builds the kit, which ships the databases
 
 cd ../the-gaffer-v0.4
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27
@@ -13,8 +14,9 @@ node tools/eafc-import/validate.mjs mods/eafc-fc27
 ```
 
 The run writes a package directory and a ready-to-install `mods/eafc-fc27.ofm`
-(`--no-pack` skips the archive). Node 18+ is enough; the only dependency is the
-kit checkout itself.
+(`--no-pack` skips the archive). Use Node 24+ for the current upstream kit;
+the only dependency is the kit checkout itself. The audit and importer unit
+tests can also run without a kit checkout.
 
 ## What comes out
 
@@ -22,8 +24,8 @@ From the bundled **FC 27** database:
 
 | | Count |
 |---|---|
-| Clubs | 685 |
-| Players | 18,893 |
+| Clubs | 684 |
+| Players | 18,875 |
 | Competitions | 38 (34 domestic leagues, 4 continental) |
 | Countries | 46 |
 
@@ -110,13 +112,15 @@ EA keeps three things behind an index rather than a name, and all three resolve:
 
 - **Cities.** `teams.cityid` is joined to the localization tables, where each city
   is `CityName_<id>` (occasionally `CityName_<id>_FullChar`). That is 997 named
-  cities and a real city for 91% of the raw team rows — and for every club this
-  package ships, since the unresolved ones are national sides and placeholders.
+  cities. A reviewed supplement replaces Mjällby's country-name city fallback
+  (`Sweden`) with its recorded club locality.
 - **Grounds.** `teamstadiumlinks` joins a team to a stadium row in `stadiums`,
   which carries the name. EA names an *unlicensed* ground with a leading
   underscore (`_El Libertador` for the Camp Nou), so those are dropped rather
-  than shown: 136 of the 685 clubs get a real stadium name, the rest are drawn
-  by the game from the city.
+  than shown. 136 clubs have named EA grounds; 95 more receive reviewed
+  historical ground names from a pinned openfootball/clubs snapshot. The remaining
+  453 keep the city-based fallback. Supplemental names are not verified 2027 home
+  venues or current sponsorship names; every mapping has provenance in `data/`.
 - **Short names.** `TeamName_Abbr3_<teamid>` in the same localization tables.
 - **Confederations.** A competition's `regionId` is read from the engine's own
   catalog (`ofm_core/src/nations.rs`) rather than guessed, so a league cannot
@@ -144,11 +148,43 @@ fields but not their meaning:
   abbreviation only exists as a localization string (`TeamName_Abbr3_<id>`),
   which is also the only reliable source of short names.
 
+## Reproducible data corrections
+
+FC 27 input files are checksum-locked to the recorded kit revision. The importer
+rejects changed source bytes before writing output; use the pinned checkout in
+[`data/README.md`](data/README.md) to reproduce this package. That document also
+explains the 95 reviewed stadium mappings, the city correction and source dates.
+Synthetic placeholders are excluded together with synthetic-only player records;
+a player with another valid club link is retained. Rest of World groups retain
+real clubs but are not treated as domestic leagues.
+
+## Source-quality audit
+
+Loader acceptance is not a completeness check. Run the read-only coverage audit
+alongside schema validation, including on the archive a player installs:
+
+```bash
+node tools/eafc-import/audit.mjs mods/eafc-fc27
+node tools/eafc-import/audit.mjs mods/eafc-fc27.ofm --json
+```
+
+It reports source-field coverage, contracts before January 1 of `baseYear`,
+clubs outside explicit competition fields, dangling participants, authored
+staff, national tournaments and placeholder-name candidates. JSON output lists
+the affected clubs and stale contracts. It never changes source records and
+returns success when a report is produced, even if coverage is poor; read/parse
+failures return nonzero. Participant selectors are explicitly marked unresolved.
+
+See the [FC 27 quality baseline](../../mods/eafc-fc27/DATA_QUALITY.md) for the
+measured gaps and handling rules. In particular, do not mass-extend source
+contracts, invent missing wages, or assign Rest of World clubs to unrelated
+leagues. Generated wages, stadium labels and staff are not real imported data.
+
 ## Caveats
 
-- **Unlicensed grounds stay unnamed.** EA ships 181 stadiums for 878 clubs; the
-  rest point at a placeholder name starting with `_`. Those clubs get a city and
-  no stadium name.
+- **Unresolved grounds stay unnamed.** Placeholder names starting with `_` are
+  not imported. Only reviewed source-backed mappings can fill these gaps; 453
+  clubs still have no named ground.
 - **No badge, kit or photo.** The database holds no image assets, only ids into
   EA's own CDN.
 - **No managers, tactic dials, shirt numbers, captains or rivals.** Not a gap in
@@ -165,7 +201,7 @@ fields but not their meaning:
 - **Five-line shapes are folded.** The engine lays out three or four lines that
   add up to ten, so EA's "4-1-2-1-2" (Real Madrid) becomes "4-3-1-2" — the two
   adjacent lines holding the fewest players merge. Everything else passes through
-  unchanged; 19 shapes survive across the 685 clubs.
+  unchanged; 19 shapes survive across the 684 clubs.
 - **Kit patterns are not inferred.** `teams.jerseytype` is 0-2 across the whole
   database and does not separate stripes from hoops (Celtic and Barcelona share a
   value); `teamkits.jerseytemplateindex` is a mesh index, not a pattern.

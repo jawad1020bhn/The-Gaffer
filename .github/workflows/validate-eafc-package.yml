@@ -11,7 +11,7 @@ name: validate-eafc-package
 
 on:
   push:
-    branches: [arena/898245e7-the-gaffer-v0-4]
+    branches: [develop, "arena/**"]
     paths:
       - "mods/**"
       - "src-tauri/crates/ofm-cli/**"
@@ -45,6 +45,34 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - name: Install Node 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Test importer and audit source quality
+        run: |
+          node --test tools/eafc-import/lib/*.test.mjs
+          node tools/eafc-import/audit.mjs mods/eafc-fc27
+
+      - name: Checkout the recorded EA source revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ViniMacacari/eafc-db-kit
+          ref: 1464907bf4e726504d8b3ce15ffd0a552990565e
+          path: .eafc-db-kit
+          persist-credentials: false
+
+      - name: Reproduce the corrected package from pinned source bytes
+        run: |
+          npm ci --prefix .eafc-db-kit
+          node tools/eafc-import/import.mjs --kit .eafc-db-kit --out "$RUNNER_TEMP/eafc-rebuilt"
+          for file in package.json teams.json players.json competitions.json; do
+            cmp "mods/eafc-fc27/$file" "$RUNNER_TEMP/eafc-rebuilt/$file"
+          done
+          node tools/eafc-import/validate.mjs "$RUNNER_TEMP/eafc-rebuilt.ofm"
+          node tools/eafc-import/audit.mjs "$RUNNER_TEMP/eafc-rebuilt.ofm"
 
       - name: Install Rust 1.95.0
         uses: dtolnay/rust-toolchain@1.95.0
