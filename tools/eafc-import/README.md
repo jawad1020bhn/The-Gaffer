@@ -87,6 +87,41 @@ trademark considerations: club crests remain their clubs' trademarks. This
 tool's checked-in fixtures (`test/fixtures/badges/`) hold five verified seeds
 for the pipeline tests only and are not a redistribution-ready graphics pack.
 
+### Competition logos
+
+Competition logos work the same way as club badges, keyed by OFM competition
+id instead of EA team id. A pack's `manifest.json` can carry a
+`competitionLogos` array alongside `badges`:
+
+```json
+{
+  "version": 1,
+  "source": "https://example.com/competition-logos",
+  "licence": "CC-BY-4.0",
+  "competitionLogos": [
+    {
+      "competitionId": "uefa-champions-league",
+      "file": "uefa-champions-league.png",
+      "source": "https://example.com/uefa-champions-league.png",
+      "licence": "CC-BY-4.0",
+      "attribution": "Example Pack",
+      "checksum": "sha256:<64 hex>"
+    }
+  ]
+}
+```
+
+Pass the pack with `--competition-logos <pack>`. The importer verifies every
+checksum, packs the images into `assets/competitions/` inside the `.ofm`, and
+sets `competition.logo` so the UI renders each competition's logo. Competition
+logos share the same provenance manifest as club badges, so the archive
+documents where each asset came from.
+
+The two European competitions authored by this importer (UEFA Champions
+League, UEFA Europa League) match on their OFM competition id
+(`uefa-champions-league`, `uefa-europa-league`). Without a logo pack they
+render with no badge.
+
 ## What comes out
 
 From the bundled **FC 27** database:
@@ -116,9 +151,11 @@ one club, so the first domestic-league club wins.
 **Competitions** — one league per domestic competition, with its real clubs,
 tier (`priority`) and season start. The database's continental rows become
 competitions of their own: CONMEBOL Libertadores and Sudamericana. Two European
-cups the database does not carry are generated from reputation: the *European
-Champions Cup* (top 32 European clubs) and the *European Trophy Cup* (the next
-32, excluding the first cup's field).
+club competitions the database does not carry are authored from reputation:
+the *UEFA Champions League* (top 32 European clubs) and the *UEFA Europa League*
+(the next 32, excluding the first cup's field). Their logos come from a
+separate optional graphics pack via `--competition-logos`; without one they
+render with no badge.
 
 ### Field mapping
 

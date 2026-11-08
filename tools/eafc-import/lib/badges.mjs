@@ -1,17 +1,21 @@
 /**
- * An optional club-badge graphics pack: a folder of images named by EA team
- * id, plus a `manifest.json` that records, for every asset, its source,
- * licence, attribution and sha256 checksum.
+ * An optional graphics pack: a folder of images plus a `manifest.json` that
+ * records, for every asset, its source, licence, attribution and sha256
+ * checksum. Two asset kinds are supported:
+ *
+ * - club badges, keyed by EA team id (`badges` array)
+ * - competition logos, keyed by OFM competition id (`competitionLogos` array)
  *
  * The pack is separate from the game's code and is never fetched live: a run
- * of `import.mjs --badges <pack>` points at a checked-out copy, verifies
- * every checksum, and packs only verified images into the `.ofm`. The
- * manifest travels inside the archive, so an installed package still
- * documents where each badge came from.
+ * of `import.mjs --badges <pack>` (and/or `--competition-logos <pack>`)
+ * points at a checked-out copy, verifies every checksum, and packs only
+ * verified images into the `.ofm`. The manifest travels inside the archive,
+ * so an installed package still documents where each asset came from.
  *
- * Crosswalk recorded per asset — EA team id ↔ OFM club id ↔ image file.
- * Matching is always by EA id, never by club name, so a badge survives
- * club-name changes and re-imports from a different database vintage.
+ * Crosswalk recorded per asset — EA team id ↔ OFM club id ↔ image file, or
+ * OFM competition id ↔ image file. Matching club badges is always by EA id,
+ * never by club name, so a badge survives club-name changes and re-imports
+ * from a different database vintage.
  */
 
 import { createHash } from "node:crypto";
@@ -20,6 +24,9 @@ import path from "node:path";
 
 /** Where a verified badge lives inside the package root. */
 export const PACKAGE_ASSET_DIR = "assets/clubs";
+
+/** Where a verified competition logo lives inside the package root. */
+export const PACKAGE_COMPETITION_DIR = "assets/competitions";
 
 const MANIFEST_NAME = "manifest.json";
 const CHECKSUM = /^sha256:[0-9a-f]{64}$/;
@@ -64,6 +71,8 @@ const isPlainObject = (value) =>
 
 const isEaTeamId = (value) => Number.isInteger(value) && value > 0;
 const isClubId = (value) => typeof value === "string" && value.trim().length > 0;
+/** A competition slug used as an OFM competition id. */
+const isCompetitionId = (value) => typeof value === "string" && value.trim().length > 0;
 /** A plain file name that cannot escape the pack folder. */
 const isPackFileName = (value) =>
   typeof value === "string" &&
@@ -111,6 +120,34 @@ function readBadgeEntry(entry, index) {
   };
 }
 
+function readCompetitionLogoEntry(entry, index) {
+  const where = `competition logo manifest entry ${index}`;
+  const fail = (field) => {
+    throw new BadgePackError(`${where}: ${field} is missing or invalid`);
+  };
+  if (!isPlainObject(entry)) fail("entry");
+  const competitionId = entry.competitionId;
+  if (!isCompetitionId(competitionId)) fail("competitionId");
+  const file = entry.file;
+  if (!isPackFileName(file)) fail("file");
+  const source = entry.source;
+  if (!isSourceUrl(source)) fail("source");
+  const licence = entry.licence;
+  if (!isClubId(licence)) fail("licence");
+  const attribution = entry.attribution;
+  if (!isClubId(attribution)) fail("attribution");
+  const checksum = entry.checksum;
+  if (!isChecksum(checksum)) fail("checksum");
+  return {
+    competitionId: competitionId.trim(),
+    file,
+    source,
+    licence: licence.trim(),
+    attribution: attribution.trim(),
+    checksum,
+  };
+}
+
 /** Read and strictly validate a badge pack's manifest. No file checks yet. */
 export async function readBadgeManifest(packDir) {
   const manifestPath = path.join(packDir, MANIFEST_NAME);
@@ -133,13 +170,46 @@ export async function readBadgeManifest(packDir) {
   for (const [index, entry] of value.badges.entries()) {
     badges.push(readBadgeEntry(entry, index));
   }
+
+  const competitionLogos = [];
+  if (Array.isArray(value.competitionLogos)) {
+    for (const [index, entry] of value.competitionLogos.entries()) {
+      competitionLogos.push(readCompetitionLogoEntry(entry, index));
+    }
+  }
+
   return {
     version: value.version ?? null,
     source: value.source ?? "",
     licence: value.licence ?? "",
     badges,
+    competitionLogos,
   };
 }
+
+const verifyEntryFile = async (packDir, entry, kind) => {
+  const filePath = path.join(packDir, entry.file);
+  let stats;
+  try {
+    stats = await stat(filePath);
+  } catch (_error) {
+    throw new BadgePackError(`${kind} file missing: ${entry.file}`);
+  }
+  if (!stats.isFile()) {
+    throw new BadgePackError(`${kind} entry is not a file: ${entry.file}`);
+  }
+  const data = await readFile(filePath);
+  const digest = `sha256:${createHash("sha256").update(data).digest("hex")}`;
+  if (digest !== entry.checksum) {
+    throw new BadgePackError(
+      `checksum mismatch for ${entry.file}: manifest ${entry.checksum}, file ${digest}`,
+    );
+  }
+  if (!isLikelyImage(data)) {
+    throw new BadgePackError(`${kind} file is not a recognised image: ${entry.file}`);
+  }
+  return { ...entry, path: filePath, bytes: data.length };
+};
 
 /**
  * Verify every listed badge file exists and its sha256 matches the manifest,
@@ -148,32 +218,16 @@ export async function readBadgeManifest(packDir) {
  * silently produces wrong artwork.
  */
 export async function verifyBadgePack(packDir) {
-  const { badges } = await readBadgeManifest(packDir);
-  const verified = [];
+  const { badges, competitionLogos } = await readBadgeManifest(packDir);
+  const verifiedBadges = [];
   for (const entry of badges) {
-    const filePath = path.join(packDir, entry.file);
-    let stats;
-    try {
-      stats = await stat(filePath);
-    } catch (_error) {
-      throw new BadgePackError(`badge file missing: ${entry.file}`);
-    }
-    if (!stats.isFile()) {
-      throw new BadgePackError(`badge entry is not a file: ${entry.file}`);
-    }
-    const data = await readFile(filePath);
-    const digest = `sha256:${createHash("sha256").update(data).digest("hex")}`;
-    if (digest !== entry.checksum) {
-      throw new BadgePackError(
-        `checksum mismatch for ${entry.file}: manifest ${entry.checksum}, file ${digest}`,
-      );
-    }
-    if (!isLikelyImage(data)) {
-      throw new BadgePackError(`badge file is not a recognised image: ${entry.file}`);
-    }
-    verified.push({ ...entry, path: filePath, bytes: data.length });
+    verifiedBadges.push(await verifyEntryFile(packDir, entry, "badge"));
   }
-  return verified;
+  const verifiedCompetitionLogos = [];
+  for (const entry of competitionLogos) {
+    verifiedCompetitionLogos.push(await verifyEntryFile(packDir, entry, "competition logo"));
+  }
+  return { badges: verifiedBadges, competitionLogos: verifiedCompetitionLogos };
 }
 
 /** Relative package-internal path of one verified badge's image file. */
@@ -182,16 +236,30 @@ export function badgeAssetPath(entry) {
   return `${PACKAGE_ASSET_DIR}/${entry.eaTeamId}${extension}`;
 }
 
+/** Relative package-internal path of one verified competition logo's image file. */
+export function competitionLogoAssetPath(entry) {
+  const extension = path.extname(entry.file) || ".png";
+  return `${PACKAGE_COMPETITION_DIR}/${entry.competitionId}${extension}`;
+}
+
 /** The manifest that travels inside the packed `.ofm` next to the images. */
 export function packageManifest(pack, verified) {
   return {
     version: pack.version,
     source: pack.source,
     licence: pack.licence,
-    badges: verified.map((entry) => ({
+    badges: verified.badges.map((entry) => ({
       eaTeamId: entry.eaTeamId,
       ofmClubId: entry.ofmClubId,
       asset: badgeAssetPath(entry),
+      source: entry.source,
+      licence: entry.licence,
+      attribution: entry.attribution,
+      checksum: entry.checksum,
+    })),
+    competitionLogos: verified.competitionLogos.map((entry) => ({
+      competitionId: entry.competitionId,
+      asset: competitionLogoAssetPath(entry),
       source: entry.source,
       licence: entry.licence,
       attribution: entry.attribution,

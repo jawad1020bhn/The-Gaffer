@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "source": "fixture",
+  "licence": "MIT (fixture test data only — not a redistribution-ready graphics pack)",
+  "badges": [],
+  "competitionLogos": [
+    {
+      "competitionId": "uefa-champions-league",
+      "file": "uefa-champions-league.png",
+      "source": "https://example.com/uefa-champions-league.png",
+      "licence": "MIT (fixture test data only)",
+      "attribution": "OFM fixture data",
+      "checksum": "sha256:b7e3a3ce81aced7658ea018c94610827d11ae1b9d461e2892007a994b341fada"
+    },
+    {
+      "competitionId": "uefa-europa-league",
+      "file": "uefa-europa-league.png",
+      "source": "https://example.com/uefa-europa-league.png",
+      "licence": "MIT (fixture test data only)",
+      "attribution": "OFM fixture data",
+      "checksum": "sha256:31452ab85df2b1f4bb887858bd8f462b7a414583e55007947108021e9a871529"
+    }
+  ]
+}

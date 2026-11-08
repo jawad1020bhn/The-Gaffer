@@ -68,11 +68,16 @@ tiers, so promotion and relegation chain through each national pyramid.
 
 **4 continental competitions.** CONMEBOL Libertadores and Sudamericana keep their
 real fields from the database (which is also how Brazilian clubs get in — EA
-carries no Brazilian league). The two European cups are generated from club
-reputation: the **European Champions Cup** (the 32 best European clubs) and the
-**European Trophy Cup** (the next 32). Their fields are written out club by club,
-because the engine's reputation selector requires a single country and a
-continent-wide cup has not got one.
+carries no Brazilian league). The two European club competitions the database
+does not carry are authored from club reputation: the **UEFA Champions League**
+(the 32 best European clubs) and the **UEFA Europa League** (the next 32). Their
+fields are written out club by club, because the engine's reputation selector
+requires a single country and a continent-wide cup has not got one.
+
+Competition logos are not shipped checked-in. `tools/eafc-import --competition-logos <pack>`
+packs a separate, versioned graphics pack into the `.ofm`; per-asset source,
+licence, attribution and checksum travel inside it (see the importer README).
+Without a logo pack, competitions render with no badge.
 
 Every club has at least 18 source players, the median is 27, and the engine's
 floor is 15. The game tops up squads below 22 (its `SQUAD_SLOTS`); 36 clubs here
