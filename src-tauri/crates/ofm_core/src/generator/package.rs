@@ -2485,7 +2485,10 @@ mod tests {
         // Second launch: nothing to do, and nothing rewritten.
         std::fs::write(&target, b"mine").unwrap();
         let again = install_bundled_packages(&bundled, &installed).expect("copies");
-        assert!(again.is_empty(), "an installed package must not be recopied");
+        assert!(
+            again.is_empty(),
+            "an installed package must not be recopied"
+        );
         assert_eq!(
             std::fs::read(&target).unwrap(),
             b"mine",
