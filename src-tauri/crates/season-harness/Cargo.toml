@@ -1,12 +1,12 @@
 [package]
 name = "season-harness"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 publish = false
 
 [dependencies]
-ofm_core = { version = "0.3.0", path = "../ofm_core" }
-domain = { version = "0.3.0", path = "../domain" }
+ofm_core = { version = "0.4.0", path = "../ofm_core" }
+domain = { version = "0.4.0", path = "../domain" }
 chrono = { version = "0.4.44", default-features = false }
 serde_json = "1"
 

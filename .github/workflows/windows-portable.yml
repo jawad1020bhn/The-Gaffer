@@ -127,8 +127,9 @@ jobs:
           players from. They are optional — the same files are compiled into the executable —
           but a copy here is yours to edit.
 
-          This is a development build of OpenFoot Manager, not a release. Source:
-          https://github.com/sturdy-robot/openfootmanager
+          This is a portable build of OpenFoot Manager: the same release binary the
+          installer ships, in a folder instead of behind a setup wizard. It is not
+          code-signed. Source: https://github.com/jawad1020bhn/the-gaffer-v0.4
           '@ | Set-Content -Path "$out/READ ME FIRST.txt" -Encoding utf8
 
           Compress-Archive -Path $out -DestinationPath "OpenfootManager-portable-windows-x64.zip" -Force
