@@ -365,6 +365,20 @@ function archivedDocuments(archivePath) {
   return { documents, names };
 }
 
+/** Shared read-only input for schema validation and source-quality auditing. */
+export async function readPackageDocuments(target) {
+  const resolved = path.resolve(target);
+  const fromArchive = resolved.endsWith(".ofm");
+  if (fromArchive) {
+    const archived = archivedDocuments(resolved);
+    return { documents: archived.documents, fileCount: archived.names.length, fromArchive };
+  }
+  const files = await readPackageFiles(resolved);
+  const documents = [];
+  for (const file of files) documents.push(JSON.parse(await readFile(file, "utf8")));
+  return { documents, fileCount: files.length, fromArchive };
+}
+
 async function main() {
   const target = process.argv[2];
   if (!target) {
@@ -372,20 +386,7 @@ async function main() {
     process.exit(2);
   }
   const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
-  const resolved = path.resolve(target);
-  const fromArchive = resolved.endsWith(".ofm");
-  let documents;
-  let fileCount;
-  if (fromArchive) {
-    const archived = archivedDocuments(resolved);
-    documents = archived.documents;
-    fileCount = archived.names.length;
-  } else {
-    const files = await readPackageFiles(resolved);
-    documents = [];
-    for (const file of files) documents.push(JSON.parse(await readFile(file, "utf8")));
-    fileCount = files.length;
-  }
+  const { documents, fileCount, fromArchive } = await readPackageDocuments(target);
   const countryCodes = await loadCountryCatalog(repoRoot);
   const problems = validatePackage({ documents, countryCodes });
   const counts = collectEntities(documents);

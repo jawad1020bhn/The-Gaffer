@@ -1,0 +1,773 @@
+{
+  "version": "FC 27",
+  "sourceRepository": "https://github.com/openfootball/clubs",
+  "sourceRevision": "ae3800227c449447b3a337fc0aac79a8f02f4c8b",
+  "sourceSnapshotDate": "2025-01-03",
+  "reviewedOn": "2026-11-08",
+  "license": "CC0-1.0",
+  "description": "Reviewed missing-ground mappings from a pinned historical snapshot. Not a claim of current sponsorship or 2027 ground availability. Excludes known obsolete grounds, stale commercial names and ambiguous identities. Existing named EA grounds take precedence.",
+  "clubs": [
+    {
+      "teamId": 1755,
+      "expectedName": "Aalesunds FK",
+      "country": "NO",
+      "stadiumName": "Color Line Stadion",
+      "sourceClubName": "Aalesunds FK",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L38"
+    },
+    {
+      "teamId": 110313,
+      "expectedName": "Accrington Stanley",
+      "country": "ENG",
+      "stadiumName": "Crown Ground",
+      "sourceClubName": "Accrington Stanley FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L596"
+    },
+    {
+      "teamId": 256,
+      "expectedName": "Austria Wien",
+      "country": "AT",
+      "stadiumName": "Generali Arena",
+      "sourceClubName": "FK Austria Wien",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/austria/at.clubs.txt#L27"
+    },
+    {
+      "teamId": 135,
+      "expectedName": "Barnet",
+      "country": "ENG",
+      "stadiumName": "The Hive Stadium",
+      "sourceClubName": "Barnet FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L56"
+    },
+    {
+      "teamId": 1932,
+      "expectedName": "Barnsley",
+      "country": "ENG",
+      "stadiumName": "Oakwell",
+      "sourceClubName": "Barnsley FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L303"
+    },
+    {
+      "teamId": 88,
+      "expectedName": "Birmingham City",
+      "country": "ENG",
+      "stadiumName": "St Andrew's",
+      "sourceClubName": "Birmingham City FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L174"
+    },
+    {
+      "teamId": 1926,
+      "expectedName": "Blackpool",
+      "country": "ENG",
+      "stadiumName": "Bloomfield Road",
+      "sourceClubName": "Blackpool FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L107"
+    },
+    {
+      "teamId": 1804,
+      "expectedName": "Bradford City",
+      "country": "ENG",
+      "stadiumName": "Valley Parade",
+      "sourceClubName": "Bradford City AFC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L273"
+    },
+    {
+      "teamId": 1962,
+      "expectedName": "Bristol Rovers",
+      "country": "ENG",
+      "stadiumName": "Memorial Stadium",
+      "sourceClubName": "Bristol Rovers FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L462"
+    },
+    {
+      "teamId": 269,
+      "expectedName": "Brøndby IF",
+      "country": "DK",
+      "stadiumName": "Brøndby Stadion",
+      "sourceClubName": "Brøndby IF",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/denmark/dk.clubs.txt#L48"
+    },
+    {
+      "teamId": 15015,
+      "expectedName": "Burton Albion",
+      "country": "ENG",
+      "stadiumName": "Pirelli Stadium",
+      "sourceClubName": "Burton Albion FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L326"
+    },
+    {
+      "teamId": 1944,
+      "expectedName": "Cambridge United",
+      "country": "ENG",
+      "stadiumName": "Abbey Stadium",
+      "sourceClubName": "Cambridge United FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L364"
+    },
+    {
+      "teamId": 89,
+      "expectedName": "Charlton Athletic",
+      "country": "ENG",
+      "stadiumName": "The Valley",
+      "sourceClubName": "Charlton Athletic FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L27"
+    },
+    {
+      "teamId": 1815,
+      "expectedName": "Clermont Foot",
+      "country": "FR",
+      "stadiumName": "Stade Gabriel Montpied",
+      "sourceClubName": "Clermont Foot 63",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L134"
+    },
+    {
+      "teamId": 1935,
+      "expectedName": "Colchester United",
+      "country": "ENG",
+      "stadiumName": "Colchester Community Stadium",
+      "sourceClubName": "Colchester United FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L423"
+    },
+    {
+      "teamId": 110747,
+      "expectedName": "Cracovia",
+      "country": "PL",
+      "stadiumName": "Stadion Cracovii im. Józefa Piłsudskiego",
+      "sourceClubName": "KS Cracovia",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/poland/pl.clubs.txt#L38"
+    },
+    {
+      "teamId": 110890,
+      "expectedName": "Crawley Town",
+      "country": "ENG",
+      "stadiumName": "Broadfield Stadium",
+      "sourceClubName": "Crawley Town FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L410"
+    },
+    {
+      "teamId": 121,
+      "expectedName": "Crewe Alexandra",
+      "country": "ENG",
+      "stadiumName": "Gresty Road",
+      "sourceClubName": "Crewe Alexandra FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L582"
+    },
+    {
+      "teamId": 113892,
+      "expectedName": "Degerfors IF",
+      "country": "SE",
+      "stadiumName": "Stora Valla",
+      "sourceClubName": "Degerfors IF",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L169"
+    },
+    {
+      "teamId": 211,
+      "expectedName": "Dinamo Zagreb",
+      "country": "HR",
+      "stadiumName": "Maksimir",
+      "sourceClubName": "GNK Dinamo Zagreb",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/croatia/hr.clubs.txt#L5"
+    },
+    {
+      "teamId": 143,
+      "expectedName": "Exeter City",
+      "country": "ENG",
+      "stadiumName": "St James Park",
+      "sourceClubName": "Exeter City FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L476"
+    },
+    {
+      "teamId": 1862,
+      "expectedName": "FC Lausanne-Sport",
+      "country": "CH",
+      "stadiumName": "Stade de la Tuilière",
+      "sourceClubName": "FC Lausanne",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/switzerland/ch.clubs.txt#L188"
+    },
+    {
+      "teamId": 217,
+      "expectedName": "FC Lorient",
+      "country": "FR",
+      "stadiumName": "Stade du Moustoir - Yves Allainmat",
+      "sourceClubName": "FC Lorient",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L146"
+    },
+    {
+      "teamId": 897,
+      "expectedName": "FC Luzern",
+      "country": "CH",
+      "stadiumName": "Swissporarena",
+      "sourceClubName": "FC Luzern",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/switzerland/ch.clubs.txt#L96"
+    },
+    {
+      "teamId": 68,
+      "expectedName": "FC Metz",
+      "country": "FR",
+      "stadiumName": "Stade Saint-Symphorien",
+      "sourceClubName": "FC Metz",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L73"
+    },
+    {
+      "teamId": 110770,
+      "expectedName": "FC Sion",
+      "country": "CH",
+      "stadiumName": "Tourbillon",
+      "sourceClubName": "FC Sion",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/switzerland/ch.clubs.txt#L163"
+    },
+    {
+      "teamId": 898,
+      "expectedName": "FC St. Gallen",
+      "country": "CH",
+      "stadiumName": "Kybunpark",
+      "sourceClubName": "FC St. Gallen",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/switzerland/ch.clubs.txt#L109"
+    },
+    {
+      "teamId": 286,
+      "expectedName": "FC Vaduz",
+      "country": "CH",
+      "stadiumName": "Rheinpark Stadion",
+      "sourceClubName": "FC Vaduz",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/liechtenstein/li.clubs.txt#L5"
+    },
+    {
+      "teamId": 894,
+      "expectedName": "FC Zürich",
+      "country": "CH",
+      "stadiumName": "Stadion Letzigrund",
+      "sourceClubName": "FC Zürich",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/switzerland/ch.clubs.txt#L40"
+    },
+    {
+      "teamId": 1874,
+      "expectedName": "Ferencvárosi TC",
+      "country": "HU",
+      "stadiumName": "Groupama Arena",
+      "sourceClubName": "Ferencvárosi TC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/hungary/hu.clubs.txt#L5"
+    },
+    {
+      "teamId": 918,
+      "expectedName": "FK Bodø/Glimt",
+      "country": "NO",
+      "stadiumName": "Aspmyra Stadion",
+      "sourceClubName": "Bodø/Glimt",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L82"
+    },
+    {
+      "teamId": 112260,
+      "expectedName": "Fleetwood Town",
+      "country": "ENG",
+      "stadiumName": "Highbury Stadium",
+      "sourceClubName": "Fleetwood Town FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L593"
+    },
+    {
+      "teamId": 2041,
+      "expectedName": "Fredrikstad FK",
+      "country": "NO",
+      "stadiumName": "Fredrikstad Stadion",
+      "sourceClubName": "Fredrikstad FK",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L49"
+    },
+    {
+      "teamId": 111594,
+      "expectedName": "GAIS",
+      "country": "SE",
+      "stadiumName": "Gamla Ullevi",
+      "sourceClubName": "GAIS",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L48"
+    },
+    {
+      "teamId": 1802,
+      "expectedName": "Gillingham",
+      "country": "ENG",
+      "stadiumName": "Priestfield Stadium",
+      "sourceClubName": "Gillingham FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L482"
+    },
+    {
+      "teamId": 322,
+      "expectedName": "Grasshopper Club Zürich",
+      "country": "CH",
+      "stadiumName": "Stadion Letzigrund",
+      "sourceClubName": "Grasshoppers Zürich",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/switzerland/ch.clubs.txt#L36"
+    },
+    {
+      "teamId": 263,
+      "expectedName": "Hajduk Split",
+      "country": "HR",
+      "stadiumName": "Poljud",
+      "sourceClubName": "HNK Hajduk Split",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/croatia/hr.clubs.txt#L39"
+    },
+    {
+      "teamId": 321,
+      "expectedName": "Halmstads BK",
+      "country": "SE",
+      "stadiumName": "Örjans Vall",
+      "sourceClubName": "Halmstads BK",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L129"
+    },
+    {
+      "teamId": 1756,
+      "expectedName": "HamKam Fotball",
+      "country": "NO",
+      "stadiumName": "Briskeby Arena",
+      "sourceClubName": "Hamarkameratene",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L108"
+    },
+    {
+      "teamId": 111705,
+      "expectedName": "IF Brommapojkarna",
+      "country": "SE",
+      "stadiumName": "Grimsta IP",
+      "sourceClubName": "IF Brommapojkarna",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L8"
+    },
+    {
+      "teamId": 700,
+      "expectedName": "IF Elfsborg",
+      "country": "SE",
+      "stadiumName": "Borås Arena",
+      "sourceClubName": "IF Elfsborg",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L82"
+    },
+    {
+      "teamId": 319,
+      "expectedName": "IFK Göteborg",
+      "country": "SE",
+      "stadiumName": "Gamla Ullevi",
+      "sourceClubName": "IFK Göteborg",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L45"
+    },
+    {
+      "teamId": 113458,
+      "expectedName": "IK Sirius",
+      "country": "SE",
+      "stadiumName": "Studenternas IP",
+      "sourceClubName": "IK Sirius",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L122"
+    },
+    {
+      "teamId": 1439,
+      "expectedName": "Kalmar FF",
+      "country": "SE",
+      "stadiumName": "Guldfågeln Arena",
+      "sourceClubName": "Kalmar FF",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L93"
+    },
+    {
+      "teamId": 113459,
+      "expectedName": "Kristiansund BK",
+      "country": "NO",
+      "stadiumName": "Kristiansund Stadion",
+      "sourceClubName": "Kristiansund BK",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L77"
+    },
+    {
+      "teamId": 252,
+      "expectedName": "LASK",
+      "country": "AT",
+      "stadiumName": "Raiffeisen Arena",
+      "sourceClubName": "LASK Linz",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/austria/at.clubs.txt#L342"
+    },
+    {
+      "teamId": 1738,
+      "expectedName": "Le Havre AC",
+      "country": "FR",
+      "stadiumName": "Stade Océane",
+      "sourceClubName": "Le Havre AC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L138"
+    },
+    {
+      "teamId": 1958,
+      "expectedName": "Leyton Orient",
+      "country": "ENG",
+      "stadiumName": "Brisbane Road",
+      "sourceClubName": "Leyton Orient FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L52"
+    },
+    {
+      "teamId": 299,
+      "expectedName": "Lillestrøm SK",
+      "country": "NO",
+      "stadiumName": "Åråsen",
+      "sourceClubName": "Lillestrøm SK",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L51"
+    },
+    {
+      "teamId": 15001,
+      "expectedName": "Lyngby BK",
+      "country": "DK",
+      "stadiumName": "Lyngby Stadion",
+      "sourceClubName": "Lyngby BK",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/denmark/dk.clubs.txt#L57"
+    },
+    {
+      "teamId": 1940,
+      "expectedName": "Mansfield Town",
+      "country": "ENG",
+      "stadiumName": "Field Mill",
+      "sourceClubName": "Mansfield Town FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L381"
+    },
+    {
+      "teamId": 97,
+      "expectedName": "Millwall",
+      "country": "ENG",
+      "stadiumName": "The Den",
+      "sourceClubName": "Millwall FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L45"
+    },
+    {
+      "teamId": 1798,
+      "expectedName": "Milton Keynes Dons",
+      "country": "ENG",
+      "stadiumName": "Stadium:mk",
+      "sourceClubName": "Milton Keynes Dons FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L499"
+    },
+    {
+      "teamId": 112072,
+      "expectedName": "Mjällby AIF",
+      "country": "SE",
+      "stadiumName": "Strandvallen",
+      "sourceClubName": "Mjällby AIF",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/sweden/se.clubs.txt#L112",
+      "city": "Mjällby",
+      "expectedCity": "Sweden"
+    },
+    {
+      "teamId": 417,
+      "expectedName": "Molde FK",
+      "country": "NO",
+      "stadiumName": "Aker Stadion",
+      "sourceClubName": "Molde FK",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L33"
+    },
+    {
+      "teamId": 70,
+      "expectedName": "Montpellier HSC",
+      "country": "FR",
+      "stadiumName": "Stade de la Mosson",
+      "sourceClubName": "Montpellier HSC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L76"
+    },
+    {
+      "teamId": 112254,
+      "expectedName": "Newport County",
+      "country": "ENG",
+      "stadiumName": "Rodney Parade",
+      "sourceClubName": "Newport County AFC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/wales/wal.clubs.txt#L78"
+    },
+    {
+      "teamId": 1930,
+      "expectedName": "Northampton Town",
+      "country": "ENG",
+      "stadiumName": "Sixfields Stadium",
+      "sourceClubName": "Northampton Town FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L555"
+    },
+    {
+      "teamId": 1937,
+      "expectedName": "Notts County",
+      "country": "ENG",
+      "stadiumName": "Meadow Lane",
+      "sourceClubName": "Notts County FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L376"
+    },
+    {
+      "teamId": 72,
+      "expectedName": "OGC Nice",
+      "country": "FR",
+      "stadiumName": "Allianz Riviera",
+      "sourceClubName": "OGC Nice",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L85"
+    },
+    {
+      "teamId": 1920,
+      "expectedName": "Oldham Athletic",
+      "country": "ENG",
+      "stadiumName": "Boundary Park",
+      "sourceClubName": "Oldham Athletic AFC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L133"
+    },
+    {
+      "teamId": 1951,
+      "expectedName": "Oxford United",
+      "country": "ENG",
+      "stadiumName": "Kassam Stadium",
+      "sourceClubName": "Oxford United FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L354"
+    },
+    {
+      "teamId": 111086,
+      "expectedName": "Piast Gliwice",
+      "country": "PL",
+      "stadiumName": "Stadion Miejski w Gliwicach",
+      "sourceClubName": "Piast Gliwice",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/poland/pl.clubs.txt#L82"
+    },
+    {
+      "teamId": 1929,
+      "expectedName": "Plymouth Argyle",
+      "country": "ENG",
+      "stadiumName": "Home Park",
+      "sourceClubName": "Plymouth Argyle FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L473"
+    },
+    {
+      "teamId": 110746,
+      "expectedName": "Pogoń Szczecin",
+      "country": "PL",
+      "stadiumName": "Stadion Miejski im. Floriana Krygiera",
+      "sourceClubName": "Pogoń Szczecin",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/poland/pl.clubs.txt#L94"
+    },
+    {
+      "teamId": 1928,
+      "expectedName": "Port Vale",
+      "country": "ENG",
+      "stadiumName": "Vale Park",
+      "sourceClubName": "Port Vale FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L322"
+    },
+    {
+      "teamId": 1801,
+      "expectedName": "Preston North End",
+      "country": "ENG",
+      "stadiumName": "Deepdale",
+      "sourceClubName": "Preston North End FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L112"
+    },
+    {
+      "teamId": 110152,
+      "expectedName": "Puebla",
+      "country": "MX",
+      "stadiumName": "Estadio Cuauhtémoc",
+      "sourceClubName": "Club Puebla",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/north-america/mexico/mx.clubs.txt#L84"
+    },
+    {
+      "teamId": 114326,
+      "expectedName": "Raków Częstochowa",
+      "country": "PL",
+      "stadiumName": "Raków Municipal Stadium",
+      "sourceClubName": "Raków Częstochowa",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/poland/pl.clubs.txt#L134"
+    },
+    {
+      "teamId": 76,
+      "expectedName": "RC Strasbourg",
+      "country": "FR",
+      "stadiumName": "Stade de la Meinau",
+      "sourceClubName": "RC Strasbourg",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L102"
+    },
+    {
+      "teamId": 1793,
+      "expectedName": "Reading",
+      "country": "ENG",
+      "stadiumName": "Madejski Stadium",
+      "sourceClubName": "Reading FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L391"
+    },
+    {
+      "teamId": 1955,
+      "expectedName": "Rochdale",
+      "country": "ENG",
+      "stadiumName": "Spotland Stadium",
+      "sourceClubName": "Rochdale AFC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L152"
+    },
+    {
+      "teamId": 298,
+      "expectedName": "Rosenborg BK",
+      "country": "NO",
+      "stadiumName": "Lerkendal Stadion",
+      "sourceClubName": "Rosenborg BK",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L22"
+    },
+    {
+      "teamId": 1797,
+      "expectedName": "Rotherham United",
+      "country": "ENG",
+      "stadiumName": "New York Stadium",
+      "sourceClubName": "Rotherham United FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L307"
+    },
+    {
+      "teamId": 112199,
+      "expectedName": "Sarpsborg 08",
+      "country": "NO",
+      "stadiumName": "Sarpsborg Stadion",
+      "sourceClubName": "Sarpsborg 08",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L66"
+    },
+    {
+      "teamId": 324,
+      "expectedName": "Servette FC",
+      "country": "CH",
+      "stadiumName": "Stade de Genève",
+      "sourceClubName": "Servette FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/switzerland/ch.clubs.txt#L181"
+    },
+    {
+      "teamId": 1807,
+      "expectedName": "Sheffield Wednesday",
+      "country": "ENG",
+      "stadiumName": "Hillsborough",
+      "sourceClubName": "Sheffield Wednesday FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L294"
+    },
+    {
+      "teamId": 127,
+      "expectedName": "Shrewsbury Town",
+      "country": "ENG",
+      "stadiumName": "New Meadow",
+      "sourceClubName": "Shrewsbury Town FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L573"
+    },
+    {
+      "teamId": 919,
+      "expectedName": "SK Brann",
+      "country": "NO",
+      "stadiumName": "Brann Stadion",
+      "sourceClubName": "SK Brann",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L41"
+    },
+    {
+      "teamId": 254,
+      "expectedName": "SK Rapid",
+      "country": "AT",
+      "stadiumName": "Allianz Stadion",
+      "sourceClubName": "SK Rapid Wien",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/austria/at.clubs.txt#L17"
+    },
+    {
+      "teamId": 111092,
+      "expectedName": "Śląsk Wrocław",
+      "country": "PL",
+      "stadiumName": "Stadion Miejski we Wrocławiu",
+      "sourceClubName": "WKS Śląsk Wrocław",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/poland/pl.clubs.txt#L50"
+    },
+    {
+      "teamId": 378,
+      "expectedName": "Stade Brestois 29",
+      "country": "FR",
+      "stadiumName": "Stade Francis Le Blé",
+      "sourceClubName": "Stade Brestois 29",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L127"
+    },
+    {
+      "teamId": 379,
+      "expectedName": "Stade de Reims",
+      "country": "FR",
+      "stadiumName": "Stade Auguste-Delaune",
+      "sourceClubName": "Stade de Reims",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L111"
+    },
+    {
+      "teamId": 74,
+      "expectedName": "Stade Rennais",
+      "country": "FR",
+      "stadiumName": "Roazhon Park",
+      "sourceClubName": "Stade Rennais FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L91"
+    },
+    {
+      "teamId": 361,
+      "expectedName": "Stevenage",
+      "country": "ENG",
+      "stadiumName": "Broadhall Way",
+      "sourceClubName": "Stevenage FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L618"
+    },
+    {
+      "teamId": 1934,
+      "expectedName": "Swindon Town",
+      "country": "ENG",
+      "stadiumName": "County Ground",
+      "sourceClubName": "Swindon Town FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L416"
+    },
+    {
+      "teamId": 1809,
+      "expectedName": "Toulouse FC",
+      "country": "FR",
+      "stadiumName": "Le Stadium",
+      "sourceClubName": "Toulouse FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/france/fr.clubs.txt#L106"
+    },
+    {
+      "teamId": 418,
+      "expectedName": "Tromsø IL",
+      "country": "NO",
+      "stadiumName": "Alfheim Stadion",
+      "sourceClubName": "Tromsø IL",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L36"
+    },
+    {
+      "teamId": 920,
+      "expectedName": "Vålerenga Fotball",
+      "country": "NO",
+      "stadiumName": "Intility Arena",
+      "sourceClubName": "Vålerenga Fotball",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/norway/no.clubs.txt#L4"
+    },
+    {
+      "teamId": 1803,
+      "expectedName": "Walsall",
+      "country": "ENG",
+      "stadiumName": "Bescot Stadium",
+      "sourceClubName": "Walsall FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L232"
+    },
+    {
+      "teamId": 1873,
+      "expectedName": "Wisła Kraków",
+      "country": "PL",
+      "stadiumName": "Stadion Miejski im. Henryka Reymana",
+      "sourceClubName": "Wisła Kraków",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/poland/pl.clubs.txt#L34"
+    },
+    {
+      "teamId": 1569,
+      "expectedName": "Wisła Płock",
+      "country": "PL",
+      "stadiumName": "Stadion im. Kazimierza Górskiego",
+      "sourceClubName": "Wisła Płock",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/poland/pl.clubs.txt#L86"
+    },
+    {
+      "teamId": 111822,
+      "expectedName": "Wolfsberger AC",
+      "country": "AT",
+      "stadiumName": "Lavanttal-Arena",
+      "sourceClubName": "Wolfsberger AC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/austria/at.clubs.txt#L589"
+    },
+    {
+      "teamId": 1933,
+      "expectedName": "Wycombe Wanderers",
+      "country": "ENG",
+      "stadiumName": "Adams Park",
+      "sourceClubName": "Wycombe Wanderers FC",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/england/eng.clubs.txt#L502"
+    },
+    {
+      "teamId": 110749,
+      "expectedName": "Zagłębie Lubin",
+      "country": "PL",
+      "stadiumName": "Stadion Zagłębia Lubin",
+      "sourceClubName": "Zagłębie Lubin",
+      "sourceUrl": "https://github.com/openfootball/clubs/blob/ae3800227c449447b3a337fc0aac79a8f02f4c8b/europe/poland/pl.clubs.txt#L123"
+    }
+  ]
+}

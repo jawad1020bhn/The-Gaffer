@@ -62,12 +62,12 @@ fn the_package_builds_the_world_it_promises() {
         return;
     };
 
-    assert_eq!(world.teams.len(), 685, "clubs");
+    assert_eq!(world.teams.len(), 684, "clubs");
+    assert_eq!(package.players.len(), 18_875, "authored players");
 
     // Every authored player reaches the world. The build also tops a club thinner
-    // than `SQUAD_SLOTS` (22) up to 22 with generated squad members, and EA lists
-    // 37 of these clubs with fewer than 22, so the world holds slightly more
-    // players than the package: 18,976 against 18,893 at the time of writing.
+    // than `SQUAD_SLOTS` (22) up to 22 with generated squad members, so the world
+    // holds slightly more players than the source package.
     let authored: HashSet<&str> = package.players.iter().map(|d| d.id.as_str()).collect();
     let built: HashSet<&str> = world.players.iter().map(|p| p.id.as_str()).collect();
     assert_eq!(

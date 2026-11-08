@@ -1,0 +1,24 @@
+{
+  "version": "FC 27",
+  "repository": "https://github.com/ViniMacacari/eafc-db-kit",
+  "revision": "1464907bf4e726504d8b3ce15ffd0a552990565e",
+  "recordedOn": "2026-11-08",
+  "files": [
+    {
+      "path": "templates/FC 27/fifa_ng_db.db",
+      "sha256": "92938136ad6a0e1ba272cecf5df07ddc2a38bbe18913df5c5b253206acb18641"
+    },
+    {
+      "path": "templates/FC 27/fifa_ng_db-meta.xml",
+      "sha256": "696a2d9dfdbc5915288bad017c292f74c6d6257c92acd9a49a20eb418de13455"
+    },
+    {
+      "path": "templates/FC 27/loc/eng_us.db",
+      "sha256": "37e384f814642cfb9701ab6a073b438668879958f7a37a2fe2ea2600c74caa92"
+    },
+    {
+      "path": "templates/FC 27/loc/eng_us-meta.xml",
+      "sha256": "af08659e6c47ac44906a3120bdd978843800a2171280914675b5c69634789d25"
+    }
+  ]
+}

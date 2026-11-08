@@ -43,6 +43,13 @@ import {
 } from "./lib/mapping.mjs";
 import { attributesMatchingOverall } from "./lib/rating.mjs";
 import { createZip } from "./lib/zip.mjs";
+import {
+  applyClubCorrections,
+  isRosterGroup,
+  isSyntheticTeam,
+  selectPlayerClub,
+} from "./lib/corrections.mjs";
+import { verifySourceLock } from "./lib/source.mjs";
 
 const PACKAGE_ID = "eafc-fc27";
 const PACKAGE_NAME = "EA FC 27 Clubs & Players";
@@ -50,9 +57,6 @@ const PACKAGE_NAME = "EA FC 27 Clubs & Players";
 /** Leagues that are not competitions: EA's scratch, fantasy and placeholder rows. */
 const NON_COMPETITIONS =
   /^(international|international women|rest of world|rest of world women|otp generics|free agents league|create player league|creation zone league|youth squad league|fifa career saved teams|fifa twist|5v5 league)$/i;
-
-/** EA rows that are squads rather than clubs: classic and all-star selections. */
-const SYNTHETIC_TEAM = /classic|all[\s-]?stars?|meta pass|default teams|soccer aid|marketing team/i;
 
 /** EA rows that are continental club competitions rather than domestic leagues. */
 const CONTINENTAL = /conmebol|libertadores|sudamericana|champions league|europa league/i;
@@ -510,6 +514,17 @@ async function main() {
   const kitDir = args.kit ?? process.env.EAFCDB_KIT;
   if (!kitDir) throw new Error("pass --kit <path to an eafc-db-kit checkout> or set EAFCDB_KIT");
   const kit = await loadKit(kitDir);
+  let corrections = [];
+  if (args.version === "FC 27") {
+    const lock = JSON.parse(
+      await readFile(new URL("./data/fc27-source-lock.json", import.meta.url), "utf8"),
+    );
+    await verifySourceLock(kitDir, lock);
+    const supplement = JSON.parse(
+      await readFile(new URL("./data/fc27-club-corrections.json", import.meta.url), "utf8"),
+    );
+    corrections = supplement.clubs;
+  }
 
   console.log(`reading ${args.version} databases...`);
   const main_ = await kit.readTemplateDatabase({
@@ -535,6 +550,7 @@ async function main() {
 
   const players = tables(main_, "players");
   const teams = tables(main_, "teams");
+  const correctClub = applyClubCorrections(corrections, teams);
   const leagues = tables(main_, "leagues");
   const nations = tables(main_, "nations");
   const leagueTeamLinks = tables(main_, "leagueteamlinks");
@@ -715,7 +731,7 @@ async function main() {
     const country = teamCountry.get(teamId);
     if (!team || !country) continue;
     const clubName = String(team.teamname ?? "").trim();
-    if (!clubName || SYNTHETIC_TEAM.test(clubName)) continue;
+    if (!clubName || isSyntheticTeam(clubName)) continue;
     const slug = slugify(clubName) || `club-${teamId}`;
     const id = (teamSlugCount.get(slug) ?? 0) > 1 ? `${slug}-${teamId}` : slug;
     if (teamIdOf.has(teamId)) continue;
@@ -723,31 +739,33 @@ async function main() {
     const nation = [...nationById.values()].find(
       (n) => nationCode(n.isocountrycode, n.nationname) === country,
     );
-    teamEntities.push({
-      schema: "team",
-      id,
-      name: clubName,
-      shortName: shortName(abbreviationById.get(teamId), clubName),
-      city:
-        cityById.get(Number(team.cityid)) ?? cityForTeam(teamId) ?? nation?.nationname ?? country,
-      country,
-      colors: {
-        primary: hexColor(team.teamcolor1r, team.teamcolor1g, team.teamcolor1b, "#1f2937"),
-        secondary: hexColor(team.teamcolor2r, team.teamcolor2g, team.teamcolor2b, "#ffffff"),
-      },
-      formation: formationByTeam.get(teamId),
-      playStyle: playStyle(team.attackrating, team.defenserating, {
-        buildUp: Number(team.buildupplay),
-        depth: Number(team.defensivedepth),
+    teamEntities.push(
+      correctClub(team, {
+        schema: "team",
+        id,
+        name: clubName,
+        shortName: shortName(abbreviationById.get(teamId), clubName),
+        city:
+          cityById.get(Number(team.cityid)) ?? cityForTeam(teamId) ?? nation?.nationname ?? country,
+        country,
+        colors: {
+          primary: hexColor(team.teamcolor1r, team.teamcolor1g, team.teamcolor1b, "#1f2937"),
+          secondary: hexColor(team.teamcolor2r, team.teamcolor2g, team.teamcolor2b, "#ffffff"),
+        },
+        formation: formationByTeam.get(teamId),
+        playStyle: playStyle(team.attackrating, team.defenserating, {
+          buildUp: Number(team.buildupplay),
+          depth: Number(team.defensivedepth),
+        }),
+        stadiumName: stadiumByTeam.get(teamId) ?? "",
+        reputationRange: reputationRange(team.overallrating),
+        financeRange: financeRange(team.clubworth),
+        foundedYear:
+          Number.isFinite(team.foundationyear) && team.foundationyear > 1800
+            ? team.foundationyear
+            : null,
       }),
-      stadiumName: stadiumByTeam.get(teamId) ?? "",
-      reputationRange: reputationRange(team.overallrating),
-      financeRange: financeRange(team.clubworth),
-      foundedYear:
-        Number.isFinite(team.foundationyear) && team.foundationyear > 1800
-          ? team.foundationyear
-          : null,
-    });
+    );
   }
   teamEntities.sort((a, b) => a.id.localeCompare(b.id));
 
@@ -757,7 +775,8 @@ async function main() {
   // first link into an imported domestic league wins.
   const domesticTeamIds = new Set();
   for (const { league } of selectedLeagues) {
-    if (CONTINENTAL.test(String(league.leaguename ?? ""))) continue;
+    if (CONTINENTAL.test(String(league.leaguename ?? "")) || isRosterGroup(league.leaguename))
+      continue;
     for (const link of leagueTeamLinks.filter((l) => l.leagueid === league.leagueid)) {
       domesticTeamIds.add(link.teamid);
     }
@@ -766,9 +785,7 @@ async function main() {
   const playerEntities = [];
   for (const player of players) {
     const teamIds = playerTeams.get(player.playerid) ?? [];
-    const clubTeamId =
-      teamIds.find((id) => domesticTeamIds.has(id) && teamIdOf.has(id)) ??
-      teamIds.find((id) => teamIdOf.has(id));
+    const clubTeamId = selectPlayerClub(teamIds, domesticTeamIds, teamIdOf);
     if (!clubTeamId) continue;
     const firstName = name(player.firstnameid);
     const lastName = name(player.lastnameid);
@@ -928,7 +945,7 @@ async function main() {
     name: PACKAGE_NAME,
     description:
       "Clubs, players and leagues imported from the EA FC 27 database by tools/eafc-import. Unofficial; not affiliated with EA.",
-    version: "0.1.0",
+    version: "0.1.1",
     author: "tools/eafc-import",
     license: "NOASSERTION",
     packageType: "database",
