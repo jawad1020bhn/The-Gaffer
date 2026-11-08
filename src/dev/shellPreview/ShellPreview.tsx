@@ -13,6 +13,7 @@ import type { MatchModeType } from "../../hooks/useAdvanceTime";
 import { createDashboardProfileNavigationState } from "../../components/dashboard/dashboardProfileNavigation";
 import type { DashboardAlert } from "../../components/dashboard/dashboardHelpers";
 import { formatDateFull, formatVal, getTeamName, getUserNextFixture } from "../../lib/helpers";
+import { useGameStore } from "../../store/gameStore";
 import { previewGameState } from "./fixture";
 
 /**
@@ -22,7 +23,16 @@ import { previewGameState } from "./fixture";
  * four-resolution check run — without building the Rust side. Every handler is local; the search
  * field is the shell's palette with nothing wired to it.
  */
+/** Pages other than Home read the career from the store, so the preview career is put there once. */
+let storeSeeded = false;
+function seedGameStore(): void {
+  if (storeSeeded) return;
+  storeSeeded = true;
+  useGameStore.getState().setGameState(previewGameState);
+}
+
 export function ShellPreview(): JSX.Element {
+  seedGameStore();
   const { t } = useTranslation();
   const gameState = previewGameState;
   const [activeTab, setActiveTab] = useState("Home");

@@ -11,14 +11,14 @@ const HINTS: { keys: string[]; labelKey: string }[] = [
 ];
 
 /**
- * The bottom strip: what the input device does here, in 28 pixels. It replaces the old footer,
+ * The left half of the bottom bar: what the input device does here. It replaces the old footer,
  * which repeated the manager and the club and held the two buttons the top bar now owns.
  */
 export default function HintBar(): JSX.Element {
   const { t } = useTranslation();
 
   return (
-    <div className="no-select flex h-game-hint shrink-0 items-center gap-4 overflow-hidden border-t border-line bg-chrome px-4 text-caption text-fg-subtle">
+    <div className="no-select flex min-w-0 flex-1 items-center gap-4 overflow-hidden text-caption text-fg-subtle">
       <p className="sr-only">{t("gameHint.title")}</p>
       {HINTS.map((hint) => (
         <span key={hint.labelKey} className="flex shrink-0 items-center gap-1.5">

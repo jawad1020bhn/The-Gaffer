@@ -19,16 +19,16 @@ describe("GameActionDock", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("lets clicks through everywhere the dock is not", () => {
+  it("sits in the shell's own bar rather than floating over the workspace", () => {
     const { container } = render(
       <GameActionDock>
         <button type="button">Save</button>
       </GameActionDock>,
     );
 
-    // The outer wrapper is a positioning frame only; the panel inside it takes the pointer.
-    const frame = container.firstElementChild;
-    expect(frame).toHaveClass("pointer-events-none");
-    expect(frame?.firstElementChild).toHaveClass("pointer-events-auto");
+    // No positioning at all: it is a row child, so nothing can end up underneath it.
+    const dock = container.firstElementChild;
+    expect(dock).not.toHaveClass("absolute");
+    expect(dock).not.toHaveClass("fixed");
   });
 });

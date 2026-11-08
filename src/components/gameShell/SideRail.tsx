@@ -82,7 +82,8 @@ export default function SideRail({
                 />
               ) : null}
             </span>
-            <span className="w-full truncate text-center text-caption font-medium leading-tight">
+            {/* Two lines: "Transfer Centre" is a name, not a string to abbreviate to "Transf...". */}
+            <span className="line-clamp-2 w-full text-center text-caption font-medium leading-tight">
               {label}
             </span>
             {count !== undefined ? <span className="sr-only">{` (${count})`}</span> : null}

@@ -17,8 +17,9 @@ describe("ShellPreview", () => {
     expect(text()).toContain("Harbour City");
 
     await waitFor(() => expect(text()).toContain("Squad Overview"));
-    // The career's actions float in the workspace dock, not in the top bar.
+    // The career's actions are docked in the bottom bar, not in the top one.
     expect(screen.getByRole("button", { name: /Continue/ }).closest("header")).toBeNull();
+    expect(screen.getByRole("button", { name: /Continue/ }).closest("footer")).not.toBeNull();
     // The fitness answer comes from the preview IPC stub, so this also proves the stub is wired up.
     expect(text()).toContain("81%");
   });

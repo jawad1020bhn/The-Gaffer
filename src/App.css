@@ -269,8 +269,8 @@
   --spacing-game-top: 3.5rem;
   --spacing-game-rail: 4.5rem;
   --spacing-game-hint: 1.75rem;
-  /* Home's dashboard bands. In rem, so they follow ui_scale and the root font size: three bands
-     plus their gaps come to ~43rem, which fits a 768px window at 1366px wide without scrolling. */
+  /* Home's dashboard bands. In rem, so they follow ui_scale: tall enough for the hero to breathe,
+     short enough that three bands of a 1080p window are on screen together. */
   --spacing-band-hero: 18rem;
   --spacing-band-secondary: 12.5rem;
   --spacing-band-tertiary: 11rem;

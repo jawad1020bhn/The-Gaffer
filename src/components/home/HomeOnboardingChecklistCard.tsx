@@ -47,7 +47,7 @@ export default function HomeOnboardingChecklistCard({
         {t("onboarding.title")}
       </CardHeader>
       <CardBody className="flex flex-col gap-3">
-        <p className="text-caption text-fg-muted">{t("onboarding.description")}</p>
+        <p className="line-clamp-2 text-caption text-fg-muted">{t("onboarding.description")}</p>
 
         <ol className="flex items-start justify-between gap-1">
           {steps.map((step, index) => {
@@ -77,8 +77,9 @@ export default function HomeOnboardingChecklistCard({
                       <span aria-hidden="true">{index + 1}</span>
                     )}
                   </span>
+                  {/* Two lines, so "Hire coaching staff" reads as itself instead of "HIRE...". */}
                   <span
-                    className={`w-full truncate text-caption font-heading font-bold uppercase tracking-label ${
+                    className={`line-clamp-2 w-full text-caption font-heading font-bold uppercase leading-tight tracking-label ${
                       step.done ? "text-fg-subtle line-through" : "text-fg"
                     }`}
                   >
@@ -87,7 +88,7 @@ export default function HomeOnboardingChecklistCard({
                 </button>
                 {index < steps.length - 1 ? (
                   <span
-                    className={`mt-4 h-0.5 min-w-2 flex-1 rounded-full ${
+                    className={`mt-3.5 h-0.5 w-4 shrink-0 rounded-full ${
                       step.done ? "bg-selected" : "bg-line"
                     }`}
                     aria-hidden="true"

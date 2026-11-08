@@ -6,6 +6,7 @@ import { ThemeProvider } from "../../context/ThemeContext";
 import { i18nReady } from "../../i18n";
 import { readHarnessLanguage, readHarnessPage } from "../pageHarness/harnessPage";
 import { readShellPreview } from "../shellPreview/readShellPreview";
+import { readMatchPreview } from "../matchPreview/readMatchPreview";
 import { StyleGuide } from "./StyleGuide";
 import { applyStyleGuideOptions, readStyleGuideOptions } from "./styleGuideOptions";
 
@@ -15,6 +16,7 @@ applyStyleGuideOptions(options, document.documentElement, localStorage);
 const rootElement = document.getElementById("root");
 const page = readHarnessPage(window.location.search);
 const shellPreview = readShellPreview(window.location.search);
+const matchPreview = readMatchPreview(window.location.search);
 
 if (rootElement && page) {
   // ?page= mounts a real page on the fixture career instead of the guide (src/dev/pageHarness).
@@ -41,6 +43,25 @@ if (rootElement && page) {
     })
     .catch((error: unknown) => {
       console.error("The shell preview could not start:", error);
+    });
+} else if (rootElement && matchPreview) {
+  // ?preview=match draws the live match screen on a preview match: no backend session needed.
+  void i18nReady
+    .then(async () => {
+      const { mockIPC } = await import("@tauri-apps/api/mocks");
+      const { installMatchPreviewIpc } = await import("../matchPreview/previewMatchIpc");
+      installMatchPreviewIpc(mockIPC);
+      const { MatchPreview } = await import("../matchPreview/MatchPreview");
+      ReactDOM.createRoot(rootElement).render(
+        <React.StrictMode>
+          <ThemeProvider>
+            <MatchPreview />
+          </ThemeProvider>
+        </React.StrictMode>,
+      );
+    })
+    .catch((error: unknown) => {
+      console.error("The match preview could not start:", error);
     });
 } else if (rootElement) {
   void i18nReady.then(() => {

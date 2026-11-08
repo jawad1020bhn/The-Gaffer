@@ -28,7 +28,6 @@ import { applySubstitutions } from "./applySubstitutions";
 import { type MatchPace, MatchSpeedControl } from "./MatchSpeedControl";
 import { useMatchPace } from "./useMatchPace";
 import {
-  Clock,
   Menu as MenuIcon,
   Users,
   BarChart3,
@@ -361,12 +360,7 @@ export default function MatchLive({
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-fg-muted" />
-              <span className="text-body font-heading text-fg-muted tabular-nums w-8">
-                {snapshot.current_minute}'
-              </span>
-            </div>
+            {/* The clock is already in the scoreline: the header states it once. */}
           </div>
 
           {/* Momentum: the last few minutes of pressure, under the scoreline. */}

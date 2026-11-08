@@ -94,6 +94,7 @@ function player(index: number, teamId: string): PlayerData {
   const condition = 68 + ((index * 7) % 30);
   return {
     id: `player-${index + 1}`,
+    jersey_number: index + 1,
     match_name: `${parts[0]?.charAt(0) ?? "A"}. ${parts[1] ?? "Player"}`,
     full_name: name,
     date_of_birth: `199${index % 10}-0${(index % 9) + 1}-1${index % 9}`,
@@ -159,6 +160,7 @@ const message = (
   body: string,
   date: string,
   read: boolean,
+  category: MessageData["category"],
 ): MessageData => ({
   id,
   sender,
@@ -167,7 +169,7 @@ const message = (
   body,
   date,
   read,
-  category: "Board",
+  category,
   priority: "Normal",
   actions: [],
   context: { team_id: null, player_id: null, fixture_id: null, match_result: null },
@@ -248,6 +250,7 @@ export const previewGameState: GameStateData = {
       "Your budget for the coming season is €16.5M.",
       "2026-05-30",
       false,
+      "BoardDirective",
     ),
     message(
       "message-2",
@@ -256,6 +259,7 @@ export const previewGameState: GameStateData = {
       "Two players are behind on condition.",
       "2026-05-29",
       false,
+      "Training",
     ),
     message(
       "message-3",
@@ -264,6 +268,7 @@ export const previewGameState: GameStateData = {
       "Three shortlisted players have fresh reports.",
       "2026-05-28",
       false,
+      "ScoutReport",
     ),
     message(
       "message-4",
@@ -272,6 +277,7 @@ export const previewGameState: GameStateData = {
       "Travel and hotels are booked for the tour.",
       "2026-05-26",
       true,
+      "System",
     ),
   ],
   news: [

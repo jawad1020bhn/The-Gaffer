@@ -4,6 +4,7 @@
     "app.publisher",
     "date.day",
     "match.momentum",
+    "gameHint.menu",
     "match.pen",
     "squad.jerseyNumber",
     "common.posAbbr.Goalkeeper",

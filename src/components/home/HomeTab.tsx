@@ -353,7 +353,9 @@ export default function HomeTab({
             hotPlayers={hotPlayers}
             coldPlayers={coldPlayers}
             onNavigate={onNavigate}
-            className="lg:col-span-6 xl:col-span-6"
+            // With no job offers to sit beside it, the card takes the whole width rather than
+            // leaving half the band empty.
+            className={onGameUpdate ? "lg:col-span-6 xl:col-span-6" : "lg:col-span-12"}
           />
           {onGameUpdate ? (
             <JobOpportunitiesCard

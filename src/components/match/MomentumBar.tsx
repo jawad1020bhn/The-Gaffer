@@ -31,6 +31,15 @@ export default function MomentumBar({
         </span>
         <span className="tabular-nums">{t("match.momentumWindow")}</span>
       </div>
+      {/* Who the two ends belong to, so the bar under the possession bar is not a second mystery. */}
+      <div className="flex items-baseline justify-between gap-3 text-caption">
+        <span className="truncate font-heading font-bold uppercase tracking-label text-fg">
+          {homeTeam} <span className="tabular-nums text-selected">{home}%</span>
+        </span>
+        <span className="truncate font-heading font-bold uppercase tracking-label text-fg">
+          <span className="tabular-nums text-info">{away}%</span> {awayTeam}
+        </span>
+      </div>
       <div
         role="img"
         aria-label={label}

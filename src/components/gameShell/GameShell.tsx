@@ -155,7 +155,7 @@ export default function GameShell({
         unreadMessagesCount={unreadMessagesCount}
         onNavigate={onNavigate}
       />
-      <main className="relative flex min-h-0 min-w-0 flex-col overflow-hidden">
+      <main className="flex min-h-0 min-w-0 flex-col overflow-hidden">
         {hasProfileHistory ? (
           <section
             aria-labelledby={titleId}
@@ -182,8 +182,10 @@ export default function GameShell({
           </section>
         ) : null}
         {children}
-        <GameActionDock>{commands}</GameActionDock>
-        <HintBar />
+        <footer className="flex min-h-game-hint shrink-0 items-center gap-3 border-t border-line bg-chrome pl-4 pr-2 py-1">
+          <HintBar />
+          <GameActionDock>{commands}</GameActionDock>
+        </footer>
       </main>
 
       <PauseMenu

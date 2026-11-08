@@ -92,13 +92,14 @@ describe("GameShell", () => {
     expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
   });
 
-  /** Given a career with actions, when the shell renders, then Continue floats in the workspace dock, not in the top bar. */
-  it("floats the career's actions in a dock instead of the top bar", () => {
+  /** Given a career with actions, when the shell renders, then Continue sits in the bottom bar, not the top one. */
+  it("docks the career's actions in the bottom bar instead of the top bar", () => {
     renderShell();
 
     const continueButton = screen.getByRole("button", { name: "Continue" });
     expect(continueButton.closest("header")).toBeNull();
-    expect(continueButton.closest("[class*='pointer-events-auto']")).not.toBeNull();
+    expect(continueButton.closest("footer")).not.toBeNull();
+    expect(screen.getByText("Workspace content")).toBeInTheDocument();
   });
 
   /** Given the Career section, when Team is chosen, then navigation opens the section's first page. */
