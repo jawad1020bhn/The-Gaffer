@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "source": "https://github.com/klunn91/team-logos",
+  "licence": "Repository MIT (Copyright 2019 Kevin Lunny); the artwork itself remains the property of each club — club crests are trademarks. This fixture set is test data for the importer badge pipeline, verified against a real FC 27 import, and is not a redistribution-ready graphics pack.",
+  "badges": [
+    {
+      "eaTeamId": 1,
+      "ofmClubId": "arsenal",
+      "file": "arsenal.png",
+      "source": "https://github.com/klunn91/team-logos/blob/master/Premier_League/arsenal.png",
+      "licence": "Repository MIT; artwork remains the property of Arsenal F.C. — trademarks apply",
+      "attribution": "klunn91/team-logos via GitHub",
+      "checksum": "sha256:4cf481c111462ed2802ec6896240d9a137b72175bc8ccffe4e30073a8c5668dc"
+    },
+    {
+      "eaTeamId": 2,
+      "ofmClubId": "aston-villa",
+      "file": "astonVilla.png",
+      "source": "https://github.com/klunn91/team-logos/blob/master/Premier_League/astonVilla.png",
+      "licence": "Repository MIT; artwork remains the property of Aston Villa F.C. — trademarks apply",
+      "attribution": "klunn91/team-logos via GitHub",
+      "checksum": "sha256:07395ad53dd0fb933753e4b3013cecf21faa7d30f72ee98b6dba9bfa36687675"
+    },
+    {
+      "eaTeamId": 1796,
+      "ofmClubId": "burnley",
+      "file": "burnley.png",
+      "source": "https://github.com/klunn91/team-logos/blob/master/Premier_League/burnley.png",
+      "licence": "Repository MIT; artwork remains the property of Burnley F.C. — trademarks apply",
+      "attribution": "klunn91/team-logos via GitHub",
+      "checksum": "sha256:cb03434820a776d45f91b3e328219a41dbe2ffa405860de8900c548f90da3fbe"
+    },
+    {
+      "eaTeamId": 1808,
+      "ofmClubId": "brighton-hove-albion",
+      "file": "brighton.png",
+      "source": "https://github.com/klunn91/team-logos/blob/master/Premier_League/brighton.png",
+      "licence": "Repository MIT; artwork remains the property of Brighton & Hove Albion F.C. — trademarks apply",
+      "attribution": "klunn91/team-logos via GitHub",
+      "checksum": "sha256:df714c0857e4f329e02f8dc3637da4c79abf1ae9d65ecf01df1c958b51887aaf"
+    },
+    {
+      "eaTeamId": 1943,
+      "ofmClubId": "afc-bournemouth",
+      "file": "bournemouth.png",
+      "source": "https://github.com/klunn91/team-logos/blob/master/Premier_League/bournemouth.png",
+      "licence": "Repository MIT; artwork remains the property of AFC Bournemouth — trademarks apply",
+      "attribution": "klunn91/team-logos via GitHub",
+      "checksum": "sha256:96eee64ebd9c9bf052755cf7be0f3848a62af0885def5823e6a7ca1ac5d7db96"
+    }
+  ]
+}

@@ -50,6 +50,14 @@ const isHexColour = (value) => typeof value === "string" && /^#[0-9a-fA-F]{6}$/.
 const isIsoDate = (value) => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
 const isSlug = (value) => typeof value === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
 
+/** Mirrors `is_contained_asset_path` in `ofm_core`: a relative path that
+ * stays inside its package — no traversal, no absolute or scheme paths. */
+const isContainedAssetPath = (value) => {
+  if (typeof value !== "string" || value.length === 0) return false;
+  if (value.startsWith("/") || value.includes("\\")) return false;
+  return value.split("/").every((segment) => segment === "" || segment === "." || segment !== "..");
+};
+
 /** Country codes the game ships, read from the engine's own catalog. */
 export async function loadCountryCatalog(repoRoot) {
   const source = await readFile(
@@ -161,6 +169,9 @@ export function validatePackage({ documents, countryCodes }) {
     if (team.foundedYear != null && !(team.foundedYear >= 1850 && team.foundedYear <= 2100)) {
       error(where, `foundedYear ${team.foundedYear} out of range`);
     }
+    if (team.logo != null && !isContainedAssetPath(team.logo)) {
+      error(where, `logo "${team.logo}" must be a relative path inside the package`);
+    }
   }
 
   const players = bySchema.get("player") ?? [];
@@ -202,6 +213,9 @@ export function validatePackage({ documents, countryCodes }) {
     }
     if (player.dateOfBirth != null && !isIsoDate(player.dateOfBirth)) {
       error(where, `dateOfBirth "${player.dateOfBirth}" is not YYYY-MM-DD`);
+    }
+    if (player.photo != null && !isContainedAssetPath(player.photo)) {
+      error(where, `photo "${player.photo}" must be a relative path inside the package`);
     }
     for (const key of ["overall", "potential"]) {
       const value = player[key];
@@ -271,6 +285,9 @@ export function validatePackage({ documents, countryCodes }) {
     }
     if (competition.countryId && countryCodes && !countryCodes.has(competition.countryId)) {
       error(where, `unknown countryId "${competition.countryId}"`);
+    }
+    if (competition.logo != null && !isContainedAssetPath(competition.logo)) {
+      error(where, `logo "${competition.logo}" must be a relative path inside the package`);
     }
     const participants = competition.participants ?? {};
     const hasExplicit = Array.isArray(participants.explicit);

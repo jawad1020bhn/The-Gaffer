@@ -11,12 +11,158 @@ cd ../eafc-db-kit && npm ci   # builds the kit, which ships the databases
 cd ../the-gaffer-v0.4
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27
 node tools/eafc-import/validate.mjs mods/eafc-fc27
+
+Add club badges and competition logos from separate graphics packs:
+
+```bash
+node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
+  --out mods/eafc-fc27 --badges ../eafc-fc27-badges --competition-logos ../eafc-fc27-competition-logos
 ```
 
 The run writes a package directory and a ready-to-install `mods/eafc-fc27.ofm`
 (`--no-pack` skips the archive). Use Node 24+ for the current upstream kit;
 the only dependency is the kit checkout itself. The audit and importer unit
 tests can also run without a kit checkout.
+
+## Club badges (optional graphics pack)
+
+`import.mjs --badges <pack>` points the importer at a separate graphics pack: a
+folder of badge images plus a `manifest.json` that records, per asset, its
+source, licence, attribution and sha256 checksum.
+
+```bash
+node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
+  --out mods/eafc-fc27 --badges ../eafc-fc27-badges
+```
+
+The pack is **not** fetched live and is **not** embedded in the game's code:
+it lives beside the package and is versioned and distributed separately. The
+importer verifies every checksum before packing, so a corrupted or swapped
+badge never reaches the archive, and the manifest travels inside the `.ofm`
+so an installed package still documents where each badge came from.
+
+### Pack format
+
+```
+<pack>/
+  manifest.json
+  <eaTeamId>.png           one badge file per EA team id
+```
+
+`manifest.json`:
+
+```json
+{
+  "version": 1,
+  "source": "https://example.com/badge-pack",
+  "licence": "CC-BY-4.0",
+  "badges": [
+    {
+      "eaTeamId": 1,
+      "ofmClubId": "arsenal",
+      "file": "1.png",
+      "source": "https://example.com/1.png",
+      "licence": "CC-BY-4.0",
+      "attribution": "Example Pack",
+      "checksum": "sha256:<64 hex>"
+    }
+  ]
+}
+```
+
+- `eaTeamId` is the EA FC team id — the crosswalk key. Badges are matched on
+  EA id, never on club name, so a badge survives club-name changes and
+  re-imports from another database vintage.
+- `ofmClubId` is the club id this badge was matched to in the package
+  (informational).
+- `file` is the badge file name inside the pack folder; inside the package it
+  lands at `assets/clubs/<eaTeamId><ext>`.
+- `checksum` is `sha256:<hex>` of the file bytes, verified on import.
+
+Clubs without a badge keep the generated crest fallback, so a partial pack is
+safe to ship.
+
+### Licensing
+
+The database holds no image assets — only ids into EA's own CDN — and having
+the database (or owning FC) does not grant redistribution rights for its
+graphics. A badge pack may only contain art you have the right to redistribute
+(permitted pack, licensed provider, openly licensed art, or assets extracted
+under terms that allow your intended use). Check each asset's licence and
+trademark considerations: club crests remain their clubs' trademarks. This
+tool's checked-in fixtures (`test/fixtures/badges/`) hold five verified seeds
+for the pipeline tests only and are not a redistribution-ready graphics pack.
+
+### Competition logos
+
+Competition logos work the same way as club badges, keyed by OFM competition
+id instead of EA team id. A pack's `manifest.json` can carry a
+`competitionLogos` array alongside `badges`:
+
+```json
+{
+  "version": 1,
+  "source": "https://example.com/competition-logos",
+  "licence": "CC-BY-4.0",
+  "competitionLogos": [
+    {
+      "competitionId": "uefa-champions-league",
+      "file": "uefa-champions-league.png",
+      "source": "https://example.com/uefa-champions-league.png",
+      "licence": "CC-BY-4.0",
+      "attribution": "Example Pack",
+      "checksum": "sha256:<64 hex>"
+    }
+  ]
+}
+```
+
+Pass the pack with `--competition-logos <pack>`. The importer verifies every
+checksum, packs the images into `assets/competitions/` inside the `.ofm`, and
+sets `competition.logo` so the UI renders each competition's logo. Competition
+logos share the same provenance manifest as club badges, so the archive
+documents where each asset came from.
+
+The two European competitions authored by this importer (UEFA Champions
+League, UEFA Europa League) match on their OFM competition id
+(`uefa-champions-league`, `uefa-europa-league`). Without a logo pack they
+render with no badge.
+
+### Player mini-faces
+
+Player mini-faces work the same way as club badges, keyed by EA player id
+instead of EA team id. A pack's `manifest.json` can carry a `playerFaces`
+array alongside `badges` and `competitionLogos`:
+
+```json
+{
+  "version": 1,
+  "source": "https://example.com/player-faces",
+  "licence": "MIT",
+  "playerFaces": [
+    {
+      "eaPlayerId": 278455,
+      "ofmPlayerId": "aarón-anselmino-278455",
+      "file": "278455.png",
+      "source": "https://example.com/278455.png",
+      "licence": "MIT",
+      "attribution": "Example Pack",
+      "checksum": "sha256:<64 hex>"
+    }
+  ]
+}
+```
+
+Pass the pack with `--player-faces <pack>`. The importer verifies every
+checksum, packs the images into `assets/players/` inside the `.ofm`, and sets
+`player.photo` so the UI renders each player's mini-face. Player faces share
+the same provenance manifest as club badges, so the archive documents where
+each asset came from.
+
+The OFM player id embeds the EA player id as its trailing numeric segment
+(e.g. `aarón-anselmino-278455` → EA id `278455`), so faces are matched on EA
+player id, never on player name. Without a face pack, players render with no
+photo.
 
 ## What comes out
 
@@ -47,9 +193,11 @@ one club, so the first domestic-league club wins.
 **Competitions** — one league per domestic competition, with its real clubs,
 tier (`priority`) and season start. The database's continental rows become
 competitions of their own: CONMEBOL Libertadores and Sudamericana. Two European
-cups the database does not carry are generated from reputation: the *European
-Champions Cup* (top 32 European clubs) and the *European Trophy Cup* (the next
-32, excluding the first cup's field).
+club competitions the database does not carry are authored from reputation:
+the *UEFA Champions League* (top 32 European clubs) and the *UEFA Europa League*
+(the next 32, excluding the first cup's field). Their logos come from a
+separate optional graphics pack via `--competition-logos`; without one they
+render with no badge.
 
 ### Field mapping
 
@@ -185,8 +333,9 @@ leagues. Generated wages, stadium labels and staff are not real imported data.
 - **Unresolved grounds stay unnamed.** Placeholder names starting with `_` are
   not imported. Only reviewed source-backed mappings can fill these gaps; 453
   clubs still have no named ground.
-- **No badge, kit or photo.** The database holds no image assets, only ids into
-  EA's own CDN.
+- **Badges need a separate pack.** The database holds no image assets, only ids
+  into EA's own CDN; club badges are imported only when `--badges <pack>` is
+  given. Kits and player photos are not imported.
 - **No managers, tactic dials, shirt numbers, captains or rivals.** Not a gap in
   this tool: the package format has no field for any of them. `staff` roles are
   AssistantManager, Coach, Scout and Physio (`StaffRole` in `domain/staff.rs`), and

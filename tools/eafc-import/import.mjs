@@ -50,6 +50,14 @@ import {
   selectPlayerClub,
 } from "./lib/corrections.mjs";
 import { verifySourceLock } from "./lib/source.mjs";
+import {
+  badgeAssetPath,
+  competitionLogoAssetPath,
+  playerFaceAssetPath,
+  packageManifest as badgePackageManifest,
+  readBadgeManifest,
+  verifyBadgePack,
+} from "./lib/badges.mjs";
 
 const PACKAGE_ID = "eafc-fc27";
 const PACKAGE_NAME = "EA FC 27 Clubs & Players";
@@ -473,6 +481,9 @@ function parseArgs(argv) {
     if (arg === "--kit") args.kit = next();
     else if (arg === "--version") args.version = next();
     else if (arg === "--out") args.out = next();
+    else if (arg === "--badges") args.badges = next();
+    else if (arg === "--competition-logos") args.competitionLogos = next();
+    else if (arg === "--player-faces") args.playerFaces = next();
     else if (arg === "--no-pack") args.pack = false;
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new Error(`unknown argument: ${arg}`);
@@ -525,6 +536,51 @@ async function main() {
     );
     corrections = supplement.clubs;
   }
+
+  // A badge pack is optional and separate from the database: without it the
+  // package is unchanged and every club falls back to a generated crest.
+  let badges = null;
+  let competitionLogos = null;
+  let playerFaces = null;
+  let verifiedPack = null;
+  let badgePackDir = null;
+  if (args.badges) {
+    verifiedPack = await verifyBadgePack(args.badges);
+    badgePackDir = args.badges;
+    badges = verifiedPack.badges;
+    competitionLogos = verifiedPack.competitionLogos;
+    playerFaces = verifiedPack.playerFaces;
+    console.log(
+      `  badge pack  ${badges.length} verified club badges, ${competitionLogos.length} verified competition logos, ${playerFaces.length} verified player faces`,
+    );
+  }
+  if (args.competitionLogos && args.competitionLogos !== args.badges) {
+    const compVerified = await verifyBadgePack(args.competitionLogos);
+    competitionLogos = compVerified.competitionLogos;
+    badgePackDir = args.competitionLogos;
+    console.log(
+      `  competition logo pack  ${compVerified.competitionLogos.length} verified competition logos`,
+    );
+  }
+  if (
+    args.playerFaces &&
+    args.playerFaces !== args.badges &&
+    args.playerFaces !== args.competitionLogos
+  ) {
+    const faceVerified = await verifyBadgePack(args.playerFaces);
+    playerFaces = faceVerified.playerFaces;
+    badgePackDir = args.playerFaces;
+    console.log(`  player face pack  ${faceVerified.playerFaces.length} verified player faces`);
+  }
+  const badgesByTeam = new Map(badges ? badges.map((entry) => [entry.eaTeamId, entry]) : []);
+  // Also index by OFM club id (slug) so packs keyed by club slug match too.
+  const badgesByClubId = new Map(badges ? badges.map((entry) => [entry.ofmClubId, entry]) : []);
+  const competitionLogosById = new Map(
+    competitionLogos ? competitionLogos.map((entry) => [entry.competitionId, entry]) : [],
+  );
+  const playerFacesByEaId = new Map(
+    playerFaces ? playerFaces.map((entry) => [entry.eaPlayerId, entry]) : [],
+  );
 
   console.log(`reading ${args.version} databases...`);
   const main_ = await kit.readTemplateDatabase({
@@ -764,6 +820,14 @@ async function main() {
           Number.isFinite(team.foundationyear) && team.foundationyear > 1800
             ? team.foundationyear
             : null,
+        // A club badge, when the optional graphics pack supplies one for this
+        // EA team id. Stored relative to the package root; the loader stamps
+        // the package id on the path before the frontend resolves it.
+        logo: badgesByClubId.has(id)
+          ? badgeAssetPath(badgesByClubId.get(id))
+          : badgesByTeam.has(teamId)
+            ? badgeAssetPath(badgesByTeam.get(teamId))
+            : undefined,
       }),
     );
   }
@@ -806,6 +870,9 @@ async function main() {
       Math.round(player.overallrating),
     );
     const potential = Math.max(ability, Math.min(99, Math.round(player.potential) || ability));
+    const faceEntry = playerFacesByEaId.has(player.playerid)
+      ? playerFacesByEaId.get(player.playerid)
+      : undefined;
     const entity = {
       schema: "player",
       id: buildPlayerId(firstName, lastName, player.playerid),
@@ -826,6 +893,7 @@ async function main() {
       alternatePositions: specific ? alternatePositions(player) : [],
       contractEnd: contractEnd(player.contractvaliduntil),
       wage: weeklyWage(player.wage),
+      photo: faceEntry ? playerFaceAssetPath(faceEntry) : undefined,
     };
     playerEntities.push(entity);
   }
@@ -885,11 +953,12 @@ async function main() {
     });
   }
 
-  // The two European cups the EA database does not carry. Their fields are
-  // authored, not selected: `topByReputation` demands a single `country`, which a
-  // continent-wide cup cannot honestly give, so the strongest European clubs are
-  // named outright — ranked by the reputation this package gives them, which is
-  // the same midpoint the engine ranks authored reputations by.
+  // The two real European club competitions the EA database does not carry.
+  // Their fields are authored, not selected: `topByReputation` demands a
+  // single `country`, which a continent-wide cup cannot honestly give, so the
+  // strongest European clubs are named outright — ranked by the reputation
+  // this package gives them, which is the same midpoint the engine ranks
+  // authored reputations by.
   const europeanClubs = teamEntities
     .filter((team) => regionFor(team.country) === "europe")
     .map((team) => ({
@@ -897,11 +966,11 @@ async function main() {
       reputation: Math.round((team.reputationRange[0] + team.reputationRange[1]) / 2),
     }))
     .sort((a, b) => b.reputation - a.reputation || a.id.localeCompare(b.id));
-  if (competitionIds.has("european-champions-cup") === false && europeanClubs.length >= 64) {
+  if (competitionIds.has("uefa-champions-league") === false && europeanClubs.length >= 64) {
     pushCompetition({
       schema: "competition",
-      id: "european-champions-cup",
-      name: "European Champions Cup",
+      id: "uefa-champions-league",
+      name: "UEFA Champions League",
       type: "ContinentalClub",
       scope: "Continental",
       regionId: "europe",
@@ -909,13 +978,16 @@ async function main() {
       format: { kind: "Knockout" },
       participants: { explicit: europeanClubs.slice(0, 32).map((club) => club.id) },
       seasonStartMonth: 8,
+      logo: competitionLogosById.has("uefa-champions-league")
+        ? competitionLogoAssetPath(competitionLogosById.get("uefa-champions-league"))
+        : undefined,
     });
   }
-  if (competitionIds.has("european-trophy-cup") === false && europeanClubs.length >= 64) {
+  if (competitionIds.has("uefa-europa-league") === false && europeanClubs.length >= 64) {
     pushCompetition({
       schema: "competition",
-      id: "european-trophy-cup",
-      name: "European Trophy Cup",
+      id: "uefa-europa-league",
+      name: "UEFA Europa League",
       type: "ContinentalClub",
       scope: "Continental",
       regionId: "europe",
@@ -923,7 +995,18 @@ async function main() {
       format: { kind: "Knockout" },
       participants: { explicit: europeanClubs.slice(32, 64).map((club) => club.id) },
       seasonStartMonth: 8,
+      logo: competitionLogosById.has("uefa-europa-league")
+        ? competitionLogoAssetPath(competitionLogosById.get("uefa-europa-league"))
+        : undefined,
     });
+  }
+
+  // Assign competition logos to every competition that has a matching entry
+  // in the logo pack (domestic leagues, CONMEBOL cups, and the two UEFA cups).
+  for (const competition of competitionEntities) {
+    if (competition.logo === undefined && competitionLogosById.has(competition.id)) {
+      competition.logo = competitionLogoAssetPath(competitionLogosById.get(competition.id));
+    }
   }
 
   // "Primera División" is both Spain's and Argentina's; the country disambiguates
@@ -965,15 +1048,66 @@ async function main() {
   await write("players.json", "player", playerEntities);
   await write("competitions.json", "competition", competitionEntities);
 
+  const zipEntries = await Promise.all(
+    ["package.json", "teams.json", "players.json", "competitions.json"].map(async (file) => ({
+      name: file,
+      data: await readFile(path.join(outDir, file)),
+    })),
+  );
+
+  // The optional graphics pack's verified images and their provenance
+  // manifest travel inside the package so an installed club/competition can
+  // resolve its badge or logo, and anyone inspecting the archive can see
+  // where each asset came from.
+  if (verifiedPack) {
+    const badgePack = await readBadgeManifest(badgePackDir);
+    const provenance = JSON.stringify(badgePackageManifest(badgePack, verifiedPack), null, 2);
+
+    if (badges.length > 0) {
+      const assetsDir = path.join(outDir, "assets/clubs");
+      await mkdir(assetsDir, { recursive: true });
+      for (const entry of badges) {
+        const data = await readFile(entry.path);
+        const assetPath = badgeAssetPath(entry);
+        await writeFile(path.join(outDir, assetPath), data);
+        zipEntries.push({ name: assetPath, data });
+      }
+      console.log(`  badges      ${badges.length} club badges packed`);
+    }
+
+    if (competitionLogos.length > 0) {
+      const compDir = path.join(outDir, "assets/competitions");
+      await mkdir(compDir, { recursive: true });
+      for (const entry of competitionLogos) {
+        const data = await readFile(entry.path);
+        const assetPath = competitionLogoAssetPath(entry);
+        await writeFile(path.join(outDir, assetPath), data);
+        zipEntries.push({ name: assetPath, data });
+      }
+      console.log(`  competition logos  ${competitionLogos.length} competition logos packed`);
+    }
+
+    if (playerFaces.length > 0) {
+      const facesDir = path.join(outDir, "assets/players");
+      await mkdir(facesDir, { recursive: true });
+      for (const entry of playerFaces) {
+        const data = await readFile(entry.path);
+        const assetPath = playerFaceAssetPath(entry);
+        await writeFile(path.join(outDir, assetPath), data);
+        zipEntries.push({ name: assetPath, data });
+      }
+      console.log(`  player faces   ${playerFaces.length} player faces packed`);
+    }
+
+    await writeFile(path.join(outDir, "assets/clubs/manifest.json"), `${provenance}\n`);
+    zipEntries.push({
+      name: "assets/clubs/manifest.json",
+      data: Buffer.from(`${provenance}\n`),
+    });
+  }
+
   if (args.pack) {
-    const archive = createZip(
-      await Promise.all(
-        ["package.json", "teams.json", "players.json", "competitions.json"].map(async (file) => ({
-          name: file,
-          data: await readFile(path.join(outDir, file)),
-        })),
-      ),
-    );
+    const archive = createZip(zipEntries);
     const archivePath = `${outDir}.ofm`;
     await writeFile(archivePath, archive);
     const { size } = await stat(archivePath);

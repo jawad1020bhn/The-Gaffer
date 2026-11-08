@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "source": "https://github.com/example/player-faces",
+  "licence": "MIT (fixture test data only — not a redistribution-ready graphics pack)",
+  "badges": [],
+  "competitionLogos": [],
+  "playerFaces": [
+    {
+      "eaPlayerId": 278455,
+      "ofmPlayerId": "aarón-anselmino-278455",
+      "file": "278455.svg",
+      "source": "https://example.com/278455.svg",
+      "licence": "MIT (fixture test data only)",
+      "attribution": "OFM fixture data",
+      "checksum": "sha256:48de26402544f9103ea1780b34c5a47bcee7fbf22614c580d6e899ca8fe179b5"
+    },
+    {
+      "eaPlayerId": 270735,
+      "ofmPlayerId": "aakash-sangwan-270735",
+      "file": "270735.svg",
+      "source": "https://example.com/270735.svg",
+      "licence": "MIT (fixture test data only)",
+      "attribution": "OFM fixture data",
+      "checksum": "sha256:e84f10473eab05b17543f961f3538cab3cdc273e2f5639a2fa19042f658c4602"
+    },
+    {
+      "eaPlayerId": 236495,
+      "ofmPlayerId": "aaron-bolger-236495",
+      "file": "236495.svg",
+      "source": "https://example.com/236495.svg",
+      "licence": "MIT (fixture test data only)",
+      "attribution": "OFM fixture data",
+      "checksum": "sha256:05c4b4f42cfdfda0aab94dd73426f9f1d93efe2c6db0dce6b1e8509e77e833d4"
+    }
+  ]
+}

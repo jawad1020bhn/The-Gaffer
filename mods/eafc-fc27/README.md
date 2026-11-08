@@ -49,6 +49,14 @@ cargo test --manifest-path src-tauri/Cargo.toml -p ofm-cli --test eafc_package
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27
 ```
 
+Add badges from a separate graphics pack with `--badges` (packs are versioned
+and distributed outside Git):
+
+```bash
+node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
+  --out mods/eafc-fc27 --badges ../eafc-fc27-badges
+```
+
 ## What is in it
 
 **34 domestic leagues** across 26 countries (the clubs span 46 countries), from the Premier League and its
@@ -60,11 +68,16 @@ tiers, so promotion and relegation chain through each national pyramid.
 
 **4 continental competitions.** CONMEBOL Libertadores and Sudamericana keep their
 real fields from the database (which is also how Brazilian clubs get in — EA
-carries no Brazilian league). The two European cups are generated from club
-reputation: the **European Champions Cup** (the 32 best European clubs) and the
-**European Trophy Cup** (the next 32). Their fields are written out club by club,
-because the engine's reputation selector requires a single country and a
-continent-wide cup has not got one.
+carries no Brazilian league). The two European club competitions the database
+does not carry are authored from club reputation: the **UEFA Champions League**
+(the 32 best European clubs) and the **UEFA Europa League** (the next 32). Their
+fields are written out club by club, because the engine's reputation selector
+requires a single country and a continent-wide cup has not got one.
+
+Competition logos are not shipped checked-in. `tools/eafc-import --competition-logos <pack>`
+packs a separate, versioned graphics pack into the `.ofm`; per-asset source,
+licence, attribution and checksum travel inside it (see the importer README).
+Without a logo pack, competitions render with no badge.
 
 Every club has at least 18 source players, the median is 27, and the engine's
 floor is 15. The game tops up squads below 22 (its `SQUAD_SLOTS`); 36 clubs here
@@ -102,8 +115,13 @@ scope — including the South American ones.
 
 - **453 clubs have no stadium name.** Unresolved grounds retain the city-based
   fallback; generic EA placeholder names are not presented as real grounds.
-- **No badges, kits or photos** — the database holds no image assets, only ids
-  into EA's own CDN.
+- **Badges, competition logos and player mini-faces are separate optional
+  packs** — the database holds no image assets, only ids into EA's own CDN, so
+  the checked-in package ships without them and clubs/competitions/players draw
+  generated fallbacks. `tools/eafc-import --badges <pack> --competition-logos
+  <pack> --player-faces <pack>` packs separate, versioned graphics packs into
+  the `.ofm`; per-asset source, licence, attribution and checksum travel inside
+  it (see the importer README). Kits are not imported.
 - **No imported managers or backroom staff.** Verified staff can be authored for
   supported roles, but there is no club-manager schema. The game generates
   managers; an assistant-manager record is not a substitute for a real manager.
