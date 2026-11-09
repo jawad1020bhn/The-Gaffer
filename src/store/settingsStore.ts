@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 import { resolveSupportedLanguage } from "../i18n/languages";
+import type { UiDensity } from "../lib/uiDensity";
 
 export interface AppSettings {
   theme: "dark" | "light" | "system";
@@ -14,7 +15,7 @@ export interface AppSettings {
   continue_to_next_event: boolean;
   ui_scale: "small" | "normal" | "large" | "xlarge";
   /** Row/panel spacing: comfortable by default, compact for dense screens. */
-  ui_density: "comfortable" | "compact";
+  ui_density: UiDensity;
   high_contrast: boolean;
   /** The open sidebar's width. */
   sidebar_width: "compact" | "standard" | "wide";
