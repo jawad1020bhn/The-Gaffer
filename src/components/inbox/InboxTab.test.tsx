@@ -1202,11 +1202,17 @@ describe("InboxTab", (): void => {
     });
   });
 
+  /**
+   * Given a language tag that groups digits with a dot
+   * When a delegated renewal report renders its money values
+   * Then each amount is formatted exactly once. The tag is set on the store directly: `de` is no
+   * longer a language the picker offers, but the formatter still honours the tag it is given, and
+   * dot grouping is what exposes a value formatted twice.
+   */
   it("formats delegated renewal money values only once in dot-separated locales", async (): Promise<void> => {
     const previousLanguage = i18n.language;
     const previousSettings = useSettingsStore.getState().settings;
 
-    await i18n.changeLanguage("de");
     useSettingsStore.setState({
       settings: { ...previousSettings, language: "de", currency: "EUR" },
       currency: { code: "EUR", symbol: "€", exchange_rate: 1 },
@@ -1257,7 +1263,7 @@ describe("InboxTab", (): void => {
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Failed: Chris Failed — Board wage policy blocks this renewal. Keep annual wages near 24.000 € while we recover.",
+          "Failed: Chris Failed — Board wage policy blocks this renewal. Keep weekly wages near 24.000 € while we recover.",
         ),
       ).toBeInTheDocument();
     } finally {

@@ -6,21 +6,11 @@ import { getLocale } from "./dateFormatting";
 describe("getLocale", () => {
   // Every code in SUPPORTED_LANGUAGES, with its expected tag written out. The
   // type on LANG_LOCALE catches a *missing* language; only this catches a wrong
-  // tag, which is the failure that actually reached users — the map was keyed on
-  // `zh` where the registry says `zh-CN`, and the raw-code fallback hid it.
+  // tag, which is the failure that actually reached users once — the map was
+  // keyed on `zh` where the registry said `zh-CN`, and the raw-code fallback hid
+  // it. English is the only shipped language now; the next one lands here too.
   const EXPECTED_TAGS: Record<SupportedLanguageCode, string> = {
     en: "en-US",
-    es: "es-ES",
-    pt: "pt-BR",
-    "pt-BR": "pt-BR",
-    fr: "fr-FR",
-    de: "de-DE",
-    it: "it-IT",
-    ru: "ru-RU",
-    "zh-CN": "zh-CN",
-    cs: "cs-CZ",
-    tr: "tr-TR",
-    id: "id-ID",
   };
 
   it("maps every language the game ships", () => {

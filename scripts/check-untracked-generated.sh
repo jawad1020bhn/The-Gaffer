@@ -18,14 +18,17 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo="${1:-$repo_root}"
 shift || true
 if [ "$#" -eq 0 ]; then
-    set -- src/dev/pageHarness/fixture.generated.ts
+    set -- src/dev/pageHarness/fixture.generated.ts \
+        src-tauri/packages/eafc-fc27.ofm \
+        src-tauri/packages/eafc-fc27.ofm.sha256
 fi
 
 status=0
 for path in "$@"; do
     if git -C "$repo" ls-files --error-unmatch -- "$path" >/dev/null 2>&1; then
         echo "check-untracked-generated: $path is tracked by git. It is generated at build time" >&2
-        echo "  (npm run fixture:pages); remove it from the index with: git rm --cached $path" >&2
+        echo "  (npm run fixture:pages / npm run world:pack); remove it from the index with:" >&2
+        echo "  git rm --cached $path" >&2
         status=1
     fi
 done

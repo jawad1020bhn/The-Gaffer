@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
+import { resolveSupportedLanguage } from "../i18n/languages";
+import type { UiDensity } from "../lib/uiDensity";
 
 export interface AppSettings {
   theme: "dark" | "light" | "system";
@@ -13,7 +15,7 @@ export interface AppSettings {
   continue_to_next_event: boolean;
   ui_scale: "small" | "normal" | "large" | "xlarge";
   /** Row/panel spacing: comfortable by default, compact for dense screens. */
-  ui_density: "comfortable" | "compact";
+  ui_density: UiDensity;
   high_contrast: boolean;
   /** The open sidebar's width. */
   sidebar_width: "compact" | "standard" | "wide";
@@ -68,7 +70,13 @@ const DEFAULT_CURRENCY: CurrencyDefinition = {
 };
 
 function mergeWithDefaultSettings(settings: Partial<AppSettings> = {}): AppSettings {
-  return { ...DEFAULT_SETTINGS, ...settings };
+  const merged = { ...DEFAULT_SETTINGS, ...settings };
+
+  // A save written by a version that shipped more languages stores codes like "de" and "pt-BR".
+  // Left as-is, the picker would show no selection (no option has that value) and Intl would keep
+  // formatting money and dates in a language whose text is gone. Normalising here covers both the
+  // loaded value and every update, so the stored setting always names a language the game ships.
+  return { ...merged, language: resolveSupportedLanguage(merged.language) };
 }
 
 async function persistSettings(settings: AppSettings) {

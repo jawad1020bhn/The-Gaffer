@@ -370,6 +370,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils xvfb xauth
 
+      # build.rs packs the shipped world before tauri-build looks for the declared resource, and
+      # it shells out to Node to do it. This job never runs npm, so without Node pinned here the
+      # build would depend on whatever the runner image happens to carry.
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24 # pinned with the frontend job; see the reason there
+
       # Keep this version equal to `rust-toolchain.toml`'s channel; scripts/check-toolchain-pin.sh
       # fails the build if they drift. `rustfmt` is installed alongside clippy so the components
       # match what the toolchain file declares. `rustfmt` is not used by this job — the `format`

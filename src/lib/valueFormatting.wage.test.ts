@@ -43,24 +43,26 @@ describe("formatWeeklyWage", () => {
   });
 
   /**
-   * Given the game is played in German
+   * Given the shipped language
    * When a wage is shown
-   * Then the unit is the German one, from the formatter, not from the caller.
+   * Then the unit is read from the catalogue by the formatter, not written by the caller.
    */
   it("takes the unit from the active language", async () => {
-    await speak("de");
+    await speak("en");
 
-    expect(formatWeeklyWage(12_345)).toBe("12.345\u00a0\u20ac/Wo");
-    expect(i18n.t("finances.perWeekSuffix")).toBe("/Wo");
+    expect(formatWeeklyWage(12_345)).toBe("\u20ac12,345/wk");
+    expect(i18n.t("finances.perWeekSuffix")).toBe("/wk");
   });
 
   /**
-   * Given a language that groups digits with a dot
+   * Given a language setting that groups digits with a dot
    * When an exact wage is shown
-   * Then the grouping follows the language setting.
+   * Then the grouping follows that setting. The setting is set directly here: `de` is no longer a
+   * language the picker offers, but `Intl` still formats any tag, and this pins that the
+   * formatter reads the setting rather than hardcoding en-US.
    */
-  it("groups digits the way the language does", async () => {
-    await speak("de");
+  it("groups digits the way the language setting does", () => {
+    useSettingsStore.setState((state) => ({ settings: { ...state.settings, language: "de" } }));
 
     expect(formatWeeklyWage(1_234_567)).toContain("1.234.567");
   });

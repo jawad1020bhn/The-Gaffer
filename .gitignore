@@ -56,6 +56,10 @@ test-world.json
 # The archives tools/eafc-import packs beside the package it generated. The
 # package directory is the source; rebuild the .ofm with the importer.
 /mods/*.ofm
+# The world every build ships, packed from mods/eafc-fc27 by scripts/pack-bundled-world.mjs on
+# predev/prebuild. Generated for the same reason as the fixture below it: a committed 1.7 MB
+# binary would conflict on every data edit. `npm run world:pack` rebuilds it.
+/src-tauri/packages/
 
 # Benchmark output from scripts/perf/run-matrix.sh (machine-specific measurements)
 /scripts/perf/results/

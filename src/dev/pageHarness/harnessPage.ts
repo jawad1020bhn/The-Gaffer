@@ -1,6 +1,6 @@
 import { SUPPORTED_LANGUAGES, type SupportedLanguageCode } from "../../i18n";
 
-/** `?lang=de` renders the page in that language (German has the longest labels); English otherwise. */
+/** `?lang=<code>` renders the page in that shipped language; English for anything else. */
 export function readHarnessLanguage(search: string): SupportedLanguageCode {
   const lang = new URLSearchParams(search).get("lang");
   return SUPPORTED_LANGUAGES.find((language) => language.code === lang)?.code ?? "en";

@@ -58,7 +58,8 @@ disabled states.
   (`Card`, `Button`, `Badge`, `ProgressBar`, `Select`, `Checkbox`, `DatePicker`, `PlayerAvatar`,
   `TeamLogo`, `CountryFlag`, `InjuryBadge`, `PitchToken`, …). Check the barrel before accepting a
   new component as necessary.
-- CJK font fallbacks stripped from `@theme` — `zh-CN` needs them.
+- System CJK fallbacks stripped from `@theme` — they cost no bundled file and still draw CJK
+  glyphs in world-package text and player names.
 
 ### Theme parity
 - **New code uses role tokens**, which need no `dark:` partner. Flag a raw palette class

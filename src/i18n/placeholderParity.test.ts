@@ -1,17 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { LOCALE_FILES, NON_ENGLISH_LOCALES, type LocaleTree } from "./i18nTestHelpers";
+import { LOCALE_FILES, type LocaleTree } from "./i18nTestHelpers";
 
-// English adds an ordinal suffix (1st, 2nd, ...) to these messages. The listed
-// languages express ordinal position without that interpolation. Keep the
-// exception tied to each key and locale so a different omission still fails.
-const REVIEW_ORDINAL_LOCALES = ["cs", "de", "es", "fr", "id", "it", "pt", "pt-BR", "tr"];
-const ALLOWED_SUFFIX_OMISSIONS: Record<string, readonly string[]> = {
-  "be.msg.seasonReview.body.topFour": REVIEW_ORDINAL_LOCALES,
-  "be.msg.seasonReview.body.midTable": REVIEW_ORDINAL_LOCALES,
-  "be.msg.seasonReview.body.lowerHalf": REVIEW_ORDINAL_LOCALES,
-  "be.msg.seasonPayout.ledgerDescription": ["id"],
-};
+// English adds an ordinal suffix (1st, 2nd, ...) to the season-review messages. A translation
+// may express ordinal position without that interpolation; when a language ships again, keep any
+// such exception tied to each key and locale so a different omission still fails.
+const ALLOWED_SUFFIX_OMISSIONS: Record<string, readonly string[]> = {};
 
 function placeholders(text: string): Set<string> {
   return new Set([...text.matchAll(/\{\{\s*([^{}]+?)\s*\}\}/g)].map((match) => match[1].trim()));
@@ -22,6 +16,7 @@ function placeholderDifferences(
   candidate: LocaleTree,
   locale: string,
   path: string[] = [],
+  allowedSuffixOmissions: Record<string, readonly string[]> = ALLOWED_SUFFIX_OMISSIONS,
 ): string[] {
   return Object.entries(reference).flatMap(([segment, englishValue]) => {
     const nextPath = [...path, segment];
@@ -38,6 +33,7 @@ function placeholderDifferences(
           : {},
         locale,
         nextPath,
+        allowedSuffixOmissions,
       );
     }
     if (typeof englishValue !== "string") return [];
@@ -46,8 +42,7 @@ function placeholderDifferences(
     const actual = placeholders(typeof translatedValue === "string" ? translatedValue : "");
     const missing = [...expected].filter(
       (name) =>
-        !actual.has(name) &&
-        !(name === "suffix" && ALLOWED_SUFFIX_OMISSIONS[key]?.includes(locale)),
+        !actual.has(name) && !(name === "suffix" && allowedSuffixOmissions[key]?.includes(locale)),
     );
     const extra = [...actual].filter((name) => !expected.has(name));
     return missing.length > 0 || extra.length > 0
@@ -64,28 +59,60 @@ describe("locale interpolation placeholders", () => {
     ]);
   });
 
-  it("allows only the documented ordinal omission", () => {
+  /**
+   * Given a locale allowed to omit the ordinal suffix, and one that is not
+   * When both are compared with English
+   * Then only the allowed one passes. The allow-list is injected here rather than read from the
+   * shipped policy: no language ships today, so the real list is empty and a test against it
+   * would prove nothing about the mechanism a future translation depends on.
+   */
+  it("allows a suffix omission only for the locale named in the allow-list", () => {
+    const key = "be.msg.seasonReview.body.topFour";
+    const exceptions = { [key]: ["fr"] };
     const en = {
       be: { msg: { seasonReview: { body: { topFour: "{{position}}{{suffix}} {{points}}" } } } },
     };
-    const allowed = {
+    const withoutSuffix = {
       be: { msg: { seasonReview: { body: { topFour: "{{position}} {{points}}" } } } },
     };
-    const wrongLocale = placeholderDifferences(en, allowed, "ru");
-    expect(placeholderDifferences(en, allowed, "fr")).toEqual([]);
-    expect(wrongLocale).toEqual(["be.msg.seasonReview.body.topFour: missing [suffix], extra []"]);
+
+    expect(placeholderDifferences(en, withoutSuffix, "fr", [], exceptions)).toEqual([]);
+    expect(placeholderDifferences(en, withoutSuffix, "ru", [], exceptions)).toEqual([
+      `${key}: missing [suffix], extra []`,
+    ]);
     expect(
       placeholderDifferences(
         en,
         { be: { msg: { seasonReview: { body: { topFour: "{{position}} {{surprise}}" } } } } },
         "fr",
+        [],
+        exceptions,
       ),
-    ).toEqual(["be.msg.seasonReview.body.topFour: missing [points], extra [surprise]"]);
+    ).toEqual([`${key}: missing [points], extra [surprise]`]);
   });
 
-  it("matches every locale's placeholder set to English", () => {
+  /**
+   * Given no language ships besides English
+   * When the shipped allow-list is read
+   * Then it is empty: an exception naming a locale that no longer exists would silently permit a
+   * missing placeholder in whatever language is added next.
+   */
+  it("carries no exceptions for languages the game does not ship", () => {
+    expect(ALLOWED_SUFFIX_OMISSIONS).toEqual({});
+  });
+
+  /**
+   * Given English is the only shipped locale
+   * When its own placeholders are compared against themselves
+   * Then nothing is reported — and the scan is proven to have read the real file, so a glob that
+   * matched nothing cannot pass this silently. The two cases above pin the comparison itself;
+   * this one runs it over every locale on disk, so a language added later is checked on arrival.
+   */
+  it("matches every shipped locale's placeholder set to English", () => {
+    expect(Object.keys(LOCALE_FILES)).toContain("en");
+
     const differences = Object.fromEntries(
-      Object.entries(NON_ENGLISH_LOCALES)
+      Object.entries(LOCALE_FILES)
         .map(([locale, translations]) => [
           locale,
           placeholderDifferences(LOCALE_FILES.en, translations, locale),

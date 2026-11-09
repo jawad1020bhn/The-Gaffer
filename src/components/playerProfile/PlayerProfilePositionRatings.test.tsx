@@ -3,7 +3,6 @@ import { createInstance } from "i18next";
 import { describe, expect, it } from "vitest";
 
 import en from "../../i18n/locales/en.json";
-import pt from "../../i18n/locales/pt.json";
 import type { AttributeKey } from "../../store/generated/AttributeKey";
 import type { PositionRatings } from "../../store/generated/PositionRatings";
 import PlayerProfilePositionRatings from "./PlayerProfilePositionRatings";
@@ -11,7 +10,7 @@ import PlayerProfilePositionRatings from "./PlayerProfilePositionRatings";
 const translations = createInstance();
 await translations.init({
   lng: "en",
-  resources: { en: { translation: en }, pt: { translation: pt } },
+  resources: { en: { translation: en } },
   interpolation: { escapeValue: false },
 });
 const tIn = (language: string) => translations.getFixedT(language);
@@ -129,13 +128,13 @@ describe("PlayerProfilePositionRatings", () => {
   });
 
   /**
-   * Given the three rows, in English and in Portuguese
+   * Given the three rows, in English — the only language the game ships
    * When they show
    * Then no word "fit" appears in the rendered text: the game names positions, never a verdict
    *      (maintainer, 21 Oct)
    */
-  it.each(["en", "pt"])("never says fit (%s)", (language) => {
-    const { container } = renderRatings(ownPlayer, language);
+  it("never says fit", () => {
+    const { container } = renderRatings(ownPlayer, "en");
 
     expect(container.textContent).not.toMatch(/\bfit\b/i);
     expect(container.textContent?.length).toBeGreaterThan(40);
@@ -144,8 +143,7 @@ describe("PlayerProfilePositionRatings", () => {
   /**
    * Given every attribute name the backend can send (AttributeKey)
    * When its label is looked up
-   * Then English has one: a key attribute can never show as a raw key (the locale coverage test
-   *      carries it to every other language)
+   * Then English has one: a key attribute can never show as a raw key
    */
   it("has a label for every attribute the backend names", () => {
     // A Record over the union: a name missing here, or one the union lacks, fails to compile.

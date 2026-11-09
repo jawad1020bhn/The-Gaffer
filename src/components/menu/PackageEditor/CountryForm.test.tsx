@@ -66,14 +66,14 @@ async function pickNation(name: string) {
 
 describe("CountryForm nation picker", () => {
   it("writes the catalog's canonical name, not the one the author sees", async () => {
-    // The trap: `countryName()` is locale-aware, so filling `name` from the
-    // rendered label would persist "Brasil" into a package authored in pt-BR
-    // and "Brazil" into the same package authored in English. The stored name
-    // has to be the catalog's, so the id and name agree across languages.
-    language = "pt-BR";
+    // The trap: `countryName()` is locale-aware, so filling `name` from the rendered label would
+    // persist a translated name into the package. English is the only shipped language now, so
+    // the two coincide for ISO countries — but the football identities do not: the picker shows
+    // `countryName("ENG")` = "England" while the catalog is the source of the stored name. The
+    // stored name has to be the catalog's, so the id and name agree.
     const updateField = renderForm({});
 
-    await pickNation("Brasil");
+    await pickNation("Brazil");
 
     expect(updateField).toHaveBeenCalledWith("id", "BR");
     expect(updateField).toHaveBeenCalledWith("name", "Brazil");

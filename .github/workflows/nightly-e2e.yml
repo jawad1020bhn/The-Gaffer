@@ -96,6 +96,14 @@ jobs:
         with:
           workspaces: ./src-tauri -> target
 
+      # build.rs packs the shipped world before tauri-build looks for the declared resource, and
+      # it shells out to Node to do it. This job never runs npm, so without Node pinned here the
+      # build would depend on whatever the runner image happens to carry.
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24 # pinned with the frontend job; see the reason there
+
       - name: Build the app with the mcp feature
         run: cargo build --locked --manifest-path src-tauri/Cargo.toml --features mcp --bin openfootmanager
 

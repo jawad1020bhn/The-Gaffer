@@ -72,14 +72,14 @@ describe("useSettingsStore", () => {
     const loading = useSettingsStore.getState().loadSettings();
     await useSettingsStore.getState().updateSettings({ list_view: "cards" });
     answer({
-      settings: { language: "es", list_view: "table" },
+      settings: { language: "en-GB", list_view: "table" },
       currency: SUPPORTED_CURRENCIES[0],
       supported_currencies: SUPPORTED_CURRENCIES,
     });
     await loading;
 
     expect(useSettingsStore.getState().settings.list_view).toBe("cards");
-    expect(useSettingsStore.getState().settings.language).toBe("es");
+    expect(useSettingsStore.getState().settings.language).toBe("en");
   });
 
   /**
@@ -104,7 +104,7 @@ describe("useSettingsStore", () => {
   it("loads settings from the backend and merges missing fields with defaults", async () => {
     vi.mocked(invoke).mockResolvedValue({
       settings: {
-        language: "es",
+        language: "en-GB",
         confirm_advance: true,
       },
       currency: SUPPORTED_CURRENCIES[0],
@@ -117,7 +117,7 @@ describe("useSettingsStore", () => {
     expect(useSettingsStore.getState().loaded).toBe(true);
     expect(useSettingsStore.getState().settings).toEqual({
       ...DEFAULT_SETTINGS,
-      language: "es",
+      language: "en",
       confirm_advance: true,
     });
     expect(useSettingsStore.getState().currency).toEqual(SUPPORTED_CURRENCIES[0]);
@@ -153,7 +153,7 @@ describe("useSettingsStore", () => {
     useSettingsStore.setState({
       settings: {
         ...DEFAULT_SETTINGS,
-        language: "pt",
+        language: "en",
       },
       currency: SUPPORTED_CURRENCIES[0],
       loaded: true,
@@ -163,14 +163,14 @@ describe("useSettingsStore", () => {
 
     expect(useSettingsStore.getState().settings).toEqual({
       ...DEFAULT_SETTINGS,
-      language: "pt",
+      language: "en",
       currency: "USD",
       high_contrast: true,
     });
     expect(invoke).toHaveBeenCalledWith("save_settings", {
       settings: {
         ...DEFAULT_SETTINGS,
-        language: "pt",
+        language: "en",
         currency: "USD",
         high_contrast: true,
       },
@@ -202,10 +202,66 @@ describe("useSettingsStore", () => {
   });
 });
 
+describe("the stored language", () => {
+  /**
+   * Given a save written by a version that shipped eleven more languages
+   * When its settings load
+   * Then the language is English. Left as the stored code, the picker would render no selection
+   *      (no option carries that value) and Intl would keep formatting money and dates in a
+   *      language whose strings are gone.
+   */
+  it("normalises a language the game no longer ships on load", async () => {
+    for (const language of ["de", "pt-BR", "zh-CN", "ru"]) {
+      vi.mocked(invoke).mockResolvedValue({
+        settings: { language },
+        currency: SUPPORTED_CURRENCIES[0],
+        supported_currencies: SUPPORTED_CURRENCIES,
+      });
+
+      await useSettingsStore.getState().loadSettings();
+
+      expect(useSettingsStore.getState().settings.language, language).toBe("en");
+    }
+  });
+
+  /**
+   * Given a regional English variant, which the game resolves rather than ships
+   * When it loads
+   * Then it is stored as `en`, so the picker's value matches an option exactly.
+   */
+  it("stores the resolved code, not the variant", async () => {
+    vi.mocked(invoke).mockResolvedValue({
+      settings: { language: "en-GB" },
+      currency: SUPPORTED_CURRENCIES[0],
+      supported_currencies: SUPPORTED_CURRENCIES,
+    });
+
+    await useSettingsStore.getState().loadSettings();
+
+    expect(useSettingsStore.getState().settings.language).toBe("en");
+  });
+
+  /**
+   * Given the Arabic option, which the picker renders disabled
+   * When a language update names it anyway
+   * Then English is stored and persisted: an announced language has no strings behind it.
+   */
+  it("does not persist a language that is only announced", async () => {
+    vi.mocked(invoke).mockResolvedValue(undefined);
+
+    await useSettingsStore.getState().updateSettings({ language: "ar" });
+
+    expect(useSettingsStore.getState().settings.language).toBe("en");
+    expect(invoke).toHaveBeenCalledWith("save_settings", {
+      settings: expect.objectContaining({ language: "en" }),
+    });
+  });
+});
+
 describe("ui_density", () => {
   it("defaults missing density to comfortable when loading older settings", async () => {
     vi.mocked(invoke).mockResolvedValue({
-      settings: { language: "es" },
+      settings: { language: "en-GB" },
       currency: SUPPORTED_CURRENCIES[0],
       supported_currencies: SUPPORTED_CURRENCIES,
     });
@@ -213,13 +269,13 @@ describe("ui_density", () => {
     await useSettingsStore.getState().loadSettings();
 
     expect(useSettingsStore.getState().settings.ui_density).toBe("comfortable");
-    expect(useSettingsStore.getState().settings.language).toBe("es");
+    expect(useSettingsStore.getState().settings.language).toBe("en");
   });
 
   it("persists compact density without changing unrelated settings", async () => {
     vi.mocked(invoke).mockResolvedValue(undefined);
     useSettingsStore.setState({
-      settings: { ...DEFAULT_SETTINGS, language: "pt", ui_scale: "large" },
+      settings: { ...DEFAULT_SETTINGS, language: "en", ui_scale: "large" },
       loaded: true,
     });
 
@@ -227,13 +283,13 @@ describe("ui_density", () => {
 
     expect(useSettingsStore.getState().settings).toMatchObject({
       ui_density: "compact",
-      language: "pt",
+      language: "en",
       ui_scale: "large",
     });
     expect(invoke).toHaveBeenCalledWith("save_settings", {
       settings: expect.objectContaining({
         ui_density: "compact",
-        language: "pt",
+        language: "en",
         ui_scale: "large",
       }),
     });
@@ -312,11 +368,11 @@ describe("overlapping loads", () => {
       throw new Error("no bridge");
     });
     await useSettingsStore.getState().loadSettings();
-    vi.mocked(invoke).mockResolvedValue({ ...stale(), settings: { language: "es" } });
+    vi.mocked(invoke).mockResolvedValue({ ...stale(), settings: { language: "en-GB" } });
 
     await useSettingsStore.getState().loadSettings();
 
-    expect(useSettingsStore.getState().settings.language).toBe("es");
+    expect(useSettingsStore.getState().settings.language).toBe("en");
   });
 
   /**
@@ -373,15 +429,15 @@ describe("overlapping loads", () => {
     const quiet = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const loading = useSettingsStore.getState().loadSettings();
-    await useSettingsStore.getState().updateSettings({ language: "fr" });
+    await useSettingsStore.getState().updateSettings({ list_view: "cards" });
     answer({
-      settings: { language: "de" },
+      settings: { list_view: "table" },
       currency: SUPPORTED_CURRENCIES[0],
       supported_currencies: SUPPORTED_CURRENCIES,
     });
     await loading;
 
-    expect(useSettingsStore.getState().settings.language).toBe("de");
+    expect(useSettingsStore.getState().settings.list_view).toBe("table");
     quiet.mockRestore();
   });
 });

@@ -7,13 +7,23 @@ import PlayerDealWorkspace from "./PlayerDealWorkspace";
 
 import { createInstance } from "i18next";
 import en from "../../i18n/locales/en.json";
-import de from "../../i18n/locales/de.json";
 import type { LoanOfferData, TransferOfferData } from "../../store/gameStore";
 
 const translations = createInstance();
 await translations.init({
   lng: "en",
-  resources: { en: { translation: en }, de: { translation: de } },
+  resources: {
+    en: { translation: en },
+    // A probe locale, not a shipped language: it overrides only the labels these tests read, so
+    // a hardcoded English string in the component fails while the real catalogue stays intact.
+    // German served this purpose before the game went English-only.
+    probe: {
+      translation: {
+        common: { unknown: "PROBE_UNKNOWN" },
+        transfers: { offerHistory: "PROBE_HISTORY", offers: "PROBE_OFFERS" },
+      },
+    },
+  },
   interpolation: { escapeValue: false },
 });
 
@@ -626,9 +636,9 @@ it("keeps focus inside when agreement data replaces the form", () => {
   );
 });
 
-/** Given a saved offer whose club no longer exists, when history renders, then the unknown-club fallback uses a translation. */
+/** Given a saved offer whose club no longer exists, when history renders, then the unknown-club fallback is read from the catalogue rather than hardcoded. */
 it("translates a missing offer club", async () => {
-  await translations.changeLanguage("de");
+  await translations.changeLanguage("probe");
   render(
     workspace(
       createPlayer({
@@ -638,7 +648,7 @@ it("translates a missing offer club", async () => {
     ),
   );
   expect(
-    within(screen.getByRole("region", { name: "Angebotsverlauf" })).getByText("Unbekannt"),
+    within(screen.getByRole("region", { name: "PROBE_HISTORY" })).getByText("PROBE_UNKNOWN"),
   ).toBeInTheDocument();
 });
 

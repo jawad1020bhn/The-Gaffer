@@ -1903,18 +1903,9 @@
     },
     "languages": {
       "en": "English",
-      "es": "Spanish",
-      "pt": "Portuguese",
-      "fr": "French",
-      "de": "German",
-      "it": "Italian",
-      "ptBR": "Portuguese (Brazil)",
-      "zhCN": "Simplified Chinese",
-      "ru": "Russian",
-      "cs": "Czech",
-      "tr": "Turkish",
-      "id": "Indonesian"
+      "ar": "العربية"
     },
+    "languageComingSoon": "Coming soon",
     "gameplay": "Gameplay",
     "defaultMatchMode": "Default Match Mode",
     "defaultMatchModeDesc": "How matches start when you press Continue",

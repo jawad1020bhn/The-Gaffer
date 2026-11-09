@@ -19,8 +19,16 @@ From the main menu, click **New Game**. You'll be asked to fill in your manager 
 
 After filling in your manager details, you'll pick the world database:
 
-- **Random World** — A procedurally generated league with teams, players, and staff. Every game is different.
+- **EA FC 27 Clubs & Players** — already ticked. The game ships this database, so a new career
+  starts on real clubs and squads with nothing to install: 684 clubs, 18,875 players and 38
+  competitions. It is unofficial and for personal use; see
+  [its README](../mods/eafc-fc27/README.md) for what is and is not in it.
+- **Random World** — untick the package to get a procedurally generated league with teams,
+  players, and staff instead. Every game is different.
 - **Custom Database** — If you have a custom world database JSON file, you can import it here.
+
+The first load of a 684-club world is slow because the selector also generates past seasons.
+Choose **None** or **6 years** of history for a much faster start; the history is cosmetic.
 
 ### 3. Choose Your Club
 

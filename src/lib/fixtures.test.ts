@@ -10,7 +10,6 @@ beforeAll(async () => {
   await i18nReady;
   previousLanguage = i18n.language;
   await i18n.changeLanguage("en");
-  await i18n.loadLanguages("pt-BR");
 });
 
 afterAll(async () => {
@@ -53,7 +52,14 @@ describe("getFixtureDisplayLabel", () => {
 });
 
 describe("getFixtureCompetitionName", () => {
-  it("translates a named World Cup in the requested locale", () => {
+  /**
+   * Given a competition whose stored name is the English template "2026 World Cup"
+   * When its name is resolved
+   * Then the season is interpolated through the key, so the name follows the active language
+   *      rather than the string the save happens to carry. Portuguese carried this case while
+   *      the game shipped it.
+   */
+  it("resolves a named World Cup through its key", () => {
     const gameState = {
       competitions: [
         {
@@ -71,8 +77,8 @@ describe("getFixtureCompetitionName", () => {
       getFixtureCompetitionName(
         gameState,
         { competition_id: "world-cup-2026" },
-        i18n.getFixedT("pt-BR"),
+        i18n.getFixedT("en"),
       ),
-    ).toBe("Copa do Mundo 2026");
+    ).toBe("2026 World Cup");
   });
 });

@@ -189,16 +189,48 @@ fn packages_dir(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, Str
     Ok(app_data_dir.join("packages"))
 }
 
-/// The `packages/` directory a build ships beside its executable, if it has one.
+/// The `packages/` directory this build ships its world in, if it has one.
 ///
-/// Only a portable build does. With no installer in play `resource_dir()` is the
-/// executable's own directory, which is exactly where the portable zip puts the world.
+/// An installed build and a portable zip both keep it under `resource_dir()`: with no installer
+/// in play that is the executable's own directory, which is where the portable zip puts the
+/// world, and with one it is where the `packages/eafc-fc27.ofm` resource lands.
+///
+/// `tauri dev` has neither. It runs the binary out of `target/`, so the resource is not beside
+/// it, and without the fallback below the developer would play a different game from the one
+/// that ships — a generated world of fictional clubs instead of the real database. In a debug
+/// build the checkout's own `src-tauri/packages` is therefore searched too; `predev` writes the
+/// archive there. A release build never looks at a path baked in from the build machine.
 fn bundled_packages_dir(app_handle: &tauri::AppHandle) -> Option<std::path::PathBuf> {
-    app_handle
-        .path()
-        .resource_dir()
-        .ok()
-        .map(|dir| dir.join("packages"))
+    let mut candidates = Vec::new();
+    if let Ok(dir) = app_handle.path().resource_dir() {
+        candidates.push(dir.join("packages"));
+    }
+    if cfg!(debug_assertions) {
+        let checkout = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("packages");
+        candidates.push(checkout);
+    }
+    first_shipped_packages_dir(candidates)
+}
+
+/// The first candidate that actually holds a package.
+///
+/// Existence of the directory is not enough: a build can leave an empty `packages/` behind, and
+/// stopping there would hide the world in the next candidate rather than fall through to it.
+fn first_shipped_packages_dir(
+    candidates: impl IntoIterator<Item = std::path::PathBuf>,
+) -> Option<std::path::PathBuf> {
+    candidates.into_iter().find(|dir| {
+        std::fs::read_dir(dir).is_ok_and(|entries| {
+            entries.flatten().any(|entry| {
+                let path = entry.path();
+                path.is_file()
+                    && path
+                        .extension()
+                        .and_then(|ext| ext.to_str())
+                        .is_some_and(|ext| ext.eq_ignore_ascii_case("ofm"))
+            })
+        })
+    })
 }
 
 /// Whether this installed file is one the build shipped rather than one the player chose.
@@ -616,8 +648,8 @@ pub fn get_nations() -> Vec<NationInfo> {
 #[cfg(test)]
 mod tests {
     use super::{
-        export_world_database_internal, validate_package_id, write_database_json_to_dir,
-        EXPORTED_WORLD_NAME_KEY,
+        export_world_database_internal, first_shipped_packages_dir, validate_package_id,
+        write_database_json_to_dir, EXPORTED_WORLD_NAME_KEY,
     };
     use chrono::{TimeZone, Utc};
     use domain::league::League;
@@ -1227,5 +1259,67 @@ mod tests {
         // and is the very character the reporter's id tripped on, so escaping it
         // would only make the message harder to read.
         assert_eq!(query, "id=a%26b%3Dc%2Bd%3Fe%25f/g");
+    }
+
+    /// A directory holding a file with the given name, under this test's own temp dir.
+    fn dir_with(dir: &TempCommandDir, name: &str, files: &[&str]) -> PathBuf {
+        let path = dir.path().join(name);
+        fs::create_dir_all(&path).expect("candidate dir should be created");
+        for file in files {
+            fs::write(path.join(file), b"not really an archive").expect("fixture file");
+        }
+        path
+    }
+
+    #[test]
+    fn shipped_packages_dir_is_the_first_candidate_holding_a_package() {
+        let temp_dir = TempCommandDir::new();
+        let installed = dir_with(&temp_dir, "installed", &["eafc-fc27.ofm"]);
+        let checkout = dir_with(&temp_dir, "checkout", &["eafc-fc27.ofm"]);
+
+        // The installed resource wins over the checkout, so a packaged build never reads a
+        // developer's working copy.
+        assert_eq!(
+            first_shipped_packages_dir([installed.clone(), checkout]),
+            Some(installed)
+        );
+    }
+
+    #[test]
+    fn shipped_packages_dir_falls_through_an_empty_directory_to_the_next_candidate() {
+        let temp_dir = TempCommandDir::new();
+        // What `tauri dev` leaves behind: the resource directory exists but holds no world.
+        let empty = dir_with(&temp_dir, "empty", &[]);
+        let checkout = dir_with(&temp_dir, "checkout", &["eafc-fc27.ofm"]);
+
+        assert_eq!(
+            first_shipped_packages_dir([empty, checkout.clone()]),
+            Some(checkout)
+        );
+    }
+
+    #[test]
+    fn shipped_packages_dir_ignores_a_directory_holding_no_archive() {
+        let temp_dir = TempCommandDir::new();
+        let stamp_only = dir_with(&temp_dir, "stamp-only", &["eafc-fc27.ofm.sha256"]);
+        let checkout = dir_with(&temp_dir, "checkout", &["eafc-fc27.ofm"]);
+
+        // The packer writes a digest beside the archive. A half-finished run can leave the
+        // digest without the archive, and that must not read as "the world is here".
+        assert_eq!(
+            first_shipped_packages_dir([stamp_only, checkout.clone()]),
+            Some(checkout)
+        );
+    }
+
+    #[test]
+    fn shipped_packages_dir_is_none_when_no_candidate_holds_a_package() {
+        let temp_dir = TempCommandDir::new();
+        let missing = temp_dir.path().join("never-created");
+        let empty = dir_with(&temp_dir, "empty", &[]);
+
+        // An ordinary build with no shipped world: the game keeps its generated default rather
+        // than failing, which is why this is an Option and not an error.
+        assert_eq!(first_shipped_packages_dir([missing, empty]), None);
     }
 }

@@ -82,10 +82,15 @@ Six rules. CI checks some mechanically; the review requirements and evidence are
    module in the same file; frontend tests are co-located as `*.test.ts(x)`. A PR that adds
    behaviour without a test that would have caught its absence is incomplete.
 
-2. **Every string a *player* reads is translated into every locale the game ships in.** Not just
-   `en.json`. The list is `SUPPORTED_LANGUAGES` in `src/i18n/index.ts`; it grows.
+2. **Every string a *player* reads goes through a translation key, in every locale the game ships
+   in.** Today that is **English only**: `SUPPORTED_LANGUAGES` in `src/i18n/languages.ts` is `en`,
+   and `src/i18n/locales/` holds `en.json` alone. Arabic sits in `UPCOMING_LANGUAGES` and renders as
+   a disabled "Coming soon" row — announced, not selectable, no locale file. A new player-facing
+   string still needs a `t("…")` key and an `en.json` entry, never a literal in a component: the
+   key is what lets a second language land later without hunting through the UI.
    → use [`/add-ui-string`](.claude/skills/add-ui-string/SKILL.md).
-   → enforced by `src/i18n/localeCoverage.test.ts` and `src/i18n/frontendKeyCoverage.test.ts`.
+   → enforced by `src/i18n/frontendKeyCoverage.test.ts` (every literal key exists in `en.json`) and
+   `src/i18n/localeCoverage.test.ts` (the registry and the files on disk name the same languages).
 
    **"A player reads it" is the test, and it is not the same as "a human reads it".** In scope: the
    whole UI, and any backend string that reaches it — a Tauri command's error is a translation key
@@ -102,8 +107,9 @@ Six rules. CI checks some mechanically; the review requirements and evidence are
 
    This is here because reviewers kept raising it as a defect on all three out-of-scope surfaces —
    see the closed threads on #479 (MCP markdown) and #437 (CLI scaffold comments). Both are working
-   as intended. If a surface is genuinely ambiguous, ask rather than translating on spec: a key that
-   no player will ever see still costs twelve translations and a row in every locale file.
+   as intended. If a surface is genuinely ambiguous, ask rather than adding a key on spec: a key no
+   player will ever see still costs a row in `en.json` and a row in every locale file of whatever
+   languages ship when it lands.
 
 3. **`engine` never imports `domain`.** The match engine defines its own mirror types on purpose
    so it can be tested and evolved independently; `ofm_core/turn/` is the only bridge. This is
@@ -242,7 +248,7 @@ Read-only reviewers. Point them at your diff before you open a PR.
 | Agent | What it looks for |
 |-------|-------------------|
 | `ofm-architecture-reviewer` | Crate-boundary violations, layering inversions, SOLID and encapsulation smells, files that should be decomposed |
-| `i18n-auditor` | Untranslated user-facing strings, missing locale keys, `INTENTIONAL_SAME.json` misuse |
+| `i18n-auditor` | User-facing strings that bypass the catalogue, keys missing from `en.json`, wording that cannot be translated later |
 | `ui-accessibility-reviewer` | Hardcoded colours, missing `dark:` pairs, missing focus rings, unlabelled controls, keyboard traps |
 | `ofm-dedup-reviewer` | A helper reimplemented under a new name, a second copy of an ordering or mapping, a modal shell rebuilt from scratch |
 | `ofm-test-reviewer` | Regression effectiveness, discriminating fixtures, mock fidelity, test layers and scenario coverage |
