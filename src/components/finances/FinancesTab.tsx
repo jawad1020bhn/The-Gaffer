@@ -157,7 +157,7 @@ function FinancesTabContent({
       </div>
     ) : (
       <div
-        className="grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1fr)_auto_minmax(0,1.2fr)] gap-4"
+        className="panel-stagger grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1fr)_auto_minmax(0,1.2fr)] gap-4"
         role="status"
         aria-busy="true"
         aria-label={t("common.loading")}
@@ -517,7 +517,7 @@ function FinancesTabLoaded({
   ];
 
   return (
-    <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1fr)_auto_minmax(0,1.2fr)] gap-4">
+    <div className="panel-stagger grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1fr)_auto_minmax(0,1.2fr)] gap-4">
       {/* Archetype A: two headline panels, then the detail behind in-panel tabs. Seven full-width
           sections used to stack into a page that scrolled. Nothing is removed — every section is
           one tab away, which is the brief's second overflow remedy. */}

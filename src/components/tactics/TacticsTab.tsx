@@ -102,7 +102,7 @@ export default function TacticsTab({
   }
 
   return (
-    <div className="grid h-full min-h-0 w-full grid-rows-[auto_auto_minmax(0,1fr)] gap-4">
+    <div className="panel-stagger grid h-full min-h-0 w-full grid-rows-[auto_auto_minmax(0,1fr)] gap-4">
       <div
         ref={dragPreviewRef}
         aria-hidden="true"

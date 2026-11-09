@@ -12,17 +12,13 @@ import {
   Checkbox,
   ConditionMeter,
   CountryFlag,
-  FormDots,
   DataTable,
-  SortHeaderButton,
-  type DataTableColumn,
   DatePicker,
   Dialog,
-  EntityCard,
   DialogCloseButton,
+  EntityCard,
+  FormDots,
   InjuryBadge,
-  UnreadBadge,
-  ViewSwitch,
   JerseyIcon,
   PageToolbar,
   PitchToken,
@@ -32,18 +28,23 @@ import {
   ProgressBar,
   RatingChip,
   SceneBackdrop,
-  type SceneId,
   SceneState,
   SegmentedControl,
   Select,
   SortControl,
-  type SortDirection,
+  SortHeaderButton,
   Switch,
+  TONE_TEXT,
   TabPanel,
   Tabs,
   TeamLocation,
   TeamLogo,
-  TONE_TEXT,
+  Ticker,
+  UnreadBadge,
+  ViewSwitch,
+  type DataTableColumn,
+  type SceneId,
+  type SortDirection,
 } from "../../components/ui";
 import { ChartContainer } from "../../components/ui/charts/ChartContainer";
 import type { ListView } from "../../store/settingsStore";
@@ -927,6 +928,8 @@ const MATERIAL_TOKENS = [
   { token: "--animate-scene-in", use: "the room arriving on a section change (animate-scene-in)" },
   { token: "--animate-panel-in", use: "a panel arriving under it (animate-panel-in)" },
   { token: "--animate-live-pulse", use: "something live, waiting on the player" },
+  { token: "--animate-route-in", use: "arriving at a section (animate-route-in)" },
+  { token: "--stagger-step", use: "gap between panels assembling (panel-stagger)" },
 ];
 
 const SCENE_STRENGTHS = [
@@ -940,6 +943,7 @@ const SCENE_STRENGTHS = [
 }[];
 
 function MaterialsSection() {
+  const [tickerValue, setTickerValue] = useState(16_500_000);
   return (
     <Section title="Materials, depth and scenes">
       <Row>
@@ -987,6 +991,39 @@ function MaterialsSection() {
           <p className="p-3 text-caption text-fg-muted">
             room-fallback — the designed gradient a room falls back to when its plate fails.
           </p>
+        </div>
+      </Row>
+      <Row>
+        <div className="w-full">
+          <p className="mb-2 text-caption text-fg-muted">
+            panel-stagger — a screen assembles top-down on arrival, 35ms apart, once per mount.
+            Reduced motion switches it off without leaving anything invisible.
+          </p>
+          <div className="panel-stagger grid grid-cols-4 gap-3">
+            {["Next match", "Season", "Squad", "Results"].map((label) => (
+              <Card key={label}>
+                <CardBody className="text-caption">{label}</CardBody>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </Row>
+      <Row>
+        <div>
+          <p className="mb-2 text-caption text-fg-muted">
+            Ticker — a figure counts to its new value; the box never reflows.
+          </p>
+          <p className="font-heading text-display font-bold text-fg">
+            <Ticker value={tickerValue} format={(n) => `€${(n / 1_000_000).toFixed(1)}M`} />
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="mt-2"
+            onClick={() => setTickerValue((v) => v + 2_500_000)}
+          >
+            advance
+          </Button>
         </div>
       </Row>
       <Row>

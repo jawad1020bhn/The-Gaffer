@@ -240,7 +240,7 @@ export default function HomeTab({
 
   if (!myTeam) {
     return (
-      <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1.55fr)_minmax(0,1.1fr)_minmax(0,1fr)] gap-4">
+      <div className="panel-stagger grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1.55fr)_minmax(0,1.1fr)_minmax(0,1fr)] gap-4">
         <div className="grid gap-3 lg:grid-cols-3">
           <HomeLeaguePositionCard
             isPreseason={isPreseason}
@@ -267,7 +267,8 @@ export default function HomeTab({
   }
 
   return (
-    <div className="scrollbar-thin flex h-full min-h-0 flex-col gap-3 overflow-y-auto">
+    // The three bands assemble top-down on arrival, 35ms apart.
+    <div className="panel-stagger scrollbar-thin flex h-full min-h-0 flex-col gap-3 overflow-y-auto">
       {/* Band 1 — the next fixture, the season's state, the table. */}
       <div className="col-span-12 grid min-h-0 grid-cols-12 grid-rows-1 gap-4">
         {/* The next fixture is the one panel that carries a room: the crowd survives across the

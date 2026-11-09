@@ -33,3 +33,4 @@ export { ViewSwitch } from "./ViewSwitch";
 export { SceneBackdrop } from "./SceneBackdrop";
 export type { SceneId } from "./SceneBackdrop";
 export { SceneState } from "./SceneState";
+export { Ticker } from "./Ticker";

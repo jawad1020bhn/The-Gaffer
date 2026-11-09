@@ -1,12 +1,13 @@
 import type { GameStateData } from "../../store/gameStore";
 import {
   Card,
-  CardHeader,
   CardBody,
-  ProgressBar,
+  CardHeader,
   CountryFlag,
+  ProgressBar,
   SceneBackdrop,
   SceneState,
+  Ticker,
 } from "../ui";
 import { ManagerCareerChart } from "./ManagerCareerChart";
 import { formatDate } from "../../lib/helpers";
@@ -55,7 +56,7 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
   const stats = mgr.career_stats;
 
   return (
-    <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[auto_minmax(0,1fr)_minmax(0,1.4fr)] gap-4">
+    <div className="panel-stagger grid h-full min-h-0 grid-cols-12 grid-rows-[auto_minmax(0,1fr)_minmax(0,1.4fr)] gap-4">
       {/* Profile card */}
       <Card accent="primary" className="relative isolate col-span-12">
         <SceneBackdrop scene="career" strength="hero" />
@@ -290,7 +291,9 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
 function StatBlock({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="flex flex-col items-center justify-center gap-1 rounded-control bg-sunken surface-well p-3 text-center shadow-well">
-      <p className="font-heading text-display font-bold text-fg tabular-nums">{value}</p>
+      <p className="font-heading text-display font-bold text-fg tabular-nums">
+        {typeof value === "number" ? <Ticker value={value} /> : value}
+      </p>
       <p className="text-caption text-fg-subtle font-heading uppercase tracking-label mt-0.5">
         {label}
       </p>

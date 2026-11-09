@@ -260,6 +260,10 @@
   --animate-panel-in: panel-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
   /* Something live and waiting on the player: a slow breathing halo, never a blink. */
   --animate-live-pulse: live-pulse 2.4s ease-in-out infinite;
+  /* Changing section. Quicker than a panel because the whole screen moves at once. */
+  --animate-route-in: route-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Gap between one panel arriving and the next. 35ms reads as assembled, not as a wait. */
+  --stagger-step: 35ms;
 }
 
 /* A club's kit on an entity card, from the --kit and --kit-2 variables kitStyle() sets on the card.
@@ -345,6 +349,43 @@
 
 @utility scroll-fade {
   mask-image: linear-gradient(180deg, black calc(100% - 0.75rem), transparent 100%);
+}
+
+/* A screen assembles top-down on arrival.
+ *
+ * Applied to the grid that holds a screen's panels, not to each panel: the delay comes from the
+ * child's position, so no component needs to know its own index. Because tab content remounts on
+ * navigation, this runs once per arrival at a screen and never again while you interact with it —
+ * the brief's "first load only". Caps at eight panels so a long screen does not crawl in.
+ */
+@utility panel-stagger {
+  & > * {
+    animation: panel-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  & > *:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  & > *:nth-child(2) {
+    animation-delay: var(--stagger-step);
+  }
+  & > *:nth-child(3) {
+    animation-delay: calc(var(--stagger-step) * 2);
+  }
+  & > *:nth-child(4) {
+    animation-delay: calc(var(--stagger-step) * 3);
+  }
+  & > *:nth-child(5) {
+    animation-delay: calc(var(--stagger-step) * 4);
+  }
+  & > *:nth-child(6) {
+    animation-delay: calc(var(--stagger-step) * 5);
+  }
+  & > *:nth-child(7) {
+    animation-delay: calc(var(--stagger-step) * 6);
+  }
+  & > *:nth-child(n + 8) {
+    animation-delay: calc(var(--stagger-step) * 7);
+  }
 }
 
 /* One lit hairline along the top of a part. The cheapest depth cue there is. */
@@ -889,6 +930,19 @@
   }
 }
 
+/* Arriving at a section: the screen fades and settles a few pixels. Short, because the panels
+   inside it are staggering too and the two must not read as one long animation. */
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Live and waiting on the player. Breathes the halo only — the label never moves or blinks. */
 @keyframes live-pulse {
   0%,
@@ -904,8 +958,17 @@
   .match-stage-in,
   .animate-scene-in,
   .animate-panel-in,
+  .animate-route-in,
   .animate-live-pulse {
     animation: none;
+  }
+
+  /* Nothing may stay invisible when the animation is switched off: `both` would otherwise hold
+     the first keyframe's opacity: 0 forever. */
+  .panel-stagger > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 

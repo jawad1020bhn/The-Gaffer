@@ -300,7 +300,46 @@ browser is available there. It needs a dev server and a Chromium; neither is add
 
 ---
 
-## 9. NOT done — the remaining work
+## 9. Game feel — motion, tickers and the sound hook
+
+**Route transition.** The workspace is keyed by tab and carries `animate-route-in` — 180ms fade plus
+a 4px settle. Verified firing on every navigation (`animationName: route-in`, `0.18s`).
+
+**Panel stagger.** New `panel-stagger` utility: the container's children arrive 35ms apart, capped at
+eight so a long screen does not crawl in. The delay comes from `:nth-child`, so no component has to
+know its own index. Because tab content remounts on navigation it runs **once per arrival** and never
+again while you interact — the brief's "first load only". Applied to Home, Manager, News, Finances
+and Tactics.
+
+Verified in Chromium at 1600×900:
+
+| | children | delays | animation | invisible after settle |
+| --- | --- | --- | --- | --- |
+| Normal | 3 bands | 0 / 35 / 70ms | `panel-in` | **0** |
+| `prefers-reduced-motion: reduce` | 3 bands | 0 / 0 / 0 | `none` | **0** |
+
+That second row is the one that matters: the keyframes use `fill-mode: both`, which would otherwise
+hold `opacity: 0` forever once the animation is switched off. The reduced-motion block explicitly
+restores `opacity: 1` and `transform: none`.
+
+**Number tickers.** New `<Ticker>` counts a figure to its new value on `requestAnimationFrame` with an
+ease-out, formatting every intermediate frame so money stays money mid-count. Only the digits move —
+the box is fixed and uses tabular numerals, so a changing figure never reflows its panel. First render
+shows the value as-is (a screen arriving should not count up from zero); reduced motion jumps
+straight to the target. Wired into Manager's career statistics; 5 component tests.
+
+**Central UI-sound hook.** `useUiSound()` returns a typed `play(sound)`. It is **deliberately silent** —
+shipping audio would mean adding assets and a playback path nobody approved, and §12 forbids new
+dependencies. The call sites are real (both Continue buttons fire `advance`), so making it audible
+later is one file's work. The hook's doc comment says how.
+
+**Continue's press.** It already had an advancing state ("Simulating", pulsing chevron,
+`cursor-wait`); it was missing the press feedback every other button has. Added
+`active:translate-y-px` with the same 150ms timing, disabled under reduced motion.
+
+---
+
+## 10. NOT done — the remaining work
 
 Honest list, in the brief's own order:
 
@@ -316,9 +355,11 @@ states).
   decision, not outstanding work.
 - **2560×1440 plate variants.** Sources are 1915–2172px wide; upscaling would add weight for no
   detail. Shipped one size at native resolution instead.
-- **Ken Burns drift**, **panel stagger on first load**, **route transitions**, **number tickers**.
-- **UI-sound hook** (the no-op central hook).
-- **Arrow-key navigation between panels**, slide-over drawers, and the modal/drawer split.
+- **Ken Burns drift** on the room plates.
+- **Arrow-key navigation between panels**, slide-over drawers, and the modal/drawer split. Tab order
+  and Esc already work; roving arrow keys do not.
+- **Ticker coverage** — the component exists and is used on Manager's stats. Money and league
+  figures elsewhere still jump.
 - **`backdrop-filter` hero panels** — skipped deliberately; §3 caps them at 1–3 per screen and
   warns about WebKitGTK cost, and no screen has needed one yet.
 - **Contrast audit across all text.** The Manager name is fixed and the root-size floor is

@@ -189,7 +189,7 @@ export default function NewsTab({ gameState, onSelectTeam }: NewsTabProps) {
   }
 
   return (
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto_auto] gap-4">
+    <div className="panel-stagger grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto_auto] gap-4">
       {/* Filters row */}
       <div className="flex items-center gap-2 flex-wrap">
         {/* Category pills */}

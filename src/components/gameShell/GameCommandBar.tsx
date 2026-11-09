@@ -2,6 +2,7 @@ import { ChevronDown, ChevronRight, Loader2, Save } from "lucide-react";
 import type { JSX, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { MatchModeType } from "../../hooks/useAdvanceTime";
+import { useUiSound } from "../../hooks/useUiSound";
 
 export interface DashboardMatchModeMeta {
   desc: string;
@@ -30,7 +31,7 @@ const FOCUS_RING =
   "focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-chrome";
 const MENU_FOCUS =
   "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus";
-const FORWARD_ACTION = `flex h-10 items-center gap-2 bg-selected font-heading text-body font-bold uppercase tracking-label text-on-brand transition-colors hover:cursor-pointer hover:bg-selected/90 motion-reduce:transition-none ${FOCUS_RING}`;
+const FORWARD_ACTION = `flex h-10 items-center gap-2 bg-selected font-heading text-body font-bold uppercase tracking-label text-on-brand transition-all duration-150 active:translate-y-px hover:cursor-pointer hover:bg-selected/90 motion-reduce:transition-none motion-reduce:active:translate-y-0 ${FOCUS_RING}`;
 
 function saveButtonClassName(saveFlash: boolean, isSaving: boolean): string {
   const state = saveFlash
@@ -91,6 +92,7 @@ export default function GameCommandBar({
   showContinueMenu,
 }: GameCommandBarProps): JSX.Element {
   const { t } = useTranslation();
+  const playSound = useUiSound();
   const currentModeMeta = modeMeta[matchMode];
   const saveLabel = saveButtonLabel(t, saveFlash, isSaving);
 
@@ -110,7 +112,10 @@ export default function GameCommandBar({
       {isUnemployed ? (
         <button
           type="button"
-          onClick={onContinue}
+          onClick={() => {
+            playSound("advance");
+            onContinue();
+          }}
           disabled={isAdvancing}
           className={`${FORWARD_ACTION} gap-1.5 rounded-control px-4 disabled:cursor-wait disabled:opacity-70`}
         >
@@ -122,7 +127,10 @@ export default function GameCommandBar({
           <div className="flex">
             <button
               type="button"
-              onClick={onContinue}
+              onClick={() => {
+                playSound("advance");
+                onContinue();
+              }}
               disabled={isAdvancing || seasonComplete}
               className={`${FORWARD_ACTION} rounded-r-none pl-4 pr-3 disabled:cursor-wait disabled:opacity-70`}
             >
