@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Badge } from "./Badge";
 
 interface CardProps {
   children: ReactNode;
@@ -26,7 +27,7 @@ export function Card({ children, className = "", accent = "none" }: CardProps) {
     <div
       className={`
         flex min-h-0 flex-col overflow-hidden
-        bg-panel surface-panel
+        bg-panel-glass surface-panel
         ${accent === "none" ? accentBorder : `border ${accentBorder} border-line`}
         rounded-panel shadow-panel
         transition-shadow duration-200 motion-reduce:transition-none
@@ -41,6 +42,8 @@ export function Card({ children, className = "", accent = "none" }: CardProps) {
 interface CardHeaderProps {
   children: ReactNode;
   action?: ReactNode;
+  /** A count beside the title — messages, reports, results. Drawn as a badge, not in the title. */
+  count?: number;
   className?: string;
   /**
    * The header's band of its own colour. On by default. Turn it off when the card carries a
@@ -51,13 +54,24 @@ interface CardHeaderProps {
   banded?: boolean;
 }
 
-export function CardHeader({ children, action, className = "", banded = true }: CardHeaderProps) {
+export function CardHeader({
+  children,
+  action,
+  count,
+  className = "",
+  banded = true,
+}: CardHeaderProps) {
   return (
     <div
       className={`flex shrink-0 items-center justify-between gap-3 border-b border-line ${banded ? "bg-card-band" : ""} edge-lit px-4 py-2.5 ${className}`}
     >
       <h3 className="flex min-w-0 items-center gap-2 text-lead font-bold font-heading uppercase tracking-label text-fg [&>svg]:shrink-0">
         {children}
+        {count !== undefined ? (
+          <Badge variant="neutral" size="sm" className="shrink-0 font-sans tabular-nums">
+            {count}
+          </Badge>
+        ) : null}
       </h3>
       {action}
     </div>
@@ -79,7 +93,26 @@ interface CardBodyProps {
 export function CardBody({ children, className = "", padded = true }: CardBodyProps) {
   return (
     <div
-      className={`scrollbar-thin min-h-0 flex-1 overflow-auto ${padded ? "p-4" : ""} ${className}`}
+      className={`scrollbar-thin scroll-fade min-h-0 flex-1 overflow-auto ${padded ? "p-4" : ""} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+interface CardFooterProps {
+  children: ReactNode;
+  className?: string;
+}
+
+/**
+ * A panel's footer: a summary line or a quick action that belongs to the panel rather than to the
+ * screen. Stays put while the body scrolls, so it is always reachable.
+ */
+export function CardFooter({ children, className = "" }: CardFooterProps) {
+  return (
+    <div
+      className={`flex shrink-0 items-center gap-2 border-t border-line bg-card-band px-4 py-2 ${className}`}
     >
       {children}
     </div>

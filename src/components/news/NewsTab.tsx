@@ -14,6 +14,7 @@ import {
   Filter,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { newsCategoryLabel } from "../../lib/newsCategory";
 import { resolveNewsArticle } from "../../utils/backendI18n";
 import ContextMenu, { type ContextMenuItem } from "../ContextMenu";
 import { buildViewTeamMenuItem } from "../playerActions/playerContextMenuItems";
@@ -224,7 +225,7 @@ export default function NewsTab({ gameState, onSelectTeam }: NewsTabProps) {
                 : "bg-hover text-fg-muted hover:bg-hover"
             }`}
           >
-            {t(`news.categories.${cat}`)}
+            {newsCategoryLabel(t, cat)}
           </button>
         ))}
 
@@ -330,7 +331,7 @@ function HeroArticle({
     icon: CAT_ICONS[article.category] || <FileText className="w-4 h-4" />,
     color: CAT_COLORS[article.category] || "text-fg-muted",
     bg: CAT_BG[article.category] || "bg-hover",
-    label: t(`news.categories.${article.category}`),
+    label: newsCategoryLabel(t, article.category),
   };
 
   const articleButton = (
@@ -425,7 +426,7 @@ function ArticleCard({
     icon: CAT_ICONS[article.category] || <FileText className="w-4 h-4" />,
     color: CAT_COLORS[article.category] || "text-fg-muted",
     bg: CAT_BG[article.category] || "bg-hover",
-    label: t(`news.categories.${article.category}`),
+    label: newsCategoryLabel(t, article.category),
   };
 
   const articleButton = (
@@ -504,7 +505,7 @@ function ArticleDetail({
     icon: CAT_ICONS[article.category] || <FileText className="w-4 h-4" />,
     color: CAT_COLORS[article.category] || "text-fg-muted",
     bg: CAT_BG[article.category] || "bg-hover",
-    label: t(`news.categories.${article.category}`),
+    label: newsCategoryLabel(t, article.category),
   };
 
   return (

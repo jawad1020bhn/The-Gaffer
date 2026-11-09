@@ -4,7 +4,7 @@ import { isTauri } from "@tauri-apps/api/core";
 import { useSettingsStore } from "./store/settingsStore";
 import i18n, { changeAppLanguage } from "./i18n";
 import { formatAppVersion } from "./lib/appVersion";
-import { rootFontSizeFor } from "./lib/uiScale";
+import { uiScaleValue } from "./lib/uiScale";
 import { densityClassFor } from "./lib/uiDensity";
 import "./App.css";
 
@@ -47,8 +47,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const size = rootFontSizeFor(settings.ui_scale);
-    document.documentElement.style.fontSize = size;
+    document.documentElement.style.setProperty("--ui-scale", uiScaleValue(settings.ui_scale));
   }, [settings.ui_scale]);
 
   useEffect(() => {

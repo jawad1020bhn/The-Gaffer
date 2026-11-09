@@ -5,6 +5,7 @@ import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { i18nReady } from "./i18n";
 import { formatAppVersion } from "./lib/appVersion";
 import { installConsoleForwarding, logError, logInfo } from "./lib/logger";
+import { installNativeChrome } from "./lib/nativeChrome";
 import App from "./App";
 
 // First, before anything else can fail: from here on `console.error` and `console.warn` also land
@@ -12,6 +13,10 @@ import App from "./App";
 // marking the places it expected trouble, and until now every one of them wrote to a devtools
 // console that nobody on a player's machine has open.
 installConsoleForwarding();
+
+// Before React mounts: the webview must never reload, zoom or offer a browser menu, whatever
+// screen ends up on it.
+installNativeChrome();
 
 // Two jobs in one line. It stamps the build identity into the log file, which until now recorded
 // nothing about which version produced it — leaving a triager to ask. And because it is written

@@ -232,7 +232,13 @@
 
   /* The wash between a scene photograph and the panels on top of it. Opaque enough that body text
      on a panel never competes with the image, transparent enough that the scene still reads. */
-  --color-veil: rgb(243 244 246 / 0.86);
+  --color-veil: rgb(243 244 246 / 0.7);
+  /* The shared grade: every room is pulled toward one lime-teal cast so a salvaged banner and a
+     new render read as the same building. Applied as a colour overlay, never as a fill. */
+  --color-room-tint: rgb(120 190 150 / 0.12);
+  /* A panel is a surface over the room, not a hole punched in it. Slightly translucent so the
+     room's light survives under it, opaque enough that body text never competes with the image. */
+  --color-panel-glass: rgb(255 255 255 / 0.92);
   /* The bevel. A raised edge catches light along the top and falls into shadow along the bottom. */
   --color-edge-light: rgb(255 255 255 / 0.5);
   --color-edge-dark: rgb(15 23 42 / 0.18);
@@ -321,6 +327,15 @@
   background-repeat: repeat;
 }
 
+/*
+ * A contained scroll area announces itself. The last few pixels of the body fade out, so a list
+ * that continues past the panel edge reads as "more below" rather than as a card clipped mid-row.
+ * The fade sits over the padding when the content fits, where it costs nothing.
+ */
+@utility scroll-fade {
+  mask-image: linear-gradient(180deg, black calc(100% - 0.75rem), transparent 100%);
+}
+
 /* One lit hairline along the top of a part. The cheapest depth cue there is. */
 @utility edge-lit {
   box-shadow: inset 0 1px 0 var(--color-edge-light);
@@ -345,7 +360,8 @@
  */
 @utility scene-plate {
   object-fit: cover;
-  filter: saturate(0.5) contrast(1.08) brightness(0.86);
+  object-position: var(--room-focus, 50% 50%);
+  filter: saturate(0.72) contrast(1.04) brightness(1.02);
 }
 
 /* Anchors a plate to its subject when the frame is crueller than the image's aspect. Used where a
@@ -372,10 +388,58 @@
 @utility scene-veil-panel {
   background-image: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--color-page) 42%, transparent) 0%,
-    color-mix(in srgb, var(--color-page) 88%, transparent) 44%,
-    var(--color-page) 100%
+    color-mix(in srgb, var(--color-page) 18%, transparent) 0%,
+    color-mix(in srgb, var(--color-page) 74%, transparent) 46%,
+    color-mix(in srgb, var(--color-page) 94%, transparent) 100%
   );
+}
+
+/* The shared colour grade. `color` blend keeps the room's luminance and takes only its hue, so
+   one cast unifies a dusk crowd, a cold training pitch and a warm boardroom without flattening
+   any of them. */
+@utility room-tint {
+  background-color: var(--color-room-tint);
+  mix-blend-mode: color;
+}
+
+/*
+ * The readability scrim. Light at the top, where the room's window zone is, heavier toward the
+ * bottom where the dense panels sit. This replaces the old flat 82% wash that crushed every room
+ * to black: open areas now hold roughly a third of the plate's brightness, which is enough to
+ * read as a place, and text still only ever sits on a panel.
+ */
+@utility room-scrim-ambient {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-page) 26%, transparent) 0%,
+    color-mix(in srgb, var(--color-page) 44%, transparent) 46%,
+    color-mix(in srgb, var(--color-page) 70%, transparent) 100%
+  );
+}
+
+/*
+ * The designed fallback, for a plate that fails to load or a room with no plate yet. A graphite
+ * depth gradient with a faint pitch grid — never a flat colour, so a missing image degrades to a
+ * designed surface rather than to a void.
+ */
+@utility room-fallback {
+  background-color: var(--color-page);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 63px,
+      color-mix(in srgb, var(--color-line) 40%, transparent) 63px 64px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 63px,
+      color-mix(in srgb, var(--color-line) 28%, transparent) 63px 64px
+    ),
+    radial-gradient(
+      120% 90% at 72% 18%,
+      color-mix(in srgb, var(--color-panel) 90%, transparent) 0%,
+      var(--color-page) 70%
+    );
 }
 
 /* Pulls the corners of a scene down so panels in the middle of the stage carry the eye. */
@@ -388,6 +452,55 @@
 }
 
 @layer base {
+  /*
+   * The window is a fixed canvas. Nothing above the content area may scroll: a page scrollbar is
+   * the loudest website tell there is, and each panel owns its own overflow instead.
+   */
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  /*
+   * One rem of root per 100px of window: 16px at 1600, 19.2px at 1920. The floor is a legibility
+   * rule — caption is 0.75rem and must stay at or above 11px, so the root never drops below
+   * 14.667px (body lands at 12.83px). --ui-scale is the player's setting; the clamp means neither
+   * a small window nor the "small" setting can push text under the minimum. The ceiling stops a
+   * 4K window rendering a 38px root. See src/lib/uiScale.ts.
+   */
+  html {
+    font-size: clamp(14.667px, calc(100vw / 100 * var(--ui-scale, 1)), 22px);
+  }
+
+  /* Chrome is not text the player reads with a cursor. Fields and anything marked copyable are. */
+  body {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+  }
+
+  input,
+  textarea,
+  [contenteditable="true"],
+  [data-copyable] {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  input,
+  textarea,
+  [contenteditable="true"] {
+    cursor: text;
+  }
+
+  /* A scene plate or a crest is not draggable out of the window. */
+  img {
+    -webkit-user-drag: none;
+  }
+
   .dark {
     color-scheme: dark;
 
@@ -409,7 +522,9 @@
     --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 12px 28px -16px rgb(0 0 0 / 0.85);
     /* The night presentation: the veil is the page colour, bevels are a thin lit top edge over a
        black underside, and the one lime accent is the only thing in the room that emits light. */
-    --color-veil: rgb(11 15 18 / 0.82);
+    --color-veil: rgb(11 15 18 / 0.5);
+    --color-room-tint: rgb(150 220 140 / 0.14);
+    --color-panel-glass: rgb(18 24 29 / 0.9);
     --color-edge-light: rgb(255 255 255 / 0.07);
     --color-edge-dark: rgb(0 0 0 / 0.55);
     --color-glow: rgb(200 244 90 / 0.28);

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { setGameKeysOwned } from "../../lib/nativeChrome";
 
 /** What the keyboard asks the shell to do, before any screen hears about it. */
 export type GameHotkey =
@@ -94,6 +95,10 @@ export function useGameHotkeys(handlers: GameHotkeyHandlers, enabled = true): vo
   useEffect(() => {
     if (!enabled) return;
 
+    // Tell the native hardening these keys are spoken for, so it does not preventDefault them
+    // out from under this listener. Released on unmount and whenever an overlay takes the keys.
+    setGameKeysOwned(true);
+
     function onKeyDown(event: KeyboardEvent): void {
       const hotkey = gameHotkeyFor(event);
       if (!hotkey) return;
@@ -123,6 +128,9 @@ export function useGameHotkeys(handlers: GameHotkeyHandlers, enabled = true): vo
     }
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      setGameKeysOwned(false);
+    };
   }, [enabled]);
 }

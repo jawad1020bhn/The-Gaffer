@@ -1,5 +1,5 @@
 import type { ListView } from "../../store/settingsStore";
-import { rootFontSizeFor, type UiScale } from "../../lib/uiScale";
+import { uiScaleValue, type UiScale } from "../../lib/uiScale";
 
 /**
  * The guide keeps its theme under its own key: it runs on the same dev origin as the app, and
@@ -12,7 +12,7 @@ export interface StyleGuideOptions {
   density: "comfortable" | "compact";
   scale: UiScale;
   highContrast: boolean;
-  rootFontSize: string;
+  uiScale: string;
   dialogOpen: boolean;
   /** The page harness's lists open in this view (`?view=cards`); the game's default otherwise. */
   listView: ListView;
@@ -35,7 +35,7 @@ export function applyStyleGuideOptions(
   root.classList.add("dark");
   root.classList.toggle("density-compact", options.density === "compact");
   root.classList.toggle("high-contrast", options.highContrast);
-  root.style.fontSize = options.rootFontSize;
+  root.style.setProperty("--ui-scale", options.uiScale);
   storage.setItem(STYLE_GUIDE_THEME_KEY, options.theme);
 }
 
@@ -52,7 +52,7 @@ export function readStyleGuideOptions(search: string): StyleGuideOptions {
     density: pick(params.get("density"), ["comfortable", "compact"] as const, "comfortable"),
     scale,
     highContrast: params.get("contrast") === "high",
-    rootFontSize: rootFontSizeFor(scale),
+    uiScale: uiScaleValue(scale),
     dialogOpen: params.get("dialog") === "open",
     listView: pick<ListView>(params.get("view"), ["table", "cards"], "table"),
   };

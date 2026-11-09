@@ -7,6 +7,7 @@ import { ThemeProvider } from "../../context/ThemeContext";
 import { i18nReady } from "../../i18n";
 import { StyleGuide } from "./StyleGuide";
 import { applyStyleGuideOptions, readStyleGuideOptions } from "./styleGuideOptions";
+import { uiScaleValue } from "../../lib/uiScale";
 
 const SOURCES = import.meta.glob(["../../components/ui/index.ts", "./StyleGuide.tsx"], {
   query: "?raw",
@@ -110,7 +111,7 @@ describe("style guide", () => {
       density: "compact",
       scale: "xlarge",
       highContrast: true,
-      rootFontSize: "20px",
+      uiScale: uiScaleValue("xlarge"),
       dialogOpen: true,
       listView: "cards",
     });
@@ -123,7 +124,7 @@ describe("style guide", () => {
       listView: "table",
       density: "comfortable",
       scale: "normal",
-      rootFontSize: "16px",
+      uiScale: uiScaleValue("normal"),
       highContrast: false,
     });
   });
@@ -184,13 +185,13 @@ describe("style guide", () => {
       storage,
     );
     expect([...root.classList].sort()).toEqual(["dark", "density-compact", "high-contrast"]);
-    expect(root.style.fontSize).toBe("20px");
+    expect(root.style.getPropertyValue("--ui-scale")).toBe(uiScaleValue("xlarge"));
     expect(stored.get("ofm-style-guide-theme")).toBe("dark");
     expect(stored.has("ofm-theme")).toBe(false);
 
     applyStyleGuideOptions(readStyleGuideOptions(""), root, storage);
     expect([...root.classList]).toEqual(["dark"]);
-    expect(root.style.fontSize).toBe("16px");
+    expect(root.style.getPropertyValue("--ui-scale")).toBe(uiScaleValue("normal"));
     expect(stored.get("ofm-style-guide-theme")).toBe("dark");
   });
 });

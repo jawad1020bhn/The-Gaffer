@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { TeamData } from "../../store/gameStore";
-import { Card, CardBody, CardHeader, TeamLogo } from "../ui";
+import { Button, Card, CardBody, CardHeader, SceneState, TeamLogo } from "../ui";
 import type { HomeRecentResult } from "./HomeTab.helpers";
 
 interface HomeRecentResultsCardProps {
@@ -38,7 +38,19 @@ export default function HomeRecentResultsCard({
       </CardHeader>
       <CardBody padded={false}>
         {recentResults.length === 0 ? (
-          <p className="text-fg-muted text-caption p-5">{t("home.noMatches")}</p>
+          <SceneState
+            title={t("home.noMatches")}
+            detail={t(
+              "home.noMatchesYetDetail",
+              "Your results will appear here after the first match.",
+            )}
+            action={
+              <Button size="sm" variant="outline" onClick={() => onNavigate?.("Schedule")}>
+                {t("dashboard.schedule")}
+              </Button>
+            }
+            className="m-3"
+          />
         ) : (
           <div className="divide-y divide-line">
             {recentResults

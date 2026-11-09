@@ -2,9 +2,11 @@ import { AlertTriangle, Dumbbell } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type { RatedTone } from "../../store/types";
-import { Card, CardBody, CardHeader, ProgressBar } from "../ui";
+import { Card, CardBody, CardFooter, CardHeader, ProgressBar } from "../ui";
 
 interface HomeSquadOverviewCardProps {
+  /** A summary line pinned under the body — player momentum lives here, not in a crushed band. */
+  footer?: React.ReactNode;
   /** Null until the backend answers, and when no healthy first-team player can be averaged. */
   avgCondition: number | null;
   /** The backend's tone for the average; null leaves its bar neutral. */
@@ -30,6 +32,7 @@ export default function HomeSquadOverviewCard({
   focus,
   onNavigate,
   className = "",
+  footer,
 }: HomeSquadOverviewCardProps) {
   const { t } = useTranslation();
 
@@ -93,6 +96,7 @@ export default function HomeSquadOverviewCard({
           </div>
         </div>
       </CardBody>
+      {footer ? <CardFooter>{footer}</CardFooter> : null}
     </Card>
   );
 }

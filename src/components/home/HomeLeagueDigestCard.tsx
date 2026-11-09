@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { newsCategoryLabel } from "../../lib/newsCategory";
 
 import { formatDateShort } from "../../lib/helpers";
 import type { NewsArticle } from "../../store/gameStore";
@@ -48,7 +49,7 @@ export default function HomeLeagueDigestCard({
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   <Badge variant="neutral" size="sm">
-                    {t(`news.categories.${article.category}`)}
+                    {newsCategoryLabel(t, article.category)}
                   </Badge>
                   <span className="text-caption text-fg-subtle">
                     {formatDateShort(article.date, lang)} - {article.source}

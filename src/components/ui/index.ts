@@ -1,4 +1,4 @@
-export { Card, CardHeader, CardBody } from "./Card";
+export { Card, CardHeader, CardBody, CardFooter } from "./Card";
 export { Button } from "./Button";
 export { Badge } from "./Badge";
 export { ProgressBar } from "./ProgressBar";

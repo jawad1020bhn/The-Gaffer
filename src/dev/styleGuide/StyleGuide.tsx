@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardGrid,
   CardHeader,
   Checkbox,
@@ -913,6 +914,8 @@ function DialogSection({ open }: { open: boolean }) {
  */
 const MATERIAL_TOKENS = [
   { token: "--color-veil", use: "the wash between a scene and the panels on it (bg-veil)" },
+  { token: "--color-room-tint", use: "the shared lime-teal grade every room takes (room-tint)" },
+  { token: "--color-panel-glass", use: "a panel over a room, 90% opaque (bg-panel-glass)" },
   { token: "--color-edge-light", use: "the lit top edge of a raised part (edge-lit)" },
   { token: "--color-edge-dark", use: "the shaded underside of a raised part" },
   { token: "--color-glow", use: "the accent as emitted light, not pigment" },
@@ -968,6 +971,22 @@ function MaterialsSection() {
         <div className="flex w-56 flex-col items-start gap-2 rounded-panel border border-line bg-panel surface-panel p-3 shadow-raised">
           <p className="text-body text-fg">shadow-raised · edge-lit</p>
           <Button className="animate-live-pulse motion-reduce:animate-none">live</Button>
+        </div>
+      </Row>
+      <Row>
+        <Card className="w-72">
+          <CardHeader count={4}>messages</CardHeader>
+          <CardBody>
+            <p className="text-body text-fg">A header count, and a footer that stays put.</p>
+          </CardBody>
+          <CardFooter>
+            <span className="text-caption text-fg-muted">CardFooter</span>
+          </CardFooter>
+        </Card>
+        <div className="relative isolate h-40 w-72 overflow-hidden rounded-panel border border-line room-fallback">
+          <p className="p-3 text-caption text-fg-muted">
+            room-fallback — the designed gradient a room falls back to when its plate fails.
+          </p>
         </div>
       </Row>
       <Row>

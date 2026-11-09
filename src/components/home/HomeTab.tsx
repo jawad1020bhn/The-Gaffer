@@ -1,4 +1,4 @@
-import { Swords } from "lucide-react";
+import { Swords, TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSquadFitness } from "../../hooks/useSquadFitness";
 import type { GameStateData } from "../../store/gameStore";
@@ -19,7 +19,6 @@ import HomeLeagueDigestCard from "./HomeLeagueDigestCard";
 import HomeLeaguePositionCard from "./HomeLeaguePositionCard";
 import HomeLatestNewsCard from "./HomeLatestNewsCard";
 import HomeOnboardingChecklistCard from "./HomeOnboardingChecklistCard";
-import HomePlayerMomentumCard from "./HomePlayerMomentumCard";
 import HomeRecentMessagesCard from "./HomeRecentMessagesCard";
 import HomeRecentResultsCard from "./HomeRecentResultsCard";
 import HomeSquadOverviewCard from "./HomeSquadOverviewCard";
@@ -214,9 +213,34 @@ export default function HomeTab({
   );
   const hasMomentum = roster.length > 0 && (hotPlayers.length > 0 || coldPlayers.length > 0);
 
+  /**
+   * Momentum is a line under the squad's figures, not a band of its own. It was a fourth row that
+   * pushed the page past the window and left half the row empty; as a footer it sits with the
+   * numbers it explains and costs no height the core panels need.
+   */
+  const momentumFooter = hasMomentum ? (
+    <div className="flex min-w-0 flex-1 items-center gap-3 text-caption">
+      <span className="shrink-0 font-heading font-bold uppercase tracking-label text-fg-subtle">
+        {t("home.playerMomentum")}
+      </span>
+      {hotPlayers.length > 0 ? (
+        <span className="flex min-w-0 items-center gap-1 text-fg">
+          <TrendingUp className="h-3 w-3 shrink-0 text-positive" aria-hidden="true" />
+          <span className="truncate">{hotPlayers[0].full_name}</span>
+        </span>
+      ) : null}
+      {coldPlayers.length > 0 ? (
+        <span className="flex min-w-0 items-center gap-1 text-fg">
+          <TrendingDown className="h-3 w-3 shrink-0 text-danger" aria-hidden="true" />
+          <span className="truncate">{coldPlayers[0].full_name}</span>
+        </span>
+      ) : null}
+    </div>
+  ) : null;
+
   if (!myTeam) {
     return (
-      <div className="scrollbar-thin flex h-full min-h-0 flex-col gap-3 overflow-y-auto">
+      <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1.55fr)_minmax(0,1.1fr)_minmax(0,1fr)] gap-4">
         <div className="grid gap-3 lg:grid-cols-3">
           <HomeLeaguePositionCard
             isPreseason={isPreseason}
@@ -245,10 +269,10 @@ export default function HomeTab({
   return (
     <div className="scrollbar-thin flex h-full min-h-0 flex-col gap-3 overflow-y-auto">
       {/* Band 1 — the next fixture, the season's state, the table. */}
-      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-hero xl:[@media(max-height:820px)]:h-band-hero-compact [@media(max-height:820px)]:gap-y-2">
+      <div className="col-span-12 grid min-h-0 grid-cols-12 grid-rows-1 gap-4">
         {/* The next fixture is the one panel that carries a room: the crowd survives across the
             header and is gone by the time the team names start. */}
-        <Card accent="primary" className="relative isolate lg:col-span-6 xl:col-span-4">
+        <Card accent="primary" className="relative isolate col-span-5">
           <SceneBackdrop scene="competitions" strength="panel" />
           <CardHeader
             banded={false}
@@ -277,14 +301,14 @@ export default function HomeTab({
             transferWindowOpensOn={transferWindow.opens_on}
             transferWindowClosesOn={transferWindow.closes_on}
             lang={lang}
-            className="lg:col-span-6 xl:col-span-4"
+            className="col-span-4"
           />
         ) : (
           <HomeLeagueDigestCard
             articles={leagueDigestArticles}
             lang={lang}
             onNavigate={onNavigate}
-            className="lg:col-span-6 xl:col-span-4"
+            className="col-span-4"
           />
         )}
 
@@ -296,12 +320,12 @@ export default function HomeTab({
           myStandingData={myStandingData}
           teamForm={myTeam.form ?? []}
           onNavigate={onNavigate}
-          className="lg:col-span-6 xl:col-span-4"
+          className="col-span-3"
         />
       </div>
 
       {/* Band 2 — what to do next, and how the squad is. */}
-      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-secondary xl:[@media(max-height:820px)]:h-band-secondary-compact [@media(max-height:820px)]:gap-y-2">
+      <div className="col-span-12 grid min-h-0 grid-cols-12 grid-rows-1 gap-4">
         {careerJournal && !careerJournal.dismissed ? (
           <FirstDayGuideCard
             gameState={gameState}
@@ -315,7 +339,7 @@ export default function HomeTab({
             totalSteps={onboardingSteps.length}
             steps={onboardingSteps}
             onNavigate={onNavigate}
-            className="lg:col-span-6 xl:col-span-4"
+            className="col-span-4"
           />
         ) : null}
         <HomeSquadOverviewCard
@@ -328,67 +352,46 @@ export default function HomeTab({
           scheduleLabel={schedLabel}
           focus={focus}
           onNavigate={onNavigate}
-          className={showOnboarding ? "lg:col-span-6 xl:col-span-4" : "lg:col-span-6 xl:col-span-6"}
+          className={showOnboarding ? "col-span-4" : "col-span-8"}
+          footer={momentumFooter}
         />
         <HomeRecentResultsCard
           recentResults={recentResults}
           teams={gameState.teams}
           onNavigate={onNavigate}
-          className={showOnboarding ? "lg:col-span-6 xl:col-span-4" : "lg:col-span-6 xl:col-span-6"}
+          className="col-span-4"
         />
       </div>
 
       {/* Band 3 — the inbox, the wire, the treatment room, the board. */}
-      <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-tertiary xl:[@media(max-height:820px)]:h-band-tertiary-compact [@media(max-height:820px)]:gap-y-2">
+      <div className="col-span-12 grid min-h-0 grid-cols-12 grid-rows-1 gap-4">
         <HomeRecentMessagesCard
           messages={recentMessages}
           lang={lang}
           onNavigate={onNavigate}
-          className="lg:col-span-6 xl:col-span-3"
+          className="col-span-3"
         />
         <HomeLatestNewsCard
           articles={latestNews}
           teams={gameState.teams}
           lang={lang}
           onNavigate={onNavigate}
-          className="lg:col-span-6 xl:col-span-3"
+          className="col-span-3"
         />
         <HomeUnavailablePlayersCard
           players={unavailablePlayers}
           resolveInjuryName={resolveInjuryName}
           onNavigate={onNavigate}
-          className="lg:col-span-6 xl:col-span-3"
+          className={boardObjectives.length > 0 ? "col-span-3" : "col-span-6"}
         />
         {boardObjectives.length > 0 ? (
           <HomeBoardObjectivesCard
             objectives={boardObjectives}
             satisfaction={gameState.manager.satisfaction}
-            className="lg:col-span-6 xl:col-span-3"
+            className="col-span-3"
           />
         ) : null}
       </div>
-
-      {/* Only when someone's form is worth a word: the fourth band appears and the page scrolls. */}
-      {hasMomentum ? (
-        <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-tertiary xl:[@media(max-height:820px)]:h-band-strip-compact [@media(max-height:820px)]:gap-y-2">
-          <HomePlayerMomentumCard
-            hotPlayers={hotPlayers}
-            coldPlayers={coldPlayers}
-            onNavigate={onNavigate}
-            // With no job offers to sit beside it, the card takes the whole width rather than
-            // leaving half the band empty.
-            className={onGameUpdate ? "lg:col-span-6 xl:col-span-6" : "lg:col-span-12"}
-          />
-          {onGameUpdate ? (
-            <JobOpportunitiesCard
-              gameState={gameState}
-              onGameUpdate={onGameUpdate}
-              hideWhenEmpty
-              className="lg:col-span-6 xl:col-span-6"
-            />
-          ) : null}
-        </div>
-      ) : null}
     </div>
   );
 }
