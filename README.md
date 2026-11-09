@@ -309,7 +309,7 @@ The project uses the odd/even convention:
 So the number alone tells you what you're running. There are no `-beta` suffixes. The base version
 lives in `src-tauri/tauri.conf.json` and is mirrored in `package.json` and the Cargo manifests; the
 channel, commit and build date are injected at build time, so nothing needs editing per build.
-A stable build shows `v0.4.0`; a development build shows `v0.4.0-dev · <sha>`.
+A stable build shows `v0.4.1`; a development build shows `v0.4.1-dev · <sha>`.
 
 ## Contributing
 
