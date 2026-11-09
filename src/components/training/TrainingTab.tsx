@@ -163,8 +163,8 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
       : null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      <div className="lg:col-span-2 flex flex-col gap-5">
+    <div className="grid h-full min-h-0 grid-cols-3 gap-4">
+      <div className="scrollbar-thin scroll-fade col-span-2 flex min-h-0 flex-col gap-4 overflow-y-auto">
         {staffAdvice ? (
           <div
             className={`flex items-start gap-3 p-4 rounded-panel border-2 ${
@@ -243,7 +243,7 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
         />
       </div>
 
-      <div className="flex flex-col gap-5">
+      <div className="scrollbar-thin scroll-fade flex min-h-0 flex-col gap-4 overflow-y-auto">
         <Card accent="accent">
           <CardHeader>{t("training.squadFitness")}</CardHeader>
           <CardBody>

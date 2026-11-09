@@ -29,7 +29,9 @@ export default function TransfersTab(props: TransfersTabProps) {
     responseError,
   } = state;
   return (
-    <div>
+    // Archetype C. Budget, tabs and filters keep their height; the market table takes the rest and
+    // scrolls inside itself rather than pushing the whole screen past the window.
+    <div className="flex h-full min-h-0 flex-col gap-3">
       {/* Budget header */}
       {<TransfersBudgetHeader state={state} />}
 
@@ -103,7 +105,9 @@ export default function TransfersTab(props: TransfersTabProps) {
         </Card>
       )}
 
-      {<TransfersMarketTable state={state} />}
+      <div className="scrollbar-thin scroll-fade min-h-0 flex-1 overflow-y-auto">
+        {<TransfersMarketTable state={state} />}
+      </div>
 
       {isScoutingView && marketLoaded && filteredList.length === 0 && (
         <Card>

@@ -214,7 +214,7 @@ export function DataTable<Row>({
                   aria-sort={
                     direction ? (direction === "asc" ? "ascending" : "descending") : undefined
                   }
-                  className={`h-8 whitespace-nowrap border-b border-line-strong bg-panel text-caption first:border-l-3 first:border-l-transparent ${
+                  className={`sticky top-0 z-10 h-8 whitespace-nowrap border-b border-line-strong bg-panel text-caption first:border-l-3 first:border-l-transparent ${
                     sortableHere ? "" : "px-2 first:pl-3.5"
                   } ${
                     column.numeric ? "text-right" : "text-left"
@@ -236,7 +236,10 @@ export function DataTable<Row>({
               );
             })}
             {rowAction ? (
-              <th scope="col" className="h-8 border-b border-line-strong bg-panel px-2">
+              <th
+                scope="col"
+                className="sticky top-0 z-10 h-8 border-b border-line-strong bg-panel px-2"
+              >
                 <span className="sr-only">{rowAction.header}</span>
               </th>
             ) : null}

@@ -249,20 +249,71 @@ belongs in the acceptance harness so this cannot regress silently.
 
 ---
 
-## 8. NOT done — the remaining work
+## 8. The five scrolling screens — fixed
+
+Every screen in the app now fits one viewport. Re-run of the corrected metric
+(`scripts/audit-ui-viewport.mjs`, 15 screens × 2 resolutions): **30/30 fit, 0 failing**, no uncued
+scroll and no text under 11px at either 1600×900 or 1280×720.
+
+| Screen | was | now | treatment |
+| --- | --- | --- | --- |
+| Tactics | 366px | **0** | archetype E — list 3 / pitch 6 / instructions 3 |
+| Transfers | 524px | **0** | archetype C — table in a contained scroll |
+| Players | 307px | **0** | archetype C |
+| Squad | 245px | **0** | archetype C, sticky table header |
+| Training | 87px | **0** | two columns, each a contained scroll |
+
+### Tactics was the worst of them
+
+The pitch carried `min-h-[35rem]` — a hard 560px floor — under a ~320px header, so it could never fit
+and the back line was cut off. It is now **sized by the height left over**, with the aspect ratio
+driving width from height instead of the reverse. The pitch always fits whole and never scrolls.
+
+- The board is `grid-cols-12` at fixed proportions, not `grid-cols-1 xl:grid-cols-[…]`. The old
+  breakpoint collapsed the board to a single column below 1280px — the mobile reflow §1 forbids.
+- The command bar was compacted from ~240px to ~165px and the pitch header from 115px to ~87px,
+  which is where the pitch's extra height came from.
+- Left and right columns are contained scrolls **with `scroll-fade`**; only the squad lists and the
+  instructions scroll, never the board.
+- Empty pitch slots said "DROP PLAYER HERE" in three wrapped lines inside a 44px token, so they
+  collided with the row above at every pitch size. The dashed circle and position abbreviation
+  already say it; the words are now `sr-only`.
+
+### Two things found on the way
+
+**Squad's table had no scroll cue.** §5's third remedy asks for a thin scrollbar *and* an edge fade;
+only the bar was there. All the new contained scrolls carry `scroll-fade`, and `DataTable`'s header
+is now `sticky top-0` so column labels survive the scroll.
+
+**The injury badge showed `HAMSTRING_STRAIN`.** This one was **not** a game bug: `InjuryBadge` already
+calls `resolveInjuryName`, which correctly falls back to the raw name when there is no key. The
+*preview fixture* supplied `name: "hamstring_strain"`, which is not one of the nine camelCase keys in
+`common.injuries`. Pointed the fixture at `hamstringTear` so the preview shows what production shows.
+No game data or logic changed.
+
+### The check is now a script, not a one-off
+
+`scripts/audit-ui-viewport.mjs` measures the **workspace wrapper**, reports silent clipping separately
+from cued scroll, checks the 11px floor, and exits non-zero on any failure so it can gate CI once a
+browser is available there. It needs a dev server and a Chromium; neither is added as a dependency
+(`--puppeteer` and `UI_AUDIT_CHROMIUM` point at an external install).
+
+---
+
+## 9. NOT done — the remaining work
 
 Honest list, in the brief's own order:
 
-**Step 6, remaining screens — five are failing acceptance now, not just unfinished.** Per §7:
-**Transfers (524px), Tactics (366px), Players (307px), Squad (245px) and Training (87px)** scroll the
-whole workspace. Priority order is worst-first, except Tactics goes first because a scrolling pitch
-is the most damaging. Staff, Transfer Centre, Scouting, Schedule and Tournaments already fit and only
-need the archetype C treatment (drawer, edge fades) rather than a re-grid. Youth, Teams, Managers and
-HallOfFame could not be measured — they crash the preview (§8, pre-existing).
+**Screens.** All 15 measurable screens fit (§8). Youth, Teams, Managers and HallOfFame could not be
+measured — they crash the preview on missing fixture data (pre-existing). Staff, Transfer Centre,
+Scouting, Schedule and Tournaments fit but have not had the archetype C polish (drawer, richer empty
+states).
 
 **Also outstanding:**
-- **Window-state plugin** (persisted size/position/maximised). Not added: it is a new Rust +
-  npm dependency and §12 forbids both without justification. Needs a decision.
+- **Window-state plugin — declined by the user.** Persisted size/position/maximised will not be
+  implemented in this pass: it needs a new Rust + npm dependency and §12 forbids both without
+  justification. The 1600×900 default and 1280×720 minimum stay as they are. This is a settled
+  decision, not outstanding work.
 - **2560×1440 plate variants.** Sources are 1915–2172px wide; upscaling would add weight for no
   detail. Shipped one size at native resolution instead.
 - **Ken Burns drift**, **panel stagger on first load**, **route transitions**, **number tickers**.

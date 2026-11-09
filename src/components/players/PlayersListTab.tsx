@@ -74,7 +74,8 @@ export default function PlayersListTab({
   };
 
   return (
-    <div>
+    // Archetype C: filters keep their height, the list takes the rest and scrolls inside itself.
+    <div className="flex h-full min-h-0 flex-col gap-3">
       <PlayerListFilters
         query={query}
         onChange={patchQuery}
@@ -110,15 +111,17 @@ export default function PlayersListTab({
 
       {listingError ? <ListAlert message={listingError} /> : null}
 
-      {view === "cards" ? (
-        <PlayersCardsView
-          {...listView}
-          teams={gameState.teams}
-          onSortChange={(key, ascending) => patchQuery({ sort_key: key, sort_asc: ascending })}
-        />
-      ) : (
-        <PlayersTableView {...listView} onSort={handleSort} />
-      )}
+      <div className="scrollbar-thin scroll-fade min-h-0 flex-1 overflow-y-auto">
+        {view === "cards" ? (
+          <PlayersCardsView
+            {...listView}
+            teams={gameState.teams}
+            onSortChange={(key, ascending) => patchQuery({ sort_key: key, sort_asc: ascending })}
+          />
+        ) : (
+          <PlayersTableView {...listView} onSort={handleSort} />
+        )}
+      </div>
       <PlayersDealModals teams={gameState.teams} bidFlow={bidFlow} contractFlow={contractFlow} />
     </div>
   );

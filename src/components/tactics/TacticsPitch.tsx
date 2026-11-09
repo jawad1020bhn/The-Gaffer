@@ -303,16 +303,17 @@ export default function TacticsPitch({
   const draggedPlayerId = dragState?.playerId ?? null;
 
   return (
-    <Card className="overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-t-xl border-b border-line bg-panel px-5 py-4">
-        <div>
+    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="flex shrink-0 flex-col gap-1.5 rounded-t-panel border-b border-line bg-panel px-3 py-2">
+        <div className="min-w-0">
           <h3 className="flex items-center gap-2 text-body font-heading font-bold uppercase tracking-label text-fg">
             <Star className="h-4 w-4 fill-current text-warning" />
             {t("preMatch.startingXI")} - {formation}
           </h3>
+          {/* Own line, so the hint wraps instead of truncating mid-word against the legend. */}
           <p className="mt-0.5 text-caption text-fg-subtle">{t("tactics.pitchInteractionHint")}</p>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {outOfPositionCount === null ? null : (
             <Badge variant={outOfPositionCount > 0 ? "danger" : "success"} size="sm">
               {outOfPositionCount} {t("squad.outOfPosition")}
@@ -342,9 +343,12 @@ export default function TacticsPitch({
         </div>
       </div>
 
-      <div className="p-5 sm:p-6 lg:p-7">
-        <div className="relative mx-auto w-full max-w-[36rem] overflow-hidden rounded-[1.5rem] border border-selected/20 bg-linear-to-b from-selected-fill to-selected-fill shadow-inner">
-          <div className="aspect-[8/10] min-h-[35rem] w-full">
+      {/* The pitch is the one thing on this screen that must never scroll or be clipped. It is
+          sized by the height left over after the header, so it always fits whole: height drives
+          width through the aspect ratio, not the other way round. */}
+      <div className="flex min-h-0 flex-1 items-center justify-center p-3">
+        <div className="relative mx-auto aspect-[8/10] h-full max-w-full overflow-hidden rounded-panel border border-selected/20 bg-linear-to-b from-selected-fill to-selected-fill shadow-inner">
+          <div className="h-full w-full">
             <svg
               viewBox="0 0 100 140"
               preserveAspectRatio="none"
@@ -581,9 +585,7 @@ export default function TacticsPitch({
                       <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-line/28 bg-overlay/12 text-caption font-heading font-bold uppercase tracking-[0.18em] text-fg/70">
                         {translatePositionAbbreviation(t, slot.position)}
                       </div>
-                      <div className="mt-1 max-w-full text-caption font-heading font-bold uppercase tracking-[0.16em] text-fg/45">
-                        {t("squad.dropPlayerHere")}
-                      </div>
+                      <span className="sr-only">{t("squad.dropPlayerHere")}</span>
                     </div>
                   )}
                 </div>

@@ -92,7 +92,7 @@ export default function TacticsRightPanel({
   const [blueprintOpen, setBlueprintOpen] = useState(true);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="scrollbar-thin scroll-fade flex h-full min-h-0 flex-col gap-4 overflow-y-auto">
       {/* Roles section */}
       <div className="rounded-panel border border-line bg-panel">
         <div className="border-b border-line px-3 py-2">
