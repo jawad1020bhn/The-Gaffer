@@ -55,7 +55,7 @@ Download `OpenfootManager-portable-windows-x64.zip`, unzip it anywhere, and run
 | **Uninstall** | Delete the folder. Delete the path above too if you want your saves gone |
 
 The zip contains the executable, a `data/` folder with the name and nation pools it generates
-players from, and `packages/` with the optional EA FC 27 world (see below).
+players from, and `packages/` with the EA FC 27 world it starts a career on (see below).
 
 ### Linux and macOS
 
@@ -102,21 +102,24 @@ creating your manager to surviving your first match day.
 
 ## World data
 
-The engine ships **no licensed football data**. You have two ways to get a world:
+The engine ships **no licensed football data**, but this fork ships a world beside it, so there
+is nothing to import before you play.
 
-**1. Generated worlds.** The game creates clubs, players, competitions and past seasons from
-editable name and nation pools. Fully fictional, no legal strings, and yours to reshape.
-
-**2. The optional EA FC 27 package.** [`mods/eafc-fc27`](mods/eafc-fc27/README.md) is an unofficial
+**1. The default: EA FC 27.** [`mods/eafc-fc27`](mods/eafc-fc27/README.md) is an unofficial
 database of **684 clubs, 18,875 player rows and 38 competitions**, imported by
-[`tools/eafc-import`](tools/eafc-import/README.md). The portable Windows build ships it in
-`packages/`, and the game installs and pre-selects it on first run, so a new career starts with
-real clubs instead of generated ones. Untick it on the new-game screen if you'd rather have a
-generated world.
+[`tools/eafc-import`](tools/eafc-import/README.md). **Every build ships it** — installer, portable
+zip and `tauri dev` alike — in `packages/`, and the game installs and pre-selects it on first run,
+so a new career starts with real clubs instead of generated ones. There is no import step.
+
+**2. Generated worlds.** Untick the package on the new-game screen and the game creates clubs,
+players, competitions and past seasons from editable name and nation pools. Fully fictional, no
+legal strings, and yours to reshape. Nothing was removed to make the real database the default.
 
 > **Read this before using the FC 27 package.** It is unofficial and unaffiliated with EA. The
 > data belongs to EA — keep it for personal use. It is a *mod*, not part of the engine, precisely
-> because upstream ships no licensed data on purpose. It is also not season-ready: 20 clubs have
+> because upstream ships no licensed data on purpose. Shipping it as the default is this fork's
+> decision and diverges from [VISION.md](VISION.md); if you redistribute a build, read that
+> document and EA's terms first. It is also not season-ready: 20 clubs have
 > no competition membership, 1,877 contracts expire before the 2027 base year, and wages and
 > goalkeeper weak-foot values are incomplete. There are no national teams or real staff.
 > [DATA_QUALITY.md](mods/eafc-fc27/DATA_QUALITY.md) lists every correction and remaining gap.
@@ -201,6 +204,11 @@ npm run tauri dev
 `npm run dev` starts only the Vite front end. That is useful for styling work, but it has **no
 Tauri backend**, so anything needing a career will not load — use `npm run tauri dev` to play.
 
+The default world needs no setup: `predev` and `prebuild` pack `mods/eafc-fc27` into
+`src-tauri/packages/eafc-fc27.ofm`, which Tauri ships as a resource and `tauri dev` reads in place.
+It is generated and gitignored; `npm run world:pack` rebuilds it, and a run with unchanged data
+costs nothing. Unlike the fixture below, this needs **no Rust** — the packer is plain Node.
+
 ### One wrinkle on a fresh checkout
 
 `src/dev/pageHarness/fixture.generated.ts` is generated from the Rust side and deliberately not
@@ -262,7 +270,7 @@ src/                    React + TypeScript front end
   App.css               Design tokens
 src-tauri/              Tauri app and the Rust workspace
   crates/               domain, engine, ofm_core, db, ofm-cli, harnesses
-mods/eafc-fc27/         Optional real-world data package (unofficial)
+mods/eafc-fc27/         The default world, packed into src-tauri/packages on predev/prebuild
 tools/eafc-import/      The importer that produced it
 docs/                   Player guides and technical documentation
 images/                 Logo and screenshots

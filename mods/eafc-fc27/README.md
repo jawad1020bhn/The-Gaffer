@@ -11,20 +11,36 @@ goalkeeper weak-foot values are incomplete. No national-team or real staff
 records are included. Read the [corrections and remaining limitations](DATA_QUALITY.md)
 before treating this as a season-ready real-world database.
 
-Unofficial and unaffiliated with EA. The data belongs to EA; keep it for personal
-use. Upstream OFM ships no licensed data on purpose (`VISION.md`), which is why
-this is a mod and not part of the engine.
+Unofficial and unaffiliated with EA. The data belongs to EA; keep it for personal use.
 
-## Install
+**This diverges from upstream on purpose.** Upstream OFM ships no licensed data (`VISION.md`:
+"No licensed real-world data"), which is why this lives in `mods/` and not in the engine. This
+fork ships it as the default world anyway. The engine still contains none of it: the database is
+a package the loader reads, the generated world is untouched, and unticking the package restores
+upstream behaviour exactly. Anyone redistributing a build should read `VISION.md` and EA's terms
+first — making it the default is a distribution decision, not just a convenience.
 
-**In game (easiest).** New Game → world selection → **+** (Install Package) →
-pick `mods/eafc-fc27.ofm`.
+## This is the game's default world
+
+**Nothing to install.** Every build ships this database, and a new career starts on it:
+`predev`/`prebuild` run [`scripts/pack-bundled-world.mjs`](../../scripts/pack-bundled-world.mjs),
+which packs this directory into `src-tauri/packages/eafc-fc27.ofm`; Tauri ships that archive as a
+resource; the game copies it into your own package directory the first time it lists packages and
+pre-selects it on the new-game screen. You should see Arsenal, Real Madrid and the rest — not
+generated clubs.
+
+`tauri dev` reads the same archive straight out of `src-tauri/packages`, so a development build
+defaults to the same world a release does.
+
+The generated world is still there. Untick this package on the new-game screen to play a
+procedurally generated one instead; nothing was removed to make this the default.
 
 A 684-club world takes a while to build the first time, because the world selector
 also generates past seasons (default 12 years). Pick **None** or **6 years** there
 for the fastest first load; the history is cosmetic.
 
-**Manual.** Copy the archive into the packages directory and restart:
+**Installing a copy by hand** is only needed if you uninstalled it. Copy the archive into
+the packages directory and restart:
 
 | OS | Path |
 |----|------|
@@ -43,7 +59,16 @@ cargo run --manifest-path src-tauri/Cargo.toml -p ofm-cli -- validate mods/eafc-
 cargo test --manifest-path src-tauri/Cargo.toml -p ofm-cli --test eafc_package
 ```
 
-`eafc-fc27.ofm` is generated, not tracked. Rebuild it with:
+The shipped archive is generated, not tracked (`src-tauri/packages/` is ignored, and
+`scripts/check-untracked-generated.sh` fails the build if it is ever committed). Rebuild it from
+this directory with:
+
+```bash
+npm run world:pack
+```
+
+Rebuilding **this directory** from the EA source is the separate, heavier step, and needs the
+upstream kit:
 
 ```bash
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27

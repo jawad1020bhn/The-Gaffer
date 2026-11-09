@@ -143,6 +143,29 @@ jobs:
           ./src-tauri/target/debug/ofm-cli validate "$RUNNER_TEMP/eafc-fc27.ofm"
           ls -lh "$RUNNER_TEMP/eafc-fc27.ofm"
 
+      # The archive every build actually ships is written by scripts/pack-bundled-world.mjs, not
+      # by `ofm-cli pack`: it runs on predev/prebuild, before any Rust toolchain is warm. So it is
+      # validated here too — otherwise the zip the game defaults to would only ever be checked by
+      # its own writer's tests, and a loader-side rejection would reach a player as a new career
+      # that silently falls back to a generated world.
+      - name: Validate the archive the game ships
+        run: |
+          set +e
+          npm run world:pack
+          ./src-tauri/target/debug/ofm-cli validate src-tauri/packages/eafc-fc27.ofm \
+            2>&1 | tee "$RUNNER_TEMP/bundled.log"
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            grep -m 15 -E "error|Error|problem" "$RUNNER_TEMP/bundled.log" |
+              while IFS= read -r line; do echo "::error::${line//\%/}"; done
+          fi
+          exit "$status"
+
+      # The shipped archive must also survive the tracked-generated gate: committing it would
+      # conflict on every data edit, which is why it is built rather than checked in.
+      - name: Check the shipped archive is not tracked
+        run: ./scripts/check-untracked-generated.sh
+
       # The load itself: `load_world_package` plus
       # `build_world_from_package_seeded`, asserting the world that comes out.
       - name: Build a world from the package
