@@ -184,10 +184,15 @@ export function sortInboxMessages(
   });
 }
 
-export function getListPaneClassName(hasSelectedMessage: boolean): string {
-  const visibilityClassName = hasSelectedMessage ? "hidden md:flex" : "flex";
-
-  return `${visibilityClassName} flex-col w-full md:w-96 md:min-w-[384px] border-r border-line`;
+/**
+ * The list column fills the grid track it is given.
+ *
+ * It used to carry a fixed `md:w-96` and hide itself below `md` — a website's responsive collapse.
+ * The window now has a 1280px minimum and the master-detail grid owns the widths, so a fixed width
+ * here only left a blank strip between the list and the pane.
+ */
+export function getListPaneClassName(): string {
+  return "flex min-h-0 flex-1 flex-col";
 }
 
 export function getMessageRowClassName(isSelected: boolean, isRead: boolean): string {

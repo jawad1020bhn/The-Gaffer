@@ -115,16 +115,108 @@ root 14.667 / 14.667 / 16 / 19.2px.
 
 ---
 
-## 6. NOT done — the remaining work
+## 6. Screen reworks — Manager, Inbox, News, Finances done
+
+![Step 6 before and after](ui-redesign/step6-native-pass.png)
+
+### Manager — archetype D (profile)
+
+`grid-cols-12 grid-rows-[auto_minmax(0,1fr)_minmax(0,1.4fr)]`: identity spans 12 as an **art-headed
+hero** (`scene="career"`), career statistics 8 beside board/fan confidence 4, career history 12.
+
+- **Name contrast fixed** — `text-on-brand` (dark lime on a dark room) → `text-fg`. This was the
+  §10 "manager name dark-on-dark" bug.
+- Reputation moved off the photograph into a `bg-panel-glass` well, so it is no longer text on art.
+- The six stat wells stretch to fill their track and use `text-display`; the board and fan gauges are
+  vertically centred rather than pinned to the top of a tall panel.
+- Career history had no empty state at all — the panel was simply blank. It now fills with a
+  `SceneState` over the empty-stadium plate: *"No appointments yet — this is your first club."*
+
+**Trophy cabinet deliberately not built.** §4 asks for one, but the save only carries
+`career_stats.trophies` — a count. There are no trophy names, seasons or competitions anywhere in the
+data, so a cabinet would mean inventing both a feature and a save-format change. §12 forbids both.
+The count stays in the stat row.
+
+### Inbox — archetype B (master-detail)
+
+- **Auto-opens the first unread**, falling back to the newest message, once per mount. The
+  "Select a message to read" placeholder is gone (§6: master-detail never shows it).
+- Root is `grid-rows-[auto_minmax(0,1fr)]`; list 4 cols, detail 8.
+- **"Load older messages" is now above the fold** — `ArchivedMessages` moved into the list column
+  inside a `max-h-52` contained scroll, instead of sitting under a full-height list.
+- Removed `getListPaneClassName`'s fixed `md:w-96 md:min-w-[384px]` and its `hidden md:flex`
+  collapse. That was a website's responsive sidebar: inside a grid track it left a blank vertical
+  strip, and below `md` it hid the list entirely. The grid owns the width now and the window has a
+  1280px minimum, so there is no narrow case to collapse for.
+
+### News — archetype B, featured layout
+
+One hero + four secondary (`PAGE_SIZE = 5`), rows `auto / 1fr / auto / auto`. The hero is an
+**art-headed panel over the press room**, so a three-line wire item fills its track with atmosphere
+instead of leaving 70% of a grey box empty. Secondary cards stay the height of their copy in a
+2-up grid — stretching them just moved the emptiness into smaller boxes. The bare empty state is
+now a `SceneState`.
+
+### Finances — archetype A (dashboard)
+
+Seven full-width sections used to stack into a scrolling page. Now: overview 8 + wage bill 4 on the
+top row, and **cash flow / wage pressure / sponsors / facilities / payroll behind in-panel tabs**
+below — §5's second overflow remedy. **Nothing was removed**; every section is one tab away.
+
+The no-snapshot states are designed too: a **panel-shaped skeleton** while loading (not a spinner on
+blank), and a full-height `SceneState` with the Retry action if the snapshot fails.
+
+### Chart labels were under the 11px floor
+
+Bringing `manager/` and `finances/` up to the strict design-system gate surfaced a real §1 violation:
+Recharts writes its text sizes as **fixed-pixel SVG presentation attributes**, so axis ticks were
+drawn at **9px** and legends at 10px, and none of them followed `ui_scale`.
+
+Fixed centrally rather than per chart: `ChartContainer` now carries a `chart-surface` class and
+`App.css` sets Recharts' tick, legend, label and tooltip text to `var(--text-caption)`. A CSS rule
+outranks a presentation attribute, so this covers **every** chart in the app, including the ones in
+folders that have not been reworked yet. The inline `fontSize` numbers are gone from
+`ManagerCareerChart` and `FinanceCashFlowChart`.
+
+`components/manager/`, `components/inbox/` and `components/finances/` have joined `FINISHED_FOLDERS`
+in `src/designSystem.test.ts`, so the colour, type, radius, overlay and focus-ring rules are now
+enforced on them in CI. (`news/` was already in.)
+
+### Verification
+
+| Screen | pageScroll | scene | tests |
+| --- | --- | --- | --- |
+| Manager | 0 at 1280×720 and 1600×900 | `career` | 22/22 |
+| Inbox | 0 at 1280×720 and 1600×900 | `office` | 57/57 |
+| News | 0 at 1600×900 | `press` | 6/6 |
+| Finances | 0 at 1600×900 | `office` | 43/43 |
+
+**Finances could only be verified in its loading and error states.** The loaded layout needs
+`get_finance_snapshot` from Rust, which the Vite preview does not have. Its grid is asserted by the
+43 component tests, not by a screenshot of real figures.
+
+**Test changes, and why they are legitimate.** Auto-opening a message and tabbing the finance
+sections change what is on screen, so some tests had to navigate first:
+- Inbox (3 tests): the opened subject now appears in the detail pane too, so subject queries are
+  scoped with `within(getByTestId("inbox-row-…"))`. A flat `mockResolvedValue` also marked *every*
+  message read the moment auto-open fired, so the mock is keyed on `messageId`.
+- Finances (17 tests): each now calls `openDetailTab("…")` before asserting, the way a manager
+  clicks. Assertions themselves are unchanged.
+
+Full suite: **3248/3248 passing**, same 3 pre-existing unloadable suites. Format clean (999 files),
+lint 141 infos / **0 errors**, `tsc` 17 pre-existing errors — all at the step-5 baseline.
+
+---
+
+## 7. NOT done — the remaining work
 
 Honest list, in the brief's own order:
 
-**Step 6, screen reworks — none of these are done.** Inbox still has no auto-selected first unread
-and still has "Load older messages" below the fold. News is still small cards, not a featured hero
-plus a secondary grid. Finances is unchanged. **Manager is still ~70% empty and its name contrast is
-not fixed.** Squad / Tactics / Training / Staff / Youth / Transfers / Scouting / Schedule / Teams /
-Tournaments / HallOfFame have inherited the new materials, room and scaling but have **not** been
-re-gridded to the archetypes B–E.
+**Step 6, remaining screens.** Manager, Inbox, News and Finances are done (§6 above). Squad /
+Tactics / Training / Staff / Youth / Transfers / Transfer Centre / Scouting / Players / Schedule /
+Teams / Tournaments / Managers / HallOfFame have inherited the new materials, room and scaling but
+have **not** been re-gridded to archetypes C (table + drawer) and E (board). Tactics is the one that
+most needs E: pitch centre, list left, instructions right.
 
 **Also outstanding:**
 - **Window-state plugin** (persisted size/position/maximised). Not added: it is a new Rust +
@@ -136,8 +228,8 @@ re-gridded to the archetypes B–E.
 - **Arrow-key navigation between panels**, slide-over drawers, and the modal/drawer split.
 - **`backdrop-filter` hero panels** — skipped deliberately; §3 caps them at 1–3 per screen and
   warns about WebKitGTK cost, and no screen has needed one yet.
-- **Contrast audit across all text.** Only the root-size floor is asserted; the Manager name and a
-  full WCAG sweep are not done.
+- **Contrast audit across all text.** The Manager name is fixed and the root-size floor is
+  asserted, but a full WCAG AA sweep is not done.
 - **Two panels still over 40% empty** on Home at 1600×900: Unavailable Players (one injury) and
   Board Objectives. They need content or a re-grid, not a smaller box.
 - **Getting Started's intro line is masked mid-line** by `scroll-fade`. It is a real contained

@@ -332,6 +332,17 @@
  * that continues past the panel edge reads as "more below" rather than as a card clipped mid-row.
  * The fade sits over the padding when the content fits, where it costs nothing.
  */
+/* Recharts writes its text sizes as SVG presentation attributes in fixed pixels, so chart labels
+   ignored ui_scale and axis ticks were drawn at 9px — below the 11px floor. A CSS rule outranks a
+   presentation attribute, so every chart's text follows the role tokens from here. */
+.chart-surface .recharts-cartesian-axis-tick-value,
+.chart-surface .recharts-polar-angle-axis-tick-value,
+.chart-surface .recharts-legend-item-text,
+.chart-surface .recharts-label,
+.chart-surface .recharts-tooltip-wrapper {
+  font-size: var(--text-caption);
+}
+
 @utility scroll-fade {
   mask-image: linear-gradient(180deg, black calc(100% - 0.75rem), transparent 100%);
 }

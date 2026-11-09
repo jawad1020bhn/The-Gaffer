@@ -1321,7 +1321,9 @@
     "fanBehind": "Fans are behind the team.",
     "fanMixed": "Fan sentiment is mixed.",
     "fanRestless": "Fans are growing restless.",
-    "fanUnrest": "Fan unrest — protests likely."
+    "fanUnrest": "Fan unrest — protests likely.",
+    "noHistoryTitle": "No appointments yet",
+    "noHistoryDetail": "This is your first club. Every result you manage here becomes the first line of your record."
   },
   "managersWorld": {
     "title": "Managers",

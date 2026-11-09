@@ -52,27 +52,21 @@ export function ManagerCareerChart({
           <CartesianGrid strokeDasharray="3 3" stroke={theme.gridColor} vertical={false} />
           <XAxis
             dataKey="club"
-            tick={{ fill: theme.axisColor, fontSize: 9, fontFamily: "var(--font-heading)" }}
+            tick={{ fill: theme.axisColor, fontFamily: "var(--font-heading)" }}
             axisLine={{ stroke: theme.gridColor }}
             tickLine={false}
           />
-          <YAxis
-            tick={{ fill: theme.axisColor, fontSize: 9 }}
-            axisLine={false}
-            tickLine={false}
-            width={24}
-          />
+          <YAxis tick={{ fill: theme.axisColor }} axisLine={false} tickLine={false} width={24} />
           <Tooltip
             contentStyle={{
               backgroundColor: theme.tooltipBg,
               border: `1px solid ${theme.tooltipBorder}`,
               borderRadius: 8,
-              fontSize: 11,
               color: theme.tooltipText,
             }}
             labelFormatter={(_label, payload) => payload?.[0]?.payload?.fullName ?? _label}
           />
-          <Legend wrapperStyle={{ fontSize: 10, fontFamily: "var(--font-heading)" }} />
+          <Legend wrapperStyle={{ fontFamily: "var(--font-heading)" }} />
           <Bar dataKey="won" stackId="a" fill={theme.success} name={wonLabel} />
           <Bar dataKey="drawn" stackId="a" fill={theme.axisColor} name={drawnLabel} />
           <Bar

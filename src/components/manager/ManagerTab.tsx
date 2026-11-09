@@ -1,5 +1,13 @@
 import type { GameStateData } from "../../store/gameStore";
-import { Card, CardHeader, CardBody, ProgressBar, CountryFlag } from "../ui";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  ProgressBar,
+  CountryFlag,
+  SceneBackdrop,
+  SceneState,
+} from "../ui";
 import { ManagerCareerChart } from "./ManagerCareerChart";
 import { formatDate } from "../../lib/helpers";
 import { useTranslation } from "react-i18next";
@@ -47,16 +55,17 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
   const stats = mgr.career_stats;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[auto_minmax(0,1fr)_minmax(0,1.4fr)] gap-4">
       {/* Profile card */}
-      <Card accent="primary" className="md:col-span-3">
-        <div className="bg-panel p-6 rounded-t-xl flex items-center gap-6">
+      <Card accent="primary" className="relative isolate col-span-12">
+        <SceneBackdrop scene="career" strength="hero" />
+        <div className="flex items-center gap-6 p-5">
           <div className="w-20 h-20 rounded-panel bg-selected-tint flex items-center justify-center font-heading font-bold text-display text-selected border-2 border-selected/40">
             {mgr.first_name.charAt(0)}
             {mgr.last_name.charAt(0)}
           </div>
           <div>
-            <h2 className="text-title font-heading font-bold text-on-brand uppercase tracking-label">
+            <h2 className="text-title font-heading font-bold text-fg uppercase tracking-label">
               {mgr.display_name}
             </h2>
             <p className="text-fg-subtle text-body mt-1">
@@ -85,7 +94,7 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
               </p>
             ) : null}
           </div>
-          <div className="ml-auto text-right">
+          <div className="ml-auto rounded-control bg-panel-glass surface-panel px-4 py-2 text-right shadow-panel">
             <p className="text-caption text-fg-subtle font-heading uppercase tracking-label">
               {t("manager.reputation")}
             </p>
@@ -95,10 +104,10 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
       </Card>
 
       {/* Career stats */}
-      <Card accent="accent" className="md:col-span-2">
+      <Card accent="accent" className="col-span-8">
         <CardHeader>{t("manager.careerStats")}</CardHeader>
         <CardBody>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+          <div className="grid h-full grid-cols-6 grid-rows-1 gap-3">
             <StatBlock label={t("manager.matches")} value={stats.matches_managed} />
             <StatBlock label={t("manager.wins")} value={stats.wins} />
             <StatBlock label={t("manager.draws")} value={stats.draws} />
@@ -117,10 +126,10 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
       </Card>
 
       {/* Board satisfaction + Fan approval */}
-      <Card>
+      <Card className="col-span-4">
         <CardHeader>{t("manager.boardStatus")}</CardHeader>
         <CardBody>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid h-full grid-cols-2 items-center gap-4">
             {/* Board */}
             <div>
               <div className="text-center mb-2">
@@ -161,116 +170,127 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
       </Card>
 
       {/* Career history */}
-      {mgr.career_history.length > 0 && (
-        <Card className="md:col-span-3">
-          <CardHeader>{t("manager.careerHistory")}</CardHeader>
-          <CardBody className="p-0">
-            <div className="px-4 pt-4 pb-2">
-              <ManagerCareerChart
-                history={mgr.career_history}
-                wonLabel={t("manager.wins")}
-                drawnLabel={t("manager.draws")}
-                lostLabel={t("manager.losses")}
-              />
-            </div>
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-sunken border-b border-line text-caption">
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
-                    {t("manager.club")}
-                  </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
-                    {t("manager.period")}
-                  </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
-                    {t("common.played")}
-                  </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
-                    {t("common.won")}
-                  </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
-                    {t("common.drawn")}
-                  </th>
-                  <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
-                    {t("common.lost")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {mgr.career_history.map((entry, i) => {
-                  const canSelectTeam =
-                    !!onSelectTeam && gameState.teams.some((team) => team.id === entry.team_id);
-                  const historyRow = (
-                    <tr
-                      key={i}
-                      data-testid={`manager-history-${entry.team_id}`}
-                      onClick={canSelectTeam ? () => onSelectTeam(entry.team_id) : undefined}
-                      onKeyDown={
-                        canSelectTeam
-                          ? (event) => {
-                              if (event.key === "Enter" || event.key === " ") {
-                                event.preventDefault();
-                                onSelectTeam(entry.team_id);
+      <Card className="col-span-12">
+        <CardHeader>{t("manager.careerHistory")}</CardHeader>
+        <CardBody padded={false} className="flex flex-col">
+          {mgr.career_history.length === 0 ? (
+            <SceneState
+              title={t("manager.noHistoryTitle", "No appointments yet")}
+              detail={t(
+                "manager.noHistoryDetail",
+                "This is your first club. Every result you manage here becomes the first line of your record.",
+              )}
+              className="m-4"
+            />
+          ) : (
+            <>
+              <div className="px-4 pt-4 pb-2">
+                <ManagerCareerChart
+                  history={mgr.career_history}
+                  wonLabel={t("manager.wins")}
+                  drawnLabel={t("manager.draws")}
+                  lostLabel={t("manager.losses")}
+                />
+              </div>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-sunken border-b border-line text-caption">
+                    <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
+                      {t("manager.club")}
+                    </th>
+                    <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted">
+                      {t("manager.period")}
+                    </th>
+                    <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
+                      {t("common.played")}
+                    </th>
+                    <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
+                      {t("common.won")}
+                    </th>
+                    <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
+                      {t("common.drawn")}
+                    </th>
+                    <th className="py-3 px-5 font-heading font-bold uppercase tracking-label text-fg-muted text-center">
+                      {t("common.lost")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {mgr.career_history.map((entry, i) => {
+                    const canSelectTeam =
+                      !!onSelectTeam && gameState.teams.some((team) => team.id === entry.team_id);
+                    const historyRow = (
+                      <tr
+                        key={i}
+                        data-testid={`manager-history-${entry.team_id}`}
+                        onClick={canSelectTeam ? () => onSelectTeam(entry.team_id) : undefined}
+                        onKeyDown={
+                          canSelectTeam
+                            ? (event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                  event.preventDefault();
+                                  onSelectTeam(entry.team_id);
+                                }
                               }
-                            }
-                          : undefined
-                      }
-                      role={canSelectTeam ? "button" : undefined}
-                      tabIndex={canSelectTeam ? 0 : undefined}
-                      className={
-                        canSelectTeam
-                          ? "cursor-pointer hover:bg-hover/30 transition-colors"
-                          : undefined
-                      }
-                    >
-                      <td className="py-3 px-5 font-semibold text-body text-fg">
-                        {entry.team_name}
-                      </td>
-                      <td className="py-3 px-5 text-body text-fg-muted">
-                        {entry.start_date.substring(0, 4)} —{" "}
-                        {entry.end_date?.substring(0, 4) || t("common.present")}
-                      </td>
-                      <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
-                        {entry.matches}
-                      </td>
-                      <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
-                        {entry.wins}
-                      </td>
-                      <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
-                        {entry.draws}
-                      </td>
-                      <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
-                        {entry.losses}
-                      </td>
-                    </tr>
-                  );
+                            : undefined
+                        }
+                        role={canSelectTeam ? "button" : undefined}
+                        tabIndex={canSelectTeam ? 0 : undefined}
+                        className={
+                          canSelectTeam
+                            ? "cursor-pointer hover:bg-hover/30 transition-colors"
+                            : undefined
+                        }
+                      >
+                        <td className="py-3 px-5 font-semibold text-body text-fg">
+                          {entry.team_name}
+                        </td>
+                        <td className="py-3 px-5 text-body text-fg-muted">
+                          {entry.start_date.substring(0, 4)} —{" "}
+                          {entry.end_date?.substring(0, 4) || t("common.present")}
+                        </td>
+                        <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
+                          {entry.matches}
+                        </td>
+                        <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
+                          {entry.wins}
+                        </td>
+                        <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
+                          {entry.draws}
+                        </td>
+                        <td className="py-3 px-5 text-center text-body text-fg-muted tabular-nums">
+                          {entry.losses}
+                        </td>
+                      </tr>
+                    );
 
-                  if (!canSelectTeam) {
-                    return historyRow;
-                  }
+                    if (!canSelectTeam) {
+                      return historyRow;
+                    }
 
-                  return (
-                    <ContextMenu
-                      items={[buildViewTeamMenuItem(t, () => onSelectTeam(entry.team_id))]}
-                      key={i}
-                    >
-                      {historyRow}
-                    </ContextMenu>
-                  );
-                })}
-              </tbody>
-            </table>
-          </CardBody>
-        </Card>
-      )}
+                    return (
+                      <ContextMenu
+                        items={[buildViewTeamMenuItem(t, () => onSelectTeam(entry.team_id))]}
+                        key={i}
+                      >
+                        {historyRow}
+                      </ContextMenu>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </>
+          )}
+        </CardBody>
+      </Card>
     </div>
   );
 }
 
 function StatBlock({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="text-center p-3 bg-sunken rounded-control">
-      <p className="font-heading font-bold text-title text-fg tabular-nums">{value}</p>
+    <div className="flex flex-col items-center justify-center gap-1 rounded-control bg-sunken surface-well p-3 text-center shadow-well">
+      <p className="font-heading text-display font-bold text-fg tabular-nums">{value}</p>
       <p className="text-caption text-fg-subtle font-heading uppercase tracking-label mt-0.5">
         {label}
       </p>

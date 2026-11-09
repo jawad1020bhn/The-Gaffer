@@ -23,7 +23,6 @@ import {
 interface InboxMessageListPaneProps {
   bulkSelectionEnabled: boolean;
   filteredMessages: MessageData[];
-  hasSelectedMessage: boolean;
   language: string;
   selectedMessageId: string | null;
   selectedMessageIds: string[];
@@ -36,7 +35,6 @@ interface InboxMessageListPaneProps {
 export default function InboxMessageListPane({
   bulkSelectionEnabled,
   filteredMessages,
-  hasSelectedMessage,
   language,
   selectedMessageId,
   selectedMessageIds,
@@ -48,7 +46,7 @@ export default function InboxMessageListPane({
   const { t } = useTranslation();
 
   return (
-    <div className={getListPaneClassName(hasSelectedMessage)}>
+    <div className={getListPaneClassName()}>
       <div className="bg-panel shrink-0 border-b border-line p-4">
         <h3 className="text-body font-heading font-bold text-fg flex items-center gap-2 uppercase tracking-label">
           <Mail className="w-4 h-4 text-warning" />

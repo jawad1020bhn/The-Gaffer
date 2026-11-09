@@ -60,13 +60,13 @@ export function FinanceCashFlowChart({
           <CartesianGrid strokeDasharray="3 3" stroke={theme.gridColor} vertical={false} />
           <XAxis
             dataKey="week"
-            tick={{ fill: theme.axisColor, fontSize: 9, fontFamily: "var(--font-heading)" }}
+            tick={{ fill: theme.axisColor, fontFamily: "var(--font-heading)" }}
             axisLine={{ stroke: theme.gridColor }}
             tickLine={false}
           />
           <YAxis
             tickFormatter={formatVal}
-            tick={{ fill: theme.axisColor, fontSize: 9 }}
+            tick={{ fill: theme.axisColor }}
             axisLine={false}
             tickLine={false}
             width="auto"
@@ -76,7 +76,6 @@ export function FinanceCashFlowChart({
               backgroundColor: theme.tooltipBg,
               border: `1px solid ${theme.tooltipBorder}`,
               borderRadius: 8,
-              fontSize: 11,
               color: theme.tooltipText,
             }}
             formatter={(value, name) => [
@@ -84,7 +83,7 @@ export function FinanceCashFlowChart({
               String(name ?? ""),
             ]}
           />
-          <Legend wrapperStyle={{ fontSize: 10, fontFamily: "var(--font-heading)" }} />
+          <Legend wrapperStyle={{ fontFamily: "var(--font-heading)" }} />
           <Area
             type="monotone"
             dataKey="income"

@@ -339,7 +339,9 @@ describe("InboxTab", (): void => {
 
     await renderInboxTab({ gameState });
 
-    expect(screen.getAllByText(/Test Message \d/)).toHaveLength(3);
+    // Scoped to the list: the detail pane auto-opens the first unread, so its subject legitimately
+    // appears a second time outside the list.
+    expect(screen.getAllByTestId(/^inbox-row-/)).toHaveLength(3);
   });
 
   it("marks an unread message as read when selected", async (): Promise<void> => {
@@ -353,7 +355,7 @@ describe("InboxTab", (): void => {
       onGameUpdate,
     });
 
-    fireEvent.click(screen.getByText("Test Message"));
+    fireEvent.click(within(screen.getByTestId("inbox-row-m1")).getByText("Test Message"));
 
     await waitFor((): void => {
       expect(mockedInvoke).toHaveBeenCalledWith("mark_message_read", {
@@ -612,12 +614,20 @@ describe("InboxTab", (): void => {
    * Then it also leaves the selection, so Delete cannot remove what is no longer on screen.
    */
   it("drops a selected message from the selection when it leaves the view", async (): Promise<void> => {
-    mockedInvoke.mockResolvedValue([
-      createMessage({ id: "m1", subject: "First", read: false }),
-      createMessage({ id: "m2", subject: "Second", read: true }),
-    ]);
+    // The detail pane auto-opens the first unread, so "Opened" is here to absorb that: it is read
+    // on arrival and leaves the Unread view, while First and Second stay unread for the test to
+    // select. Answers mark only the message actually opened, never a flat "everything is read".
+    mockedInvoke.mockImplementation(async (_command: string, args?: unknown) => {
+      const opened = (args as { messageId?: string } | undefined)?.messageId;
+      return [
+        createMessage({ id: "m0", subject: "Opened", read: true }),
+        createMessage({ id: "m1", subject: "First", read: opened === "m1" }),
+        createMessage({ id: "m2", subject: "Second", read: opened === "m2" }),
+      ];
+    });
     await renderInboxTab({
       gameState: createGameState([
+        createMessage({ id: "m0", subject: "Opened", read: false }),
         createMessage({ id: "m1", subject: "First", read: false }),
         createMessage({ id: "m2", subject: "Second", read: false }),
       ]),
@@ -627,7 +637,7 @@ describe("InboxTab", (): void => {
     fireEvent.click(screen.getByTestId("inbox-toggle-selection-mode"));
     fireEvent.click(screen.getByTestId("inbox-select-message-m1"));
     fireEvent.click(screen.getByTestId("inbox-select-message-m2"));
-    fireEvent.click(screen.getByText("Second"));
+    fireEvent.click(within(screen.getByTestId("inbox-row-m2")).getByText("Second"));
 
     await waitFor((): void => {
       expect(screen.queryByTestId("inbox-select-message-m2")).not.toBeInTheDocument();
