@@ -72,7 +72,11 @@ export default function DashboardWorkspaceContent({
   return (
     // The workspace owns the page's scroll (layout rule L1); min-h-0 lets it shrink inside the column
     // so it scrolls rather than growing past the window.
-    <div className="scrollbar-thin min-h-0 flex-1 overflow-auto bg-page p-3">
+    //
+    // No background of its own: GameShell paints the page and puts the section's SceneBackdrop
+    // behind this column, so an opaque fill here would cover the room and leave the plate visible
+    // nowhere but the outer gutters.
+    <div className="scrollbar-thin min-h-0 flex-1 overflow-auto p-3">
       {isUnemployed && (
         <div className="mb-4 flex items-center gap-3 rounded-lg border border-line bg-warning-tint px-4 py-3">
           <ShieldX className="h-5 w-5 shrink-0 text-warning" />
