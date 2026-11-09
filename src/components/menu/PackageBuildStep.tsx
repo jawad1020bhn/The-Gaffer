@@ -20,7 +20,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "../ui";
-import type { PackageInfo, PackageIssue, StackConflictInfo } from "./WorldSelect";
+import type { PackageInfo, PackageIssue, StackConflictInfo } from "./packageTypes";
 
 interface PackageBuildStepProps {
   installedPackages: PackageInfo[];
@@ -33,6 +33,8 @@ interface PackageBuildStepProps {
   onNext: () => void;
   onBack: () => void;
   onClose: () => void;
+  /** When hosted by the career setup frame, the frame owns the title, back and exit controls. */
+  embedded?: boolean;
 }
 
 function StepIndicator({ current }: { current: 2 | 3 }) {
@@ -184,6 +186,7 @@ export default function PackageBuildStep({
   onNext,
   onBack,
   onClose,
+  embedded = false,
 }: PackageBuildStepProps) {
   const { t } = useTranslation();
   const [stackConflicts, setStackConflicts] = useState<StackConflictInfo[]>([]);
@@ -235,33 +238,37 @@ export default function PackageBuildStep({
   return (
     <div className="flex flex-col gap-4">
       {/* Header */}
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-2">
+      {!embedded && (
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-fg-subtle hover:text-fg transition-colors p-1 rounded-control hover:bg-hover"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h2 className="text-heading font-heading font-bold uppercase tracking-label text-fg">
+              {t("packageBuild.title")}
+            </h2>
+          </div>
           <button
             type="button"
-            onClick={onBack}
-            className="text-fg-subtle hover:text-fg transition-colors p-1 rounded-control hover:bg-hover"
+            onClick={onClose}
+            className="text-fg-subtle hover:text-fg transition-colors p-1 rounded-control hover:bg-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
+            aria-label={t("common.close")}
           >
-            <ArrowLeft className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
-          <h2 className="text-heading font-heading font-bold uppercase tracking-label text-fg">
-            {t("packageBuild.title")}
-          </h2>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-fg-subtle hover:text-fg transition-colors p-1 rounded-control hover:bg-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
-          aria-label={t("common.close")}
-        >
-          <X className="w-5 h-5" aria-hidden="true" />
-        </button>
-      </div>
+      )}
 
-      <StepIndicator current={2} />
+      {!embedded && <StepIndicator current={2} />}
 
       {/* Scrollable content */}
-      <div className="flex flex-col gap-4 max-h-[52vh] overflow-y-auto pr-1">
+      <div
+        className={`flex flex-col gap-4 overflow-y-auto pr-1 ${embedded ? "max-h-[58vh]" : "max-h-[52vh]"}`}
+      >
         {/* Databases section */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">

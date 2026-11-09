@@ -5,7 +5,7 @@ import { routeForActiveCareer } from "../services/careerService";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { applyExtraTranslations } from "../lib/extraTranslations";
 import type { JSX } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getActiveGame, getActiveSaveId, saveGame, exitToMenu } from "../services/sessionService";
 import { resolveBackendError } from "../utils/backendI18n";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -73,6 +73,21 @@ import {
 } from "../services/portraitService";
 import { getFinanceSnapshot, type TeamFinanceSnapshotData } from "../services/financeService";
 import { isSeasonComplete } from "../lib/seasonContext";
+import ArrivalSequence from "../components/onboarding/ArrivalSequence";
+import {
+  acknowledgeMilestone,
+  advanceArrival,
+  dismissGuide,
+  isCareerJournal,
+  loadCareerJournal,
+  resumeGuide,
+  saveCareerJournal,
+  skipArrival,
+  type CareerJournal,
+  type FirstDayMilestone,
+} from "../components/onboarding/careerJournal";
+import type { BoardPromise } from "../components/careerSetup/careerSetupModel";
+import { setPlayStyle } from "../services/squadService";
 
 const CLUB_TABS = new Set<string>(
   DASHBOARD_DESTINATIONS.filter((entry) => entry.clubOnly).map((entry) => entry.tab),
@@ -85,6 +100,7 @@ interface DashboardProps {
 
 export default function Dashboard({ initialTab = "Home" }: DashboardProps): JSX.Element {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     hasActiveGame,
     managerName,
@@ -122,6 +138,7 @@ export default function Dashboard({ initialTab = "Home" }: DashboardProps): JSX.
     new Set<string>(),
   );
   const [activeSaveId, setActiveSaveId] = useState<string | null>(null);
+  const [careerJournal, setCareerJournal] = useState<CareerJournal | null>(null);
   const [squadListSortState, setSquadListSortState] = useState<SquadListSortState>(
     DEFAULT_SQUAD_LIST_SORT_STATE,
   );
@@ -255,6 +272,72 @@ export default function Dashboard({ initialTab = "Home" }: DashboardProps): JSX.
   useEffect(() => {
     setSquadListSortState(DEFAULT_SQUAD_LIST_SORT_STATE);
   }, [activeSaveId]);
+
+  // Presentation-only career journal: stored beside the save, never inside the simulation state.
+  useEffect(() => {
+    if (!gameState) {
+      setCareerJournal(null);
+      return;
+    }
+    const stored = loadCareerJournal(gameState, activeSaveId);
+    const routeState = location.state as { arrivalJournal?: unknown } | null;
+    const routed =
+      isCareerJournal(routeState?.arrivalJournal) &&
+      routeState.arrivalJournal.managerId === gameState.manager.id
+        ? routeState.arrivalJournal
+        : null;
+    setCareerJournal(stored ?? routed);
+  }, [gameState, activeSaveId, location.state]);
+
+  const updateCareerJournal = useCallback(
+    (next: CareerJournal) => {
+      setCareerJournal(next);
+      const state = latestGameStateRef.current;
+      if (state && !saveCareerJournal(state, activeSaveId, next)) {
+        console.warn("Career journal could not be persisted; progress remains in memory.");
+      }
+    },
+    [activeSaveId],
+  );
+
+  const handleArrivalAdvance = useCallback(
+    (promise?: BoardPromise) => {
+      setCareerJournal((current) => {
+        if (!current) return current;
+        const next = advanceArrival(current, promise);
+        const state = latestGameStateRef.current;
+        if (state) saveCareerJournal(state, activeSaveId, next);
+        return next;
+      });
+    },
+    [activeSaveId],
+  );
+
+  const handleArrivalSign = useCallback(async () => {
+    const state = latestGameStateRef.current;
+    const journal = careerJournal;
+    if (!state || !journal) return;
+    const team = state.teams.find((candidate) => candidate.id === state.manager.team_id);
+    if (team && team.play_style !== journal.philosophy) {
+      const updated = await setPlayStyle(journal.philosophy);
+      setGameState(updated);
+      await saveGame();
+      markClean();
+    }
+  }, [careerJournal, setGameState, markClean]);
+
+  const handleAcknowledgeMilestone = useCallback(
+    (milestone: FirstDayMilestone) => {
+      setCareerJournal((current) => {
+        if (!current) return current;
+        const next = acknowledgeMilestone(current, milestone);
+        const state = latestGameStateRef.current;
+        if (state) saveCareerJournal(state, activeSaveId, next);
+        return next;
+      });
+    },
+    [activeSaveId],
+  );
 
   useEffect(() => {
     if (!backgroundPortraitPrewarmKey) {
@@ -538,12 +621,15 @@ export default function Dashboard({ initialTab = "Home" }: DashboardProps): JSX.
     visitedOnboardingTabs,
     squadListSortState,
     initialMessageId: profileNavigation.initialMessageId,
+    careerJournal,
     handlers: {
       onSelectPlayer: selectPlayer,
       onSelectTeam: selectTeam,
       onGameUpdate: setGameState,
       onNavigate: handleNavigate,
       onSquadListSortChange: setSquadListSortState,
+      onDismissGuide: () => careerJournal && updateCareerJournal(dismissGuide(careerJournal)),
+      onAcknowledgeMilestone: handleAcknowledgeMilestone,
     },
   });
 
@@ -563,6 +649,14 @@ export default function Dashboard({ initialTab = "Home" }: DashboardProps): JSX.
       onNavigate={handleNavClick}
       onBack={handleBack}
       onNavigateSettings={handleNavigateSettings}
+      onResumeGuide={
+        careerJournal
+          ? () => {
+              updateCareerJournal(resumeGuide(careerJournal));
+              handleNavClick("Home");
+            }
+          : undefined
+      }
       onSave={handleSave}
       onContinue={handleContinue}
       isSaving={isSaving}
@@ -634,6 +728,15 @@ export default function Dashboard({ initialTab = "Home" }: DashboardProps): JSX.
         onDigestStop={abortDigest}
       />
       <FiredModal />
+      {careerJournal && careerJournal.arrivalStage !== "done" ? (
+        <ArrivalSequence
+          gameState={gameState}
+          journal={careerJournal}
+          onAdvance={handleArrivalAdvance}
+          onSkip={() => updateCareerJournal(skipArrival(careerJournal))}
+          onSign={handleArrivalSign}
+        />
+      ) : null}
 
       {saveError !== null ? (
         <p
@@ -653,6 +756,8 @@ export default function Dashboard({ initialTab = "Home" }: DashboardProps): JSX.
         onSelectTeam={selectTeam}
         onGameUpdate={setGameState}
         isUnemployed={isUnemployed ?? false}
+        careerJournal={careerJournal}
+        onAcknowledgeMilestone={handleAcknowledgeMilestone}
       />
     </GameShell>
   );

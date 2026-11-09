@@ -32,6 +32,7 @@ interface GameShellProps {
   onNavigate: (tab: string) => void;
   onBack: () => void;
   onNavigateSettings: () => void;
+  onResumeGuide?: () => void;
   onExitClick: () => void;
   /** Quick save, reachable from the pause menu and F5. */
   onSave?: () => void;
@@ -86,6 +87,7 @@ export default function GameShell({
   onNavigate,
   onBack,
   onNavigateSettings,
+  onResumeGuide,
   onExitClick,
   onSave,
   onContinue,
@@ -194,6 +196,7 @@ export default function GameShell({
         onSave={onSave}
         onOpenSearch={() => setSearchOpen(true)}
         onNavigateSettings={onNavigateSettings}
+        onResumeGuide={onResumeGuide}
         onExitClick={onExitClick}
         isSaving={isSaving}
         saveFlash={saveFlash}

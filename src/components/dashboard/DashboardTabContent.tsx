@@ -43,7 +43,15 @@ export default function DashboardTabContent({ viewModel }: DashboardTabContentPr
     seasonComplete,
     squadListSortState,
     visitedOnboardingTabs,
-    handlers: { onGameUpdate, onNavigate, onSelectPlayer, onSelectTeam, onSquadListSortChange },
+    careerJournal,
+    handlers: {
+      onGameUpdate,
+      onNavigate,
+      onSelectPlayer,
+      onSelectTeam,
+      onSquadListSortChange,
+      onDismissGuide,
+    },
   } = viewModel;
 
   // Held here, which stays mounted across tabs: the season's end screen must outlast the game
@@ -68,6 +76,8 @@ export default function DashboardTabContent({ viewModel }: DashboardTabContentPr
         onNavigate={onNavigate}
         onGameUpdate={onGameUpdate}
         visitedOnboardingTabs={visitedOnboardingTabs}
+        careerJournal={careerJournal}
+        onDismissGuide={onDismissGuide}
       />
     );
   };

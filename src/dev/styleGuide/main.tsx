@@ -7,6 +7,7 @@ import { i18nReady } from "../../i18n";
 import { readHarnessLanguage, readHarnessPage } from "../pageHarness/harnessPage";
 import { readShellPreview } from "../shellPreview/readShellPreview";
 import { readMatchPreview } from "../matchPreview/readMatchPreview";
+import { readOnboardingPreview } from "../onboardingPreview/readOnboardingPreview";
 import { StyleGuide } from "./StyleGuide";
 import { applyStyleGuideOptions, readStyleGuideOptions } from "./styleGuideOptions";
 
@@ -17,6 +18,7 @@ const rootElement = document.getElementById("root");
 const page = readHarnessPage(window.location.search);
 const shellPreview = readShellPreview(window.location.search);
 const matchPreview = readMatchPreview(window.location.search);
+const onboardingPreview = readOnboardingPreview(window.location.search);
 
 if (rootElement && page) {
   // ?page= mounts a real page on the fixture career instead of the guide (src/dev/pageHarness).
@@ -43,6 +45,27 @@ if (rootElement && page) {
     })
     .catch((error: unknown) => {
       console.error("The shell preview could not start:", error);
+    });
+} else if (rootElement && onboardingPreview) {
+  // ?preview=onboarding walks the real first-run screens (title → setup → club → arrival → office)
+  // on a preview career: no save, no Rust runtime. `stage` jumps to a beat for screenshots.
+  void i18nReady
+    .then(async () => {
+      const { mockIPC, mockWindows } = await import("@tauri-apps/api/mocks");
+      mockWindows("main");
+      const { installOnboardingPreviewIpc } = await import("../onboardingPreview/previewIpc");
+      installOnboardingPreviewIpc(mockIPC);
+      const { OnboardingPreview } = await import("../onboardingPreview/OnboardingPreview");
+      ReactDOM.createRoot(rootElement).render(
+        <React.StrictMode>
+          <ThemeProvider>
+            <OnboardingPreview stage={onboardingPreview.stage} />
+          </ThemeProvider>
+        </React.StrictMode>,
+      );
+    })
+    .catch((error: unknown) => {
+      console.error("The onboarding preview could not start:", error);
     });
 } else if (rootElement && matchPreview) {
   // ?preview=match draws the live match screen on a preview match: no backend session needed.

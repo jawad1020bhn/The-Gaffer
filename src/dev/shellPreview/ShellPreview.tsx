@@ -13,7 +13,8 @@ import type { MatchModeType } from "../../hooks/useAdvanceTime";
 import { createDashboardProfileNavigationState } from "../../components/dashboard/dashboardProfileNavigation";
 import type { DashboardAlert } from "../../components/dashboard/dashboardHelpers";
 import { formatDateFull, formatVal, getTeamName, getUserNextFixture } from "../../lib/helpers";
-import { useGameStore } from "../../store/gameStore";
+import { useGameStore, type GameStateData } from "../../store/gameStore";
+import type { CareerJournal, FirstDayMilestone } from "../../components/onboarding/careerJournal";
 import { previewGameState } from "./fixture";
 
 /**
@@ -31,10 +32,27 @@ function seedGameStore(): void {
   useGameStore.getState().setGameState(previewGameState);
 }
 
-export function ShellPreview(): JSX.Element {
-  seedGameStore();
+export interface ShellPreviewProps {
+  /** The career to draw; defaults to the shell preview's own fixture career. */
+  gameState?: GameStateData;
+  /** Presentation-only first-day guidance, as the Dashboard wires it. */
+  careerJournal?: CareerJournal | null;
+  onDismissGuide?: () => void;
+  onAcknowledgeMilestone?: (milestone: FirstDayMilestone) => void;
+  onResumeGuide?: () => void;
+}
+
+export function ShellPreview({
+  gameState: providedGameState,
+  careerJournal,
+  onDismissGuide,
+  onAcknowledgeMilestone,
+  onResumeGuide,
+}: ShellPreviewProps = {}): JSX.Element {
+  // A caller that brings its own career (the onboarding preview) has already seeded the store.
+  if (!providedGameState) seedGameStore();
   const { t } = useTranslation();
-  const gameState = previewGameState;
+  const gameState = providedGameState ?? previewGameState;
   const [activeTab, setActiveTab] = useState("Home");
   const [matchMode, setMatchMode] = useState<MatchModeType>("live");
   const [showContinueMenu, setShowContinueMenu] = useState(false);
@@ -66,18 +84,25 @@ export function ShellPreview(): JSX.Element {
     activeTab: management.activeTab,
     gameState,
     seasonComplete: false,
-    visitedOnboardingTabs: new Set(["Squad", "Staff"]),
+    visitedOnboardingTabs: careerJournal ? new Set<string>() : new Set(["Squad", "Staff"]),
     squadListSortState: DEFAULT_SQUAD_LIST_SORT_STATE,
     initialMessageId: management.initialMessageId,
+    careerJournal,
     handlers: {
       onSelectPlayer: () => {},
       onSelectTeam: () => {},
       onGameUpdate: () => {},
-      onNavigate: (tab) => {
-        setManagement((current) => ({ ...current, activeTab: tab }));
+      onNavigate: (tab, context) => {
+        setManagement((current) => ({
+          ...current,
+          activeTab: tab,
+          initialMessageId: context?.messageId ?? null,
+        }));
         setActiveTab(tab);
       },
       onSquadListSortChange: () => {},
+      onDismissGuide,
+      onAcknowledgeMilestone,
     },
   });
 
@@ -112,6 +137,15 @@ export function ShellPreview(): JSX.Element {
       }}
       onBack={() => {}}
       onNavigateSettings={() => {}}
+      onResumeGuide={
+        onResumeGuide
+          ? () => {
+              onResumeGuide();
+              setActiveTab("Home");
+              setManagement((current) => ({ ...current, activeTab: "Home" }));
+            }
+          : undefined
+      }
       onExitClick={() => {}}
       onSave={save}
       onContinue={() => {}}
@@ -162,6 +196,8 @@ export function ShellPreview(): JSX.Element {
         onSelectTeam={() => {}}
         onGameUpdate={() => {}}
         isUnemployed={false}
+        careerJournal={careerJournal}
+        onAcknowledgeMilestone={onAcknowledgeMilestone}
       />
     </GameShell>
   );

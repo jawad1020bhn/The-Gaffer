@@ -18,6 +18,10 @@ Full-UI redesign into a dark, broadcast-style football command centre, inspired 
 
 Implementation status for the redesign: what the first vertical slice shipped, targeted verification results, and the fixture/Rust/browser blockers still open.
 
+### [roadmap/ONBOARDING_PLAN.md](roadmap/ONBOARDING_PLAN.md)
+
+First-day-in-charge journey: a full-window career-setup frame, richer club dossier, appointment ceremony and meaningful first-day guidance. Covers the Guided/Quick paths, save-backed progress, implementation slices and acceptance gates, plus §11's record of what shipped, the browser previews and the verification limits. Extends the UI redesign's front-door phase. Visual evidence lives in [roadmap/evidence/onboarding/](roadmap/evidence/onboarding/).
+
 ### [roadmap/ARCHIVE.md](roadmap/ARCHIVE.md)
 
 Historical record of the shipped 0.1.x, 0.2.x and 0.3.0 releases, preserved verbatim from the roadmap issue before it was restructured into an index. Uses the old `-alpha`/`-beta` naming; see [CONTRIBUTING](../CONTRIBUTING.md) for the current odd/even scheme. The live roadmap is [issue #11](https://github.com/openfootmanager/openfootmanager/issues/11).

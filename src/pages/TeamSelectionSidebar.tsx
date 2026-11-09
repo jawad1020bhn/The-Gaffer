@@ -6,8 +6,9 @@ import { visibleRatingText } from "../lib/playerKnowledge";
 import { naturalPositionOf } from "../lib/positions";
 import { translatePositionLabel } from "../components/squad/SquadTab.helpers";
 import { competitionDisplayName } from "../lib/competitionName";
-import { Badge, Card, CardBody, TeamLocation } from "../components/ui";
-import { Globe, Shield, Target, Users } from "lucide-react";
+import { Badge, Card, CardBody, TeamLocation, TeamLogo } from "../components/ui";
+import { formatVal } from "../lib/helpers";
+import { Globe, Landmark, Shield, Target, Trophy, Users, Wallet } from "lucide-react";
 
 interface TeamSelectionSidebarProps {
   selectedTeam: TeamData | null;
@@ -26,6 +27,10 @@ export default function TeamSelectionSidebar({
 }: TeamSelectionSidebarProps) {
   const { t, i18n } = useTranslation();
   const compName = (c: LeagueData) => competitionDisplayName(c, t);
+  const lastSeason = (selectedTeam?.history ?? []).reduce<TeamData["history"][number] | null>(
+    (latest, record) => (!latest || record.season > latest.season ? record : latest),
+    null,
+  );
 
   return (
     <Card accent="accent" className="h-fit">
@@ -36,9 +41,10 @@ export default function TeamSelectionSidebar({
               <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {t("teamSelect.selectedClub")}
               </p>
-              <h2 className="mt-1 font-heading text-title font-bold text-fg">
-                {selectedTeam.name}
-              </h2>
+              <div className="mt-2 flex items-center gap-3">
+                <TeamLogo team={selectedTeam} className="h-14 w-14 shrink-0" />
+                <h2 className="font-heading text-title font-bold text-fg">{selectedTeam.name}</h2>
+              </div>
               <TeamLocation
                 city={selectedTeam.city}
                 countryCode={selectedTeam.country}
@@ -74,7 +80,40 @@ export default function TeamSelectionSidebar({
                 label={t("teamSelect.competitions")}
                 value={String(selectedTeamCompetitions.length)}
               />
+              <DetailTile
+                icon={<Wallet className="h-4 w-4" />}
+                label={t("teamSelect.transferBudget")}
+                value={formatVal(selectedTeam.transfer_budget)}
+              />
+              <DetailTile
+                icon={<Landmark className="h-4 w-4" />}
+                label={t("teamSelect.stadium")}
+                value={t("teamSelect.stadiumValue", {
+                  name: selectedTeam.stadium_name,
+                  capacity: selectedTeam.stadium_capacity.toLocaleString(i18n.language),
+                })}
+              />
+              <DetailTile
+                icon={<Trophy className="h-4 w-4" />}
+                label={t("teamSelect.lastSeason")}
+                value={
+                  lastSeason
+                    ? t("teamSelect.lastSeasonValue", {
+                        season: lastSeason.season,
+                        position: lastSeason.league_position,
+                      })
+                    : t("teamSelect.noHistory")
+                }
+              />
+              <DetailTile
+                icon={<Shield className="h-4 w-4" />}
+                label={t("teamSelect.wageBudget")}
+                value={formatVal(selectedTeam.wage_budget)}
+              />
             </div>
+            <p className="rounded-control border border-line bg-sunken px-3 py-2 text-caption text-fg-muted">
+              {t("teamSelect.expectationsNote")}
+            </p>
 
             <div>
               <p className="mb-3 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">

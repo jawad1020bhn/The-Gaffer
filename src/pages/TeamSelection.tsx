@@ -1,9 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore } from "../store/gameStore";
 import { buildRegionLabel } from "../lib/teamRegions";
-import { Badge, Card, CardBody } from "../components/ui";
-import { ArrowLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Badge, Button, Card, CardBody } from "../components/ui";
+import { ArrowLeft, ChevronRight } from "lucide-react";
+import { isCareerPresentation } from "../components/careerSetup/careerSetupModel";
 import TeamSelectionScopePanel from "./TeamSelectionScopePanel";
 import TeamSelectionGrid from "./TeamSelectionGrid";
 import TeamSelectionSidebar from "./TeamSelectionSidebar";
@@ -12,7 +13,12 @@ import { useTeamSelection } from "./useTeamSelection";
 export default function TeamSelection() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { gameState, setGameState, setGameActive } = useGameStore();
+  const routeState = location.state as { careerSetup?: unknown } | null;
+  const presentation = isCareerPresentation(routeState?.careerSetup)
+    ? routeState.careerSetup
+    : undefined;
 
   const {
     clubSearch,
@@ -46,7 +52,7 @@ export default function TeamSelection() {
     handleRegionToggle,
     handleCompetitionToggle,
     handleConfirm,
-  } = useTeamSelection({ gameState, setGameState, setGameActive, navigate });
+  } = useTeamSelection({ gameState, setGameState, setGameActive, navigate, presentation });
 
   if (!gameState) {
     navigate("/");
@@ -54,8 +60,8 @@ export default function TeamSelection() {
   }
 
   return (
-    <div className="min-h-screen bg-page">
-      <header className="flex items-center justify-between border-b border-line bg-panel px-6 py-4 shadow-sm">
+    <div className="flex h-dvh flex-col overflow-hidden bg-page">
+      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-line bg-chrome px-6 py-4">
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -74,30 +80,25 @@ export default function TeamSelection() {
         </div>
         <div className="flex items-center gap-3">
           {selectedTeam && (
-            <button
-              type="button"
-              onClick={handleConfirm}
+            <Button
+              variant="primary"
+              size="lg"
               disabled={isConfirming}
-              className={`flex items-center gap-2 rounded-control bg-selected px-6 py-2.5 font-heading text-body font-bold uppercase tracking-label text-on-brand transition-colors hover:bg-selected/90 ${
-                isConfirming ? "cursor-wait opacity-70" : ""
-              }`}
+              iconRight={<ChevronRight />}
+              onClick={handleConfirm}
             >
-              <span>
-                {isConfirming
-                  ? t("teamSelect.confirming")
-                  : t("teamSelect.manage", { name: selectedTeam.short_name })}
-              </span>
-              {isConfirming ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </button>
+              {isConfirming
+                ? t("teamSelect.confirming")
+                : t("teamSelect.manage", { name: selectedTeam.short_name })}
+            </Button>
           )}
         </div>
       </header>
 
-      <div className="space-y-5 p-6">
+      <main
+        aria-label={t("teamSelect.title")}
+        className="scrollbar-thin min-h-0 flex-1 space-y-5 overflow-y-auto p-6"
+      >
         {scopeMessage && (
           <Card accent="accent">
             <CardBody className="py-3">
@@ -165,7 +166,7 @@ export default function TeamSelection() {
             </div>
           </CardBody>
         </Card>
-      </div>
+      </main>
     </div>
   );
 }

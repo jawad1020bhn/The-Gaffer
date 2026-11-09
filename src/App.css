@@ -298,6 +298,9 @@
      960px window: at normal scale (16px root) 36rem = 576px fits the 655px workspace and two
      panels show; at xlarge (20px root) 36rem = 720px exceeds the 579px workspace and they stack. */
   --container-split: 36rem;
+
+  /* Career setup beat transition: short, restrained, and disabled by motion-reduce:animate-none. */
+  --animate-beat-enter: fade-slide-in 180ms ease-out;
 }
 
 /* A club's kit on an entity card, from the --kit and --kit-2 variables kitStyle() sets on the card.

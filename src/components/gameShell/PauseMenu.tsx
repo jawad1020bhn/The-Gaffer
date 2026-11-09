@@ -1,4 +1,13 @@
-import { Check, Save, Search, Settings, LogOut, Play, type LucideIcon } from "lucide-react";
+import {
+  Check,
+  Save,
+  Search,
+  Settings,
+  LogOut,
+  Play,
+  Compass,
+  type LucideIcon,
+} from "lucide-react";
 import { type JSX, type ReactNode, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog } from "../ui";
@@ -9,6 +18,7 @@ interface PauseMenuProps {
   onSave?: () => void;
   onOpenSearch: () => void;
   onNavigateSettings: () => void;
+  onResumeGuide?: () => void;
   onExitClick: () => void;
   isSaving?: boolean;
   saveFlash?: boolean;
@@ -66,6 +76,7 @@ export default function PauseMenu({
   onSave,
   onOpenSearch,
   onNavigateSettings,
+  onResumeGuide,
   onExitClick,
   isSaving = false,
   saveFlash = false,
@@ -120,6 +131,16 @@ export default function PauseMenu({
             onOpenSearch();
           }}
         />
+        {onResumeGuide ? (
+          <MenuButton
+            icon={Compass}
+            label={t("firstDay.resume")}
+            onClick={() => {
+              onClose();
+              onResumeGuide();
+            }}
+          />
+        ) : null}
         <MenuButton
           icon={Settings}
           label={t("dashboard.settings")}

@@ -210,6 +210,7 @@ vi.mock("../lib/extraTranslations", () => ({
 
 vi.mock("react-router-dom", () => ({
   useNavigate: () => navigateMock,
+  useLocation: () => ({ state: null }),
 }));
 
 vi.mock("@tauri-apps/api/core", () => ({

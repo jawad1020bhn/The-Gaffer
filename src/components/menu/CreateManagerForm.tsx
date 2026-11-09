@@ -4,6 +4,8 @@ import { Button, Select } from "../ui";
 import { AlertCircle, ChevronRight, X } from "lucide-react";
 import ManagerProfileList from "./ManagerProfileList";
 import type { ManagerProfile } from "./types";
+import ChoiceCards from "../careerSetup/ChoiceCards";
+import { MANAGER_BACKGROUNDS, type ManagerBackground } from "../careerSetup/careerSetupModel";
 
 const CreateManagerNationalityField = lazy(() => import("./CreateManagerNationalityField"));
 
@@ -30,6 +32,14 @@ interface CreateManagerFormProps {
   onSelectProfile: (profile: ManagerProfile) => void;
   onDeleteProfile: (id: string) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  /** Rendered inside the full-window career setup frame rather than the legacy menu card. */
+  embedded?: boolean;
+  formId?: string;
+  hideSubmit?: boolean;
+  submitLabelKey?: string;
+  showSeasonFields?: boolean;
+  background?: ManagerBackground;
+  onBackgroundChange?: (background: ManagerBackground) => void;
 }
 
 function NationalityFieldFallback({ error }: { error?: string }) {
@@ -79,34 +89,33 @@ export default function CreateManagerForm({
   onSelectProfile,
   onDeleteProfile,
   onSubmit,
+  embedded = false,
+  formId,
+  hideSubmit = false,
+  submitLabelKey = "createManager.chooseWorld",
+  showSeasonFields = true,
+  background,
+  onBackgroundChange,
 }: CreateManagerFormProps) {
   const { t, i18n } = useTranslation();
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-heading font-heading font-bold uppercase tracking-label text-fg transition-colors">
-          {t("createManager.title")}
-        </h2>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-control p-1 text-fg-subtle transition-colors hover:bg-hover hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
-          aria-label={t("common.close")}
-        >
-          <X className="h-5 w-5" aria-hidden="true" />
-        </button>
-      </div>
-
-      <div className="mb-1 flex items-center gap-2">
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-selected-fill text-caption font-bold text-on-brand">
-          1
+    <form id={formId} onSubmit={onSubmit} className="flex flex-col gap-4">
+      {!embedded && (
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-heading font-heading font-bold uppercase tracking-label text-fg transition-colors">
+            {t("createManager.title")}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-control p-1 text-fg-subtle transition-colors hover:bg-hover hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
+            aria-label={t("common.close")}
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
+          </button>
         </div>
-        <div className="h-0.5 flex-1 bg-hover" />
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-hover text-caption font-bold text-fg-subtle">
-          2
-        </div>
-      </div>
+      )}
 
       <ManagerProfileList
         profiles={profiles}
@@ -177,72 +186,74 @@ export default function CreateManagerForm({
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <div className="flex-1" id="create-manager-field-startYear">
-          <label
-            htmlFor="create-manager-start-year"
-            className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
-          >
-            {t("createManager.startYear")}
-          </label>
-          <input
-            id="create-manager-start-year"
-            aria-label={t("createManager.startYear")}
-            type="text"
-            pattern="[0-9]*"
-            inputMode="numeric"
-            className={`w-full rounded-control border bg-sunken p-3 text-fg outline-none transition-all placeholder:text-fg-subtle focus:ring-2 placeholder:text-fg-muted ${
-              formErrors.startYear
-                ? "border-danger focus:border-danger focus-visible:ring-focus"
-                : "border-line-strong focus:border-selected focus:ring-selected/20"
-            }`}
-            value={formData.startYear}
-            onChange={(event) => {
-              onChange("startYear", event.target.value);
-              onClearError("startYear");
-            }}
-          />
-          {formErrors.startYear ? (
-            <p className="mt-1 flex items-center gap-1 text-caption text-danger">
-              <AlertCircle className="h-3 w-3" />
-              {formErrors.startYear}
-            </p>
-          ) : null}
-        </div>
+      {showSeasonFields && (
+        <div className="flex gap-3">
+          <div className="flex-1" id="create-manager-field-startYear">
+            <label
+              htmlFor="create-manager-start-year"
+              className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
+            >
+              {t("createManager.startYear")}
+            </label>
+            <input
+              id="create-manager-start-year"
+              aria-label={t("createManager.startYear")}
+              type="text"
+              pattern="[0-9]*"
+              inputMode="numeric"
+              className={`w-full rounded-control border bg-sunken p-3 text-fg outline-none transition-all placeholder:text-fg-subtle focus:ring-2 placeholder:text-fg-muted ${
+                formErrors.startYear
+                  ? "border-danger focus:border-danger focus-visible:ring-focus"
+                  : "border-line-strong focus:border-selected focus:ring-selected/20"
+              }`}
+              value={formData.startYear}
+              onChange={(event) => {
+                onChange("startYear", event.target.value);
+                onClearError("startYear");
+              }}
+            />
+            {formErrors.startYear ? (
+              <p className="mt-1 flex items-center gap-1 text-caption text-danger">
+                <AlertCircle className="h-3 w-3" />
+                {formErrors.startYear}
+              </p>
+            ) : null}
+          </div>
 
-        <div className="flex-1" id="create-manager-field-startPhase">
-          <label
-            htmlFor="create-manager-start-phase"
-            className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
-          >
-            {t("createManager.startPhase")}
-          </label>
-          <Select
-            id="create-manager-start-phase"
-            aria-label={t("createManager.startPhase")}
-            fullWidth
-            value={formData.startPhase}
-            className={
-              formErrors.startPhase
-                ? "border-danger focus:border-danger focus-visible:ring-focus"
-                : ""
-            }
-            onChange={(event) => {
-              onChange("startPhase", event.target.value as CareerStartPhase);
-              onClearError("startPhase");
-            }}
-          >
-            <option value="seasonStart">{t("createManager.phaseSeasonStart")}</option>
-            <option value="midSeason">{t("createManager.phaseMidSeason")}</option>
-          </Select>
-          {formErrors.startPhase ? (
-            <p className="mt-1 flex items-center gap-1 text-caption text-danger">
-              <AlertCircle className="h-3 w-3" />
-              {formErrors.startPhase}
-            </p>
-          ) : null}
+          <div className="flex-1" id="create-manager-field-startPhase">
+            <label
+              htmlFor="create-manager-start-phase"
+              className="mb-1.5 block text-caption font-heading font-bold uppercase tracking-label text-fg-muted"
+            >
+              {t("createManager.startPhase")}
+            </label>
+            <Select
+              id="create-manager-start-phase"
+              aria-label={t("createManager.startPhase")}
+              fullWidth
+              value={formData.startPhase}
+              className={
+                formErrors.startPhase
+                  ? "border-danger focus:border-danger focus-visible:ring-focus"
+                  : ""
+              }
+              onChange={(event) => {
+                onChange("startPhase", event.target.value as CareerStartPhase);
+                onClearError("startPhase");
+              }}
+            >
+              <option value="seasonStart">{t("createManager.phaseSeasonStart")}</option>
+              <option value="midSeason">{t("createManager.phaseMidSeason")}</option>
+            </Select>
+            {formErrors.startPhase ? (
+              <p className="mt-1 flex items-center gap-1 text-caption text-danger">
+                <AlertCircle className="h-3 w-3" />
+                {formErrors.startPhase}
+              </p>
+            ) : null}
+          </div>
         </div>
-      </div>
+      )}
 
       <Suspense fallback={<NationalityFieldFallback error={formErrors.nationality} />}>
         <CreateManagerNationalityField
@@ -254,15 +265,33 @@ export default function CreateManagerForm({
         />
       </Suspense>
 
-      <Button
-        type="submit"
-        variant="primary"
-        size="lg"
-        className="mt-2 w-full"
-        iconRight={<ChevronRight />}
-      >
-        {t("createManager.chooseWorld")}
-      </Button>
+      {background && onBackgroundChange ? (
+        <>
+          <ChoiceCards
+            label={t("careerSetup.backgroundLabel")}
+            options={MANAGER_BACKGROUNDS.map((entry) => ({
+              value: entry.id,
+              label: t(entry.labelKey),
+              description: t(entry.descriptionKey),
+            }))}
+            value={background}
+            onChange={onBackgroundChange}
+          />
+          <p className="text-caption text-fg-subtle">{t("careerSetup.backgroundNote")}</p>
+        </>
+      ) : null}
+
+      {!hideSubmit && (
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="mt-2 w-full"
+          iconRight={<ChevronRight />}
+        >
+          {t(submitLabelKey)}
+        </Button>
+      )}
     </form>
   );
 }

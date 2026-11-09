@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { defaultActivePackageIds } from "./packageSelection";
-import type { PackageInfo } from "./WorldSelect";
+import type { PackageInfo } from "./packageTypes";
 
 function pkg(overrides: Partial<PackageInfo>): PackageInfo {
   return {

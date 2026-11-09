@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { visibleRatingText } from "../lib/playerKnowledge";
 import { useTranslation } from "react-i18next";
 
@@ -12,6 +12,28 @@ interface TeamGroup {
   name: string;
   order: number;
   teams: TeamData[];
+}
+
+type StoryPreset = "all" | "contenders" | "sleepingGiants" | "newStories";
+
+const STORY_PRESETS: ReadonlyArray<{ id: StoryPreset; labelKey: string }> = [
+  { id: "all", labelKey: "teamSelect.presets.all" },
+  { id: "contenders", labelKey: "teamSelect.presets.contenders" },
+  { id: "sleepingGiants", labelKey: "teamSelect.presets.sleepingGiants" },
+  { id: "newStories", labelKey: "teamSelect.presets.newStories" },
+];
+
+/** Honest story filters derived only from the club's recorded history. */
+export function matchesStoryPreset(team: TeamData, preset: StoryPreset): boolean {
+  if (preset === "all") return true;
+  const history = team.history ?? [];
+  if (preset === "newStories") return history.length === 0;
+  const last = history.reduce<TeamData["history"][number] | null>(
+    (latest, record) => (!latest || record.season > latest.season ? record : latest),
+    null,
+  );
+  if (preset === "contenders") return last?.league_position === 1;
+  return history.some((record) => record.league_position === 1) && last?.league_position !== 1;
 }
 
 interface TeamSelectionGridProps {
@@ -36,6 +58,14 @@ export default function TeamSelectionGrid({
   getTeamPlayerCount,
 }: TeamSelectionGridProps) {
   const { t, i18n } = useTranslation();
+  const [preset, setPreset] = useState<StoryPreset>("all");
+  const visibleGroups = teamGroups
+    .map((group) => ({
+      ...group,
+      teams: group.teams.filter((team) => matchesStoryPreset(team, preset)),
+    }))
+    .filter((group) => group.teams.length > 0);
+  const visibleCount = visibleGroups.reduce((count, group) => count + group.teams.length, 0);
 
   const getReputationLabel = (
     rep: number,
@@ -60,14 +90,31 @@ export default function TeamSelectionGrid({
           className="min-w-0 flex-1 rounded-control border border-line bg-sunken px-3 py-2 text-body text-fg placeholder:text-fg-subtle"
         />
         <span className="shrink-0 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
-          {t("teamSelect.clubCount", { n: filteredTeamsCount })}
+          {t("teamSelect.clubCount", { n: preset === "all" ? filteredTeamsCount : visibleCount })}
         </span>
       </div>
-      {filteredTeamsCount === 0 ? (
+      <div
+        role="group"
+        aria-label={t("teamSelect.presets.label")}
+        className="mb-4 flex flex-wrap gap-2"
+      >
+        {STORY_PRESETS.map((entry) => (
+          <button
+            key={entry.id}
+            type="button"
+            aria-pressed={preset === entry.id}
+            onClick={() => setPreset(entry.id)}
+            className={`min-h-9 rounded-control border px-3 py-1.5 font-heading text-caption font-bold uppercase tracking-label transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page ${preset === entry.id ? "border-selected bg-selected-tint text-selected" : "border-line bg-panel text-fg-muted hover:bg-hover hover:text-fg"}`}
+          >
+            {t(entry.labelKey)}
+          </button>
+        ))}
+      </div>
+      {visibleCount === 0 ? (
         <p className="py-10 text-center text-body text-fg-muted">{t("teamSelect.noClubsMatch")}</p>
       ) : (
         <div className="max-h-[640px] space-y-5 overflow-y-auto pr-1">
-          {teamGroups.map((group) => (
+          {visibleGroups.map((group) => (
             <div key={group.id}>
               <p className="mb-2 text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
                 {group.name}
@@ -84,19 +131,14 @@ export default function TeamSelectionGrid({
                       key={team.id}
                       type="button"
                       onClick={() => onSelectTeam(team.id)}
-                      className={`rounded-panel text-left transition-all duration-200 ${
-                        isSelected
-                          ? "scale-[1.01] ring-2 ring-selected ring-offset-2"
-                          : "hover:scale-[1.01]"
+                      aria-pressed={isSelected}
+                      className={`rounded-panel text-left transition-colors duration-150 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page ${
+                        isSelected ? "ring-2 ring-selected" : "hover:ring-1 hover:ring-line-strong"
                       }`}
                     >
                       <Card accent={isSelected ? "primary" : "none"} className="h-full">
                         <div
-                          className={`rounded-t-xl p-4 ${
-                            isSelected
-                              ? "bg-gradient-to-r from-selected-fill to-selected-fill"
-                              : "bg-panel"
-                          }`}
+                          className={`rounded-t-panel p-4 ${isSelected ? "bg-selected-tint" : "bg-panel"}`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
