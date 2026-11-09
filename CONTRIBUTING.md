@@ -259,15 +259,15 @@ The base version lives in three files that must stay in sync:
 - `src-tauri/Cargo.toml`
 - `package.json`
 
-**Do not bump these per build.** They only change when a release stream branches
-(`0.3` → `0.4`). Everything that varies build to build — the channel and the commit hash — is
-injected by `vite.config.ts` as `__APP_VERSION__`, `__APP_CHANNEL__` and `__APP_COMMIT__`, and
-formatted by `formatAppVersion()` in
+**Do not bump these per build.** They change when a release is cut — a new stream (`0.3` → `0.4`)
+or a patch within one (`0.4.0` → `0.4.1`) — never for an individual CI build. Everything that varies
+build to build — the channel and the commit hash — is injected by `vite.config.ts` as
+`__APP_VERSION__`, `__APP_CHANNEL__` and `__APP_COMMIT__`, and formatted by `formatAppVersion()` in
 `src/lib/appVersion.ts`:
 
 | build | shown in the UI and window title |
 | --- | --- |
-| stable | `v0.4.0` |
+| stable | `v0.4.1` |
 | nightly | `v0.3.0-nightly · f164fcd` |
 | local | `v0.3.0-dev · f164fcd` |
 

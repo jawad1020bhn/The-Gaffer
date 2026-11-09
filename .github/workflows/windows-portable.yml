@@ -80,6 +80,24 @@ jobs:
           src-tauri/target/release/ofm-cli.exe pack mods/eafc-fc27 --output eafc-fc27.ofm
           src-tauri/target/release/ofm-cli.exe validate eafc-fc27.ofm
 
+      # The release notes used to hardcode these, and had drifted to "685 clubs, 18,893 players"
+      # while the package held 684 and 18,875. Read them from the data being shipped instead, so
+      # the notes cannot describe a different database from the one in the zip.
+      - name: Count what the world ships
+        id: world
+        shell: bash
+        run: |
+          node --input-type=module -e '
+            import { readFileSync, appendFileSync } from "node:fs";
+            const count = (name) =>
+              JSON.parse(readFileSync("mods/eafc-fc27/" + name + ".json", "utf8")).items.length;
+            const rows = [["teams", "clubs"], ["players", "players"], ["competitions", "competitions"]];
+            appendFileSync(
+              process.env.GITHUB_OUTPUT,
+              rows.map(([file, key]) => key + "=" + count(file) + "\n").join(""),
+            );
+          '
+
       - name: Assemble the folder
         shell: pwsh
         run: |
@@ -141,6 +159,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+          CLUBS: ${{ steps.world.outputs.clubs }}
+          PLAYERS: ${{ steps.world.outputs.players }}
+          COMPETITIONS: ${{ steps.world.outputs.competitions }}
         run: |
           # `--latest=false`: the stable releases own "latest", and a portable development build
           # taking that flag would silently become what every visitor is offered to download.
@@ -149,7 +170,11 @@ jobs:
             --latest=false \
             --notes "A Windows build with nothing to install: unzip, run \`OpenfootManager.exe\`.
 
-          Baked from \`${GITHUB_SHA:0:7}\`. Real players included — \`packages/eafc-fc27.ofm\` holds 685 clubs, 18,893 players and 38 competitions from EA FC 27, installed and pre-selected on first run, so a new career starts on the real world.
+          Baked from \`${GITHUB_SHA:0:7}\`. **Real players are the default** — \`packages/eafc-fc27.ofm\` holds $CLUBS clubs, $PLAYERS players and $COMPETITIONS competitions from EA FC 27, installed and pre-selected on first run, so a new career starts on the real world with nothing to import. Untick the package on the new-game screen for a generated world instead.
+
+          The game ships in English; Arabic appears in the language picker as coming soon.
+
+          Unofficial and unaffiliated with EA. The data belongs to EA — keep it for personal use.
 
           Not code-signed, so SmartScreen will ask once. Needs WebView2, which Windows 10 and 11 already have." \
             "OpenfootManager-portable-windows-x64.zip"

@@ -1,7 +1,7 @@
 {
   "name": "openfootmanager",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "scripts": {
     "audit:i18n": "node scripts/audit-i18n.mjs",
