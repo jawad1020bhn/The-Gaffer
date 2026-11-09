@@ -10,10 +10,14 @@
  * still opened on a generated world of fictional clubs. Declaring the archive as a Tauri
  * resource puts it in the same place for every build, and this script is what writes it.
  *
- * Why not `ofm-cli pack`, which the portable workflow uses? That needs a Rust build first. This
- * runs on `predev` and `prebuild`, before any Rust, and a fresh checkout has no toolchain warm —
- * so it reuses the importer's dependency-free zip writer instead. Both produce a zip whose
- * entries sit at the root, which is all a `.ofm` is.
+ * Why not `ofm-cli pack`, which the portable workflow uses? That needs a Rust build first, and
+ * this has to run *before* one: `src-tauri/build.rs` calls it so the declared resource exists by
+ * the time tauri-build looks for it. `predev` and `prebuild` call it too, for the npm-only paths.
+ * So it reuses the importer's dependency-free zip writer rather than the CLI. Both produce a zip
+ * whose entries sit at the root, which is all a `.ofm` is.
+ *
+ * Being called from build.rs is why this must never need `npm ci`: a bare `cargo test --workspace`
+ * has to work on a fresh checkout with nothing but Node on PATH.
  *
  * The archive is generated, never committed: `mods/eafc-fc27/` is the source of truth, and a
  * committed binary would conflict on every data change (see scripts/check-untracked-generated.sh).

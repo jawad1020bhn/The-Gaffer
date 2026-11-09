@@ -23,9 +23,9 @@ first — making it the default is a distribution decision, not just a convenien
 ## This is the game's default world
 
 **Nothing to install.** Every build ships this database, and a new career starts on it:
-`predev`/`prebuild` run [`scripts/pack-bundled-world.mjs`](../../scripts/pack-bundled-world.mjs),
-which packs this directory into `src-tauri/packages/eafc-fc27.ofm`; Tauri ships that archive as a
-resource; the game copies it into your own package directory the first time it lists packages and
+`src-tauri/build.rs` runs [`scripts/pack-bundled-world.mjs`](../../scripts/pack-bundled-world.mjs)
+before every build (and `predev`/`prebuild` cover the npm-only paths), which packs this directory
+into `src-tauri/packages/eafc-fc27.ofm`; Tauri ships that archive as a resource; the game copies it into your own package directory the first time it lists packages and
 pre-selects it on the new-game screen. You should see Arsenal, Real Madrid and the rest — not
 generated clubs.
 

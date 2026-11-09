@@ -204,10 +204,13 @@ npm run tauri dev
 `npm run dev` starts only the Vite front end. That is useful for styling work, but it has **no
 Tauri backend**, so anything needing a career will not load — use `npm run tauri dev` to play.
 
-The default world needs no setup: `predev` and `prebuild` pack `mods/eafc-fc27` into
+The default world needs no setup. `mods/eafc-fc27` is packed into
 `src-tauri/packages/eafc-fc27.ofm`, which Tauri ships as a resource and `tauri dev` reads in place.
-It is generated and gitignored; `npm run world:pack` rebuilds it, and a run with unchanged data
-costs nothing. Unlike the fixture below, this needs **no Rust** — the packer is plain Node.
+`src-tauri/build.rs` does the packing, so **any** `cargo build`/`test`/`clippy` produces it — the
+npm `predev`/`prebuild` hooks just cover the frontend-only paths. It is generated and gitignored;
+`npm run world:pack` rebuilds it, and a run with unchanged data costs nothing. Unlike the fixture
+below, the packer needs **no Rust** — but building the app now needs Node on PATH, which it
+already did for `dist`.
 
 ### One wrinkle on a fresh checkout
 
