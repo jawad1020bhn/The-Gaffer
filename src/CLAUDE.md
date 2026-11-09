@@ -7,31 +7,36 @@ Read [`../CLAUDE.md`](../CLAUDE.md) first for the project-wide rules.
 
 ## 1. Internationalisation — the rule that breaks CI most often
 
-**Every string a player can read must exist in all 12 locales.** No exceptions, no "I'll add the
-translations later."
+**Every string a player can read goes through a translation key.** The game ships **English only**:
+`src/i18n/locales/` holds `en.json` alone. A literal hardcoded in a component is still a defect — the
+key is what lets a second language land later without hunting through the UI.
 
 "A player can read it" is the whole test. Everything rendered in `src/` qualifies, including an
 `aria-label` and any backend error the UI surfaces. It does **not** reach text whose only reader is
 an AI agent or a modder — MCP tool output, `ofm-cli`, `docs/` — which stays English on purpose; the
 root [`../CLAUDE.md`](../CLAUDE.md) rule 2 has the table.
 
-- Source of truth for the locale list: `SUPPORTED_LANGUAGES` in `src/i18n/index.ts` —
-  `en, es, pt, fr, de, it, ru, pt-BR, zh-CN, cs, tr, id`.
-- Translation files: `src/i18n/locales/<code>.json`.
-- Deliberate same-as-English terms (proper nouns, football abbreviations) go in
-  `src/i18n/INTENTIONAL_SAME.json`, keyed by locale or under `global`. This is an escape hatch for
-  words that genuinely don't translate — not a way to skip work.
+- Source of truth for the language list: `SUPPORTED_LANGUAGES` in `src/i18n/languages.ts` — `en`.
+  `UPCOMING_LANGUAGES` holds `ar`, rendered as a disabled "Coming soon" row in both pickers
+  (`src/i18n/languageOptions.tsx`): announced, not selectable, no locale file.
+- Translation file: `src/i18n/locales/en.json`.
+- Anything else resolves to English, including the eleven codes the game used to ship.
+  `src/store/settingsStore.ts` normalises the stored code on load and on update, so an old save
+  shows a picker selection and formats money and dates in English.
 
-Enforced by two tests, both run by `npm test`:
+Enforced by tests, all run by `npm test`:
 
-- `src/i18n/localeCoverage.test.ts` — every locale has every `en.json` key, and no locale silently
-  copies the English text.
 - `src/i18n/frontendKeyCoverage.test.ts` — every literal `t("…")` key used in `src/` exists in
   `en.json`. It parses the TypeScript AST, so a typo'd key is caught, not just a missing one.
+- `src/i18n/localeCoverage.test.ts` — the registry and the files on disk name the same languages,
+  English is a complete locale rather than a stub, and an announced language has a label but no
+  file.
+- `src/i18n/placeholderParity.test.ts`, `duplicateKeys.test.ts`, `currencySymbols.test.ts` —
+  interpolation, duplicate keys, and money parameters.
 
 Backend strings arrive as **translation keys**, not English prose. `src/utils/backendI18n.ts`
 (plus `backendI18nPlayerEvents.ts` and `backendI18n.legacy.ts`) maps them to text. If you add a
-message on the Rust side, you add its key to every locale here.
+message on the Rust side, you add its key to `en.json`.
 
 Use `/add-ui-string` — it is the whole procedure, in order.
 

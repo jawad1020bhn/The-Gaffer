@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { findDuplicateKeys } from "./duplicateKeys.helpers";
+import { SUPPORTED_LANGUAGES } from "./index";
 
 /**
  * Every locale file's text, read raw. `JSON.parse` (and so the bundler's JSON import, and so the
@@ -88,9 +89,14 @@ describe("locale files", () => {
   /**
    * Given the locale files the scan reads
    * When they are counted
-   * Then there are several, so an empty glob cannot make the check above pass by reading nothing.
+   * Then every shipped locale is there, so an empty glob cannot make the check above pass by
+   *      reading nothing. The game ships English only; the count follows the registry so a
+   *      language added later is scanned on arrival.
    */
   it("are found by the scan", () => {
-    expect(Object.keys(localeSources).length).toBeGreaterThanOrEqual(12);
+    expect(Object.keys(localeSources).sort()).toEqual(
+      SUPPORTED_LANGUAGES.map(({ code }) => `./locales/${code}.json`).sort(),
+    );
+    expect(localeSources["./locales/en.json"]).toBeTruthy();
   });
 });

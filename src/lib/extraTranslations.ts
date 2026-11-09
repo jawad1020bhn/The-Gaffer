@@ -1,4 +1,4 @@
-import i18n, { SUPPORTED_LANGUAGES, resolveSupportedLanguage } from "../i18n";
+import i18n, { isSupportedLanguageLocale, SUPPORTED_LANGUAGES } from "../i18n";
 
 const PKG_NS = "pkgTranslations";
 
@@ -23,7 +23,11 @@ export function applyExtraTranslations(
     if (typeof bundle !== "object" || bundle === null || Array.isArray(bundle)) {
       continue;
     }
-    const locale = resolveSupportedLanguage(rawLocale);
-    i18n.addResourceBundle(locale, PKG_NS, bundle, true, true);
+    // A package may carry bundles for languages the game no longer ships. Resolving `de` to
+    // `en` here would install German text as the English fallback and show it to every player,
+    // so a bundle is only taken when its own locale is one the game ships.
+    if (!isSupportedLanguageLocale(rawLocale)) continue;
+
+    i18n.addResourceBundle(rawLocale.trim().toLowerCase(), PKG_NS, bundle, true, true);
   }
 }

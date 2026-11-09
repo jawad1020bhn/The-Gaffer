@@ -245,6 +245,9 @@ function TokensSection() {
 }
 
 /** Heights drawn at their size (they shrink under compact density); widths, fonts and tracking named. */
+// Named as a literal so the token-coverage test sees it, and demonstrated on the element itself.
+const MOTION_TOKEN = "--animate-beat-enter";
+
 function LayoutTokens() {
   return (
     <div className="grid gap-2 rounded-lg border border-line bg-panel p-4 text-caption text-fg-muted">
@@ -272,6 +275,12 @@ function LayoutTokens() {
         <span className="text-fg">{"--tracking-label".replace("--", "")}</span>: the letter spacing
         of uppercase headings, buttons, badges and tabs
       </p>
+      <div className="flex items-center gap-3">
+        <span className="animate-beat-enter motion-reduce:animate-none rounded-sm bg-sunken px-2 py-1 text-fg ring-1 ring-inset ring-line">
+          {MOTION_TOKEN.replace("--", "")}
+        </span>
+        <span>a career-setup beat arriving (animate-beat-enter); pair it with motion-reduce</span>
+      </div>
     </div>
   );
 }

@@ -16,6 +16,12 @@ const speak = (language: string, currency: "EUR" | "GBP" | "USD" = "EUR") =>
     supportedCurrencies: SUPPORTED_CURRENCIES,
   }));
 
+/**
+ * The tags below are formatter inputs, not languages the picker offers: the game ships English
+ * only, and the settings store normalises anything else to `en`. They stay because the formatter
+ * takes the tag from the settings and hands it to `Intl` — these cases pin that it does, and that
+ * the compact units and grouping follow the tag rather than a hardcoded en-US.
+ */
 describe("money in the player's language", () => {
   beforeEach(() => speak("en"));
   afterEach(() => speak("en"));

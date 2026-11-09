@@ -9,7 +9,6 @@ import {
   normaliseNationality,
   resolveCountryFlagCode,
 } from "./countries";
-import { SUPPORTED_LANGUAGES } from "../i18n";
 
 // ---------------------------------------------------------------------------
 // resolveCountryFlagCode
@@ -51,42 +50,15 @@ describe("countryName", () => {
     expect(countryName("ENG")).toBe("England");
   });
 
-  it("returns localised name for supported locales", () => {
-    const nameDe = countryName("FR", "de");
-    expect(nameDe).toBe("Frankreich");
-
-    const nameEs = countryName("DE", "es");
-    expect(nameEs).toBe("Alemania");
-
-    const nameIt = countryName("DE", "it");
-    expect(nameIt).toBe("Germania");
-
-    const nameRu = countryName("DE", "ru");
-    expect(nameRu).toBe("Германия");
-
-    const nameZh = countryName("DE", "zh-CN");
-    expect(nameZh).toBe("德国");
-
-    const englandEs = countryName("ENG", "es");
-    expect(englandEs).toBe("Inglaterra");
-
-    const englandRu = countryName("ENG", "ru");
-    expect(englandRu).toBe("Англия");
-
-    const englandZh = countryName("ENG", "zh-CN");
-    expect(englandZh).toBe("英格兰");
-
-    const nameCs = countryName("DE", "cs");
-    expect(nameCs).toBe("Německo");
-
-    const englandCs = countryName("ENG", "cs");
-    expect(englandCs).toBe("Anglie");
-
-    const nameTr = countryName("DE", "tr");
-    expect(nameTr).toBe("Almanya");
-
-    const englandTr = countryName("ENG", "tr");
-    expect(englandTr).toBe("İngiltere");
+  /**
+   * Given the game ships English only
+   * When a country and a football identity are named in English
+   * Then both resolve, including the identities the ISO library has no entry for
+   */
+  it("returns the English name for the shipped locale", () => {
+    expect(countryName("FR", "en")).toBe("France");
+    expect(countryName("DE", "en")).toBe("Germany");
+    expect(countryName("ENG", "en")).toBe("England");
   });
 
   it("falls back to English for unknown locale", () => {
@@ -126,25 +98,16 @@ describe("allCountries", () => {
     expect(codes).toContain("BR");
   });
 
-  it("returns Italian country names when requested", () => {
-    const list = allCountries("it");
-    const germany = list.find((country) => country.code === "DE");
-
-    expect(germany?.name).toBe("Germania");
-  });
-
-  it("returns Czech country names when requested", () => {
-    const list = allCountries("cs");
-    const germany = list.find((country) => country.code === "DE");
-
-    expect(germany?.name).toBe("Německo");
-  });
-
-  it("returns Turkish country names when requested", () => {
-    const list = allCountries("tr");
-    const germany = list.find((country) => country.code === "DE");
-
-    expect(germany?.name).toBe("Almanya");
+  /**
+   * Given a locale the game no longer ships
+   * When the whole list is built
+   * Then every name is English, so the list is not a mix of a dropped pack and the fallback
+   */
+  it("returns English country names for a locale that is not shipped", () => {
+    for (const locale of ["it", "cs", "tr"]) {
+      const germany = allCountries(locale).find((country) => country.code === "DE");
+      expect(germany?.name, locale).toBe("Germany");
+    }
   });
 });
 
@@ -242,70 +205,12 @@ describe("normaliseNationality", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Every shipped language has country names (#614)
+// Country names in the shipped language (#614)
 // ---------------------------------------------------------------------------
 
-describe("country names in every shipped language", () => {
-  const nonEnglish = SUPPORTED_LANGUAGES.map(({ code }) => code).filter((code) => code !== "en");
-
+describe("country names in the shipped language", () => {
   /**
    * Given each language the game ships
-   * When the name of an ordinary ISO country (Germany) is requested
-   * Then it is not the English name — the library pack was found
-   */
-  it.each(nonEnglish)("translates an ISO country name for %s", (code) => {
-    expect(countryName("DE", code)).not.toBe("Germany");
-  });
-
-  /**
-   * Given each language the game ships
-   * When a football-only identity (England, Scotland, Northern Ireland,
-   *      Republic of Ireland) is requested
-   * Then it is translated into that language
-   */
-  it.each(nonEnglish)("translates football identities for %s", (code) => {
-    // German writes "England" exactly as English does.
-    const writtenTheSame = new Set(["de:ENG"]);
-    for (const identity of ["ENG", "SCO", "NIR", "IE"]) {
-      if (writtenTheSame.has(`${code}:${identity}`)) continue;
-      expect(countryName(identity, code), `${identity} in ${code}`).not.toBe(
-        countryName(identity, "en"),
-      );
-    }
-  });
-
-  /**
-   * Given Indonesian is selected
-   * When the nationality list is built
-   * Then it is named in Indonesian
-   */
-  it("lists nationalities in Indonesian", () => {
-    const names = allNationalities("id").map(({ name }) => name);
-    expect(names).toContain("Inggris");
-    expect(names).toContain("Jerman");
-  });
-
-  /**
-   * Given a Brazilian Portuguese player
-   * When country names are requested
-   * Then they come from the Portuguese names
-   */
-  it("serves pt-BR from the Portuguese names", () => {
-    expect(countryName("DE", "pt-BR")).toBe(countryName("DE", "pt"));
-    expect(countryName("SCO", "pt-BR")).toBe("Escócia");
-  });
-
-  /**
-   * Given an Indonesian country name from an import
-   * When the nationality is normalised
-   * Then it resolves to its ISO code
-   */
-  it("normalises an Indonesian country name from an import", () => {
-    expect(normaliseNationality("Jerman")).toBe("DE");
-  });
-
-  /**
-   * Given every language the game ships
    * When its country-name pack is looked up
    * Then the pack exists and is a pack for exactly that library locale.
    *      (Vitest loads the library's Node entry, which registers every pack,
@@ -319,4 +224,42 @@ describe("country names in every shipped language", () => {
       expect(pack?.locale).toBe(libraryLocale);
     },
   );
+
+  /**
+   * Given English is the only shipped language
+   * When an ISO country and a football-only identity are named
+   * Then both come from the English pack, so the football identities the library has no entry
+   *      for (England, Scotland, Northern Ireland, Republic of Ireland) are not shown as codes
+   */
+  it("names ISO countries and football identities in English", () => {
+    expect(countryName("DE", "en")).toBe("Germany");
+    expect(countryName("ENG", "en")).toBe("England");
+    expect(countryName("SCO", "en")).toBe("Scotland");
+    expect(countryName("NIR", "en")).toBe("Northern Ireland");
+    expect(countryName("IE", "en")).toBe("Republic of Ireland");
+  });
+
+  /**
+   * Given a save or a package that names a language this version dropped
+   * When a country name is requested in it
+   * Then the English name is served rather than the raw code: the display language falls back,
+   *      and country names have to follow it
+   */
+  it("serves English names for a language the game no longer ships", () => {
+    for (const locale of ["de", "pt-BR", "ru", "zh-CN", "id", "ar"]) {
+      expect(countryName("DE", locale), locale).toBe("Germany");
+      expect(countryName("SCO", locale), locale).toBe("Scotland");
+    }
+  });
+
+  /**
+   * Given the nationality list is built for a locale that falls back to English
+   * When it is sorted and named
+   * Then it matches the English list exactly, football nations included
+   */
+  it("lists nationalities in English for a dropped language", () => {
+    const english = allNationalities("en");
+    expect(english.map(({ name }) => name)).toContain("England");
+    expect(allNationalities("de")).toEqual(english);
+  });
 });

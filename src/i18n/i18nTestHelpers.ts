@@ -8,7 +8,7 @@ export type LocaleTree = Record<string, unknown>;
  * simply not checked by it — silently, because a shorter list still passes.
  * Deriving the set here means a new locale is covered by every suite the day
  * its file lands, and `localeCoverage` asserts this set and
- * `SUPPORTED_LANGUAGES` name exactly the same locales.
+ * `SUPPORTED_LANGUAGES` name exactly the same locales — English only today.
  */
 const localeModules = import.meta.glob<{ default: LocaleTree }>("./locales/*.json", {
   eager: true,
@@ -20,73 +20,6 @@ export const LOCALE_FILES: Record<string, LocaleTree> = Object.fromEntries(
     module.default,
   ]),
 );
-
-/** The locales checked against English, which is the reference and so excluded. */
-export const NON_ENGLISH_LOCALES: Record<string, LocaleTree> = Object.fromEntries(
-  Object.entries(LOCALE_FILES).filter(([code]) => code !== "en"),
-);
-
-type LeafResult = string[];
-
-function traverseLocaleTree(
-  reference: LocaleTree,
-  candidate: LocaleTree,
-  path: string[],
-  onLeaf: (key: string, refValue: unknown, candidateValue: unknown, path: string[]) => LeafResult,
-): LeafResult {
-  return Object.entries(reference).flatMap(([key, value]) => {
-    const nextPath = [...path, key];
-    const candidateValue = candidate[key];
-
-    if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-      if (
-        candidateValue !== null &&
-        typeof candidateValue === "object" &&
-        !Array.isArray(candidateValue)
-      ) {
-        return traverseLocaleTree(
-          value as LocaleTree,
-          candidateValue as LocaleTree,
-          nextPath,
-          onLeaf,
-        );
-      }
-      return onLeaf(key, value, candidateValue, nextPath);
-    }
-
-    return onLeaf(key, value, candidateValue, nextPath);
-  });
-}
-
-export function collectMissingKeys(
-  reference: LocaleTree,
-  candidate: LocaleTree,
-  path: string[] = [],
-): string[] {
-  return traverseLocaleTree(reference, candidate, path, (_key, value, candidateValue, nextPath) => {
-    if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-      return [nextPath.join(".")];
-    }
-    return candidateValue == null || typeof candidateValue !== "string" ? [nextPath.join(".")] : [];
-  });
-}
-
-export function collectUntranslatedKeys(
-  reference: LocaleTree,
-  candidate: LocaleTree,
-  path: string[] = [],
-): string[] {
-  return traverseLocaleTree(reference, candidate, path, (_key, value, candidateValue, nextPath) => {
-    if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-      return [];
-    }
-    return typeof value === "string" &&
-      typeof candidateValue === "string" &&
-      candidateValue === value
-      ? [nextPath.join(".")]
-      : [];
-  });
-}
 
 /**
  * Keys the candidate locale carries that `en.json` does not — the direction

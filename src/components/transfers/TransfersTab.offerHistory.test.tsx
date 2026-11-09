@@ -3,14 +3,24 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createInstance } from "i18next";
 import en from "../../i18n/locales/en.json";
-import de from "../../i18n/locales/de.json";
 import TransfersTab from "./TransfersTab";
 import { invoke } from "@tauri-apps/api/core";
 
 const translations = createInstance();
 await translations.init({
   lng: "en",
-  resources: { en: { translation: en }, de: { translation: de } },
+  resources: {
+    en: { translation: en },
+    // A probe locale, not a shipped language: it overrides only the labels these tests read, so
+    // a hardcoded English string in the component fails while the real catalogue stays intact.
+    // German served this purpose before the game went English-only.
+    probe: {
+      translation: {
+        common: { unknown: "PROBE_UNKNOWN" },
+        transfers: { offerHistory: "PROBE_HISTORY", offers: "PROBE_OFFERS" },
+      },
+    },
+  },
   interpolation: { escapeValue: false },
 });
 vi.mock("react-i18next", async (importOriginal) => ({
@@ -175,11 +185,11 @@ it.each(["transfer", "loan"] as const)(
   },
 );
 
-/** Given a reloaded offer from a missing club, when the Offers table is read in German, then its club fallback is translated. */
+/** Given a reloaded offer from a missing club, when the Offers table is read in the probe locale, then its club fallback comes from the catalogue, not a hardcoded string. */
 it.each(["transfer", "loan"] as const)(
   "translates the %s offer club in the offers table",
   async (kind) => {
-    await translations.changeLanguage("de");
+    await translations.changeLanguage("probe");
     const player = createPlayer({
       transfer_offers:
         kind === "transfer"
@@ -221,8 +231,8 @@ it.each(["transfer", "loan"] as const)(
         onSelectTeam={vi.fn()}
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: /Angebote \(1\)/ }));
-    expect(await screen.findByText("Unbekannt")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /PROBE_OFFERS \(1\)/ }));
+    expect(await screen.findByText("PROBE_UNKNOWN")).toBeInTheDocument();
     expect(screen.queryByText("Unknown")).not.toBeInTheDocument();
   },
 );

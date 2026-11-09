@@ -284,14 +284,20 @@ describe("phaseLabel", () => {
     expect(phaseLabel("Finished")).toBe("Final");
   });
 
-  it("returns translated phase labels for pt-BR", async () => {
-    await i18n.changeLanguage("pt-BR");
+  /**
+   * Given the shipped language
+   * When phase labels are read through the translator
+   * Then they come from the catalogue. This ran in Portuguese while the game shipped it; the
+   *      point was always that the label is looked up, not written in the helper.
+   */
+  it("reads phase labels from the catalogue", async () => {
+    await i18n.changeLanguage("en");
 
     const t = i18n.t.bind(i18n);
 
-    expect(phaseLabel("FirstHalf", t)).toBe("1º Tempo");
-    expect(phaseLabel("SecondHalf", t)).toBe("2º Tempo");
-    expect(phaseLabel("PenaltyShootout", t)).toBe("Pênaltis");
+    expect(phaseLabel("FirstHalf", t)).toBe("1st Half");
+    expect(phaseLabel("SecondHalf", t)).toBe("2nd Half");
+    expect(phaseLabel("PenaltyShootout", t)).toBe("Penalties");
   });
 
   it("humanizes unknown phases when no fixed label exists", () => {
@@ -369,14 +375,14 @@ describe("getEventDisplay", () => {
 });
 
 describe("getEventTypeLabel", () => {
-  it("returns translated event labels for pt-BR", async () => {
-    await i18n.changeLanguage("pt-BR");
+  it("reads event labels from the catalogue", async () => {
+    await i18n.changeLanguage("en");
 
     const t = i18n.t.bind(i18n);
 
-    expect(getEventTypeLabel("Goal", t)).toBe("Gol");
-    expect(getEventTypeLabel("SecondHalfStart", t)).toBe("Início do 2º Tempo");
-    expect(getEventTypeLabel("PenaltyAwarded", t)).toBe("Pênalti Marcado");
+    expect(getEventTypeLabel("Goal", t)).toBe("Goal");
+    expect(getEventTypeLabel("SecondHalfStart", t)).toBe("2nd Half Start");
+    expect(getEventTypeLabel("PenaltyAwarded", t)).toBe("Penalty Awarded");
   });
 
   it("falls back to a humanized label for unknown events", async () => {
@@ -414,41 +420,44 @@ describe("getTeamTalkOptions", () => {
     });
   });
 
-  it("returns translated team talk options for pt-BR", async () => {
-    await i18n.changeLanguage("pt-BR");
+  /**
+   * Given the shipped language
+   * When the team talk options are built
+   * Then both the label and the description are read from the catalogue for every option.
+   */
+  it("reads every team talk label and description from the catalogue", async () => {
+    await i18n.changeLanguage("en");
 
     const options = getTeamTalkOptions(i18n.t.bind(i18n));
 
-    expect(options[0]).toEqual({
-      id: "calm",
-      icon: "calm",
-      label: "Mantenham a calma",
-      description: "Peça calma ao time e mantenha o foco no plano de jogo.",
-    });
     expect(options[3]).toEqual({
       id: "aggressive",
       icon: "aggressive",
-      label: "Incendiar o time",
-      description: "Faça uma preleção agressiva e cheia de energia.",
+      label: "Get Fired Up",
+      description: "An aggressive, fiery team talk.",
     });
+    for (const option of options) {
+      expect(option.label, option.id).not.toContain("match.teamTalkOptions");
+      expect(option.description, option.id).not.toContain("match.teamTalkOptions");
+    }
   });
 
-  it("returns translated team talk options for italian", async () => {
-    await i18n.changeLanguage("it");
+  it("returns the motivational and praise options with their own descriptions", async () => {
+    await i18n.changeLanguage("en");
 
     const options = getTeamTalkOptions(i18n.t.bind(i18n));
 
     expect(options[1]).toEqual({
       id: "motivational",
       icon: "motivational",
-      label: "Motiva",
-      description: "Spingi i giocatori a dare il massimo.",
+      label: "Motivate",
+      description: "Inspire the players to give their best.",
     });
     expect(options[4]).toEqual({
       id: "praise",
       icon: "praise",
-      label: "Loda",
-      description: "Dì alla squadra che finora è stata eccellente.",
+      label: "Praise",
+      description: "Tell them they've been excellent.",
     });
   });
 });

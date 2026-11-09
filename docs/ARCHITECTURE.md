@@ -13,7 +13,7 @@ OpenFoot Manager is a desktop football management simulation built with **Tauri*
 | **Frontend** | React + TypeScript | UI rendering, user interaction |
 | **Styling** | Tailwind CSS | Utility-first CSS framework |
 | **State (frontend)** | Zustand | Lightweight stores for game and settings |
-| **i18n** | i18next + react-i18next | Internationalization (7 locales) |
+| **i18n** | i18next + react-i18next | String catalogue (English; Arabic announced) |
 | **Build** | Vite | Frontend bundler and dev server |
 
 ---
@@ -28,7 +28,7 @@ openfootmanager/
 │   │   └── ui/                   # Design system primitives (Badge, ThemeToggle)
 │   ├── context/                  # React contexts (ThemeContext)
 │   ├── i18n/                     # Internationalization config + locale files
-│   │   └── locales/              # en.json, de.json, es.json, fr.json, it.json, pt.json, pt-BR.json
+│   │   └── locales/              # en.json — the only shipped locale
 │   ├── lib/                      # Shared utilities (helpers.ts, countries.ts)
 │   ├── pages/                    # Route-level pages
 │   ├── services/                 # Frontend Tauri/invoke wrappers

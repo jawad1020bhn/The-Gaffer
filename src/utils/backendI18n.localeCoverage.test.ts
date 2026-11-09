@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { collectMissingKeys, LOCALE_FILES, localeValue } from "../i18n/i18nTestHelpers";
+import { LOCALE_FILES, localeValue } from "../i18n/i18nTestHelpers";
 
-// Derived, not listed. This file used to import eleven locales by hand and was
-// missing Indonesian, so it silently checked one locale fewer than it claimed.
+// Derived, not listed, so a locale added later is covered the day its file lands. The game ships
+// English only today, which makes this a check that the backend-facing keys exist in English.
 const LOCALES = LOCALE_FILES;
-const en = LOCALE_FILES.en;
 
 const REQUIRED_KEYS = [
   "be.sender.assistantManager",
@@ -138,11 +137,13 @@ describe("backend i18n locale coverage", () => {
     expect(missingKeysByLocale).toEqual({});
   });
 
-  it("keeps zh-CN aligned with the English translation key set", () => {
-    expect(collectMissingKeys(en, LOCALE_FILES["zh-CN"])).toEqual([]);
-  });
-
-  it("keeps ru aligned with the English translation key set", () => {
-    expect(collectMissingKeys(en, LOCALE_FILES.ru)).toEqual([]);
+  /**
+   * Given the loop above
+   * When no locale files are found at all
+   * Then it must fail rather than report an empty result: a glob that matched nothing would
+   * otherwise make every assertion here pass.
+   */
+  it("scanned at least the English locale", () => {
+    expect(Object.keys(LOCALES)).toContain("en");
   });
 });

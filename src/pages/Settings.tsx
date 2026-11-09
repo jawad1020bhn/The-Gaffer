@@ -4,7 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore, type AppSettings } from "../store/settingsStore";
 import { SegmentedControl, Switch, Select } from "../components/ui";
-import { SUPPORTED_LANGUAGES, changeAppLanguage } from "../i18n";
+import { changeAppLanguage } from "../i18n";
+import { languageOptions } from "../i18n/languageOptions";
 import { formatAppVersion } from "../lib/appVersion";
 import { Section, SettingRow } from "./Settings.components";
 import { ReportBugModal } from "../components/diagnostics/ReportBugModal";
@@ -145,18 +146,17 @@ export default function Settings() {
         {/* ─── Display ─── */}
         <Section title={t("settings.display")} icon={<Monitor className="w-5 h-5" />}>
           <SettingRow label={t("settings.language")} description={t("settings.languageDesc")}>
-            <Select
-              value={settings.language}
-              onChange={(e) => handleUpdate({ language: e.target.value })}
-              icon={<Globe className="w-4 h-4" />}
-              className="min-w-48"
-            >
-              {SUPPORTED_LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {t(lang.labelKey)}
-                </option>
-              ))}
-            </Select>
+            {(labelId) => (
+              <Select
+                value={settings.language}
+                onChange={(e) => handleUpdate({ language: e.target.value })}
+                icon={<Globe className="w-4 h-4" />}
+                className="min-w-48"
+                aria-labelledby={labelId}
+              >
+                {languageOptions(t)}
+              </Select>
+            )}
           </SettingRow>
 
           <SettingRow label={t("settings.currency")} description={t("settings.currencyDesc")}>

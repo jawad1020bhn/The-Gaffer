@@ -40,26 +40,38 @@ describe("formatOrdinal", () => {
   });
 
   /**
-   * Given the game in Portuguese
+   * Given a language whose ordinal rule has no "two" category
    * When a rank of 2 is formatted
-   * Then it reads "2.º", not "2nd"
+   * Then the translator is asked for the `other` form, not English's `two`. Portuguese carried
+   *      this case while the game shipped it; the rule lookup is the point, so the language is
+   *      passed straight to the formatter here rather than loaded from a locale file.
    */
-  it("writes Portuguese ordinals the Portuguese way", async () => {
-    expect(await ordinalIn("pt", 2)).toBe("2.º");
-    expect(await ordinalIn("pt-BR", 2)).toBe("2º");
+  it("asks for the form the language's own plural rule picks", () => {
+    const asked: string[] = [];
+    const translate = (key: string, options: { n: number }) => {
+      asked.push(key);
+      return `${options.n}`;
+    };
+
+    expect(formatOrdinal(2, "pt", translate)).toBe("2");
+    expect(asked).toEqual(["common.ordinal.other"]);
+
+    asked.length = 0;
+    expect(formatOrdinal(2, "en", translate)).toBe("2");
+    expect(asked).toEqual(["common.ordinal.two"]);
   });
 
   /**
    * Given each language the game ships
    * When a rank of 2 is formatted
-   * Then it contains the number and, outside English, none of English's suffixes
+   * Then the catalogue writes it, so no screen shows a raw key
    */
-  it("follows every shipped language, never English's suffixes", async () => {
+  it("resolves a written ordinal in every shipped language", async () => {
     for (const { code } of SUPPORTED_LANGUAGES) {
       const written = await ordinalIn(code, 2);
 
       expect(written, code).toContain("2");
-      if (code !== "en") expect(written, code).not.toMatch(/\d(st|nd|rd|th)$/);
+      expect(written, code).not.toContain("common.ordinal");
     }
   });
 });

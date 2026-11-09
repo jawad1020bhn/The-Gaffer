@@ -5,24 +5,16 @@ import { describe, expect, it } from "vitest";
 import { SUPPORTED_LANGUAGES, type SupportedLanguageCode } from "./index";
 
 /**
- * The font subset each locale needs from the bundled Inter. `cjk` is deliberately not bundled:
- * Chinese falls through the stack to the system's CJK face (a 5-10 MB face per weight is not
- * worth shipping), so it is listed here to make that choice explicit.
+ * The font subset each locale needs from the bundled Inter.
+ *
+ * English only today. The union type keeps the wider decision on record for the next language:
+ * `latin-ext` for accents beyond the basic Latin range, `cyrillic` for Russian, and `cjk` — which
+ * is deliberately not bundled, because a 5-10 MB face per weight is not worth shipping, so a
+ * Chinese locale would fall through the stack to the system's CJK face.
  */
 const SCRIPT_BY_LOCALE: Record<SupportedLanguageCode, "latin" | "latin-ext" | "cyrillic" | "cjk"> =
   {
     en: "latin",
-    es: "latin",
-    pt: "latin",
-    fr: "latin",
-    de: "latin",
-    it: "latin",
-    ru: "cyrillic",
-    "pt-BR": "latin",
-    "zh-CN": "cjk",
-    cs: "latin-ext",
-    tr: "latin-ext",
-    id: "latin",
   };
 
 const INTER_WEIGHTS = [400, 500, 600, 700];
@@ -31,37 +23,20 @@ function appCss(): string {
   return readFileSync("src/App.css", "utf-8");
 }
 
-/** The @font-face block of `family` at `weight` whose file is `file`, or null. */
-function faceBlock(css: string, family: string, weight: number, file: string): string | null {
-  const blocks = css.match(/@font-face\s*\{[^}]*\}/g) ?? [];
-  return (
-    blocks.find(
-      (block) =>
-        block.includes(`font-family: "${family}"`) &&
-        block.includes(`font-weight: ${weight};`) &&
-        block.includes(file),
-    ) ?? null
-  );
-}
-
-/** The first code point of every range in a block's unicode-range. */
-function rangeStarts(block: string): number[] {
-  const range = block.match(/unicode-range:\s*([^;]+);/)?.[1] ?? "";
-  return [...range.matchAll(/U\+([0-9A-Fa-f]+)/g)].map((match) => Number.parseInt(match[1], 16));
-}
-
-/** The block declares a unicode-range, and none of it reaches below the combining accent at U+0301. */
-function expectCyrillicOnly(block: string): void {
-  const starts = rangeStarts(block);
-  expect(starts.length).toBeGreaterThan(0);
-  expect(Math.min(...starts)).toBeGreaterThanOrEqual(0x0301);
+/**
+ * App.css without its comments. The gates below ask what the stylesheet *declares*; the comments
+ * explain what was removed and what a future language needs, so they name scripts the app no longer
+ * bundles and must not be read as declarations.
+ */
+function cssDeclarations(): string {
+  return appCss().replace(/\/\*[\s\S]*?\*\//g, "");
 }
 
 describe("bundled font coverage", () => {
   /**
    * Given every locale the game ships
    * When the font subsets they need are looked up
-   * Then each locale names its script, so a 13th locale cannot ship without a decision here
+   * Then each locale names its script, so the next locale cannot ship without a decision here
    */
   it("knows the script of every supported locale", () => {
     expect(Object.keys(SCRIPT_BY_LOCALE).sort()).toEqual(
@@ -83,44 +58,30 @@ describe("bundled font coverage", () => {
   });
 
   /**
-   * Given Russian is written in Cyrillic, which the Latin faces do not cover
+   * Given no shipped language is written in Cyrillic
    * When App.css is read
-   * Then Inter's Cyrillic face is declared at every UI weight, limited to Cyrillic code points, so
-   *      the text is not drawn in a system fallback
+   * Then no Cyrillic face is bundled. These faces were shipped for Russian; keeping them after
+   * the locale went would pull ~10 woff2 files into every build for text no screen can produce.
+   * A Cyrillic locale added later restores them, and this assertion is what asks for that.
    */
-  it("declares Inter cyrillic and cyrillic-ext at every UI weight, scoped to Cyrillic", () => {
-    const css = appCss();
+  it("bundles no Cyrillic face while no Cyrillic language ships", () => {
+    const cyrillicLocales = Object.entries(SCRIPT_BY_LOCALE).filter(
+      ([, script]) => script === "cyrillic",
+    );
+    expect(cyrillicLocales).toEqual([]);
 
-    for (const weight of INTER_WEIGHTS) {
-      const block = faceBlock(css, "Inter", weight, `inter-cyrillic-${weight}-normal.woff2`);
-      expect(block, `Inter cyrillic ${weight}`).not.toBeNull();
-      expectCyrillicOnly(block ?? "");
-      const extended = faceBlock(css, "Inter", weight, `inter-cyrillic-ext-${weight}-normal.woff2`);
-      expect(extended, `Inter cyrillic-ext ${weight}`).not.toBeNull();
-      expectCyrillicOnly(extended ?? "");
-    }
+    expect(cssDeclarations()).not.toMatch(/cyrillic/i);
   });
 
   /**
-   * Given Barlow Condensed, the heading face, has no Cyrillic glyphs
-   * When a Russian heading is drawn
-   * Then the heading stack names a bundled condensed Cyrillic face right after Barlow, and that
-   *      face claims Cyrillic code points only, so Latin headings stay Barlow Condensed
+   * Given Barlow Condensed is the heading face
+   * When the heading stack is read
+   * Then it is named first. It used to be followed by a condensed Cyrillic fallback for Russian
+   * headings; with no Cyrillic locale there is nothing for that face to draw.
    */
-  it("gives headings a Cyrillic-only condensed face behind Barlow Condensed", () => {
-    const css = appCss();
-    const headingStack = css.match(/--font-heading:\s*([^;]+);/)?.[1] ?? "";
+  it("leads the heading stack with Barlow Condensed", () => {
+    const headingStack = appCss().match(/--font-heading:\s*([^;]+);/)?.[1] ?? "";
 
-    expect(headingStack).toMatch(/^"Barlow Condensed",\s*"Fira Sans Extra Condensed"/);
-    for (const weight of [600, 700]) {
-      const block = faceBlock(
-        css,
-        "Fira Sans Extra Condensed",
-        weight,
-        `fira-sans-extra-condensed-cyrillic-${weight}-normal.woff2`,
-      );
-      expect(block, `Fira cyrillic ${weight}`).not.toBeNull();
-      expectCyrillicOnly(block ?? "");
-    }
+    expect(headingStack).toMatch(/^"Barlow Condensed"/);
   });
 });

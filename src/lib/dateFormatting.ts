@@ -4,29 +4,13 @@ import { useSettingsStore } from "../store/settingsStore";
 /**
  * The BCP-47 tag `Intl` should use for each language we ship.
  *
- * Typed against the language registry, so adding a locale to
- * `SUPPORTED_LANGUAGES` without deciding its date format is a compile error.
- * It was keyed on `zh` while the registry says `zh-CN`, and had no entry for
- * `ru`, `pt-BR` or `id` — none of which showed, because the lookup falls back
- * to the raw code and every one of those happens to be a usable tag on its own.
- * The next language may not be so lucky.
+ * Typed against the language registry, so adding a locale to `SUPPORTED_LANGUAGES` without
+ * deciding its date format is a compile error. English is the only shipped language today;
+ * `getLocale` still passes an unknown code through, so a save written by a version that shipped
+ * more languages keeps formatting its dates until the player picks a language.
  */
 const LANG_LOCALE: Record<SupportedLanguageCode, string> = {
   en: "en-US",
-  es: "es-ES",
-  // Deliberately unchanged: `pt` mapped here before `pt-BR` was a separate
-  // language, and correcting it to pt-PT would change dates for existing
-  // Portuguese players. Worth deciding, but not inside a test-wiring change.
-  pt: "pt-BR",
-  "pt-BR": "pt-BR",
-  fr: "fr-FR",
-  de: "de-DE",
-  it: "it-IT",
-  ru: "ru-RU",
-  "zh-CN": "zh-CN",
-  cs: "cs-CZ",
-  tr: "tr-TR",
-  id: "id-ID",
 };
 
 export function getLocale(lang?: string): string {

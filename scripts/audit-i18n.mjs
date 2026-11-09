@@ -430,8 +430,15 @@ function printLocaleCoverage() {
     }
   }
 
-  if (missingLocaleCount === 0) {
-    console.log("- All supported locales match the English key set.");
+  const translatedLocales = localeFiles.filter(
+    (filePath) => path.basename(filePath, ".json") !== "en",
+  );
+  if (translatedLocales.length === 0) {
+    // Saying "all locales match" here would claim a check that never ran: the game ships English
+    // alone, so there is no second key set to compare against.
+    console.log("- English only: no other locale file to compare against.");
+  } else if (missingLocaleCount === 0) {
+    console.log(`- All ${translatedLocales.length} other locale(s) match the English key set.`);
   }
 
   console.log("");

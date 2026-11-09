@@ -94,8 +94,8 @@ Underneath that:
 - **Finances** — budgets, wages and cash flow.
 - **Accessibility** — high-contrast mode, UI scale, and a **density** setting (comfortable or
   compact) so the same screens work on smaller displays.
-- **12 languages** — Czech, German, English, Spanish, French, Indonesian, Italian, Portuguese,
-  Brazilian Portuguese, Russian, Turkish and Simplified Chinese.
+- **English**, with every player-facing string behind a translation key. Arabic is shown in the
+  language picker as *coming soon*.
 
 New to the game? [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) walks a first career from
 creating your manager to surviving your first match day.
@@ -238,7 +238,7 @@ Windows runner when a `portable-*` tag is pushed.
 
 ```bash
 npm test                                    # front end (needs the Rust-generated fixture)
-npm run audit:i18n                          # every locale has the same key set
+npm run audit:i18n                          # advisory scan for strings that bypass the catalogue
 npm run lint                                # Biome
 npm run format:check
 cargo test --locked --manifest-path src-tauri/Cargo.toml --workspace
@@ -250,14 +250,15 @@ so match that scope before calling a change clippy-clean.
 
 Two test suites are worth knowing about: `src/designSystem.test.ts` enforces the token rules —
 including repo-wide guards that fail if a raw Tailwind palette class reappears on any screen — and
-`src/i18n` checks translation parity across all 12 locales.
+`src/i18n` checks that every literal `t("…")` key exists in `en.json` and that the language
+registry matches the files on disk.
 
 ## Project layout
 
 ```
 src/                    React + TypeScript front end
   components/           One folder per screen family, plus ui/ primitives
-  i18n/locales/         12 translation files
+  i18n/locales/         en.json — the whole string catalogue
   App.css               Design tokens
 src-tauri/              Tauri app and the Rust workspace
   crates/               domain, engine, ofm_core, db, ofm-cli, harnesses

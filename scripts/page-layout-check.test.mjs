@@ -99,14 +99,16 @@ describe("the fonts it measures with", () => {
   it("requires exactly the faces the app bundles", () => {
     const css = readFileSync(new URL("../src/App.css", import.meta.url), "utf-8");
     // The Latin faces are @fontsource imports (no script: latin and latin-ext load by the default
-    // sample); the Cyrillic ones are @font-face blocks, named by the file they load.
+    // sample). A @font-face block names a non-Latin script by the file it loads; the game ships
+    // none today, and this reads one when Arabic's face is added.
     const imported = [
       ...css.matchAll(/@import "@fontsource\/([a-z-]+)\/[a-z-]+-(\d+)\.css";/g),
     ].map(([, slug, weight]) => `${slug} ${weight}`);
     const declared = [...css.matchAll(/@font-face\s*\{[^}]*\}/g)].map(([block]) => {
       const [, slug, script, weight] =
-        block.match(/files\/([a-z-]+?)-(cyrillic(?:-ext)?)-(\d+)-normal\.woff2/) ?? [];
-      return `${slug.replace(/-cyrillic$/, "")} ${weight} ${script}`;
+        block.match(/files\/([a-z-]+?)-([a-z-]+)-(\d+)-normal\.woff2/) ?? [];
+      expect(block, `unreadable @font-face block: ${block}`).toContain("-normal.woff2");
+      return `${slug.replace(new RegExp(`-${script}$`), "")} ${weight} ${script}`;
     });
     const bundled = new Set([...imported, ...declared]);
     const required = new Set(

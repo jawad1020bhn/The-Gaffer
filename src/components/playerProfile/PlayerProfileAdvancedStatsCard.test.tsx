@@ -29,17 +29,18 @@ describe("PlayerProfileAdvancedStatsCard percentiles", () => {
   });
 
   /**
-   * Given the game language is Portuguese and a shots percentile of 2
+   * Given a shots percentile of 2
    * When the card renders
-   * Then it reads "2.º", not "2nd"
+   * Then the suffix is the one the active language's plural rule picks, read from the catalogue
+   *      rather than written by the card. Portuguese carried this case while the game shipped it.
    */
   it("writes the percentile as an ordinal in the game language", async () => {
-    await changeAppLanguage("pt");
+    await changeAppLanguage("en");
 
     render(<PlayerProfileAdvancedStatsCard summary={SUMMARY} t={(key) => key} />);
 
-    expect(screen.getByText("2.º")).toBeInTheDocument();
-    expect(screen.queryByText("2nd")).not.toBeInTheDocument();
+    expect(screen.getByText("2nd")).toBeInTheDocument();
+    expect(screen.queryByText("common.ordinal")).not.toBeInTheDocument();
   });
 
   /**

@@ -7,16 +7,6 @@
 import countries, { type LocaleData } from "i18n-iso-countries";
 import { hasFlag } from "country-flag-icons";
 import enLocale from "i18n-iso-countries/langs/en.json";
-import esLocale from "i18n-iso-countries/langs/es.json";
-import ptLocale from "i18n-iso-countries/langs/pt.json";
-import frLocale from "i18n-iso-countries/langs/fr.json";
-import deLocale from "i18n-iso-countries/langs/de.json";
-import itLocale from "i18n-iso-countries/langs/it.json";
-import ruLocale from "i18n-iso-countries/langs/ru.json";
-import zhLocale from "i18n-iso-countries/langs/zh.json";
-import csLocale from "i18n-iso-countries/langs/cs.json";
-import trLocale from "i18n-iso-countries/langs/tr.json";
-import idLocale from "i18n-iso-countries/langs/id.json";
 import type { SupportedLanguageCode } from "../i18n";
 
 /**
@@ -24,20 +14,14 @@ import type { SupportedLanguageCode } from "../i18n";
  * one place a pack is named. `SupportedLocale` and the registration both come
  * from here, so a pack cannot be listed without being registered, nor
  * registered without being listed. The vocabulary differs from the game's
- * language codes (`zh`, not `zh-CN`; no `pt-BR`).
+ * language codes (the library writes `zh`, not `zh-CN`).
+ *
+ * English only today. A language added to `SUPPORTED_LANGUAGES` needs its pack
+ * here and an entry in `LIBRARY_LOCALE_FOR_LANGUAGE` below, which does not
+ * compile until both are done.
  */
 export const COUNTRY_PACKS = {
   en: enLocale,
-  es: esLocale,
-  pt: ptLocale,
-  fr: frLocale,
-  de: deLocale,
-  it: itLocale,
-  ru: ruLocale,
-  zh: zhLocale,
-  tr: trLocale,
-  id: idLocale,
-  cs: csLocale,
 } satisfies Record<string, LocaleData>;
 
 type SupportedLocale = keyof typeof COUNTRY_PACKS;
@@ -53,23 +37,10 @@ for (const pack of Object.values(COUNTRY_PACKS)) {
  *
  * A `Record` over `SupportedLanguageCode`, so shipping a new language fails to
  * compile until someone decides which pack it uses, instead of silently
- * falling back to English (#614). Brazilian Portuguese deliberately reuses
- * the Portuguese pack: the library has no `pt-BR` one, and the football
- * identities below are written identically in both.
+ * falling back to English (#614).
  */
 export const LIBRARY_LOCALE_FOR_LANGUAGE: Record<SupportedLanguageCode, SupportedLocale> = {
   en: "en",
-  es: "es",
-  pt: "pt",
-  fr: "fr",
-  de: "de",
-  it: "it",
-  ru: "ru",
-  "pt-BR": "pt",
-  "zh-CN": "zh",
-  cs: "cs",
-  tr: "tr",
-  id: "id",
 };
 
 interface FootballIdentityDefinition {
@@ -85,16 +56,6 @@ const FOOTBALL_IDENTITIES: Record<string, FootballIdentityDefinition> = {
     code: "ENG",
     names: {
       en: "England",
-      es: "Inglaterra",
-      pt: "Inglaterra",
-      fr: "Angleterre",
-      de: "England",
-      it: "Inghilterra",
-      ru: "Англия",
-      zh: "英格兰",
-      cs: "Anglie",
-      tr: "İngiltere",
-      id: "Inggris",
     },
     aliases: ["english", "england"],
     flagCode: "GB-ENG",
@@ -104,16 +65,6 @@ const FOOTBALL_IDENTITIES: Record<string, FootballIdentityDefinition> = {
     code: "SCO",
     names: {
       en: "Scotland",
-      es: "Escocia",
-      pt: "Escócia",
-      fr: "Écosse",
-      de: "Schottland",
-      it: "Scozia",
-      ru: "Шотландия",
-      zh: "苏格兰",
-      cs: "Skotsko",
-      tr: "İskoçya",
-      id: "Skotlandia",
     },
     aliases: ["scottish", "scotland"],
     flagCode: "GB-SCT",
@@ -123,16 +74,6 @@ const FOOTBALL_IDENTITIES: Record<string, FootballIdentityDefinition> = {
     code: "WAL",
     names: {
       en: "Wales",
-      es: "Gales",
-      pt: "País de Gales",
-      fr: "Pays de Galles",
-      de: "Wales",
-      it: "Galles",
-      ru: "Уэльс",
-      zh: "威尔士",
-      cs: "Wales",
-      tr: "Galler",
-      id: "Wales",
     },
     aliases: ["welsh", "wales"],
     flagCode: "GB-WLS",
@@ -142,16 +83,6 @@ const FOOTBALL_IDENTITIES: Record<string, FootballIdentityDefinition> = {
     code: "NIR",
     names: {
       en: "Northern Ireland",
-      es: "Irlanda del Norte",
-      pt: "Irlanda do Norte",
-      fr: "Irlande du Nord",
-      de: "Nordirland",
-      it: "Irlanda del Nord",
-      ru: "Северная Ирландия",
-      zh: "北爱尔兰",
-      cs: "Severní Irsko",
-      tr: "Kuzey İrlanda",
-      id: "Irlandia Utara",
     },
     aliases: ["northern irish", "northern ireland"],
     flagCode: "GB-NIR",
@@ -161,16 +92,6 @@ const FOOTBALL_IDENTITIES: Record<string, FootballIdentityDefinition> = {
     code: "IE",
     names: {
       en: "Republic of Ireland",
-      es: "República de Irlanda",
-      pt: "República da Irlanda",
-      fr: "République d'Irlande",
-      de: "Republik Irland",
-      it: "Repubblica d'Irlanda",
-      ru: "Республика Ирландия",
-      zh: "爱尔兰共和国",
-      cs: "Irská republika",
-      tr: "İrlanda Cumhuriyeti",
-      id: "Republik Irlandia",
     },
     aliases: ["irish", "republic of ireland", "ireland"],
     flagCode: "IE",
@@ -194,10 +115,11 @@ const ALIAS_TO_CODE = Object.values(FOOTBALL_IDENTITIES).reduce<Record<string, s
 );
 
 /**
- * The country-name pack for a language code, e.g. `pt-BR` -> `pt`, `zh-CN` -> `zh`.
+ * The country-name pack for a language code.
  *
- * Regional variants the game does not list (`es-MX`) fall back to their base
- * language; anything unknown is English.
+ * Regional variants fall back to their base language (`en-GB` -> `en`); anything
+ * the game does not ship is English, so a save naming a language this version
+ * dropped still shows country names instead of raw codes.
  */
 function getBaseLocale(locale: string): SupportedLocale {
   if (!locale) return "en";

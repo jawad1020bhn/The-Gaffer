@@ -86,6 +86,50 @@ describe("Settings: retired presentation controls", () => {
   });
 });
 
+describe("Settings: the language picker", () => {
+  /**
+   * Given the game ships English and announces Arabic
+   * When the language picker opens
+   * Then English is the only selectable row and Arabic is there but disabled, marked as coming
+   *      soon. An enabled Arabic row would switch the game to a language with no strings.
+   */
+  it("offers English and announces Arabic without letting it be chosen", async () => {
+    renderSettings();
+
+    const trigger = await screen.findByRole("combobox", { name: "settings.language" });
+    fireEvent.click(trigger);
+
+    const options = within(screen.getByRole("listbox")).getAllByRole("option");
+    expect(options).toHaveLength(2);
+
+    const [english, arabic] = options;
+    expect(english).toHaveAccessibleName("settings.languages.en");
+    expect(english).not.toBeDisabled();
+    expect(arabic).toHaveAccessibleName("settings.languages.ar (settings.languageComingSoon)");
+    expect(arabic).toBeDisabled();
+  });
+
+  /**
+   * Given the open picker with Arabic disabled
+   * When a player clicks it anyway
+   * Then nothing is saved and the picker stays on English.
+   */
+  it("does not change the language when the announced row is clicked", async () => {
+    renderSettings();
+
+    const trigger = await screen.findByRole("combobox", { name: "settings.language" });
+    fireEvent.click(trigger);
+    fireEvent.click(
+      within(screen.getByRole("listbox")).getByRole("option", {
+        name: "settings.languages.ar (settings.languageComingSoon)",
+      }),
+    );
+
+    expect(savedSettings()).toHaveLength(0);
+    expect(useSettingsStore.getState().settings.language).toBe("en");
+  });
+});
+
 describe("Settings: the choices", () => {
   /**
    * Given the Settings page

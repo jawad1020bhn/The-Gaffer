@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import i18n, { SUPPORTED_LANGUAGES } from "../../i18n";
+import i18n from "../../i18n";
+import { languageOptions } from "../../i18n/languageOptions";
 import {
   ArrowLeft,
   CheckCircle,
@@ -208,11 +209,7 @@ export function WorldEditorTopBar({
           selectSize="sm"
           title={t("settings.language")}
         >
-          {SUPPORTED_LANGUAGES.map(({ code, labelKey }) => (
-            <option key={code} value={code}>
-              {t(labelKey)}
-            </option>
-          ))}
+          {languageOptions(t)}
         </Select>
 
         {/* Theme toggle */}

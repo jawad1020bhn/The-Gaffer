@@ -1,6 +1,7 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import i18n, { i18nReady } from "../i18n";
 import { useSettingsStore } from "../store/settingsStore";
+import { formatDate } from "../lib/dateFormatting";
 import {
   resolveBackendText,
   resolveBackendError,
@@ -284,16 +285,16 @@ describe("resolveAction", () => {
   it("does not re-normalize already formatted compact money params from resolveMessage", async () => {
     const previousLanguage = i18n.language;
     const previousSettings = useSettingsStore.getState().settings;
-    await i18n.changeLanguage("de");
+    await i18n.changeLanguage("en");
     useSettingsStore.setState({
-      settings: { ...previousSettings, language: "de" },
+      settings: { ...previousSettings, language: "en" },
     });
 
     i18n.addResourceBundle(
-      "de",
+      "en",
       "translation",
       {
-        "test.compactActionLabel": "Akzeptiere {{amount}}",
+        "test.compactActionLabel": "Accept {{amount}}",
       },
       true,
       true,
@@ -314,7 +315,7 @@ describe("resolveAction", () => {
         }),
       );
 
-      expect(result.actions[0].label).toBe("Akzeptiere 1,8\u00a0Mio.\u00a0€");
+      expect(result.actions[0].label).toBe("Accept €1.8M");
     } finally {
       useSettingsStore.setState({ settings: previousSettings });
       await i18n.changeLanguage(previousLanguage);
@@ -422,12 +423,13 @@ describe("resolveMessage", () => {
     expect(result.body).not.toContain("800001");
   });
 
-  // Given a failed registration notice, when rendered in German, then its date follows the same locale as its text.
-  it("localizes the failed registration day in German", async () => {
+  // Given a failed registration notice, when rendered, then its date is written out rather than
+  // left as the raw ISO value the backend sent.
+  it("localizes the failed registration day", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("de");
+    await i18n.changeLanguage("en");
     useSettingsStore.setState({
-      settings: { ...useSettingsStore.getState().settings, language: "de" },
+      settings: { ...useSettingsStore.getState().settings, language: "en" },
     });
     try {
       const result = resolveMessage(
@@ -442,8 +444,8 @@ describe("resolveMessage", () => {
           },
         }),
       );
-      expect(result.body).toContain("2. Juli 2026");
-      expect(result.body).toContain("800.001\u00a0€");
+      expect(result.body).toContain("July 2, 2026");
+      expect(result.body).toContain("€800,001");
       expect(result.body).not.toContain("2026-07-02");
     } finally {
       await i18n.changeLanguage(previousLanguage);
@@ -487,7 +489,7 @@ describe("resolveMessage", () => {
 
   it("localizes legacy delegated renewal messages without persisted i18n keys", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const msg = makeMessage({
@@ -500,18 +502,18 @@ describe("resolveMessage", () => {
 
       const result = resolveMessage(msg);
 
-      expect(result.subject).toBe("Relatório do assistente — Renovações contratuais");
-      expect(result.sender).toBe("Auxiliar Técnico");
-      expect(result.sender_role).toBe("Auxiliar Técnico");
+      expect(result.subject).toBe("Assistant Report — Contract Renewals");
+      expect(result.sender).toBe("Assistant Manager");
+      expect(result.sender_role).toBe("Assistant Manager");
       expect(result.body).toContain(
-        "Chefe, revisei nossa lista de renovações no Lisbon Sporting. 4 concluídas, 2 ainda pendentes e 1 falhas.",
+        "Boss, I went through our renewal list at Lisbon Sporting. 4 completed, 2 still pending, 1 failed.",
       );
-      expect(result.body).toContain("Concluída: Claes aceitou 1 ano(s) por €5K/semana.");
+      expect(result.body).toContain("Completed: Claes agreed to 1 year(s) on €5K/wk.");
       expect(result.body).toContain(
-        "Continua difícil: Vieira — O estafe deles quer cerca de €25K/semana por 3 anos, acima dos limites da delegação.",
+        "Still difficult: Vieira — Their camp want around €25K/wk for 3 years, which is beyond the delegation limits.",
       );
       expect(result.body).toContain(
-        "Falhou: Fernandes — Você me disse para ainda não reabrir as conversas contratuais.",
+        "Failed: Fernandes — You told me not to reopen contract talks yet.",
       );
     } finally {
       await i18n.changeLanguage(previousLanguage);
@@ -520,7 +522,7 @@ describe("resolveMessage", () => {
 
   it("localizes legacy takeover contract review messages without persisted i18n keys", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const msg = makeMessage({
@@ -549,14 +551,14 @@ describe("resolveMessage", () => {
 
       const result = resolveMessage(msg);
 
-      expect(result.subject).toBe("Assistente Técnico - Revisão de Contratos");
-      expect(result.sender).toBe("Auxiliar Técnico");
-      expect(result.sender_role).toBe("Auxiliar Técnico");
+      expect(result.subject).toBe("Assistant Manager - Contract Review");
+      expect(result.sender).toBe("Assistant Manager");
+      expect(result.sender_role).toBe("Assistant Manager");
       expect(result.body).toBe(
-        "Seu assistente revisou os contratos do elenco após a sua chegada. 2 jogador(es) devem entrar em negociação de renovação nesta temporada, mas nenhum exige uma decisão imediata hoje.\n\nComece a mapear quem você quer manter para que a situação fique sob controle.",
+        "Your assistant has reviewed the squad contracts after your arrival. 2 player(s) are due to come up for renewal this season, but none require an immediate decision today.\n\nStart mapping out who you want to keep so the situation stays under control.",
       );
-      expect(result.actions[0].label).toBe("Revisar Contratos do Elenco");
-      expect(result.actions[1].label).toBe("Entendido");
+      expect(result.actions[0].label).toBe("Review Squad Contracts");
+      expect(result.actions[1].label).toBe("Understood");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -572,7 +574,7 @@ describe("resolveMessage", () => {
 
   it("localizes football nationality params inside translated inbox messages", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const msg = makeMessage({
@@ -588,8 +590,8 @@ describe("resolveMessage", () => {
 
       const result = resolveMessage(msg);
 
-      expect(result.subject).toBe("Convocação Internacional — King");
-      expect(result.body).toContain("seleção Inglaterra");
+      expect(result.subject).toBe("International Call-Up — King");
+      expect(result.body).toContain("England national team");
       expect(result.body).not.toContain("ENG");
     } finally {
       await i18n.changeLanguage(previousLanguage);
@@ -632,7 +634,7 @@ describe("resolveNewsArticle", () => {
 
   it("localizes legacy weekly digest headlines that still carry an English weekLabel param", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -643,7 +645,7 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.headline).toBe("Resumo Semanal — Semana de 2026-07-27");
+      expect(result.headline).toBe("Weekly Digest — Week of 2026-07-27");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -651,7 +653,7 @@ describe("resolveNewsArticle", () => {
 
   it("localizes transfer roundup articles through backend keys", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -677,10 +679,10 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.headline).toBe("Resumo de Transferências — Semana de 2026-07-27");
-      expect(result.body).toContain("2 transferência(s) concluída(s)");
-      expect(result.body).toContain("Adam Smith: de Alpha FC para Beta FC (€1.8M)");
-      expect(result.source).toBe("Inteligência de Transferências");
+      expect(result.headline).toBe("Transfer Roundup — Week of 2026-07-27");
+      expect(result.body).toContain("2 completed deal(s)");
+      expect(result.body).toContain("Adam Smith: Alpha FC -> Beta FC (€1.8M)");
+      expect(result.source).toBe("Transfer Intelligence");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -726,7 +728,7 @@ describe("resolveNewsArticle", () => {
 
   it("localizes friendly match report scorer sections through backend keys", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -754,10 +756,10 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.headline).toBe("Alpha FC 2 - 1 Beta FC: resumo do amistoso");
-      expect(result.body).toContain("No amistoso, Alpha FC 2 - 1 Beta FC.");
-      expect(result.body).toContain("Gols: Alice (10', Alpha FC)");
-      expect(result.source).toBe("Gazeta Esportiva");
+      expect(result.headline).toBe("Alpha FC 2 - 1 Beta FC: Friendly report");
+      expect(result.body).toContain("In friendly action, Alpha FC 2 - 1 Beta FC.");
+      expect(result.body).toContain("Goals: Alice (10', Alpha FC)");
+      expect(result.source).toBe("Sports Gazette");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -767,7 +769,7 @@ describe("resolveNewsArticle", () => {
   // then it names its competition and lists the scorer instead of ending at the score.
   it("writes the scorers into a competition match report", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("de");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -791,9 +793,9 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.headline).toBe("Alpha FC 2 - 1 Beta FC: Spielbericht (Landespokal)");
-      expect(result.body).toContain("Landespokal: Die Partie endete Alpha FC 2 - 1 Beta FC.");
-      expect(result.body).toContain("Tore: Alice (10. Min., Alpha FC)");
+      expect(result.headline).toBe("Alpha FC 2 - 1 Beta FC: Match report (Landespokal)");
+      expect(result.body).toContain("Landespokal: the match ended Alpha FC 2 - 1 Beta FC.");
+      expect(result.body).toContain("Goals: Alice (10', Alpha FC)");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -804,7 +806,7 @@ describe("resolveNewsArticle", () => {
   // then the competition is named the way every other screen names it: from its key.
   it("translates a generated competition's name in its match report", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("de");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -831,9 +833,12 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.headline).toBe("Alpha FC 1 - 0 Beta FC: Spielbericht (Deutschland Pokal)");
-      expect(result.body).toContain("Deutschland Pokal: Die Partie endete");
-      expect(result.body).not.toContain("Germany Cup");
+      expect(result.headline).toBe("Alpha FC 1 - 0 Beta FC: Match report (Germany Cup)");
+      expect(result.body).toContain("Germany Cup: the match ended");
+      // The stored name is the English template, so in English the resolved text matches it.
+      // What this pins is that the country came from `competitionCountry` via the key, not from
+      // the stored string: a resolver that skipped the key would leave `{{country}}` unfilled.
+      expect(result.body).not.toContain("{{");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -841,7 +846,7 @@ describe("resolveNewsArticle", () => {
 
   it("localizes league match report scorers from structured scorer data", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -875,9 +880,9 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.body).toContain("Na ação da Rodada 5");
-      expect(result.body).toContain("Gols: Alice (10', Alpha FC), Bob (75', Beta FC)");
-      expect(result.source).toBe("Gazeta Esportiva");
+      expect(result.body).toContain("In Matchday 5 action");
+      expect(result.body).toContain("Goals: Alice (10', Alpha FC), Bob (75', Beta FC)");
+      expect(result.source).toBe("Sports Gazette");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -885,7 +890,7 @@ describe("resolveNewsArticle", () => {
 
   it("localizes press conference articles from stored quote metadata", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -916,18 +921,18 @@ describe("resolveNewsArticle", () => {
       const result = resolveNewsArticle(article);
 
       expect(result.headline).toBe(
-        'Coletiva de Imprensa: "Os jogadores trabalharam duro. Nos preparamos bem e executamos o plano de jogo." — técnico do Madrid Real',
+        'Press Conference: "The players worked hard. We prepared well and executed the game plan." — Madrid Real boss',
       );
       expect(result.body).toContain(
-        "Após o resultado Madrid Real 7 - 1 Rome Gladiators, o técnico do Madrid Real falou com a imprensa.",
+        "Speaking after the Madrid Real 7 - 1 Rome Gladiators result, the Madrid Real manager addressed the press.",
       );
       expect(result.body).toContain(
-        '• "Os jogadores trabalharam duro. Nos preparamos bem e executamos o plano de jogo."',
+        '• "The players worked hard. We prepared well and executed the game plan."',
       );
       expect(result.body).toContain(
-        '• "Primeiro recuperação, depois preparação. Vamos jogo a jogo."',
+        '• "Recovery first, then preparation. We take it one game at a time."',
       );
-      expect(result.source).toBe("Diário Esportivo");
+      expect(result.source).toBe("Sports Daily");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -935,7 +940,7 @@ describe("resolveNewsArticle", () => {
 
   it("localizes standings entries through backend keys", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -962,12 +967,12 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.headline).toBe("Atualização da Classificação — Rodada 4");
+      expect(result.headline).toBe("Standings Update — Matchday 4");
       expect(result.body).toContain(
-        "Após a Rodada 4, o Alpha FC está no topo da tabela da Primeira Divisão.",
+        "After Matchday 4, Alpha FC sit at the top of the Premier Division table.",
       );
-      expect(result.body).toContain("1. Alpha FC — 12 pts (SG: +5)");
-      expect(result.source).toBe("Notícias da Liga");
+      expect(result.body).toContain("1. Alpha FC — 12 pts (GD: +5)");
+      expect(result.source).toBe("League Wire");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -975,7 +980,7 @@ describe("resolveNewsArticle", () => {
 
   it("localizes roundup result lines and biggest winner copy through backend keys", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -1010,13 +1015,13 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.headline).toBe("Primeira Divisão Rodada 4: Todos os Resultados");
-      expect(result.body).toContain("A Rodada 4 está encerrada. Confira os resultados completos:");
+      expect(result.headline).toBe("Premier Division Matchday 4: All the Results");
+      expect(result.body).toContain("Matchday 4 is in the books. Here are the full results:");
       expect(result.body).toContain("Alpha FC 3 - 0 Beta FC");
       expect(result.body).toContain("Gamma FC 1 - 1 Delta FC");
-      expect(result.body).toContain("5 gols marcados em 2 jogos.");
-      expect(result.body).toContain("O Alpha FC registrou a maior vitória do dia.");
-      expect(result.source).toBe("Notícias da Liga");
+      expect(result.body).toContain("5 goals scored across 2 matches.");
+      expect(result.body).toContain("Alpha FC recorded the biggest win of the day.");
+      expect(result.source).toBe("League Wire");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -1024,7 +1029,7 @@ describe("resolveNewsArticle", () => {
 
   it("localizes preseason digest result lines and unbeaten copy through backend keys", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -1050,14 +1055,14 @@ describe("resolveNewsArticle", () => {
 
       const result = resolveNewsArticle(article);
 
-      expect(result.headline).toBe("Resumo da pré-temporada — Semana de 2025-08-11");
+      expect(result.headline).toBe("Preseason Digest — Week of 2025-08-11");
       expect(result.body).toContain(
-        "2 amistoso(s) foram disputados pela divisão nesta semana, produzindo 3 gol(s).",
+        "2 friendly result(s) were played across the division this week, producing 3 goal(s).",
       );
       expect(result.body).toContain("Alpha FC 2 - 1 Beta FC");
       expect(result.body).toContain("Gamma FC 0 - 0 Delta FC");
-      expect(result.body).toContain("Alpha FC e Gamma FC seguem invictos na pré-temporada.");
-      expect(result.source).toBe("Crônica da Liga");
+      expect(result.body).toContain("Alpha FC and Gamma FC remain unbeaten in preseason.");
+      expect(result.source).toBe("League Chronicle");
     } finally {
       await i18n.changeLanguage(previousLanguage);
     }
@@ -1065,7 +1070,7 @@ describe("resolveNewsArticle", () => {
 
   it("includes every unbeaten team when more than two clubs remain unbeaten", async () => {
     const previousLanguage = i18n.language;
-    await i18n.changeLanguage("pt-BR");
+    await i18n.changeLanguage("en");
 
     try {
       const article = makeNewsArticle({
@@ -1085,7 +1090,7 @@ describe("resolveNewsArticle", () => {
       const result = resolveNewsArticle(article);
 
       expect(result.body).toContain(
-        "Alpha FC, Gamma FC e Delta FC seguem invictos na pré-temporada.",
+        "Alpha FC, Gamma FC, and Delta FC remain unbeaten in preseason.",
       );
     } finally {
       await i18n.changeLanguage(previousLanguage);
@@ -1206,28 +1211,15 @@ describe("resolveBackendText", () => {
     expect(result).toBe("Kicks off on August 1, 2026");
   });
 
-  // The English assertion above passes even if the locale never reaches
-  // `formatDate`, since en-US is the default. This one does not.
-  it("formats the `start` param in the player's own locale", async () => {
-    const previousLanguage = i18n.language;
-    i18n.addResourceBundle(
-      "de",
-      "translation",
-      {
-        "test.kickoff": "Beginnt am {{start}}",
-      },
-      true,
-      true,
-    );
-
-    await i18n.changeLanguage("de");
-    try {
-      const result = resolveBackendText("test.kickoff?start=2026-08-01", "fallback");
-
-      expect(result).toBe("Beginnt am 1. August 2026");
-    } finally {
-      await i18n.changeLanguage(previousLanguage);
-    }
+  /**
+   * Given a language whose date order differs from English
+   * When the `start` param is formatted
+   * Then it follows that locale. The locale is passed to `formatDate` directly here: English is
+   * the only shipped language, and an en-US assertion passes even if the locale never arrives.
+   */
+  it("formats the `start` param in the locale it is given", () => {
+    expect(formatDate("2026-08-01", "de")).toBe("1. August 2026");
+    expect(formatDate("2026-08-01", "en")).toBe("August 1, 2026");
   });
 
   // `parseDateInput` builds the date at *local* noon (no `Z`), so the calendar
@@ -1388,20 +1380,16 @@ describe("accepted deal messages", () => {
     expect(message.body).toContain("December 20, 2026");
     expect(message.body).not.toContain("800");
   });
-  // Given German settings, when a loan notice is read, then both dates follow the German locale.
-  it("localizes both loan dates in German", async () => {
-    const previous = i18n.language;
-    await i18n.changeLanguage("de");
-    useSettingsStore.setState({ settings: { ...originalSettings, language: "de" } });
-    try {
-      const message = resolveMessage(
-        dealMessage("be.msg.loanAgreed.bodyNoOption", "be.msg.loanAgreed.subject"),
-      );
-      expect(message.body).toContain("2. Juli 2026");
-      expect(message.body).toContain("20. Dezember 2026");
-    } finally {
-      await i18n.changeLanguage(previous);
-    }
+  // Given a loan notice carrying two ISO dates, when read, then both are written out and neither
+  // leaks the raw value the backend sent.
+  it("localizes both loan dates", () => {
+    const message = resolveMessage(
+      dealMessage("be.msg.loanAgreed.bodyNoOption", "be.msg.loanAgreed.subject"),
+    );
+    expect(message.body).toContain("July 2, 2026");
+    expect(message.body).toContain("December 20, 2026");
+    expect(message.body).not.toContain("2026-07-02");
+    expect(message.body).not.toContain("2026-12-20");
   });
 });
 

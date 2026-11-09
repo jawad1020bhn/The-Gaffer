@@ -52,11 +52,17 @@ describe("SavesList", () => {
     expect(screen.getByText("Jane Doe's Career")).toBeInTheDocument();
   });
 
-  it("translates that name into the player's language", async () => {
-    await i18n.changeLanguage("fr");
+  /**
+   * Given a save whose stored name is a key with a query parameter
+   * When the list renders
+   * Then the manager is interpolated into the translated template and the key itself never
+   *      shows. This ran in French while the game shipped it; the parameter path is the point.
+   */
+  it("interpolates the manager into the translated name", () => {
     renderList([save({ name: "be.save.defaultName?manager=Jane%20Doe" })]);
 
-    expect(screen.getByText("Carrière de Jane Doe")).toBeInTheDocument();
+    expect(screen.getByText("Jane Doe's Career")).toBeInTheDocument();
+    expect(screen.queryByText(/be\.save\.defaultName/)).not.toBeInTheDocument();
   });
 
   // Saves written before the key existed, and any the player renamed, are

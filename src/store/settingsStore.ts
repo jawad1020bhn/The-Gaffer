@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
+import { resolveSupportedLanguage } from "../i18n/languages";
 
 export interface AppSettings {
   theme: "dark" | "light" | "system";
@@ -68,7 +69,13 @@ const DEFAULT_CURRENCY: CurrencyDefinition = {
 };
 
 function mergeWithDefaultSettings(settings: Partial<AppSettings> = {}): AppSettings {
-  return { ...DEFAULT_SETTINGS, ...settings };
+  const merged = { ...DEFAULT_SETTINGS, ...settings };
+
+  // A save written by a version that shipped more languages stores codes like "de" and "pt-BR".
+  // Left as-is, the picker would show no selection (no option has that value) and Intl would keep
+  // formatting money and dates in a language whose text is gone. Normalising here covers both the
+  // loaded value and every update, so the stored setting always names a language the game ships.
+  return { ...merged, language: resolveSupportedLanguage(merged.language) };
 }
 
 async function persistSettings(settings: AppSettings) {

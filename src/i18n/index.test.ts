@@ -1,49 +1,80 @@
 import { afterAll, describe, expect, it } from "vitest";
 import i18n, { changeAppLanguage, i18nReady, resolveSupportedLanguage } from "./index";
+import { isSupportedLanguageLocale } from "./languages";
 
 describe("resolveSupportedLanguage", () => {
-  it("maps Simplified Chinese locale variants to zh-CN", () => {
-    expect(resolveSupportedLanguage("zh")).toBe("zh-CN");
-    expect(resolveSupportedLanguage("zh-CN")).toBe("zh-CN");
-    expect(resolveSupportedLanguage("zh-Hans")).toBe("zh-CN");
-    expect(resolveSupportedLanguage("zh-Hans-CN")).toBe("zh-CN");
-    expect(resolveSupportedLanguage("ZH_hans_cn")).toBe("zh-CN");
-  });
-
-  it("keeps existing exact and base language matching behavior", () => {
-    expect(resolveSupportedLanguage("PT-BR")).toBe("pt-BR");
-    expect(resolveSupportedLanguage("ru-RU")).toBe("ru");
-    expect(resolveSupportedLanguage("cs-CZ")).toBe("cs");
-    expect(resolveSupportedLanguage("tr-TR")).toBe("tr");
-    expect(resolveSupportedLanguage("es-419")).toBe("es");
+  it("keeps English through its regional variants", () => {
+    expect(resolveSupportedLanguage("en")).toBe("en");
     expect(resolveSupportedLanguage("en-US")).toBe("en");
+    expect(resolveSupportedLanguage("en-GB")).toBe("en");
+    expect(resolveSupportedLanguage("EN_gb")).toBe("en");
+    expect(resolveSupportedLanguage("  en-AU  ")).toBe("en");
   });
 
-  it("falls back to English for unsupported locales", () => {
-    expect(resolveSupportedLanguage("nl-NL")).toBe("en");
-    expect(resolveSupportedLanguage("zh-Hant-TW")).toBe("en");
+  /**
+   * Given a locale the game used to ship, or one it only announces as coming soon
+   * When it is resolved
+   * Then it is English. A save written by an older version stores codes like `de` and `zh-CN`;
+   * without this fallback those players would get raw keys instead of text.
+   */
+  it("falls back to English for every language the game does not ship", () => {
+    for (const locale of [
+      "de",
+      "fr",
+      "es-419",
+      "pt-BR",
+      "ru-RU",
+      "zh-CN",
+      "zh-Hans",
+      "cs-CZ",
+      "tr-TR",
+      "id",
+      "it",
+      "ar",
+      "ar-EG",
+      "nl-NL",
+    ]) {
+      expect(resolveSupportedLanguage(locale), locale).toBe("en");
+    }
   });
 });
 
-describe("i18n lazy loading", () => {
+describe("isSupportedLanguageLocale", () => {
+  /**
+   * Given a locale that resolves to English only by fallback
+   * When it is asked whether the game ships it
+   * Then the answer is no: a world package's German bundle must not be installed as English.
+   */
+  it("distinguishes a shipped locale from one that merely falls back", () => {
+    expect(isSupportedLanguageLocale("en")).toBe(true);
+    expect(isSupportedLanguageLocale("en-GB")).toBe(true);
+    expect(isSupportedLanguageLocale("de")).toBe(false);
+    expect(isSupportedLanguageLocale("ar")).toBe(false);
+  });
+});
+
+describe("i18n resource loading", () => {
   afterAll(async () => {
     await changeAppLanguage("en");
   });
 
-  it("initializes with the active language resources instead of all locales", async () => {
+  it("loads the English resources the game ships", async () => {
     await i18nReady;
 
     expect(i18n.hasResourceBundle("en", "translation")).toBe(true);
-    expect(i18n.hasResourceBundle("pt-BR", "translation")).toBe(false);
-    expect(i18n.hasResourceBundle("zh-CN", "translation")).toBe(false);
+    expect(i18n.t("settings.language")).toBe("Language");
   });
 
-  it("loads a locale bundle on demand when the app language changes", async () => {
+  /**
+   * Given a save whose stored language is German
+   * When the app switches to it
+   * Then English is used and its strings are present, rather than a rejected locale module.
+   */
+  it("serves English when asked for a language that no longer ships", async () => {
     await i18nReady;
 
-    await changeAppLanguage("ru-RU");
-
-    expect(i18n.language).toBe("ru");
-    expect(i18n.hasResourceBundle("ru", "translation")).toBe(true);
+    expect(await changeAppLanguage("de")).toBe("en");
+    expect(i18n.language).toBe("en");
+    expect(i18n.t("settings.language")).toBe("Language");
   });
 });

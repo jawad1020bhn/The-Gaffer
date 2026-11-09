@@ -52,35 +52,19 @@ export function nodeProblem(webSocket, version) {
 }
 
 /**
- * The faces the app bundles (App.css's @fontsource imports and its Cyrillic @font-face blocks; a
- * test holds the two equal). A width measured while one of them hadn't loaded is the width of
- * whatever system font stood in, which is why two machines got different numbers: so every case
- * first loads each of these, and fails if one doesn't.
+ * The faces the app bundles (App.css's @fontsource imports; a test holds the two equal). A width
+ * measured while one of them hadn't loaded is the width of whatever system font stood in, which is
+ * why two machines got different numbers: so every case first loads each of these, and fails if one
+ * doesn't.
  *
- * A face scoped by `unicode-range` (the Cyrillic ones) only loads for text in its range, so its
- * entry names a `script` and a `sample` in it; the Latin faces are loaded with the default sample.
+ * The game ships English, so these are all Latin faces loaded with the default sample. The Cyrillic
+ * faces were removed with the locales that needed them. A face scoped by `unicode-range` only loads
+ * for text in its range, so an entry for one names a `script` and a `sample` in it — `loadFaces` and
+ * `judge` still support that, which is what a bundled Arabic face will need when Arabic ships.
  */
 export const REQUIRED_FACES = [
   ...[400, 500, 600, 700].map((weight) => ({ family: "Inter", weight })),
   ...[600, 700].map((weight) => ({ family: "Barlow Condensed", weight })),
-  ...[400, 500, 600, 700].map((weight) => ({
-    family: "Inter",
-    weight,
-    script: "cyrillic",
-    sample: "Яё",
-  })),
-  ...[400, 500, 600, 700].map((weight) => ({
-    family: "Inter",
-    weight,
-    script: "cyrillic-ext",
-    sample: "Ѡ",
-  })),
-  ...[600, 700].map((weight) => ({
-    family: "Fira Sans Extra Condensed",
-    weight,
-    script: "cyrillic",
-    sample: "Яё",
-  })),
 ];
 
 /** What is wrong with one measured case; empty when it passes. */

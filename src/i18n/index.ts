@@ -2,29 +2,14 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import resourcesToBackend from "i18next-resources-to-backend";
 
-export const SUPPORTED_LANGUAGES = [
-  { code: "en", labelKey: "settings.languages.en" },
-  { code: "es", labelKey: "settings.languages.es" },
-  { code: "pt", labelKey: "settings.languages.pt" },
-  { code: "fr", labelKey: "settings.languages.fr" },
-  { code: "de", labelKey: "settings.languages.de" },
-  { code: "it", labelKey: "settings.languages.it" },
-  { code: "ru", labelKey: "settings.languages.ru" },
-  { code: "pt-BR", labelKey: "settings.languages.ptBR" },
-  { code: "zh-CN", labelKey: "settings.languages.zhCN" },
-  { code: "cs", labelKey: "settings.languages.cs" },
-  { code: "tr", labelKey: "settings.languages.tr" },
-  { code: "id", labelKey: "settings.languages.id" },
-] as const;
-
-/** A language code the game ships, as named in `SUPPORTED_LANGUAGES`. */
-export type SupportedLanguageCode = (typeof SUPPORTED_LANGUAGES)[number]["code"];
-
-const SUPPORTED_CODES = new Map(
-  SUPPORTED_LANGUAGES.map((language) => [language.code.toLowerCase(), language.code]),
-);
-
-const SIMPLIFIED_CHINESE_LOCALES = new Set(["zh", "zh-cn", "zh-sg", "zh-my"]);
+export {
+  SUPPORTED_LANGUAGES,
+  UPCOMING_LANGUAGES,
+  isSupportedLanguageLocale,
+  resolveSupportedLanguage,
+} from "./languages";
+export type { SupportedLanguageCode } from "./languages";
+import { resolveSupportedLanguage, SUPPORTED_LANGUAGES } from "./languages";
 
 type TranslationResource = Record<string, unknown>;
 
@@ -45,19 +30,6 @@ function localeBackendLoader(language: string): Promise<TranslationResource> {
   }
 
   return loader().then((module) => module.default);
-}
-
-export function resolveSupportedLanguage(locale: string): string {
-  const normalized = locale.trim().replace(/_/g, "-").toLowerCase();
-  const exactMatch = SUPPORTED_CODES.get(normalized);
-  if (exactMatch) return exactMatch;
-
-  if (SIMPLIFIED_CHINESE_LOCALES.has(normalized) || normalized.startsWith("zh-hans")) {
-    return "zh-CN";
-  }
-
-  const base = normalized.split("-")[0];
-  return SUPPORTED_CODES.get(base) ?? "en";
 }
 
 /**
