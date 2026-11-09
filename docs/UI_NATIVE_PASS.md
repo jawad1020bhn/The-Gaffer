@@ -208,15 +208,57 @@ lint 141 infos / **0 errors**, `tsc` 17 pre-existing errors — all at the step-
 
 ---
 
-## 7. NOT done — the remaining work
+## 7. Correction: the audit's scroll metric had a blind spot
+
+The §1 audit reported **`pageScroll = 0` on every tab at every resolution**. That number was
+measured as `document.documentElement.scrollHeight - clientHeight`, and it was true — but it was
+measuring the wrong element.
+
+`DashboardWorkspaceContent.tsx:79` wraps **all** tab content in
+`scrollbar-thin min-h-0 flex-1 overflow-auto p-3`. The document never scrolls because that wrapper
+does. A screen that has not been re-gridded simply grows past the viewport and **the whole screen
+scrolls inside the wrapper** — the same website behaviour §5 calls a bug, moved one element inward
+where my metric could not see it.
+
+Re-measured against the wrapper at 1600×900 (`ui-redesign/workspace-scroll-sweep.json`):
+
+| Screen | doc scroll | **workspace scroll** | verdict |
+| --- | --- | --- | --- |
+| Home, Manager, Inbox, News, Finances | 0 | **0** | fits — re-gridded |
+| Staff, Transfer Centre, Scouting, Schedule, Tournaments | 0 | **0** | fits already |
+| Training | 0 | **87px** | whole screen scrolls |
+| Squad | 0 | **245px** | whole screen scrolls |
+| Players | 0 | **307px** | whole screen scrolls |
+| Tactics | 0 | **366px** | whole screen scrolls |
+| Transfers | 0 | **524px** | whole screen scrolls |
+
+So the five screens done so far genuinely fit, and **five more demonstrably do not**. The four
+"still outstanding" screens I had listed as merely "not re-gridded" are in fact failing an
+acceptance criterion right now.
+
+Two consequences worth stating plainly:
+
+1. **Tactics' pitch is cut off mid-defence** and scrolls to see the rest (`step6/tactics-before-1600x900.png`).
+   For archetype E the pitch is the one thing that must never scroll. This is the worst remaining
+   layout defect in the app.
+2. **Squad's table is cut mid-row** with a thin scrollbar but **no edge fade** (`step6/squad-before-1600x900.png`).
+   §5's third remedy requires both cues; only one is present.
+
+The corrected metric — assert the *workspace wrapper* does not scroll, not just the document —
+belongs in the acceptance harness so this cannot regress silently.
+
+---
+
+## 8. NOT done — the remaining work
 
 Honest list, in the brief's own order:
 
-**Step 6, remaining screens.** Manager, Inbox, News and Finances are done (§6 above). Squad /
-Tactics / Training / Staff / Youth / Transfers / Transfer Centre / Scouting / Players / Schedule /
-Teams / Tournaments / Managers / HallOfFame have inherited the new materials, room and scaling but
-have **not** been re-gridded to archetypes C (table + drawer) and E (board). Tactics is the one that
-most needs E: pitch centre, list left, instructions right.
+**Step 6, remaining screens — five are failing acceptance now, not just unfinished.** Per §7:
+**Transfers (524px), Tactics (366px), Players (307px), Squad (245px) and Training (87px)** scroll the
+whole workspace. Priority order is worst-first, except Tactics goes first because a scrolling pitch
+is the most damaging. Staff, Transfer Centre, Scouting, Schedule and Tournaments already fit and only
+need the archetype C treatment (drawer, edge fades) rather than a re-grid. Youth, Teams, Managers and
+HallOfFame could not be measured — they crash the preview (§8, pre-existing).
 
 **Also outstanding:**
 - **Window-state plugin** (persisted size/position/maximised). Not added: it is a new Rust +
