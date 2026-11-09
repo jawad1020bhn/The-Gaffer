@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import type { WorldMetaDef } from "../menu/PackageEditor/types";
 import { SAMPLE_PACKAGES, type SamplePackage } from "../menu/PackageEditor/sampleData";
-import type { PackageInfo } from "../menu/WorldSelect";
+import type { PackageInfo } from "../menu/packageTypes";
 
 export interface RecentProject {
   path: string;

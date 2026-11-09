@@ -9,7 +9,10 @@ import { buildRegionLabel } from "../lib/teamRegions";
 import { competitionDisplayName } from "../lib/competitionName";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
+import { getActiveSaveId } from "../services/sessionService";
 import { showError } from "../lib/errorDialog";
+import { createCareerJournal, saveCareerJournal } from "../components/onboarding/careerJournal";
+import type { CareerPresentation } from "../components/careerSetup/careerSetupModel";
 import {
   regionsFromCompetitions,
   competitionRequiredRegions,
@@ -29,7 +32,8 @@ interface UseTeamSelectionArgs {
   gameState: GameStateData | null;
   setGameState: (game: GameStateData) => void;
   setGameActive: (active: boolean, managerName: string) => void;
-  navigate: (path: string) => void;
+  navigate: (path: string, options?: { state?: unknown }) => void;
+  presentation?: CareerPresentation;
 }
 
 export function useTeamSelection({
@@ -37,6 +41,7 @@ export function useTeamSelection({
   setGameState,
   setGameActive,
   navigate,
+  presentation = { guidance: "guided", background: "outsider", philosophy: "Balanced" },
 }: UseTeamSelectionArgs) {
   const { t } = useTranslation();
   const compName = (c: LeagueData) => competitionDisplayName(c, t);
@@ -403,7 +408,15 @@ export function useTeamSelection({
       setGameState(updatedGame);
       const mgr = updatedGame.manager;
       setGameActive(true, mgr.display_name);
-      navigate("/dashboard");
+      // The appointment is committed exactly once. The journal is presentation-only and
+      // career-scoped; it never changes the simulation or re-runs select_team.
+      const journal = createCareerJournal(updatedGame, presentation);
+      try {
+        saveCareerJournal(updatedGame, await getActiveSaveId(), journal);
+      } catch (journalError) {
+        console.warn("Career journal storage unavailable:", journalError);
+      }
+      navigate("/dashboard", { state: { arrivalJournal: journal } });
     } catch (error) {
       console.error("Failed to select team:", error);
       await showError(

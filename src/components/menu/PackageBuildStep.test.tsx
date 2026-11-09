@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import PackageBuildStep from "./PackageBuildStep";
-import type { PackageInfo } from "./WorldSelect";
+import type { PackageInfo } from "./packageTypes";
 
 const invoke = vi.fn().mockResolvedValue([]);
 vi.mock("@tauri-apps/api/core", () => ({

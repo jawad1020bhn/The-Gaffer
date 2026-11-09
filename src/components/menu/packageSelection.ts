@@ -1,4 +1,4 @@
-import type { PackageInfo } from "./WorldSelect";
+import type { PackageInfo } from "./packageTypes";
 
 /**
  * The packages a new career starts with when the player has chosen none.

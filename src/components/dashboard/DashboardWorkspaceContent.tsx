@@ -9,6 +9,13 @@ import DashboardTabContent from "./DashboardTabContent";
 import type { DashboardTabContentModel } from "./dashboardTabContentModel";
 import { ShieldX } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import FirstDayTaskBanner from "../onboarding/FirstDayTaskBanner";
+import {
+  firstDayProgress,
+  taskForTab,
+  type CareerJournal,
+  type FirstDayMilestone,
+} from "../onboarding/careerJournal";
 
 interface DashboardWorkspaceContentProps {
   dashboardAlerts: DashboardAlert[];
@@ -20,6 +27,8 @@ interface DashboardWorkspaceContentProps {
   onSelectTeam: (id: string) => void;
   onGameUpdate: (state: GameStateData) => void;
   isUnemployed: boolean;
+  careerJournal?: CareerJournal | null;
+  onAcknowledgeMilestone?: (milestone: FirstDayMilestone) => void;
 }
 
 export default function DashboardWorkspaceContent({
@@ -32,6 +41,8 @@ export default function DashboardWorkspaceContent({
   onSelectTeam,
   onGameUpdate,
   isUnemployed,
+  careerJournal,
+  onAcknowledgeMilestone,
 }: DashboardWorkspaceContentProps) {
   const { t } = useTranslation();
   const rosterPlayer = profileNavigation.selectedPlayerId
@@ -44,6 +55,19 @@ export default function DashboardWorkspaceContent({
   const selectedTeam = profileNavigation.selectedTeamId
     ? (gameState.teams.find((team) => team.id === profileNavigation.selectedTeamId) ?? null)
     : null;
+  const activeTask =
+    careerJournal &&
+    !careerJournal.dismissed &&
+    careerJournal.arrivalStage === "done" &&
+    !selectedPlayer &&
+    !selectedTeam
+      ? taskForTab(dashboardTabContentModel.activeTab)
+      : null;
+  const activeTaskDone =
+    activeTask && careerJournal
+      ? firstDayProgress(careerJournal, gameState).steps.find((step) => step.id === activeTask)
+          ?.done
+      : false;
 
   return (
     // The workspace owns the page's scroll (layout rule L1); min-h-0 lets it shrink inside the column
@@ -81,6 +105,10 @@ export default function DashboardWorkspaceContent({
           isOwnTeam={selectedTeam.id === gameState.manager.team_id}
           onSelectPlayer={onSelectPlayer}
         />
+      ) : null}
+
+      {activeTask && !activeTaskDone && onAcknowledgeMilestone ? (
+        <FirstDayTaskBanner task={activeTask} onAcknowledge={onAcknowledgeMilestone} />
       ) : null}
 
       {!selectedPlayer && !selectedTeam ? (

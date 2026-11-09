@@ -52,7 +52,12 @@
     "failedStartGame": "Failed to start game: {{error}}",
     "mainMenu": "Main Menu",
     "worldEditor": "World Editor",
-    "startupOptionsRejected": "Those career settings could not be used. Go back to the world screen and check the start year, the start phase and how much past history to generate."
+    "startupOptionsRejected": "Those career settings could not be used. Go back to the world screen and check the start year, the start phase and how much past history to generate.",
+    "tagline": "Every club has a story. Write yours.",
+    "keyboardHint": "Arrow keys to move · Enter to select",
+    "quit": "Quit",
+    "title": "OpenFoot Manager",
+    "startingGame": "Preparing your career…"
   },
   "managerProfiles": {
     "saveConfirm": {
@@ -403,6 +408,21 @@
       "regionRemovedDisablesCompetitions": "{{region}} was removed from the simulation scope, so dependent competitions were switched off too.",
       "clubCompetitionLocked": "{{competition}} is on {{club}}'s schedule and will always be simulated.",
       "autoEnabledRegions": "{{competition}} needs {{regions}}, so those regions were enabled automatically."
+    },
+    "transferBudget": "Transfer budget",
+    "wageBudget": "Wage budget",
+    "stadium": "Stadium",
+    "stadiumValue": "{{name}} · {{capacity}}",
+    "lastSeason": "Last season",
+    "lastSeasonValue": "{{season}} · finished {{position}}",
+    "noHistory": "No recorded history",
+    "expectationsNote": "The board reveals its objectives after you take charge. Budgets and history shown here are the club’s real starting facts.",
+    "presets": {
+      "label": "Club stories",
+      "all": "All clubs",
+      "contenders": "Title contenders",
+      "sleepingGiants": "Sleeping giants",
+      "newStories": "New stories"
     }
   },
   "youthAcademy": {
@@ -1937,7 +1957,10 @@
     "uiScaleDesc": "Adjust font size and spacing for readability",
     "uiDensity": "Density",
     "uiDensityDesc": "How much space rows and panels use.",
-    "uiDensityOptions": { "comfortable": "Comfortable", "compact": "Compact" },
+    "uiDensityOptions": {
+      "comfortable": "Comfortable",
+      "compact": "Compact"
+    },
     "sidebarWidth": "Sidebar width",
     "sidebarWidthDesc": "How wide the open sidebar is. Wide fits every menu name on one line.",
     "sidebarWidthOptions": {
@@ -4527,5 +4550,167 @@
     "body": "Your last session ended in a crash. Reporting it helps us fix it — you will see everything that would be sent before anything leaves your computer.",
     "report": "Report it",
     "notNow": "Not now"
+  },
+  "careerSetup": {
+    "newCareer": "New career",
+    "exitSetup": "Exit setup",
+    "rail": "Career setup steps",
+    "passport": "Manager passport",
+    "unnamedManager": "Unnamed manager",
+    "stepOf": "Beat {{current}} / {{total}}",
+    "footerHint": "Your choices are kept while you move between beats. Nothing is simulated until you take charge.",
+    "continue": "Continue",
+    "findClub": "Find a club",
+    "generatingNote": "Building the world and its history. This can take a moment; there is no fake progress bar.",
+    "beats": {
+      "world": "World",
+      "season": "Season",
+      "identity": "Identity",
+      "philosophy": "Philosophy",
+      "club": "Club",
+      "board": "Board",
+      "sign": "Signing",
+      "welcome": "Welcome"
+    },
+    "world": {
+      "subtitle": "Choose the football world your career opens in. Installed databases keep real clubs; no database means a generated world."
+    },
+    "season": {
+      "title": "Set the season",
+      "subtitle": "Choose when the clock starts, how much history the world carries, and how much guidance you want."
+    },
+    "identity": {
+      "title": "Who are you?",
+      "subtitle": "Name the manager, pick a home country, and choose the story you arrive with."
+    },
+    "philosophy": {
+      "title": "Your football",
+      "subtitle": "Pick the starting identity you will sign with. You can change it later in Tactics."
+    },
+    "backgroundLabel": "Background",
+    "backgroundNote": "Background shapes your presentation and press story. It does not secretly change ratings, budgets or results.",
+    "philosophyLabel": "Starting approach",
+    "philosophyNote": "Applied to your club when you sign. It is a real tactical preset, not a hidden simulation bonus.",
+    "guidanceLabel": "Guidance",
+    "guided": "Guided",
+    "quick": "Quick",
+    "guidedDesc": "Board meeting, signing ceremony and a first-day guide in the Hub.",
+    "quickDesc": "Straight to the club and the Hub. The first-day guide stays available from the pause menu.",
+    "backgrounds": {
+      "legend": "Club legend",
+      "legendDesc": "You return as the name the terraces already sing.",
+      "formerPro": "Former pro",
+      "formerProDesc": "A playing career behind you; the touchline is the next chapter.",
+      "youthCoach": "Youth coach",
+      "youthCoachDesc": "You built players before you built teams.",
+      "outsider": "The outsider",
+      "outsiderDesc": "No old debts at this club. Everything is earned from day one."
+    },
+    "philosophies": {
+      "possession": "Possession",
+      "possessionDesc": "Keep the ball, build patiently, control the rhythm.",
+      "press": "High press",
+      "pressDesc": "Win it high and turn pressure into chances.",
+      "counter": "Counter",
+      "counterDesc": "Stay compact, then break at speed.",
+      "pragmatic": "Pragmatic",
+      "pragmaticDesc": "Balance first. Adapt to the opponent and the moment."
+    },
+    "summary": {
+      "season": "Season",
+      "background": "Background",
+      "approach": "Approach",
+      "guidance": "Guidance"
+    },
+    "soundOn": "Turn UI sound off",
+    "soundOff": "Turn UI sound on",
+    "elapsed": "Time in setup"
+  },
+  "arrival": {
+    "skip": "Skip ceremony",
+    "footerHint": "The career is already saved. This scene does not advance the clock.",
+    "appointedHeadline": "{{manager}} appointed at {{club}}",
+    "promiseNote": "Your promise is stored as your stated ambition. It does not alter the board objectives or the simulation.",
+    "board": {
+      "title": "The board meeting",
+      "subtitle": "The objectives are real. Your promise is your own.",
+      "chairman": "Chairman",
+      "objective": "Board objective",
+      "speech": "Welcome, {{manager}}. {{club}} needs direction. These are the objectives we will measure you against — now tell us what you intend to build.",
+      "promiseLabel": "Your season promise",
+      "continue": "Agree and proceed"
+    },
+    "promises": {
+      "europe": "Chase Europe",
+      "europeDesc": "Push for continental places and keep the club ambitious.",
+      "attractive": "Play attractive football",
+      "attractiveDesc": "Commit to a front-foot identity the supporters can recognise.",
+      "survival": "Build to survive",
+      "survivalDesc": "Stabilise first, then grow. Safety before spectacle."
+    },
+    "sign": {
+      "title": "The signing",
+      "subtitle": "Make it official.",
+      "official": "Official appointment",
+      "manager": "Manager",
+      "club": "Club",
+      "background": "Background",
+      "approach": "Starting approach",
+      "note": "No invented contract terms: this records the appointment and applies your chosen starting approach.",
+      "action": "Sign",
+      "signing": "Signing…",
+      "error": "The starting approach could not be applied. Try again — your appointment is still safe."
+    },
+    "welcome": {
+      "title": "Welcome to the club",
+      "subtitle": "The press has the news. The squad is waiting.",
+      "subtitleShort": "Your first day starts now.",
+      "press": "Press release",
+      "captain": "Captain",
+      "keyPlayer": "Key player",
+      "inbox": "Waiting in your inbox",
+      "nextFixture": "First look at the calendar: {{home}} vs {{away}}",
+      "action": "Enter the office"
+    }
+  },
+  "firstDay": {
+    "title": "First day essentials",
+    "readyTitle": "Ready for the season",
+    "readyDescription": "The essentials are done. The season is yours — staff, training and scouting are there when you want them.",
+    "progress": "{{completed}} / {{total}} complete",
+    "optionalHint": "Optional: staff, training, scouting",
+    "go": "Go",
+    "dismiss": "Dismiss first-day guide",
+    "resume": "Resume first-day guide",
+    "tasks": {
+      "board": {
+        "label": "Board briefing",
+        "description": "Open the welcome briefing and read what the board expects.",
+        "confirm": "Mark briefed"
+      },
+      "squad": {
+        "label": "Review the squad",
+        "description": "Look through the roster, then confirm you have reviewed it. Visiting the tab alone does not count.",
+        "confirm": "Squad reviewed"
+      },
+      "tactics": {
+        "label": "Check the tactics",
+        "description": "Check formation, roles and style. Keep the current setup if it already fits.",
+        "confirm": "Keep current tactics"
+      },
+      "fixture": {
+        "label": "Know the next fixture",
+        "description": "Open the calendar and confirm you have seen the next match.",
+        "confirm": "Fixture noted"
+      }
+    },
+    "horizons": {
+      "week": "First week: meet the staff, set training, and send one scouting assignment if you want depth.",
+      "ninety": "First 90 days: check the board objectives monthly and adjust the squad window by window.",
+      "season": "Season rhythm: keep the essentials under review and let the calendar drive the next decision."
+    }
+  },
+  "diagnostics": {
+    "reportBug": "Report a bug"
   }
 }

@@ -8,23 +8,45 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore, type GameStateData } from "../store/gameStore";
 import type { CareerStartPhase, CreateManagerFormData } from "../components/menu/CreateManagerForm";
-import type { PackageInfo, PackageIssue } from "../components/menu/WorldSelect";
+import type { PackageInfo, PackageIssue } from "../components/menu/packageTypes";
 import { defaultActivePackageIds } from "../components/menu/packageSelection";
 import type { ManagerProfile } from "../components/menu/types";
 import { applyExtraTranslations } from "../lib/extraTranslations";
 import { formatAppVersion } from "../lib/appVersion";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
-import { FolderOpen, Settings, PlusCircle, ChevronRight, Power, Package } from "lucide-react";
+import {
+  FolderOpen,
+  Settings,
+  PlusCircle,
+  ChevronRight,
+  Power,
+  Bug,
+  ArrowLeft,
+  Loader2,
+} from "lucide-react";
 import { ReportBugModal } from "../components/diagnostics/ReportBugModal";
 import { CrashReportPrompt } from "../components/diagnostics/CrashReportPrompt";
 import { showError } from "../lib/errorDialog";
+import { Button } from "../components/ui";
+import CareerSetupLayout from "../components/careerSetup/CareerSetupLayout";
+import CareerPassport from "../components/careerSetup/CareerPassport";
+import SeasonStep from "../components/careerSetup/SeasonStep";
+import PhilosophyStep from "../components/careerSetup/PhilosophyStep";
+import {
+  beatIndex,
+  createSetupDraft,
+  nextSetupStep,
+  presentationOf,
+  previousSetupStep,
+  type CareerSetupDraft,
+  type CareerSetupStep,
+} from "../components/careerSetup/careerSetupModel";
 
 const CreateManagerForm = lazy(() => import("../components/menu/CreateManagerForm"));
 const ProfileSaveConfirm = lazy(() => import("../components/menu/ProfileSaveConfirm"));
 const SavesList = lazy(() => import("../components/menu/SavesList"));
 const PackageBuildStep = lazy(() => import("../components/menu/PackageBuildStep"));
-const GenerationStep = lazy(() => import("../components/menu/WorldSelect"));
 
 interface SaveEntry {
   id: string;
@@ -37,15 +59,11 @@ interface SaveEntry {
   last_played_at: string;
 }
 
-/**
- * Earliest year a career may start. Historical world packages recreate eras
- * decades before the modern game, so the floor only keeps the clock inside a
- * sane calendar range. Must match `MIN_START_YEAR` in `commands/game.rs`.
- */
 const MIN_CAREER_START_YEAR = 1900;
-const DEFAULT_GENERATED_HISTORY_DEPTH_YEARS = 12;
 const MAX_GENERATED_HISTORY_DEPTH_YEARS = 24;
 const GENERATED_HISTORY_DEPTH_STORAGE_KEY = "ofm-generated-history-depth-years";
+const FOCUS_RING =
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page";
 
 type StartupOptionsPayload = {
   startYear: number;
@@ -60,10 +78,8 @@ function defaultCareerStartYear(): string {
 function parseCareerStartYear(rawValue: string): number | null {
   const trimmed = rawValue.trim();
   if (!/^\d+$/.test(trimmed)) return null;
-
   const parsed = Number(trimmed);
-  if (!Number.isInteger(parsed)) return null;
-  return parsed;
+  return Number.isInteger(parsed) ? parsed : null;
 }
 
 function isCareerStartPhase(value: string): value is CareerStartPhase {
@@ -71,46 +87,29 @@ function isCareerStartPhase(value: string): value is CareerStartPhase {
 }
 
 function normalizeHistoryDepthYears(value: number): number | null {
-  if (!Number.isInteger(value)) return null;
-  if (value < 0 || value > MAX_GENERATED_HISTORY_DEPTH_YEARS) return null;
+  if (!Number.isInteger(value) || value < 0 || value > MAX_GENERATED_HISTORY_DEPTH_YEARS)
+    return null;
   return value;
 }
 
 function initialHistoryDepthYears(): number {
-  if (typeof window === "undefined") {
-    return DEFAULT_GENERATED_HISTORY_DEPTH_YEARS;
-  }
-
+  if (typeof window === "undefined") return 12;
   const storedValue = window.localStorage.getItem(GENERATED_HISTORY_DEPTH_STORAGE_KEY);
-  if (storedValue === null) {
-    return DEFAULT_GENERATED_HISTORY_DEPTH_YEARS;
-  }
-
-  const parsedValue = Number(storedValue);
-  return normalizeHistoryDepthYears(parsedValue) ?? DEFAULT_GENERATED_HISTORY_DEPTH_YEARS;
+  if (storedValue === null) return 12;
+  return normalizeHistoryDepthYears(Number(storedValue)) ?? 12;
 }
 
-function buildStartupOptions(
-  formData: CreateManagerFormData,
-  historyDepthYears: number,
-): StartupOptionsPayload | null {
-  const startYear = parseCareerStartYear(formData.startYear);
-  if (startYear === null || startYear < MIN_CAREER_START_YEAR) {
+function buildStartupOptions(draft: CareerSetupDraft): StartupOptionsPayload | null {
+  const startYear = parseCareerStartYear(draft.startYear);
+  if (
+    startYear === null ||
+    startYear < MIN_CAREER_START_YEAR ||
+    !isCareerStartPhase(draft.startPhase)
+  )
     return null;
-  }
-  if (!isCareerStartPhase(formData.startPhase)) {
-    return null;
-  }
-  const normalizedHistoryDepthYears = normalizeHistoryDepthYears(historyDepthYears);
-  if (normalizedHistoryDepthYears === null) {
-    return null;
-  }
-
-  return {
-    startYear,
-    startPhase: formData.startPhase,
-    historyDepthYears: normalizedHistoryDepthYears,
-  };
+  const historyDepthYears = normalizeHistoryDepthYears(draft.historyDepthYears);
+  if (historyDepthYears === null) return null;
+  return { startYear, startPhase: draft.startPhase, historyDepthYears };
 }
 
 const CREATE_MANAGER_FIELD_ORDER = [
@@ -122,36 +121,38 @@ const CREATE_MANAGER_FIELD_ORDER = [
 ] as const satisfies ReadonlyArray<keyof CreateManagerFormData>;
 
 function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return (
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 }
 
 function deferFocusToNextPaint(callback: () => void): void {
-  requestAnimationFrame(() => {
-    requestAnimationFrame(callback);
-  });
+  requestAnimationFrame(() => requestAnimationFrame(callback));
 }
 
 function focusFirstCreateManagerError(
   errors: Partial<Record<keyof CreateManagerFormData, string>>,
 ): void {
-  const first = CREATE_MANAGER_FIELD_ORDER.find((k) => errors[k]);
+  const first = CREATE_MANAGER_FIELD_ORDER.find((key) => errors[key]);
   if (!first) return;
   const root = document.getElementById(`create-manager-field-${first}`);
-  root?.scrollIntoView?.({
-    behavior: prefersReducedMotion() ? "auto" : "smooth",
-    block: "center",
-  });
-  const focusable = root?.querySelector<HTMLElement>(
-    "input:not([type=hidden]), button:not([disabled]), select, textarea",
-  );
-  focusable?.focus({ preventScroll: true });
+  root?.scrollIntoView?.({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "center" });
+  root
+    ?.querySelector<HTMLElement>(
+      "input:not([type=hidden]), button:not([disabled]), select, textarea",
+    )
+    ?.focus({ preventScroll: true });
 }
 
 function MenuPanelFallback() {
+  const { t } = useTranslation();
   return (
-    <div className="flex min-h-64 items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-selected border-t-transparent" />
+    <div
+      className="flex min-h-64 items-center justify-center"
+      role="status"
+      aria-label={t("dashboard.loading")}
+    >
+      <Loader2 className="h-8 w-8 animate-spin text-selected" aria-hidden="true" />
     </div>
   );
 }
@@ -162,9 +163,11 @@ export default function MainMenu() {
   const setGameState = useGameStore((state) => state.setGameState);
   const { t } = useTranslation();
 
-  const [menuState, setMenuState] = useState<
-    "main" | "create" | "packages" | "generation" | "load"
-  >("main");
+  const [screen, setScreen] = useState<"title" | "setup" | "load">("title");
+  const [draft, setDraft] = useState<CareerSetupDraft>(() => ({
+    ...createSetupDraft(Number(defaultCareerStartYear())),
+    historyDepthYears: initialHistoryDepthYears(),
+  }));
   const [showProfileConfirm, setShowProfileConfirm] = useState(false);
   const [saves, setSaves] = useState<SaveEntry[]>([]);
   const [isLoadingSaves, setIsLoadingSaves] = useState(false);
@@ -172,67 +175,61 @@ export default function MainMenu() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
   const [reportingBug, setReportingBug] = useState(false);
-
   const [profiles, setProfiles] = useState<ManagerProfile[]>([]);
   const [loadedProfile, setLoadedProfile] = useState<ManagerProfile | null>(null);
-
-  const [formData, setFormData] = useState<CreateManagerFormData>({
-    firstName: "",
-    lastName: "",
-    startYear: defaultCareerStartYear(),
-    startPhase: "seasonStart",
-    nationality: "",
-  });
   const [formErrors, setFormErrors] = useState<
     Partial<Record<keyof CreateManagerFormData, string>>
   >({});
-
-  // Installed packages state
   const [installedPackages, setInstalledPackages] = useState<PackageInfo[]>([]);
-  const [activePackageIds, setActivePackageIds] = useState<string[]>([]);
   const [isInstallingPackage, setIsInstallingPackage] = useState(false);
-  // Only ever applied once: after this the player's own toggles are the last word.
   const preselectedPackageRef = useRef(false);
   const [packageStackErrors, setPackageStackErrors] = useState<PackageIssue[]>([]);
-  const [historyDepthYears, setHistoryDepthYears] = useState(initialHistoryDepthYears);
+  const titleActionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const formData: CreateManagerFormData = {
+    firstName: draft.firstName,
+    lastName: draft.lastName,
+    startYear: draft.startYear,
+    startPhase: draft.startPhase,
+    nationality: draft.nationality,
+  };
 
   useEffect(() => {
-    window.localStorage.setItem(GENERATED_HISTORY_DEPTH_STORAGE_KEY, String(historyDepthYears));
-  }, [historyDepthYears]);
+    window.localStorage.setItem(
+      GENERATED_HISTORY_DEPTH_STORAGE_KEY,
+      String(draft.historyDepthYears),
+    );
+  }, [draft.historyDepthYears]);
 
   useEffect(() => {
     invoke<ManagerProfile[]>("get_manager_profiles")
-      .then((p) => setProfiles(p ?? []))
+      .then((entries) => setProfiles(entries ?? []))
       .catch((error) => console.error("Failed to load manager profiles:", error));
   }, []);
 
-  // Check if a game is already active (e.g. loaded by MCP --mcp-auto-start before frontend mounted)
   useEffect(() => {
     invoke<GameStateData>("get_active_game")
       .then((state) => {
-        const mgrName = state.manager.display_name;
         applyExtraTranslations(state.extra_translations);
         setGameState(state);
-        setGameActive(true, mgrName);
+        setGameActive(true, state.manager.display_name);
         return routeForActiveCareer().then(navigate);
       })
       .catch(() => {
-        // No active game — stay on menu
+        // No active career: the title screen remains the front door.
       });
   }, [setGameState, setGameActive, navigate]);
 
-  // Listen for game loaded by MCP auto-start (event may arrive after mount)
   useEffect(() => {
     const unlisten = listen("game-state-changed", async () => {
       try {
         const state = await invoke<GameStateData>("get_active_game");
-        const mgrName = state.manager.display_name;
         applyExtraTranslations(state.extra_translations);
         setGameState(state);
-        setGameActive(true, mgrName);
+        setGameActive(true, state.manager.display_name);
         navigate(await routeForActiveCareer());
       } catch {
-        // Game not actually active — ignore
+        // The event can arrive before a career is active.
       }
     });
     return () => {
@@ -240,104 +237,65 @@ export default function MainMenu() {
     };
   }, [setGameState, setGameActive, navigate]);
 
-  const updateFormField = (field: keyof CreateManagerFormData, value: string) => {
-    setFormData((previous) => ({
+  const patchDraft = (patch: Partial<CareerSetupDraft>) =>
+    setDraft((previous) => ({ ...previous, ...patch }));
+
+  const goToStep = (step: CareerSetupStep) => {
+    setDraft((previous) => ({
       ...previous,
-      [field]: value,
+      step,
+      furthestStep:
+        beatIndex(step) > beatIndex(previous.furthestStep) ? step : previous.furthestStep,
     }));
+  };
+
+  const updateFormField = (field: keyof CreateManagerFormData, value: string) => {
+    patchDraft({ [field]: value } as Partial<CareerSetupDraft>);
   };
 
   const clearFormError = (field: keyof CreateManagerFormData) => {
-    setFormErrors((previous) => ({
-      ...previous,
-      [field]: "",
-    }));
+    setFormErrors((previous) => ({ ...previous, [field]: "" }));
   };
 
-  const validateForm = (): {
-    ok: boolean;
-    errors: Partial<Record<keyof CreateManagerFormData, string>>;
-  } => {
+  const validateForm = () => {
     const errors: Partial<Record<keyof CreateManagerFormData, string>> = {};
-    if (!formData.firstName.trim()) {
-      errors.firstName = t("validation.required", {
-        field: t("createManager.firstName"),
-      });
-    } else if (formData.firstName.length > 30) {
+    if (!formData.firstName.trim())
+      errors.firstName = t("validation.required", { field: t("createManager.firstName") });
+    else if (formData.firstName.length > 30)
       errors.firstName = t("validation.maxLength", {
         field: t("createManager.firstName"),
         max: 30,
       });
-    }
-
-    if (!formData.lastName.trim()) {
-      errors.lastName = t("validation.required", {
-        field: t("createManager.lastName"),
-      });
-    } else if (formData.lastName.length > 30) {
-      errors.lastName = t("validation.maxLength", {
-        field: t("createManager.lastName"),
-        max: 30,
-      });
-    }
-
-    if (!formData.startYear.trim()) {
-      errors.startYear = t("validation.required", {
-        field: t("createManager.startYear"),
-      });
-    } else {
+    if (!formData.lastName.trim())
+      errors.lastName = t("validation.required", { field: t("createManager.lastName") });
+    else if (formData.lastName.length > 30)
+      errors.lastName = t("validation.maxLength", { field: t("createManager.lastName"), max: 30 });
+    if (!formData.startYear.trim())
+      errors.startYear = t("validation.required", { field: t("createManager.startYear") });
+    else {
       const startYear = parseCareerStartYear(formData.startYear);
-      if (startYear === null || startYear < MIN_CAREER_START_YEAR) {
-        errors.startYear = t("validation.minStartYear", {
-          min: MIN_CAREER_START_YEAR,
-        });
-      }
+      if (startYear === null || startYear < MIN_CAREER_START_YEAR)
+        errors.startYear = t("validation.minStartYear", { min: MIN_CAREER_START_YEAR });
     }
-    if (!isCareerStartPhase(formData.startPhase)) {
-      errors.startPhase = t("validation.required", {
-        field: t("createManager.startPhase"),
-      });
-    }
+    if (!isCareerStartPhase(formData.startPhase))
+      errors.startPhase = t("validation.required", { field: t("createManager.startPhase") });
     if (!formData.nationality)
-      errors.nationality = t("validation.required", {
-        field: t("createManager.countryOfOrigin"),
-      });
-    setFormErrors(errors);
-    return {
-      ok: Object.keys(errors).length === 0,
-      errors,
-    };
-  };
-
-  const handleGoToWorldSelect = (e: React.FormEvent) => {
-    e.preventDefault();
-    const validation = validateForm();
-    if (!validation.ok) {
-      deferFocusToNextPaint(() => focusFirstCreateManagerError(validation.errors));
-      return;
-    }
-    if (loadedProfile && formDiffersFromProfile(formData, loadedProfile)) {
-      setShowProfileConfirm(true);
-      return;
-    }
-    void autoSaveProfile();
-    proceedToPackages();
+      errors.nationality = t("validation.required", { field: t("createManager.countryOfOrigin") });
+    const meaningfulErrors = Object.fromEntries(
+      Object.entries(errors).filter(([, value]) => Boolean(value)),
+    );
+    setFormErrors(meaningfulErrors);
+    return { ok: Object.keys(meaningfulErrors).length === 0, errors: meaningfulErrors };
   };
 
   const loadInstalledPackages = async () => {
     try {
-      const pkgs = await invoke<PackageInfo[]>("list_installed_packages");
-      // Tauri commands can resolve to null; never let installedPackages become
-      // null or downstream `.filter` calls (here and in PackageBuildStep) throw.
-      setInstalledPackages(pkgs ?? []);
-
-      // A portable build ships its world installed. Pre-selecting it keeps "New Game" from
-      // generating a fictional world beside data the player just downloaded — and from
-      // looking like the download was empty.
+      const pkgs = (await invoke<PackageInfo[]>("list_installed_packages")) ?? [];
+      setInstalledPackages(pkgs);
       if (!preselectedPackageRef.current) {
         preselectedPackageRef.current = true;
-        const defaults = defaultActivePackageIds(pkgs ?? []);
-        if (defaults.length > 0) setActivePackageIds(defaults);
+        const defaults = defaultActivePackageIds(pkgs);
+        if (defaults.length > 0) patchDraft({ packageIds: defaults });
       }
     } catch (err) {
       console.error("Failed to list packages:", err);
@@ -345,10 +303,136 @@ export default function MainMenu() {
   };
 
   useEffect(() => {
-    if (menuState === "packages") {
-      void loadInstalledPackages();
+    if (screen === "setup" && draft.step === "world") void loadInstalledPackages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen, draft.step]);
+
+  const autoSaveProfile = async (forceNew = false) => {
+    try {
+      const saved = await invoke<ManagerProfile>("save_manager_profile", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        nationality: formData.nationality,
+        force: forceNew || undefined,
+      });
+      setProfiles((prev) => {
+        const exists = prev.some((profile) => profile.id === saved.id);
+        const next =
+          !forceNew && exists
+            ? prev.map((profile) => (profile.id === saved.id ? saved : profile))
+            : [...prev, saved];
+        return next.sort((a, b) =>
+          (b.last_used_at ?? b.created_at).localeCompare(a.last_used_at ?? a.created_at),
+        );
+      });
+      setLoadedProfile(saved);
+    } catch (err) {
+      console.error("Failed to auto-save manager profile:", err);
     }
-  }, [menuState]);
+  };
+
+  const handleUpdateProfile = async () => {
+    if (!loadedProfile) return;
+    try {
+      const updated = await invoke<ManagerProfile | null>("update_manager_profile", {
+        id: loadedProfile.id,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        nationality: formData.nationality,
+      });
+      if (updated) {
+        setProfiles((prev) =>
+          prev.map((profile) => (profile.id === updated.id ? updated : profile)),
+        );
+        setLoadedProfile(updated);
+      }
+    } catch (error) {
+      console.error("Failed to update manager profile:", error);
+    }
+    setShowProfileConfirm(false);
+    proceedAfterIdentity();
+  };
+
+  const handleStartGame = async () => {
+    const startupOptions = buildStartupOptions(draft);
+    if (!startupOptions) {
+      const validation = validateForm();
+      if (!validation.ok) {
+        const seasonError = validation.errors.startYear || validation.errors.startPhase;
+        goToStep(seasonError ? "season" : "identity");
+        deferFocusToNextPaint(() => focusFirstCreateManagerError(validation.errors));
+        return;
+      }
+      await showError(t("errors.title"), t("menu.startupOptionsRejected"));
+      return;
+    }
+    setIsStarting(true);
+    try {
+      const game = await invoke<GameStateData>("start_new_game", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        nationality: formData.nationality,
+        startupOptions,
+        packageIds: draft.packageIds.length > 0 ? draft.packageIds : undefined,
+      });
+      applyExtraTranslations(game.extra_translations);
+      setGameState(game);
+      navigate("/select-team", { state: { careerSetup: presentationOf(draft) } });
+    } catch (error) {
+      console.error("Failed to start game:", error);
+      await showError(
+        t("errors.title"),
+        t("menu.failedStartGame", { error: resolveBackendError(error) }),
+      );
+    } finally {
+      setIsStarting(false);
+    }
+  };
+
+  const proceedAfterIdentity = () => {
+    const next = nextSetupStep(draft);
+    if (next === "club") void handleStartGame();
+    else if (next) goToStep(next);
+  };
+
+  const finishIdentity = () => {
+    void autoSaveProfile();
+    proceedAfterIdentity();
+  };
+
+  const validateSeasonFields = () => {
+    const errors: Partial<Record<keyof CreateManagerFormData, string>> = {};
+    if (!draft.startYear.trim())
+      errors.startYear = t("validation.required", { field: t("createManager.startYear") });
+    else {
+      const startYear = parseCareerStartYear(draft.startYear);
+      if (startYear === null || startYear < MIN_CAREER_START_YEAR)
+        errors.startYear = t("validation.minStartYear", { min: MIN_CAREER_START_YEAR });
+    }
+    if (!isCareerStartPhase(draft.startPhase))
+      errors.startPhase = t("validation.required", { field: t("createManager.startPhase") });
+    setFormErrors((previous) => ({
+      ...previous,
+      startYear: errors.startYear ?? "",
+      startPhase: errors.startPhase ?? "",
+    }));
+    return errors;
+  };
+
+  const handleIdentitySubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const validation = validateForm();
+    if (!validation.ok) {
+      if (validation.errors.startYear || validation.errors.startPhase) goToStep("season");
+      deferFocusToNextPaint(() => focusFirstCreateManagerError(validation.errors));
+      return;
+    }
+    if (loadedProfile && formDiffersFromProfile(formData, loadedProfile)) {
+      setShowProfileConfirm(true);
+      return;
+    }
+    finishIdentity();
+  };
 
   const handleInstallPackage = async () => {
     const selected = await open({
@@ -372,8 +456,8 @@ export default function MainMenu() {
   const handleUninstallPackage = async (id: string) => {
     try {
       await invoke("uninstall_package", { id });
-      setInstalledPackages((prev) => prev.filter((p) => p.id !== id));
-      setActivePackageIds((prev) => prev.filter((pid) => pid !== id));
+      setInstalledPackages((prev) => prev.filter((pkg) => pkg.id !== id));
+      patchDraft({ packageIds: draft.packageIds.filter((packageId) => packageId !== id) });
       setPackageStackErrors([]);
     } catch (err) {
       console.error("Failed to uninstall package:", err);
@@ -382,58 +466,19 @@ export default function MainMenu() {
   };
 
   const handleTogglePackage = (id: string) => {
-    setActivePackageIds((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id],
-    );
+    patchDraft({
+      packageIds: draft.packageIds.includes(id)
+        ? draft.packageIds.filter((packageId) => packageId !== id)
+        : [...draft.packageIds, id],
+    });
     setPackageStackErrors([]);
   };
 
-  const handleStartGame = async () => {
-    const startupOptions = buildStartupOptions(formData, historyDepthYears);
-    if (!startupOptions) {
-      const validation = validateForm();
-      if (validation.ok) {
-        // The two disagreed: `buildStartupOptions` rejected something `validateForm` does not
-        // check. Today that is only the generated-history depth, which lives on the world screen
-        // and has no field on this form — so bouncing to the create step would put the player in
-        // front of a form with no errors on it and no way to tell what was wrong. Say so instead.
-        await showError(t("errors.title"), t("menu.startupOptionsRejected"));
-        return;
-      }
-      setMenuState("create");
-      deferFocusToNextPaint(() => focusFirstCreateManagerError(validation.errors));
-      return;
-    }
-
-    setIsStarting(true);
-    try {
-      const game = await invoke<GameStateData>("start_new_game", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        nationality: formData.nationality,
-        startupOptions,
-        packageIds: activePackageIds.length > 0 ? activePackageIds : undefined,
-      });
-      applyExtraTranslations(game.extra_translations);
-      setGameState(game);
-      navigate("/select-team");
-    } catch (error) {
-      console.error("Failed to start game:", error);
-      await showError(
-        t("errors.title"),
-        t("menu.failedStartGame", { error: resolveBackendError(error) }),
-      );
-    } finally {
-      setIsStarting(false);
-    }
-  };
-
   const handleOpenLoadMenu = async () => {
-    setMenuState("load");
+    setScreen("load");
     setIsLoadingSaves(true);
     try {
-      const dbSaves = await invoke<SaveEntry[]>("get_saves");
-      setSaves(dbSaves);
+      setSaves(await invoke<SaveEntry[]>("get_saves"));
     } catch (error) {
       console.error("Failed to load saves:", error);
     } finally {
@@ -441,330 +486,393 @@ export default function MainMenu() {
     }
   };
 
-  const handleLoadGame = async (saveId: string) => {
+  const handleLoadSave = async (saveId: string) => {
     setLoadingSaveId(saveId);
     try {
-      const managerName = await invoke<string>("load_game", { saveId });
-      const activeGame = await invoke<GameStateData>("get_active_game");
-      try {
-        await prewarmManagerSquadPortraits(activeGame);
-      } catch (portraitError) {
-        console.warn("Portrait prewarm failed during save load:", portraitError);
-      }
-      setGameState(activeGame);
-      setGameActive(true, managerName);
+      const state = await invoke<GameStateData>("load_game", { saveId });
+      applyExtraTranslations(state.extra_translations);
+      setGameState(state);
+      setGameActive(true, state.manager.display_name);
       navigate(await routeForActiveCareer());
+      void prewarmManagerSquadPortraits(state);
     } catch (error) {
-      console.error("Failed to load game:", error);
-      setLoadingSaveId(null);
+      console.error("Failed to load save:", error);
       await showError(
         t("errors.title"),
         t("menu.loadGameFailed", { error: resolveBackendError(error) }),
       );
+    } finally {
+      setLoadingSaveId(null);
     }
   };
 
   const handleDeleteSave = async (saveId: string) => {
     try {
-      await invoke<boolean>("delete_save", { saveId });
-      setSaves((prev) => prev.filter((s) => s.id !== saveId));
+      await invoke("delete_save", { saveId });
+      setSaves((prev) => prev.filter((save) => save.id !== saveId));
       setConfirmDeleteId(null);
     } catch (error) {
       console.error("Failed to delete save:", error);
     }
   };
 
+  const handleExit = async () => {
+    try {
+      await getCurrentWindow().close();
+    } catch (error) {
+      console.error("Failed to close window:", error);
+    }
+  };
+
   const handleSelectProfile = (profile: ManagerProfile) => {
-    setFormData((prev) => ({
-      ...prev,
+    setLoadedProfile(profile);
+    patchDraft({
       firstName: profile.first_name,
       lastName: profile.last_name,
       nationality: profile.nationality,
-    }));
+    });
     setFormErrors({});
-    setLoadedProfile(profile);
     void invoke("touch_manager_profile", { id: profile.id });
-  };
-
-  const formDiffersFromProfile = (form: CreateManagerFormData, profile: ManagerProfile) =>
-    form.firstName !== profile.first_name ||
-    form.lastName !== profile.last_name ||
-    form.nationality !== profile.nationality;
-
-  const proceedToPackages = () => {
-    setShowProfileConfirm(false);
-    setMenuState("packages");
-  };
-
-  const handleUpdateProfile = async () => {
-    if (!loadedProfile) return;
-    try {
-      const updated = await invoke<ManagerProfile | null>("update_manager_profile", {
-        id: loadedProfile.id,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        nationality: formData.nationality,
-      });
-      if (updated) {
-        setProfiles((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-        setLoadedProfile(updated);
-      }
-    } catch (error) {
-      console.error("Failed to update manager profile:", error);
-    }
-    proceedToPackages();
-  };
-
-  const handleSaveAsNewProfile = () => {
-    void autoSaveProfile(true);
-    setLoadedProfile(null);
-    proceedToPackages();
   };
 
   const handleDeleteProfile = async (id: string) => {
     try {
-      await invoke<boolean>("delete_manager_profile", { id });
-      setProfiles((prev) => prev.filter((p) => p.id !== id));
+      await invoke("delete_manager_profile", { id });
+      setProfiles((prev) => prev.filter((profile) => profile.id !== id));
       if (loadedProfile?.id === id) setLoadedProfile(null);
-    } catch (error) {
-      console.error("Failed to delete manager profile:", error);
+    } catch (err) {
+      console.error("Failed to delete manager profile:", err);
     }
   };
 
-  const autoSaveProfile = async (forceNew = false) => {
-    try {
-      const saved = await invoke<ManagerProfile>("save_manager_profile", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        nationality: formData.nationality,
-        force: forceNew || undefined,
-      });
-      setProfiles((prev) => {
-        const exists = prev.some((p) => p.id === saved.id);
-        const next =
-          !forceNew && exists ? prev.map((p) => (p.id === saved.id ? saved : p)) : [...prev, saved];
-        return next.sort((a, b) => {
-          const aDate = a.last_used_at ?? a.created_at;
-          const bDate = b.last_used_at ?? b.created_at;
-          return bDate.localeCompare(aDate);
-        });
-      });
-    } catch (error) {
-      console.error("Failed to auto-save manager profile:", error);
-    }
+  const handleTitleKeys = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    const buttons = titleActionRefs.current.filter((button): button is HTMLButtonElement =>
+      Boolean(button && !button.disabled),
+    );
+    if (buttons.length === 0) return;
+    event.preventDefault();
+    const current = buttons.indexOf(document.activeElement as HTMLButtonElement);
+    const delta = event.key === "ArrowDown" ? 1 : -1;
+    buttons[(current + delta + buttons.length) % buttons.length]?.focus();
   };
 
-  const handleExitApp = async (): Promise<void> => {
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-      await getCurrentWindow().destroy();
-    } catch (error) {
-      console.error("Failed to exit app:", error);
-    }
+  const setupTitles: Record<CareerSetupStep, { title: string; subtitle: string }> = {
+    world: { title: "packageBuild.title", subtitle: "careerSetup.world.subtitle" },
+    season: { title: "careerSetup.season.title", subtitle: "careerSetup.season.subtitle" },
+    identity: { title: "careerSetup.identity.title", subtitle: "careerSetup.identity.subtitle" },
+    philosophy: {
+      title: "careerSetup.philosophy.title",
+      subtitle: "careerSetup.philosophy.subtitle",
+    },
+    club: { title: "teamSelect.title", subtitle: "teamSelect.subtitle" },
+    board: { title: "arrival.board.title", subtitle: "arrival.board.subtitle" },
+    sign: { title: "arrival.sign.title", subtitle: "arrival.sign.subtitle" },
+    welcome: { title: "arrival.welcome.title", subtitle: "arrival.welcome.subtitleShort" },
   };
+
+  const primaryAction = (() => {
+    if (draft.step === "season") {
+      return (
+        <Button
+          variant="primary"
+          size="lg"
+          iconRight={<ChevronRight />}
+          onClick={() => {
+            const errors = validateSeasonFields();
+            if (errors.startYear || errors.startPhase) {
+              deferFocusToNextPaint(() => focusFirstCreateManagerError(errors));
+              return;
+            }
+            goToStep("identity");
+          }}
+        >
+          {t("careerSetup.continue")}
+        </Button>
+      );
+    }
+    if (draft.step === "identity") {
+      return (
+        <Button
+          type="submit"
+          form="career-identity-form"
+          variant="primary"
+          size="lg"
+          iconRight={<ChevronRight />}
+        >
+          {t("careerSetup.continue")}
+        </Button>
+      );
+    }
+    if (draft.step === "philosophy") {
+      return (
+        <Button
+          variant="primary"
+          size="lg"
+          disabled={isStarting}
+          iconRight={<ChevronRight />}
+          onClick={() => void handleStartGame()}
+        >
+          {isStarting ? t("menu.startingGame") : t("careerSetup.findClub")}
+        </Button>
+      );
+    }
+    return null;
+  })();
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-x-hidden bg-page">
-      {/* Background gradient accents */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-selected/5 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-info/5 blur-3xl" />
-      </div>
-
-      {/* Main Card */}
-      <div className="relative z-10 w-full max-w-md">
-        {/* Top accent bar */}
-        <div className="h-1.5 rounded-t-panel bg-selected" />
-
-        <div className="rounded-b-panel border border-t-0 border-line bg-panel p-8 shadow-xl">
-          {/* Logo */}
+    <div className="h-dvh overflow-hidden bg-page text-fg">
+      {screen === "title" ? (
+        <div className="relative flex h-full flex-col overflow-hidden">
           <img
-            src="/openfootlogo.svg"
-            alt={t("app.name")}
-            className="text-center w-full h-full object-cover"
+            src="/assets/onboarding/stadium-night.jpg"
+            alt=""
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-55"
           />
-
-          <div className="my-8 border-t border-line" />
-
-          {/* Main Menu */}
-          {menuState === "main" && (
-            <div className="flex flex-col gap-3">
-              <button
-                type="button"
-                onClick={() => setMenuState("create")}
-                className="group flex w-full items-center justify-between rounded-control bg-selected p-4 text-on-brand transition-colors hover:bg-selected/90"
-              >
-                <div className="flex items-center gap-3">
-                  <PlusCircle className="w-6 h-6" />
-                  <span className="font-heading text-lead font-bold uppercase tracking-label">
-                    {t("menu.newGame")}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-page via-page/85 to-transparent" />
+          <main
+            aria-label={t("menu.title")}
+            className="relative z-10 flex min-h-0 flex-1 flex-col justify-center px-8 py-10 sm:px-16"
+          >
+            <img
+              src="/openfootlogo.svg"
+              alt={t("app.name")}
+              className="h-20 w-96 max-w-full object-contain object-left sm:h-28 sm:w-[30rem]"
+            />
+            <p className="mt-3 max-w-md font-heading text-lead font-bold uppercase tracking-label text-fg-muted">
+              {t("menu.tagline")}
+            </p>
+            <nav
+              aria-label={t("menu.title")}
+              onKeyDown={handleTitleKeys}
+              className="mt-10 flex w-full max-w-sm flex-col gap-2"
+            >
+              {[
+                {
+                  label: t("menu.newGame"),
+                  icon: <PlusCircle />,
+                  onClick: () => {
+                    setDraft((previous) => ({ ...previous, step: "world", furthestStep: "world" }));
+                    setScreen("setup");
+                  },
+                  primary: true,
+                },
+                {
+                  label: t("menu.loadGame"),
+                  icon: <FolderOpen />,
+                  onClick: () => void handleOpenLoadMenu(),
+                },
+                {
+                  label: t("menu.settings"),
+                  icon: <Settings />,
+                  onClick: () => navigate("/settings"),
+                },
+                {
+                  label: t("diagnostics.reportBug"),
+                  icon: <Bug />,
+                  onClick: () => setReportingBug(true),
+                },
+              ].map((action, index) => (
+                <button
+                  key={action.label}
+                  ref={(node) => {
+                    titleActionRefs.current[index] = node;
+                  }}
+                  type="button"
+                  onClick={action.onClick}
+                  className={`group flex min-h-14 items-center justify-between gap-4 rounded-control border-l-4 px-5 py-3 text-left font-heading text-title font-bold uppercase tracking-label transition-colors duration-150 motion-reduce:transition-none ${FOCUS_RING} ${action.primary ? "border-selected bg-selected-fill text-on-brand hover:bg-selected-hover" : "border-line bg-panel/80 text-fg hover:border-selected hover:bg-hover"}`}
+                >
+                  <span className="flex items-center gap-3">
+                    {action.icon}
+                    {action.label}
                   </span>
-                </div>
-                <ChevronRight className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-              </button>
-
-              <button
-                type="button"
-                onClick={handleOpenLoadMenu}
-                className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-selected hover:bg-hover"
-              >
-                <div className="flex items-center gap-3">
-                  <FolderOpen className="w-6 h-6 text-warning" />
-                  <span className="font-heading text-lead font-bold uppercase tracking-label">
-                    {t("menu.loadGame")}
-                  </span>
-                </div>
-                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-warning" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate("/world-editor")}
-                className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-selected hover:bg-hover"
-              >
-                <div className="flex items-center gap-3">
-                  <Package className="w-6 h-6 text-warning" />
-                  <span className="font-heading text-lead font-bold uppercase tracking-label">
-                    {t("menu.worldEditor")}
-                  </span>
-                </div>
-                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-warning" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate("/settings", { state: { from: "/" } })}
-                className="group flex w-full items-center justify-between rounded-control border border-line bg-sunken p-4 text-fg transition-colors hover:border-line-strong hover:bg-hover"
-              >
-                <div className="flex items-center gap-3">
-                  <Settings className="w-6 h-6 text-fg-subtle" />
-                  <span className="font-heading text-lead font-bold uppercase tracking-label">
-                    {t("menu.settings")}
-                  </span>
-                </div>
-                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-fg-subtle" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  void handleExitApp();
-                }}
-                className="group flex items-center justify-between w-full p-4 bg-panel hover:bg-danger-tint text-fg rounded-panel transition-all duration-300 border border-line hover:border-danger/40 shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <Power className="w-6 h-6 text-danger" />
-                  <span className="font-heading text-lead font-bold uppercase tracking-label">
-                    {t("menu.exitGame")}
-                  </span>
-                </div>
-              </button>
+                  <ChevronRight
+                    className="h-5 w-5 opacity-60 transition-transform group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+                    aria-hidden="true"
+                  />
+                </button>
+              ))}
+            </nav>
+          </main>
+          <footer className="relative z-10 flex items-center justify-between gap-4 border-t border-line bg-chrome/90 px-6 py-3">
+            <p className="text-caption text-fg-subtle">{formatAppVersion()}</p>
+            <div className="flex items-center gap-3">
+              <span className="hidden text-caption text-fg-subtle sm:inline">
+                {t("menu.keyboardHint")}
+              </span>
+              <Button variant="ghost" size="sm" icon={<Power />} onClick={() => void handleExit()}>
+                {t("menu.quit")}
+              </Button>
             </div>
-          )}
+          </footer>
+        </div>
+      ) : null}
 
-          {/* Step 1: Create Manager Form */}
-          {menuState === "create" && (
-            <Suspense fallback={<MenuPanelFallback />}>
-              <CreateManagerForm
-                formData={formData}
-                formErrors={formErrors}
-                profiles={profiles}
-                selectedProfileId={loadedProfile?.id}
-                onChange={updateFormField}
-                onClearError={clearFormError}
-                onClose={() => {
-                  setMenuState("main");
-                  setFormErrors({});
-                  setLoadedProfile(null);
-                }}
-                onSelectProfile={handleSelectProfile}
-                onDeleteProfile={handleDeleteProfile}
-                onSubmit={handleGoToWorldSelect}
-              />
-            </Suspense>
-          )}
-
-          {/* Profile save confirmation modal */}
-          {showProfileConfirm && loadedProfile && (
-            <Suspense fallback={null}>
-              <ProfileSaveConfirm
-                loadedProfile={loadedProfile}
-                onUpdate={() => {
-                  void handleUpdateProfile();
-                }}
-                onSaveNew={() => {
-                  void handleSaveAsNewProfile();
-                }}
-                onSkip={proceedToPackages}
-                onClose={() => setShowProfileConfirm(false)}
-              />
-            </Suspense>
-          )}
-
-          {/* Step 2a: Build Your World (package selection) */}
-          {menuState === "packages" && (
+      {screen === "setup" ? (
+        <CareerSetupLayout
+          step={draft.step}
+          furthestStep={draft.furthestStep}
+          titleKey={setupTitles[draft.step].title}
+          subtitleKey={setupTitles[draft.step].subtitle}
+          busy={isStarting}
+          onBack={() => {
+            const previous = previousSetupStep(draft);
+            if (previous) goToStep(previous);
+            else setScreen("title");
+          }}
+          onExit={() => setScreen("title")}
+          onSelectStep={goToStep}
+          primaryAction={primaryAction}
+          summary={<CareerPassport draft={draft} />}
+        >
+          {draft.step === "world" ? (
             <Suspense fallback={<MenuPanelFallback />}>
               <PackageBuildStep
+                embedded
                 installedPackages={installedPackages}
-                activePackageIds={activePackageIds}
+                activePackageIds={draft.packageIds}
                 isInstallingPackage={isInstallingPackage}
                 packageStackErrors={packageStackErrors}
                 onTogglePackage={handleTogglePackage}
                 onInstallPackage={handleInstallPackage}
                 onUninstallPackage={handleUninstallPackage}
-                onNext={() => setMenuState("generation")}
-                onBack={() => setMenuState("create")}
-                onClose={() => setMenuState("main")}
+                onNext={() => goToStep("season")}
+                onBack={() => setScreen("title")}
+                onClose={() => setScreen("title")}
               />
             </Suspense>
-          )}
-
-          {/* Step 2b: Generation & Completion */}
-          {menuState === "generation" && (
+          ) : null}
+          {draft.step === "season" ? (
+            <SeasonStep
+              draft={draft}
+              hasDatabase={installedPackages.some(
+                (pkg) => draft.packageIds.includes(pkg.id) && pkg.packageType === "database",
+              )}
+              errors={formErrors}
+              onChange={patchDraft}
+            />
+          ) : null}
+          {draft.step === "identity" ? (
             <Suspense fallback={<MenuPanelFallback />}>
-              <GenerationStep
-                isStarting={isStarting}
-                startYear={parseCareerStartYear(formData.startYear) ?? MIN_CAREER_START_YEAR}
-                startPhase={formData.startPhase}
-                historyDepthYears={historyDepthYears}
-                onChangeHistoryDepthYears={setHistoryDepthYears}
-                onStart={handleStartGame}
-                onBack={() => setMenuState("packages")}
-                onClose={() => setMenuState("main")}
-                activePackages={installedPackages.filter((p) => activePackageIds.includes(p.id))}
+              <CreateManagerForm
+                embedded
+                formId="career-identity-form"
+                hideSubmit
+                showSeasonFields={false}
+                formData={formData}
+                formErrors={formErrors}
+                profiles={profiles}
+                selectedProfileId={loadedProfile?.id}
+                background={draft.background}
+                onBackgroundChange={(background) => patchDraft({ background })}
+                onChange={updateFormField}
+                onClearError={clearFormError}
+                onClose={() => setScreen("title")}
+                onSelectProfile={handleSelectProfile}
+                onDeleteProfile={handleDeleteProfile}
+                onSubmit={handleIdentitySubmit}
               />
             </Suspense>
-          )}
+          ) : null}
+          {draft.step === "philosophy" ? (
+            <PhilosophyStep
+              value={draft.philosophy}
+              onChange={(philosophy) => patchDraft({ philosophy })}
+            />
+          ) : null}
+        </CareerSetupLayout>
+      ) : null}
 
-          {/* Load Game List */}
-          {menuState === "load" && (
-            <Suspense fallback={<MenuPanelFallback />}>
-              <SavesList
-                loadingSaveId={loadingSaveId}
-                saves={saves}
-                isLoading={isLoadingSaves}
-                confirmDeleteId={confirmDeleteId}
-                onLoad={handleLoadGame}
-                onDelete={handleDeleteSave}
-                onConfirmDelete={setConfirmDeleteId}
-                onClose={() => setMenuState("main")}
-              />
-            </Suspense>
-          )}
-
-          {/* Package Editor */}
+      {screen === "load" ? (
+        <div className="relative flex h-full flex-col overflow-hidden">
+          <img
+            src="/assets/onboarding/stadium-night.jpg"
+            alt=""
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25"
+          />
+          <header className="relative z-10 flex items-center gap-3 border-b border-line bg-chrome/90 px-6 py-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<ArrowLeft />}
+              onClick={() => setScreen("title")}
+            >
+              {t("common.back")}
+            </Button>
+            <img
+              src="/openfootlogo.svg"
+              alt={t("app.name")}
+              className="h-8 w-40 object-contain object-left"
+            />
+          </header>
+          <main
+            aria-label={t("menu.loadGame")}
+            className="scrollbar-thin relative z-10 min-h-0 flex-1 overflow-y-auto px-6 py-8"
+          >
+            <div className="mx-auto w-full max-w-3xl rounded-panel border border-line bg-panel/95 p-6">
+              <Suspense fallback={<MenuPanelFallback />}>
+                <SavesList
+                  saves={saves}
+                  isLoading={isLoadingSaves}
+                  loadingSaveId={loadingSaveId}
+                  confirmDeleteId={confirmDeleteId}
+                  onLoad={handleLoadSave}
+                  onDelete={handleDeleteSave}
+                  onConfirmDelete={setConfirmDeleteId}
+                  onClose={() => setScreen("title")}
+                />
+              </Suspense>
+            </div>
+          </main>
         </div>
-      </div>
+      ) : null}
 
-      {/* Version */}
-      <div className="absolute bottom-4 right-4 text-fg-subtle text-caption font-heading uppercase tracking-label transition-colors">
-        {formatAppVersion()}
-      </div>
+      {isStarting ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed inset-0 z-50 grid place-items-center bg-overlay p-4"
+        >
+          <div className="flex flex-col items-center gap-4 rounded-panel border border-line bg-panel p-8">
+            <Loader2 className="h-10 w-10 animate-spin text-selected" aria-hidden="true" />
+            <p className="font-heading text-title font-bold uppercase tracking-label text-fg">
+              {t("menu.startingGame")}
+            </p>
+            <p className="max-w-sm text-center text-body text-fg-muted">
+              {t("careerSetup.generatingNote")}
+            </p>
+          </div>
+        </div>
+      ) : null}
 
+      {showProfileConfirm && loadedProfile ? (
+        <Suspense fallback={<MenuPanelFallback />}>
+          <ProfileSaveConfirm
+            loadedProfile={loadedProfile}
+            onUpdate={() => void handleUpdateProfile()}
+            onSaveNew={() => {
+              setShowProfileConfirm(false);
+              void autoSaveProfile(true);
+              proceedAfterIdentity();
+            }}
+            onSkip={() => {
+              setShowProfileConfirm(false);
+              proceedAfterIdentity();
+            }}
+            onClose={() => setShowProfileConfirm(false)}
+          />
+        </Suspense>
+      ) : null}
+      {reportingBug ? <ReportBugModal onClose={() => setReportingBug(false)} /> : null}
       <CrashReportPrompt onReport={() => setReportingBug(true)} />
-      {reportingBug && <ReportBugModal onClose={() => setReportingBug(false)} />}
     </div>
+  );
+}
+
+function formDiffersFromProfile(formData: CreateManagerFormData, profile: ManagerProfile): boolean {
+  return (
+    formData.firstName !== profile.first_name ||
+    formData.lastName !== profile.last_name ||
+    formData.nationality !== profile.nationality
   );
 }

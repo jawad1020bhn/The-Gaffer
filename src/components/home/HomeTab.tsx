@@ -28,12 +28,16 @@ import HomeUnavailablePlayersCard from "./HomeUnavailablePlayersCard";
 import { isMessageVisible } from "../../utils/newsVisibility";
 import { Dumbbell, Mail, Flame, Scale, Feather, Users, Crosshair, UserCog } from "lucide-react";
 import JobOpportunitiesCard from "./JobOpportunitiesCard";
+import FirstDayGuideCard from "../onboarding/FirstDayGuideCard";
+import type { CareerJournal } from "../onboarding/careerJournal";
 
 interface HomeTabProps {
   gameState: GameStateData;
   onNavigate?: (tab: string, context?: { messageId?: string }) => void;
   onGameUpdate?: (state: GameStateData) => void;
   visitedOnboardingTabs: ReadonlySet<string>;
+  careerJournal?: CareerJournal | null;
+  onDismissGuide?: () => void;
 }
 
 const SCHEDULE_ICONS: Record<string, { icon: React.ReactNode; color: string }> = {
@@ -58,6 +62,8 @@ export default function HomeTab({
   onNavigate,
   onGameUpdate,
   visitedOnboardingTabs,
+  careerJournal,
+  onDismissGuide,
 }: HomeTabProps) {
   const { t, i18n } = useTranslation();
   const myTeam = gameState.teams.find((tm) => tm.id === gameState.manager.team_id);
@@ -292,7 +298,14 @@ export default function HomeTab({
 
       {/* Band 2 — what to do next, and how the squad is. */}
       <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-secondary xl:[@media(max-height:820px)]:h-band-secondary-compact [@media(max-height:820px)]:gap-y-2">
-        {showOnboarding ? (
+        {careerJournal && !careerJournal.dismissed ? (
+          <FirstDayGuideCard
+            gameState={gameState}
+            journal={careerJournal}
+            onNavigate={onNavigate ?? (() => {})}
+            onDismiss={onDismissGuide ?? (() => {})}
+          />
+        ) : showOnboarding && !careerJournal ? (
           <HomeOnboardingChecklistCard
             completedSteps={completedSteps}
             totalSteps={onboardingSteps.length}
