@@ -380,6 +380,15 @@ npm run format:check && npm run lint
 - [x] Empty, loading and error are one family with a way out, not three grey sentences.
 - [x] 1.6 MB for all 11 plates; grain is procedural.
 
-**Still to verify by eye on Windows** (no browser in this sandbox — Chromium downloads are blocked):
-the plates at 1280×720 and at `ui_scale=xlarge`, and the `scene-grain` `mix-blend-overlay` under
-WebKitGTK on Linux.
+**Verified by screenshot** — see [ui-redesign/](ui-redesign/) for before/after at 960×640, the four
+rooms at 1600×900, and the style guide's material section. Captured in headless Chromium on the shell
+preview career.
+
+That pass caught a bug the tests could not: `DashboardWorkspaceContent` carried its own `bg-page`,
+which painted over the shell's `SceneBackdrop`. The plate loaded, graded and positioned correctly
+and was visible nowhere. Fixed in `1bd565d`; the Schedule comparison is the evidence.
+
+**Still to verify by eye on a real build:** the plates at `ui_scale=xlarge`, and `scene-grain`'s
+`mix-blend-overlay` under WebKitGTK on Linux (these shots are Chromium). Two pre-existing preview
+gaps are visible in the shots and are not from this work: Hall of Fame crashes on a fixture with no
+titles, and News shows a raw `news.categories.general` key.
