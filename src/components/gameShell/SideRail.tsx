@@ -45,7 +45,7 @@ export default function SideRail({
   return (
     <nav
       aria-label={t("gameNav.context")}
-      className="no-select flex w-game-rail shrink-0 flex-col gap-1 overflow-y-auto overflow-x-hidden border-r border-line bg-sunken p-1.5"
+      className="no-select flex w-game-rail shrink-0 flex-col gap-1 overflow-y-auto overflow-x-hidden border-r border-line bg-sunken surface-well p-1.5"
     >
       {tabs.map((tab, index) => {
         const entry = destinationForTab(tab);

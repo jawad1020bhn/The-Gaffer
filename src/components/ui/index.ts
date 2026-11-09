@@ -30,3 +30,6 @@ export { EntityCard } from "./EntityCard";
 export { ConditionMeter } from "./ConditionMeter";
 export { FormDots } from "./FormDots";
 export { ViewSwitch } from "./ViewSwitch";
+export { SceneBackdrop } from "./SceneBackdrop";
+export type { SceneId } from "./SceneBackdrop";
+export { SceneState } from "./SceneState";

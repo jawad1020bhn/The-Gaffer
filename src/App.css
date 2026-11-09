@@ -219,6 +219,41 @@
 
   /* Career setup beat transition: short, restrained, and disabled by motion-reduce:animate-none. */
   --animate-beat-enter: fade-slide-in 180ms ease-out;
+
+  /*
+   * Game presentation: the material layer.
+   *
+   * A screen is a lit stage, not a document. Three things make that read: a scene behind the
+   * panels, panels that are physically raised off it, and one accent that emits light. These
+   * tokens are the only place those values live, so every screen inherits the same materials and
+   * a change here moves the whole game. Light values are the plain fallback; .dark below carries
+   * the real presentation, exactly as the surface roles do.
+   */
+
+  /* The wash between a scene photograph and the panels on top of it. Opaque enough that body text
+     on a panel never competes with the image, transparent enough that the scene still reads. */
+  --color-veil: rgb(243 244 246 / 0.86);
+  /* The bevel. A raised edge catches light along the top and falls into shadow along the bottom. */
+  --color-edge-light: rgb(255 255 255 / 0.5);
+  --color-edge-dark: rgb(15 23 42 / 0.18);
+  /* The accent as emitted light rather than pigment: the halo under a primary action. */
+  --color-glow: rgb(4 120 87 / 0.35);
+
+  /* Depth, in three physical steps: a panel resting on the stage, a panel under the pointer, and
+     a well cut into a panel. Each pairs a contact shadow with an ambient one, so nothing floats. */
+  --shadow-panel: 0 1px 2px rgb(15 23 42 / 0.08), 0 6px 16px -8px rgb(15 23 42 / 0.2);
+  --shadow-raised: 0 2px 4px rgb(15 23 42 / 0.1), 0 14px 32px -12px rgb(15 23 42 / 0.32);
+  --shadow-well: inset 0 2px 4px rgb(15 23 42 / 0.1);
+  /* The HUD floats clear of the stage, so its shadow is longer and softer than a panel's. */
+  --shadow-hud: 0 8px 28px -6px rgb(15 23 42 / 0.35);
+  --shadow-glow: 0 0 0 1px rgb(4 120 87 / 0.3), 0 0 18px -2px var(--color-glow);
+
+  /* Scene and panel entrances. A scene crossfades slowly because it is the room; a panel arrives
+     fast because it is a control. Both are disabled under prefers-reduced-motion below. */
+  --animate-scene-in: scene-in 420ms ease-out;
+  --animate-panel-in: panel-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Something live and waiting on the player: a slow breathing halo, never a blink. */
+  --animate-live-pulse: live-pulse 2.4s ease-in-out infinite;
 }
 
 /* A club's kit on an entity card, from the --kit and --kit-2 variables kitStyle() sets on the card.
@@ -243,6 +278,115 @@
   );
 }
 
+/*
+ * The material utilities. Each is a surface finish, not a colour: it lays a lit gradient over
+ * whatever role colour the element already carries, so `bg-panel surface-panel` is a panel made
+ * of the game's material and a themed screen needs no second set of rules.
+ */
+
+/* A panel resting on the stage: lit along its top edge, falling to its own colour by 40%. Pair
+   with `shadow-panel` (the depth) and `border-line` (the cut edge). */
+@utility surface-panel {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-panel) 86%, var(--color-edge-light)) 0%,
+    var(--color-panel) 42%
+  );
+}
+
+/* A well cut into a panel — a table body, a track, a code block. The inverse gradient reads as
+   recessed before the shadow does. Pair with `shadow-well`. */
+@utility surface-well {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-sunken) 82%, var(--color-edge-dark)) 0%,
+    var(--color-sunken) 55%
+  );
+}
+
+/* The chrome's brushed finish: a faint horizontal grain so a 56px bar is a machined part rather
+   than a filled rectangle. */
+@utility surface-chrome {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-chrome) 88%, var(--color-edge-light)) 0%,
+    var(--color-chrome) 60%
+  );
+}
+
+/* Photographic grain over a scene, so a generated plate and a reused photograph sit in the same
+   room. Procedural: no asset to load, and it survives any ui_scale. */
+@utility scene-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* One lit hairline along the top of a part. The cheapest depth cue there is. */
+@utility edge-lit {
+  box-shadow: inset 0 1px 0 var(--color-edge-light);
+}
+
+/* A moulded key: gloss down the top half, shade up the bottom, over whatever fill the button
+   carries. This is what separates a game button from a filled rectangle, and it themes for free
+   because it is light and shade rather than a colour. */
+@utility surface-brand {
+  background-image: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.18) 0%,
+    transparent 46%,
+    rgb(0 0 0 / 0.14) 100%
+  );
+}
+
+/*
+ * Scene plates. Every key visual — generated or salvaged from the old project — goes through the
+ * same grade, so a 2019 banner and a new render sit in one room. The grade is deliberately heavy:
+ * the old art arrives warm, purple or daylight, and leaves desaturated and cool.
+ */
+@utility scene-plate {
+  object-fit: cover;
+  filter: saturate(0.5) contrast(1.08) brightness(0.86);
+}
+
+/* Anchors a plate to its subject when the frame is crueller than the image's aspect. Used where a
+   salvaged banner carries a baked logo or baked lettering down one side: that side is cropped out
+   rather than painted over. */
+@utility scene-anchor-right {
+  object-position: 82% 50%;
+}
+
+/* A hero's veil: opaque where the text sits, clear where the photograph does the work. This is the
+   onboarding composition — words on the left in shadow, the room on the right in light. */
+@utility scene-veil-left {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-page) 0%,
+    color-mix(in srgb, var(--color-page) 92%, transparent) 34%,
+    color-mix(in srgb, var(--color-page) 46%, transparent) 66%,
+    color-mix(in srgb, var(--color-page) 12%, transparent) 100%
+  );
+}
+
+/* An art-headed panel: the top of the panel keeps the photograph, and it is solid page by the
+   time the data starts. Lets a working panel carry a room without costing a row of legibility. */
+@utility scene-veil-panel {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-page) 42%, transparent) 0%,
+    color-mix(in srgb, var(--color-page) 88%, transparent) 44%,
+    var(--color-page) 100%
+  );
+}
+
+/* Pulls the corners of a scene down so panels in the middle of the stage carry the eye. */
+@utility scene-vignette {
+  background-image: radial-gradient(
+    130% 105% at 50% 42%,
+    transparent 38%,
+    color-mix(in srgb, var(--color-page) 72%, transparent) 100%
+  );
+}
+
 @layer base {
   .dark {
     color-scheme: dark;
@@ -263,6 +407,19 @@
     --color-on-brand: #101600;
     --color-card-band: #1a232a;
     --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 12px 28px -16px rgb(0 0 0 / 0.85);
+    /* The night presentation: the veil is the page colour, bevels are a thin lit top edge over a
+       black underside, and the one lime accent is the only thing in the room that emits light. */
+    --color-veil: rgb(11 15 18 / 0.82);
+    --color-edge-light: rgb(255 255 255 / 0.07);
+    --color-edge-dark: rgb(0 0 0 / 0.55);
+    --color-glow: rgb(200 244 90 / 0.28);
+    --shadow-panel: inset 0 1px 0 var(--color-edge-light), 0 1px 2px rgb(0 0 0 / 0.6),
+      0 16px 32px -20px rgb(0 0 0 / 0.9);
+    --shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 2px 4px rgb(0 0 0 / 0.6),
+      0 22px 44px -20px rgb(0 0 0 / 0.95);
+    --shadow-well: inset 0 2px 6px rgb(0 0 0 / 0.55), inset 0 -1px 0 var(--color-edge-light);
+    --shadow-hud: inset 0 1px 0 var(--color-edge-light), 0 12px 40px -8px rgb(0 0 0 / 0.85);
+    --shadow-glow: 0 0 0 1px rgb(200 244 90 / 0.35), 0 0 22px -2px var(--color-glow);
     --kit-wash-mix: 26%;
     --color-selected: #c8f45a;
     --color-selected-tint: #25331a;
@@ -582,8 +739,46 @@
   }
 }
 
+/* The room arrives once when a section changes: a slow settle from slightly further away. */
+@keyframes scene-in {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A panel arrives under the scene: short, from just below, so a screen assembles top-down. */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Live and waiting on the player. Breathes the halo only — the label never moves or blinks. */
+@keyframes live-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--color-glow);
+  }
+  50% {
+    box-shadow: 0 0 16px 2px var(--color-glow);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .match-stage-in {
+  .match-stage-in,
+  .animate-scene-in,
+  .animate-panel-in,
+  .animate-live-pulse {
     animation: none;
   }
 }

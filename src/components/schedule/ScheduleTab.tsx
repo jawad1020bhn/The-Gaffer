@@ -22,7 +22,7 @@ import {
 } from "../../services/scheduleService";
 import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/errorMessage";
 import ContextMenu, { type ContextMenuItem } from "../ContextMenu";
-import { Badge, Card, CardBody, Select } from "../ui";
+import { Badge, Card, CardBody, SceneState, Select } from "../ui";
 import ScheduleCalendarGrid from "./ScheduleCalendarGrid";
 import MovedFromNote from "./MovedFromNote";
 
@@ -142,7 +142,7 @@ export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProp
   });
 
   if (activeCompetitions.length === 0) {
-    return <p className="py-8 text-center text-fg-muted">{t("schedule.noLeague")}</p>;
+    return <SceneState title={t("schedule.noLeague")} className="m-4" />;
   }
 
   const competitionSwitcher = activeCompetitions.length > 1 && (
@@ -343,9 +343,7 @@ function CalendarView({
           ))}
         </div>
       ) : (
-        <p className="py-4 text-center text-body text-fg-muted">
-          {t("schedule.noUpcoming", "No upcoming fixtures.")}
-        </p>
+        <SceneState title={t("schedule.noUpcoming", "No upcoming fixtures.")} />
       )}
 
       {/* Past groups */}

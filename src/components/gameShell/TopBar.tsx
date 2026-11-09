@@ -162,7 +162,7 @@ export default function TopBar({
   const { t } = useTranslation();
 
   return (
-    <header className="no-select col-span-2 grid h-game-top grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center border-b border-line bg-chrome">
+    <header className="no-select col-span-2 grid h-game-top grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center border-b border-line bg-chrome surface-chrome">
       <Brand />
       <PrimaryNav
         activeSection={activeSection}

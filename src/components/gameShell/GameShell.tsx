@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next";
 import {
   DASHBOARD_DESTINATIONS,
   resolveSectionDestination,
+  sceneForTab,
   sectionForTab,
   sectionsWithDestinations,
   type GameSectionId,
 } from "../dashboard/dashboardDestinations";
+import { SceneBackdrop } from "../ui/SceneBackdrop";
 import CommandPalette from "./CommandPalette";
 import GameActionDock from "./GameActionDock";
 import HintBar from "./HintBar";
@@ -157,7 +159,10 @@ export default function GameShell({
         unreadMessagesCount={unreadMessagesCount}
         onNavigate={onNavigate}
       />
-      <main className="flex min-h-0 min-w-0 flex-col overflow-hidden">
+      <main className="relative isolate flex min-h-0 min-w-0 flex-col overflow-hidden">
+        {/* The room this page is in. Inert and behind everything: panels sit on it, the
+            gutters between them show it, and a hero band lets it read at full strength. */}
+        <SceneBackdrop scene={sceneForTab(activeTab)} />
         {hasProfileHistory ? (
           <section
             aria-labelledby={titleId}
@@ -184,7 +189,7 @@ export default function GameShell({
           </section>
         ) : null}
         {children}
-        <footer className="flex min-h-game-hint shrink-0 items-center gap-3 border-t border-line bg-chrome pl-4 pr-2 py-1">
+        <footer className="flex min-h-game-hint shrink-0 items-center gap-3 border-t border-line bg-chrome surface-chrome pl-4 pr-2 py-1">
           <HintBar />
           <GameActionDock>{commands}</GameActionDock>
         </footer>

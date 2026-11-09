@@ -26,10 +26,10 @@ export function Card({ children, className = "", accent = "none" }: CardProps) {
     <div
       className={`
         flex min-h-0 flex-col overflow-hidden
-        bg-panel
+        bg-panel surface-panel
         ${accent === "none" ? accentBorder : `border ${accentBorder} border-line`}
-        rounded-panel shadow-sm dark:shadow-md
-        transition-colors duration-300
+        rounded-panel shadow-panel
+        transition-shadow duration-200 motion-reduce:transition-none
         ${className}
       `}
     >
@@ -42,12 +42,19 @@ interface CardHeaderProps {
   children: ReactNode;
   action?: ReactNode;
   className?: string;
+  /**
+   * The header's band of its own colour. On by default. Turn it off when the card carries a
+   * SceneBackdrop: an opaque band would cover the plate across the top, which is the only part of
+   * an art-headed panel where the veil is thin enough to see it. A prop rather than a `bg-*` class
+   * so the winner is not decided by the order of the stylesheet.
+   */
+  banded?: boolean;
 }
 
-export function CardHeader({ children, action, className = "" }: CardHeaderProps) {
+export function CardHeader({ children, action, className = "", banded = true }: CardHeaderProps) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-between gap-3 border-b border-line px-4 py-2.5 ${className}`}
+      className={`flex shrink-0 items-center justify-between gap-3 border-b border-line ${banded ? "bg-card-band" : ""} edge-lit px-4 py-2.5 ${className}`}
     >
       <h3 className="flex min-w-0 items-center gap-2 text-lead font-bold font-heading uppercase tracking-label text-fg [&>svg]:shrink-0">
         {children}

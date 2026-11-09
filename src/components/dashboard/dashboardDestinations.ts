@@ -1,3 +1,5 @@
+import type { SceneId } from "../ui/SceneBackdrop";
+
 export const GAME_SECTIONS = [
   { id: "career", labelKey: "gameNav.career", icon: "home" },
   { id: "team", labelKey: "gameNav.team", icon: "squad" },
@@ -153,4 +155,24 @@ export function resolveSectionDestination(
   const available = destinationsForSection(section, isUnemployed);
   if (remembered && available.includes(remembered)) return remembered;
   return available[0] ?? "Home";
+}
+
+/**
+ * The room a destination is in. Most pages sit in their section's room; a page that is a place in
+ * its own right — the tactics room, the training ground, the press conference — names its own.
+ * Nothing here changes navigation: it only picks the plate behind the workspace.
+ */
+const TAB_SCENES: Partial<Record<string, SceneId>> = {
+  Tactics: "tactics",
+  Training: "training",
+  Youth: "training",
+  Schedule: "schedule",
+  News: "press",
+  Managers: "press",
+  HallOfFame: "honours",
+  Tournaments: "honours",
+};
+
+export function sceneForTab(tab: string): SceneId {
+  return TAB_SCENES[tab] ?? sectionForTab(tab);
 }

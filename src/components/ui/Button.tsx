@@ -18,17 +18,21 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
+  // A key that is physically pressed: it moves down a pixel into its own shadow, and the pointer
+  // never selects its label. Reduced motion keeps the state change and drops the travel.
   const base =
-    "inline-flex items-center justify-center gap-2 font-heading font-bold uppercase tracking-label rounded-control transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center gap-2 font-heading font-bold uppercase tracking-label rounded-control no-select transition-all duration-150 active:translate-y-px motion-reduce:transition-none motion-reduce:active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-page disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:active:translate-y-0";
 
+  // Hover lights the key up in the night presentation and presses it down in the light one, so
+  // on-brand text keeps its contrast in both. The dark fill is lime, so brighter is also safer.
   const variants = {
     primary:
-      "bg-primary-700 hover:bg-primary-800 active:bg-primary-900 text-on-brand shadow-md hover:shadow-lg",
+      "bg-primary-700 surface-brand hover:bg-primary-800 dark:hover:bg-primary-600 active:bg-primary-900 dark:active:bg-primary-700 text-on-brand shadow-panel hover:shadow-glow",
     accent:
-      "bg-accent-400 hover:bg-accent-500 active:bg-accent-600 text-navy-900 shadow-md hover:shadow-lg",
-    ghost: "bg-transparent hover:bg-hover text-fg-muted hover:text-fg",
+      "bg-accent-400 surface-brand hover:bg-accent-500 active:bg-accent-600 text-navy-900 shadow-panel hover:shadow-raised",
+    ghost: "bg-transparent hover:bg-hover text-fg-muted hover:text-fg active:bg-hover",
     outline:
-      "bg-transparent border-2 border-line-strong hover:border-primary-500 dark:hover:border-primary-400 text-fg-muted hover:text-positive",
+      "bg-transparent border-2 border-line-strong hover:border-primary-500 dark:hover:border-primary-400 text-fg-muted hover:text-positive hover:bg-hover",
   };
 
   const sizes = {

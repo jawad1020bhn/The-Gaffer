@@ -30,6 +30,9 @@ import {
   PositionBadges,
   ProgressBar,
   RatingChip,
+  SceneBackdrop,
+  type SceneId,
+  SceneState,
   SegmentedControl,
   Select,
   SortControl,
@@ -904,6 +907,92 @@ function DialogSection({ open }: { open: boolean }) {
   );
 }
 
+/**
+ * The material layer: the tokens that make a screen a lit stage rather than a document. Named as
+ * literals so the token-coverage test sees them, and each drawn on the thing it is for.
+ */
+const MATERIAL_TOKENS = [
+  { token: "--color-veil", use: "the wash between a scene and the panels on it (bg-veil)" },
+  { token: "--color-edge-light", use: "the lit top edge of a raised part (edge-lit)" },
+  { token: "--color-edge-dark", use: "the shaded underside of a raised part" },
+  { token: "--color-glow", use: "the accent as emitted light, not pigment" },
+  { token: "--shadow-panel", use: "a panel resting on the stage (shadow-panel)" },
+  { token: "--shadow-raised", use: "a panel under the pointer (shadow-raised)" },
+  { token: "--shadow-well", use: "a well cut into a panel (shadow-well)" },
+  { token: "--shadow-hud", use: "the floating action dock (shadow-hud)" },
+  { token: "--shadow-glow", use: "a primary action under the pointer (shadow-glow)" },
+  { token: "--animate-scene-in", use: "the room arriving on a section change (animate-scene-in)" },
+  { token: "--animate-panel-in", use: "a panel arriving under it (animate-panel-in)" },
+  { token: "--animate-live-pulse", use: "something live, waiting on the player" },
+];
+
+const SCENE_STRENGTHS = [
+  { strength: "ambient", scene: "career", use: "behind a whole workspace" },
+  { strength: "hero", scene: "competitions", use: "behind one band, words on the left" },
+  { strength: "panel", scene: "team", use: "an art-headed working panel" },
+] as const satisfies readonly {
+  strength: "ambient" | "hero" | "panel";
+  scene: SceneId;
+  use: string;
+}[];
+
+function MaterialsSection() {
+  return (
+    <Section title="Materials, depth and scenes">
+      <Row>
+        {SCENE_STRENGTHS.map(({ strength, scene, use }) => (
+          <Card key={strength} className="relative isolate h-40 w-72">
+            <SceneBackdrop scene={scene} strength={strength} />
+            {/* An art-headed panel drops the header's band, or it covers the plate exactly where
+                the veil is thin enough to see it. */}
+            <CardHeader banded={false}>{strength}</CardHeader>
+            <CardBody>
+              <p className="text-caption text-fg-muted">{use}</p>
+            </CardBody>
+          </Card>
+        ))}
+      </Row>
+      <Row>
+        <div className="w-56 rounded-panel border border-line bg-panel surface-panel p-3 shadow-panel">
+          <p className="text-body text-fg">surface-panel + shadow-panel</p>
+          <p className="text-caption text-fg-muted">a panel resting on the stage</p>
+        </div>
+        <div className="w-56 rounded-panel border border-line bg-sunken surface-well p-3 shadow-well">
+          <p className="text-body text-fg">surface-well + shadow-well</p>
+          <p className="text-caption text-fg-muted">a well cut into a panel</p>
+        </div>
+        <div className="w-56 rounded-panel border border-line bg-chrome surface-chrome p-3 shadow-hud">
+          <p className="text-body text-chrome-fg">surface-chrome + shadow-hud</p>
+          <p className="text-caption text-chrome-fg-muted">the shell's machined bars</p>
+        </div>
+        <div className="flex w-56 flex-col items-start gap-2 rounded-panel border border-line bg-panel surface-panel p-3 shadow-raised">
+          <p className="text-body text-fg">shadow-raised · edge-lit</p>
+          <Button className="animate-live-pulse motion-reduce:animate-none">live</Button>
+        </div>
+      </Row>
+      <Row>
+        {(["empty", "loading", "error"] as const).map((variant) => (
+          <SceneState
+            key={variant}
+            variant={variant}
+            className="w-72"
+            title={variant}
+            detail="The scouting list is clear. Send a scout to start a report."
+            action={variant === "error" ? <Button size="sm">retry</Button> : undefined}
+          />
+        ))}
+      </Row>
+      <div className="grid gap-2 rounded-panel border border-line bg-panel surface-panel p-4 text-caption text-fg-muted shadow-panel">
+        {MATERIAL_TOKENS.map(({ token, use }) => (
+          <p key={token}>
+            <span className="text-fg">{token.replace("--", "")}</span>: {use}
+          </p>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
 export function StyleGuide({ options }: { options: StyleGuideOptions }) {
   return (
     <main className="min-h-screen bg-page px-6 py-8 text-fg">
@@ -917,6 +1006,7 @@ export function StyleGuide({ options }: { options: StyleGuideOptions }) {
           </p>
         </header>
         <TokensSection />
+        <MaterialsSection />
         <NavigationSection />
         <ControlsSection />
         <DisplaySection />

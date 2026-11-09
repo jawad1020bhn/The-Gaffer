@@ -2,7 +2,7 @@ import { Swords } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSquadFitness } from "../../hooks/useSquadFitness";
 import type { GameStateData } from "../../store/gameStore";
-import { Badge, Card, CardBody, CardHeader } from "../ui";
+import { Badge, Card, CardBody, CardHeader, SceneBackdrop } from "../ui";
 import { formatDateShort, getUserCompetition } from "../../lib/helpers";
 import { useFetchedSquad } from "../../hooks/useFetchedSquad";
 import { isFirstTeamSquadPlayer } from "../../lib/playerSquad";
@@ -246,8 +246,12 @@ export default function HomeTab({
     <div className="scrollbar-thin flex h-full min-h-0 flex-col gap-3 overflow-y-auto">
       {/* Band 1 — the next fixture, the season's state, the table. */}
       <div className="grid shrink-0 grid-cols-1 gap-3 lg:grid-cols-12 xl:h-band-hero xl:[@media(max-height:820px)]:h-band-hero-compact [@media(max-height:820px)]:gap-y-2">
-        <Card accent="primary" className="lg:col-span-6 xl:col-span-4">
+        {/* The next fixture is the one panel that carries a room: the crowd survives across the
+            header and is gone by the time the team names start. */}
+        <Card accent="primary" className="relative isolate lg:col-span-6 xl:col-span-4">
+          <SceneBackdrop scene="competitions" strength="panel" />
           <CardHeader
+            banded={false}
             action={
               <Badge variant="neutral" size="sm" className="shrink-0">
                 {t(`season.phases.${seasonContext.phase}`)}
