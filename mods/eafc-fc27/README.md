@@ -82,14 +82,16 @@ node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out m
 ```
 
 The importer itself still writes no artwork — a database holds ids into EA's
-own CDN, not images. The badges in this directory are produced by a separate
-step from the crest folder, then imported as a normal graphics pack:
+own CDN, not images. The badges and competition logos in this directory are
+produced by a separate step from the crest and league-logo folders, then
+imported as a normal graphics pack:
 
 ```bash
 node tools/eafc-import/badges-from-crest-pack.mjs \
-  --kit ../eafc-db-kit --crest-pack crest50x50.zip \
-  --competition-logos tools/eafc-import/test/fixtures/competition-logos \
-  --out ../eafc-fc27-badges --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json
+  --kit ../eafc-db-kit --crest-pack crest50x50.zip --league-logos leagues.zip \
+  --out ../eafc-fc27-badges \
+  --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json \
+  --write-league-crosswalk tools/eafc-import/data/fc27-league-logo-crosswalk.json
 
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
   --out mods/eafc-fc27 --badges ../eafc-fc27-badges
