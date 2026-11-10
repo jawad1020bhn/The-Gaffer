@@ -24,6 +24,35 @@ The run writes a package directory and a ready-to-install `mods/eafc-fc27.ofm`
 the only dependency is the kit checkout itself. The audit and importer unit
 tests can also run without a kit checkout.
 
+## Club badges from EA's crest folder
+
+EA ships crests as `crest16x16/l<eaTeamId>.dds` — 16×16 DDS, with a recoloured
+`dark/` sibling — and no club names anywhere in the pack. `badges-from-crest-pack.mjs`
+turns that into a normal graphics pack by resolving the ids against the database
+`import.mjs` reads:
+
+```bash
+node tools/eafc-import/badges-from-crest-pack.mjs \
+  --kit ../eafc-db-kit --crest-pack crest16x16.zip \
+  --competition-logos tools/eafc-import/test/fixtures/competition-logos \
+  --out ../eafc-fc27-badges \
+  --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json
+```
+
+It decodes both formats the pack contains (uncompressed 32-bit BGRA and DXT5),
+encodes PNG with `node:zlib`, and upscales in whole pixel steps. `--variant dark`
+is the default because the game's one presentation is dark; `--scale` sets the
+output size (64 by default).
+
+`--write-crosswalk` records `ofmClubId → eaTeamId` so the mapping is reviewable
+without the database — that file, plus `crest16x16.zip`, is all
+[`scripts/build-club-badges.mjs`](../../scripts/build-club-badges.mjs) needs to
+rebuild the bundled world's badges.
+
+The crosswalk never guesses. Two EA rows can share a name (a club and its
+"rest of world" duplicate); the crest breaks the tie, and if both candidates
+have one the club is left out — a wrong badge is worse than a generated crest.
+
 ## Club badges (optional graphics pack)
 
 `import.mjs --badges <pack>` points the importer at a separate graphics pack: a

@@ -4,6 +4,10 @@ An unofficial Openfoot Manager database of **684 clubs**, **18,875 player
 rows** and **38 competitions**, imported from the EA FC 27 database by
 [`tools/eafc-import`](../../tools/eafc-import/README.md).
 
+**Real club badges (0.2.0):** every club EA ships a crest for now carries one —
+**588 of 684**. The 96 without are clubs EA's crest pack has no entry for, and
+they keep the generated crest. See [Club badges](#club-badges).
+
 **Data cleanup (0.1.1):** removed a placeholder club and 18 fake players; added
 95 source-backed historical ground names. Still, 20 clubs have no competition
 membership, 1,877 contracts end before the 2027 base year, and wages and
@@ -74,10 +78,16 @@ upstream kit:
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27
 ```
 
-Add badges from a separate graphics pack with `--badges` (packs are versioned
-and distributed outside Git):
+The importer itself still writes no artwork — a database holds ids into EA's
+own CDN, not images. The badges in this directory are produced by a separate
+step from the crest folder, then imported as a normal graphics pack:
 
 ```bash
+node tools/eafc-import/badges-from-crest-pack.mjs \
+  --kit ../eafc-db-kit --crest-pack crest16x16.zip \
+  --competition-logos tools/eafc-import/test/fixtures/competition-logos \
+  --out ../eafc-fc27-badges --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json
+
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
   --out mods/eafc-fc27 --badges ../eafc-fc27-badges
 ```
@@ -99,10 +109,10 @@ does not carry are authored from club reputation: the **UEFA Champions League**
 fields are written out club by club, because the engine's reputation selector
 requires a single country and a continent-wide cup has not got one.
 
-Competition logos are not shipped checked-in. `tools/eafc-import --competition-logos <pack>`
-packs a separate, versioned graphics pack into the `.ofm`; per-asset source,
-licence, attribution and checksum travel inside it (see the importer README).
-Without a logo pack, competitions render with no badge.
+The two authored European cups carry a competition logo, taken from the
+checked-in fixture pack under `tools/eafc-import/test/fixtures/`. Per-asset
+source, licence, attribution and checksum travel inside the `.ofm` at
+`assets/clubs/manifest.json`. The other competitions render with no badge.
 
 Every club has at least 18 source players, the median is 27, and the engine's
 floor is 15. The game tops up squads below 22 (its `SQUAD_SLOTS`); 36 clubs here
@@ -136,17 +146,56 @@ The package writes **no `defaultActiveRegions`**. The engine fills the active
 regions from the competitions themselves, so every league and cup below is in
 scope — including the South American ones.
 
+## Club badges
+
+`teams.json` names `assets/clubs/<eaTeamId>.png` on each club, and those PNGs
+are committed here beside it. A plain checkout therefore shows real crests with
+no extra step, no download and no EA database on disk, and the CI package job
+still compares `teams.json` byte for byte against a fresh import — which is why
+the paths live in the package rather than being stamped on by a build script.
+
+```
+teams.json                     "logo": "assets/clubs/1.png"
+assets/clubs/1.png             64×64 PNG, Arsenal
+assets/clubs/manifest.json     eaTeamId ↔ club id, source, licence, checksum
+assets/competitions/*.svg      the two European cup badges
+```
+
+**Where the images come from.** EA's `crest16x16.zip`: 16×16 `.dds` files named
+by EA team id, with no club names in them at all. The ids are resolved against
+the pinned FC 27 database to this package's club ids, and the result is recorded
+in [`tools/eafc-import/data/fc27-crest-crosswalk.json`](../../tools/eafc-import/data/fc27-crest-crosswalk.json)
+— a wrong badge is worse than no badge, so a name shared by two EA rows is
+resolved by whichever one has a crest and otherwise left out.
+
+The `dark/` variant is used: the game has one presentation and it is dark, and
+those are the recoloured crests that stay legible on it. They are upscaled to
+64×64 in whole pixel steps, so the browser is never left smoothing a 16 px
+image up to the 80 px the club page draws.
+
+**Rebuild the images** (no EA database needed — only the crest zip and the
+committed crosswalk):
+
+```bash
+node scripts/build-club-badges.mjs          # rewrite assets/clubs/*.png
+node scripts/build-club-badges.mjs --check  # what CI runs: fail if stale
+```
+
+**Licensing.** The crests are EA's artwork, converted for personal use, exactly
+like the rest of this package. The manifest says `PersonalUseOnly` rather than
+inventing a licence the art does not carry. Read `VISION.md` before
+redistributing a build.
+
 ## Known gaps
 
 - **453 clubs have no stadium name.** Unresolved grounds retain the city-based
   fallback; generic EA placeholder names are not presented as real grounds.
-- **Badges, competition logos and player mini-faces are separate optional
-  packs** — the database holds no image assets, only ids into EA's own CDN, so
-  the checked-in package ships without them and clubs/competitions/players draw
-  generated fallbacks. `tools/eafc-import --badges <pack> --competition-logos
-  <pack> --player-faces <pack>` packs separate, versioned graphics packs into
-  the `.ofm`; per-asset source, licence, attribution and checksum travel inside
-  it (see the importer README). Kits are not imported.
+- **96 clubs have no badge**, because EA's crest pack has no entry for them
+  (mostly smaller sides outside the licensed leagues). They draw the game's
+  generated crest. **Player mini-faces are still absent**: the database holds
+  no image assets, only ids into EA's own CDN, so faces need a separate
+  graphics pack (`tools/eafc-import --player-faces <pack>`). Kits are not
+  imported.
 - **No imported managers or backroom staff.** Verified staff can be authored for
   supported roles, but there is no club-manager schema. The game generates
   managers; an assistant-manager record is not a substitute for a real manager.

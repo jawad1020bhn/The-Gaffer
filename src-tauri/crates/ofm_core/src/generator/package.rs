@@ -272,11 +272,19 @@ fn default_package_type() -> String {
 ///
 /// `bundled_dir` is allowed to be absent: only builds that ship a world have one.
 ///
-/// Existing files win. Someone who dropped a newer version of the same package into the
-/// game wins over the one baked into the download, and one who deleted the bundled package
-/// gets it back on the next launch — it is part of the build, not a user file.
+/// A newer bundled version replaces an older installed one, and nothing else is touched.
+/// Someone who dropped a *newer* version of the same package into the game keeps it, and one
+/// who deleted the bundled package gets it back on the next launch — it is part of the build,
+/// not a user file.
 ///
-/// Returns the file names copied, so the caller can log a first-run install.
+/// The "newer wins" half is not a convenience. A bundled world is data the build owns, and its
+/// content changes between builds: the one this rule was written for gained real club badges,
+/// and a player upgrading from the previous build kept the crestless archive copied on first
+/// run forever, reporting that the fix "did not work". Version is the only honest signal of
+/// which copy is which, so it is what decides — a copy whose manifest cannot be read is left
+/// alone rather than guessed at.
+///
+/// Returns the file names copied or replaced, so the caller can log it.
 pub fn install_bundled_packages(
     bundled_dir: &Path,
     packages_dir: &Path,
@@ -303,7 +311,11 @@ pub fn install_bundled_packages(
         };
         let target = packages_dir.join(name);
         if target.exists() {
-            continue;
+            // Present but older: the build shipped a newer version of the package the player
+            // already has, so the stale copy is what would keep them on old data.
+            if !bundled_supersedes(&path, &target) {
+                continue;
+            }
         }
         std::fs::create_dir_all(packages_dir)?;
         std::fs::copy(&path, &target)?;
@@ -311,6 +323,66 @@ pub fn install_bundled_packages(
     }
 
     Ok(copied)
+}
+
+/// The version an archive's manifest declares, or `None` when it has none.
+fn package_version(path: &Path) -> Option<String> {
+    read_package_manifest_from_ofm(path)
+        .map(|meta| meta.version.trim().to_string())
+        .filter(|version| !version.is_empty())
+}
+
+/// Whether the bundled archive is a later version than the installed one.
+///
+/// Both manifests have to be readable and versioned. Anything else is "no": an unreadable
+/// archive is not evidence of being newer, and treating it as such would let a corrupt file
+/// in the download overwrite a working install.
+fn bundled_supersedes(bundled: &Path, installed: &Path) -> bool {
+    let (Some(bundled_version), Some(installed_version)) =
+        (package_version(bundled), package_version(installed))
+    else {
+        return false;
+    };
+    compare_versions(&bundled_version, &installed_version).is_gt()
+}
+
+/// Compare two dotted numeric versions, `0.1.2` against `0.1.10`.
+///
+/// Not a general semver parser: package versions here are release counters, and a
+/// pre-release suffix only needs to sort *below* the plain version it precedes. Missing
+/// components count as zero, so `1.2` and `1.2.0` are equal.
+fn compare_versions(left: &str, right: &str) -> std::cmp::Ordering {
+    use std::cmp::Ordering;
+    let numeric = |value: &str| -> (Vec<u64>, bool) {
+        let (core, has_suffix) = match value.split_once(['-', '+']) {
+            Some((core, _)) => (core, true),
+            None => (value, false),
+        };
+        let parts = core
+            .split('.')
+            .map(|part| part.trim().parse::<u64>().unwrap_or(0))
+            .collect();
+        (parts, has_suffix)
+    };
+    let (left_parts, left_suffix) = numeric(left);
+    let (right_parts, right_suffix) = numeric(right);
+    let width = left_parts.len().max(right_parts.len());
+    for index in 0..width {
+        let ordering = left_parts
+            .get(index)
+            .copied()
+            .unwrap_or(0)
+            .cmp(&right_parts.get(index).copied().unwrap_or(0));
+        if ordering != Ordering::Equal {
+            return ordering;
+        }
+    }
+    // Same numbers: `1.0.0` beats `1.0.0-beta`, and a suffix on both is not worth ordering.
+    match (left_suffix, right_suffix) {
+        (false, true) => Ordering::Greater,
+        (true, false) => Ordering::Less,
+        _ => Ordering::Equal,
+    }
 }
 
 /// A package summarised for display and install management.
@@ -581,15 +653,38 @@ impl PackageError {
 // Loading
 // ---------------------------------------------------------------------------
 
-/// Recursively collect every JSON/YAML file under `dir`.
+/// Recursively collect every JSON/YAML file under `dir` that holds definitions.
+///
+/// The package's `assets/` tree is not scanned. It is artwork and, since badges
+/// began shipping inside the bundled world, a provenance `manifest.json` beside
+/// the images. That manifest is data *about* the artwork, not an entity
+/// definition, so reading it as one reported a package that loaded perfectly as
+/// `missing schema` — and `read_package_info` drops any package with an error
+/// from the installed list, so the shipped world would have disappeared rather
+/// than merely lost its badges.
 pub(super) fn collect_data_files(dir: &Path, out: &mut Vec<PathBuf>) {
+    collect_definition_files(dir, out, true)
+}
+
+fn collect_definition_files(dir: &Path, out: &mut Vec<PathBuf>, is_root: bool) {
     let Ok(entries) = std::fs::read_dir(dir) else {
         return;
     };
     for entry in entries.flatten() {
         let path = entry.path();
         if path.is_dir() {
-            collect_data_files(&path, out);
+            // Only the top level is checked: a nested `assets` folder belongs
+            // to whoever wrote the package, but the one at the root is the
+            // artwork tree by construction (`ASSET_DIR_PREFIX`).
+            let is_asset_tree = is_root
+                && path
+                    .file_name()
+                    .and_then(|name| name.to_str())
+                    .is_some_and(|name| name.eq_ignore_ascii_case("assets"));
+            if is_asset_tree {
+                continue;
+            }
+            collect_definition_files(&path, out, false);
         } else if matches!(
             path.extension()
                 .and_then(|ext| ext.to_str())
@@ -2108,6 +2203,14 @@ pub fn qualify_package_asset_paths(package: &mut WorldPackage, package_id: &str)
     for player in &mut package.players {
         qualify(&mut player.photo);
     }
+    // A competition's logo is authored exactly like a club's badge and lands in
+    // the same extracted tree (`assets/competitions/…`), so it needs the same
+    // stamp. Without it the frontend sees a bare `assets/competitions/…`, takes
+    // it for an app-bundled asset, and serves it from the frontend root — where
+    // it does not exist, so the badge silently never draws.
+    for competition in &mut package.competitions {
+        qualify(&mut competition.logo);
+    }
     if let Some(meta) = package.meta.as_mut() {
         qualify(&mut meta.logo);
     }
@@ -2482,7 +2585,8 @@ mod tests {
         assert_eq!(std::fs::read(&target).unwrap(), b"world");
         assert!(!installed.join("READ ME FIRST.txt").exists());
 
-        // Second launch: nothing to do, and nothing rewritten.
+        // Second launch: nothing to do, and nothing rewritten. The copy here has no readable
+        // manifest, and an unreadable installed package is never treated as older.
         std::fs::write(&target, b"mine").unwrap();
         let again = install_bundled_packages(&bundled, &installed).expect("copies");
         assert!(
@@ -2495,6 +2599,83 @@ mod tests {
             "a bundled package must never overwrite an installed one"
         );
         std::fs::remove_dir_all(&root).ok();
+    }
+
+    #[test]
+    fn a_newer_bundled_package_replaces_an_older_installed_one() {
+        // The bug this exists for: a build shipped a world with real club badges, and every
+        // existing player kept the crestless archive copied in on first run, so the fix
+        // appeared not to work. A build's own data has to be able to reach an installed copy.
+        let root = temp_package();
+        let bundled = root.join("bundled");
+        let installed = root.join("installed");
+        std::fs::create_dir_all(&bundled).unwrap();
+        std::fs::create_dir_all(&installed).unwrap();
+
+        let with_version = |version: &str| -> PathBuf {
+            let manifest = format!(
+                r#"{{"schema":"world","id":"eafc-fc27","name":"EA","packageType":"database","version":"{version}"}}"#
+            );
+            build_zip(&[("package.json", manifest.as_bytes())])
+        };
+
+        let newer = with_version("0.2.0");
+        std::fs::copy(&newer, bundled.join("eafc-fc27.ofm")).unwrap();
+        std::fs::copy(with_version("0.1.1"), installed.join("eafc-fc27.ofm")).unwrap();
+
+        let copied = install_bundled_packages(&bundled, &installed).expect("copies");
+
+        assert_eq!(copied, vec!["eafc-fc27.ofm".to_string()]);
+        assert_eq!(
+            std::fs::read(installed.join("eafc-fc27.ofm")).unwrap(),
+            std::fs::read(bundled.join("eafc-fc27.ofm")).unwrap(),
+            "the newer bundled archive should have replaced the older one"
+        );
+        std::fs::remove_dir_all(&root).ok();
+    }
+
+    #[test]
+    fn a_player_newer_package_is_left_alone() {
+        // The other direction: a build that ships an older world must not downgrade the copy
+        // a player installed themselves.
+        let root = temp_package();
+        let bundled = root.join("bundled");
+        let installed = root.join("installed");
+        std::fs::create_dir_all(&bundled).unwrap();
+        std::fs::create_dir_all(&installed).unwrap();
+
+        let with_version = |version: &str| -> PathBuf {
+            let manifest = format!(
+                r#"{{"schema":"world","id":"eafc-fc27","name":"EA","packageType":"database","version":"{version}"}}"#
+            );
+            build_zip(&[("package.json", manifest.as_bytes())])
+        };
+
+        std::fs::copy(with_version("0.1.1"), bundled.join("eafc-fc27.ofm")).unwrap();
+        std::fs::copy(with_version("0.2.0"), installed.join("eafc-fc27.ofm")).unwrap();
+        let before = std::fs::read(installed.join("eafc-fc27.ofm")).unwrap();
+
+        let copied = install_bundled_packages(&bundled, &installed).expect("copies");
+
+        assert!(copied.is_empty(), "a newer install must not be downgraded");
+        assert_eq!(
+            std::fs::read(installed.join("eafc-fc27.ofm")).unwrap(),
+            before
+        );
+        std::fs::remove_dir_all(&root).ok();
+    }
+
+    #[test]
+    fn versions_compare_numerically_component_by_component() {
+        use std::cmp::Ordering;
+        assert_eq!(compare_versions("0.1.10", "0.1.9"), Ordering::Greater);
+        assert_eq!(compare_versions("0.2.0", "0.1.99"), Ordering::Greater);
+        assert_eq!(compare_versions("1.2", "1.2.0"), Ordering::Equal);
+        assert_eq!(compare_versions("0.1.1", "0.1.1"), Ordering::Equal);
+        // A pre-release sorts below the release it precedes, and above nothing.
+        assert_eq!(compare_versions("1.0.0", "1.0.0-beta"), Ordering::Greater);
+        assert_eq!(compare_versions("1.0.0-beta", "1.0.0"), Ordering::Less);
+        assert_eq!(compare_versions("1.0.0-beta", "0.9.0"), Ordering::Greater);
     }
 
     #[test]
@@ -3051,6 +3232,122 @@ mod tests {
 
         std::fs::remove_dir_all(&asset_root).ok();
         std::fs::remove_file(&archive).ok();
+    }
+
+    #[test]
+    fn a_provenance_manifest_beside_the_badges_is_not_a_definition_file() {
+        // The shipped world carries `assets/clubs/manifest.json` next to the
+        // crests. It is data *about* the artwork, not an entity, so reading it
+        // as one reported `missing schema` — and a package with any error is
+        // dropped from the installed list, so the world would have vanished
+        // entirely rather than merely lost its badges.
+        let dir = temp_package();
+        write(
+            &dir,
+            "world.json",
+            r#"{"schema":"world","id":"badge-world","name":"Badge World"}"#,
+        );
+        write(
+            &dir,
+            "teams.json",
+            r#"{"schema":"team","items":[{"id":"arsenal","name":"Arsenal","city":"London",
+                 "country":"GB","colors":{"primary":"#fff","secondary":"#000"},
+                 "logo":"assets/clubs/1.png"}]}"#,
+        );
+        write(
+            &dir,
+            "assets/clubs/manifest.json",
+            r#"{"version":1,"badges":[{"eaTeamId":1,"ofmClubId":"arsenal"}]}"#,
+        );
+
+        let (package, errors) = load_world_package(&dir);
+
+        assert!(errors.is_empty(), "the artwork manifest must be ignored: {errors:?}");
+        assert_eq!(package.teams.len(), 1);
+        assert_eq!(
+            package.teams[0].logo.as_deref(),
+            Some("assets/clubs/1.png")
+        );
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn a_json_file_outside_the_asset_tree_is_still_read() {
+        // The exemption is for the artwork tree only. A definition nested in a
+        // folder of the author's choosing keeps loading, which is why the skip
+        // is anchored at the package root rather than at any `assets/` segment.
+        let dir = temp_package();
+        write(
+            &dir,
+            "world.json",
+            r#"{"schema":"world","id":"nested","name":"Nested"}"#,
+        );
+        write(
+            &dir,
+            "clubs/england/teams.json",
+            r#"{"schema":"team","items":[{"id":"arsenal","name":"Arsenal","city":"London",
+                 "country":"GB","colors":{"primary":"#fff","secondary":"#000"}}]}"#,
+        );
+        write(&dir, "assets/clubs/manifest.json", r#"{"badges":[]}"#);
+
+        let (package, errors) = load_world_package(&dir);
+
+        assert!(errors.is_empty(), "unexpected errors: {errors:?}");
+        assert_eq!(package.teams.len(), 1);
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn a_competition_logo_is_qualified_like_a_club_badge() {
+        // Both land in the same extracted tree, so both need the package prefix.
+        // Without it the frontend reads a bare `assets/competitions/...` as an
+        // app-bundled asset and serves it from the frontend root, where it does
+        // not exist — the badge silently never draws.
+        let mut package = WorldPackage::default();
+        package.competitions.push(
+            serde_json::from_value(serde_json::json!({
+                "id": "uefa-champions-league",
+                "name": "UEFA Champions League",
+                "type": "ContinentalClub",
+                "scope": "Continental",
+                "regionId": "europe",
+                "priority": 0,
+                "format": { "kind": "Knockout" },
+                "participants": { "explicit": ["arsenal", "chelsea"] },
+                "logo": "assets/competitions/ucl.svg"
+            }))
+            .expect("competition def"),
+        );
+
+        qualify_package_asset_paths(&mut package, "eafc-fc27");
+
+        assert_eq!(
+            package.competitions[0].logo.as_deref(),
+            Some("eafc-fc27/assets/competitions/ucl.svg")
+        );
+    }
+
+    #[test]
+    fn a_competition_logo_that_escapes_the_package_is_dropped() {
+        let mut package = WorldPackage::default();
+        package.competitions.push(
+            serde_json::from_value(serde_json::json!({
+                "id": "cup",
+                "name": "Cup",
+                "type": "ContinentalClub",
+                "scope": "Continental",
+                "regionId": "europe",
+                "priority": 0,
+                "format": { "kind": "Knockout" },
+                "participants": { "explicit": ["arsenal", "chelsea"] },
+                "logo": "assets/../../secret.svg"
+            }))
+            .expect("competition def"),
+        );
+
+        qualify_package_asset_paths(&mut package, "eafc-fc27");
+
+        assert_eq!(package.competitions[0].logo, None);
     }
 
     #[test]
