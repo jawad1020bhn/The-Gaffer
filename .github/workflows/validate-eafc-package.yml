@@ -75,6 +75,14 @@ jobs:
           path: .eafc-db-kit
           persist-credentials: false
 
+      # The kit is a source checkout at a pinned revision, so its `dist/` does
+      # not exist until it is built: `npm ci` runs the package's `prepare`
+      # script, which compiles the TypeScript the importer loads. This has to
+      # come before any step that reads the kit, badge pack included — the
+      # badge step only needs club ids, but the importer it feeds needs builds.
+      - name: Build the pinned EA source revision
+        run: npm ci --prefix .eafc-db-kit
+
       # The badge pack is built from the committed crest zip and the committed
       # crosswalk, so the rebuilt package has to carry the same `logo` paths as
       # the one in `mods/` — hence `--badges` here as well as in the real import.
@@ -91,7 +99,6 @@ jobs:
 
       - name: Reproduce the corrected package from pinned source bytes
         run: |
-          npm ci --prefix .eafc-db-kit
           node tools/eafc-import/import.mjs --kit .eafc-db-kit --out "$RUNNER_TEMP/eafc-rebuilt" \
             --badges "$RUNNER_TEMP/eafc-badges"
           for file in package.json teams.json players.json competitions.json; do

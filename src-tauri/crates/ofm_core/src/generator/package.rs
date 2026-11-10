@@ -2612,10 +2612,9 @@ mod tests {
         std::fs::create_dir_all(&bundled).unwrap();
         std::fs::create_dir_all(&installed).unwrap();
 
+        // Only `schema` and `version` matter here: the freshness rule reads nothing else.
         let with_version = |version: &str| -> PathBuf {
-            let manifest = format!(
-                r#"{{"schema":"world","id":"eafc-fc27","name":"EA","packageType":"database","version":"{version}"}}"#
-            );
+            let manifest = format!(r#"{{"schema":"world","version":"{version}"}}"#);
             build_zip(&[("package.json", manifest.as_bytes())])
         };
 
@@ -2644,10 +2643,9 @@ mod tests {
         std::fs::create_dir_all(&bundled).unwrap();
         std::fs::create_dir_all(&installed).unwrap();
 
+        // Only `schema` and `version` matter here: the freshness rule reads nothing else.
         let with_version = |version: &str| -> PathBuf {
-            let manifest = format!(
-                r#"{{"schema":"world","id":"eafc-fc27","name":"EA","packageType":"database","version":"{version}"}}"#
-            );
+            let manifest = format!(r#"{{"schema":"world","version":"{version}"}}"#);
             build_zip(&[("package.json", manifest.as_bytes())])
         };
 
@@ -3250,9 +3248,9 @@ mod tests {
         write(
             &dir,
             "teams.json",
-            r#"{"schema":"team","items":[{"id":"arsenal","name":"Arsenal","city":"London",
+            r##"{"schema":"team","items":[{"id":"arsenal","name":"Arsenal","city":"London",
                  "country":"GB","colors":{"primary":"#fff","secondary":"#000"},
-                 "logo":"assets/clubs/1.png"}]}"#,
+                 "logo":"assets/clubs/1.png"}]}"##,
         );
         write(
             &dir,
@@ -3285,8 +3283,8 @@ mod tests {
         write(
             &dir,
             "clubs/england/teams.json",
-            r#"{"schema":"team","items":[{"id":"arsenal","name":"Arsenal","city":"London",
-                 "country":"GB","colors":{"primary":"#fff","secondary":"#000"}}]}"#,
+            r##"{"schema":"team","items":[{"id":"arsenal","name":"Arsenal","city":"London",
+                 "country":"GB","colors":{"primary":"#fff","secondary":"#000"}}]"##,
         );
         write(&dir, "assets/clubs/manifest.json", r#"{"badges":[]}"#);
 

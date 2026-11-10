@@ -128,7 +128,10 @@ fn every_club_badge_the_package_names_is_a_real_png_it_ships() {
         assert_eq!(&bytes[..8], &png, "{} badge is not a PNG", team.id);
         // 64×64, the size the crests are built at: a 16 px image is a smear at
         // the 80 px the team page draws.
-        assert_eq!(u32::from_be_bytes([bytes[16], bytes[17], bytes[18], bytes[19]]), 64);
+        assert_eq!(
+            u32::from_be_bytes([bytes[16], bytes[17], bytes[18], bytes[19]]),
+            64
+        );
     }
 
     // A club with no badge path falls back to a generated crest, which is the
