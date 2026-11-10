@@ -1,0 +1,2362 @@
+{
+  "version": 1,
+  "source": "https://github.com/ViniMacacari/eafc-db-kit",
+  "gameVersion": "FC 27",
+  "revision": "1464907bf4e726504d8b3ce15ffd0a552990565e",
+  "recordedOn": "2026-11-10",
+  "note": "ofmClubId -> EA team id for every club whose crest EA ships. Derived from the pinned FC 27 teams table plus this package's club ids (slugify(teamname), disambiguated with the EA id on collision). Committed so club artwork can be rebuilt -- and reviewed -- without a 16 MB EA database on disk: scripts/build-club-badges.mjs consumes it, and tools/eafc-import/badges-from-crest-pack.mjs --write-crosswalk regenerates it.",
+  "badges": [
+    {
+      "clubId": "1-fc-heidenheim",
+      "eaTeamId": 111235
+    },
+    {
+      "clubId": "1-fc-kaiserslautern",
+      "eaTeamId": 29
+    },
+    {
+      "clubId": "1-fc-koln",
+      "eaTeamId": 31
+    },
+    {
+      "clubId": "1-fc-magdeburg",
+      "eaTeamId": 110588
+    },
+    {
+      "clubId": "1-fc-nurnberg",
+      "eaTeamId": 171
+    },
+    {
+      "clubId": "1-fc-saarbrucken",
+      "eaTeamId": 523
+    },
+    {
+      "clubId": "1-fc-union-berlin",
+      "eaTeamId": 1831
+    },
+    {
+      "clubId": "1-fsv-mainz-05",
+      "eaTeamId": 169
+    },
+    {
+      "clubId": "aberdeen",
+      "eaTeamId": 77
+    },
+    {
+      "clubId": "academia-puerto-cabello",
+      "eaTeamId": 114611
+    },
+    {
+      "clubId": "accrington-stanley",
+      "eaTeamId": 110313
+    },
+    {
+      "clubId": "ad-ceuta",
+      "eaTeamId": 1894
+    },
+    {
+      "clubId": "adelaide-united",
+      "eaTeamId": 111393
+    },
+    {
+      "clubId": "aek",
+      "eaTeamId": 278
+    },
+    {
+      "clubId": "afc-bournemouth",
+      "eaTeamId": 1943
+    },
+    {
+      "clubId": "afc-wimbledon",
+      "eaTeamId": 112259
+    },
+    {
+      "clubId": "agf",
+      "eaTeamId": 271
+    },
+    {
+      "clubId": "aik",
+      "eaTeamId": 433
+    },
+    {
+      "clubId": "aj-auxerre",
+      "eaTeamId": 57
+    },
+    {
+      "clubId": "ajax",
+      "eaTeamId": 245
+    },
+    {
+      "clubId": "al-ahli",
+      "eaTeamId": 112387
+    },
+    {
+      "clubId": "al-ain-fc-uae",
+      "eaTeamId": 111701
+    },
+    {
+      "clubId": "al-ettifaq",
+      "eaTeamId": 112096
+    },
+    {
+      "clubId": "al-fateh",
+      "eaTeamId": 112390
+    },
+    {
+      "clubId": "al-fayha",
+      "eaTeamId": 113057
+    },
+    {
+      "clubId": "al-hazem",
+      "eaTeamId": 113222
+    },
+    {
+      "clubId": "al-hilal",
+      "eaTeamId": 605
+    },
+    {
+      "clubId": "al-ittihad",
+      "eaTeamId": 607
+    },
+    {
+      "clubId": "al-khaleej",
+      "eaTeamId": 112883
+    },
+    {
+      "clubId": "al-nassr",
+      "eaTeamId": 112139
+    },
+    {
+      "clubId": "al-qadsiah",
+      "eaTeamId": 112391
+    },
+    {
+      "clubId": "al-riyadh",
+      "eaTeamId": 113037
+    },
+    {
+      "clubId": "al-shabab",
+      "eaTeamId": 111674
+    },
+    {
+      "clubId": "al-taawoun",
+      "eaTeamId": 112393
+    },
+    {
+      "clubId": "albacete-balompie",
+      "eaTeamId": 1854
+    },
+    {
+      "clubId": "aldosivi",
+      "eaTeamId": 111707
+    },
+    {
+      "clubId": "alemannia-aachen",
+      "eaTeamId": 1826
+    },
+    {
+      "clubId": "altach",
+      "eaTeamId": 15009
+    },
+    {
+      "clubId": "alverca",
+      "eaTeamId": 717
+    },
+    {
+      "clubId": "america",
+      "eaTeamId": 1879
+    },
+    {
+      "clubId": "america-de-cali",
+      "eaTeamId": 101099
+    },
+    {
+      "clubId": "anderlecht",
+      "eaTeamId": 229
+    },
+    {
+      "clubId": "angers-sco",
+      "eaTeamId": 1530
+    },
+    {
+      "clubId": "antwerp",
+      "eaTeamId": 230
+    },
+    {
+      "clubId": "apoel-nicosia-fc",
+      "eaTeamId": 100135
+    },
+    {
+      "clubId": "argentinos-juniors",
+      "eaTeamId": 111019
+    },
+    {
+      "clubId": "arminia-bielefeld",
+      "eaTeamId": 159
+    },
+    {
+      "clubId": "arouca",
+      "eaTeamId": 112513
+    },
+    {
+      "clubId": "arsenal",
+      "eaTeamId": 1
+    },
+    {
+      "clubId": "as-monaco",
+      "eaTeamId": 69
+    },
+    {
+      "clubId": "as-nancy",
+      "eaTeamId": 1823
+    },
+    {
+      "clubId": "as-saint-etienne",
+      "eaTeamId": 1819
+    },
+    {
+      "clubId": "ascoli",
+      "eaTeamId": 1847
+    },
+    {
+      "clubId": "aston-villa",
+      "eaTeamId": 2
+    },
+    {
+      "clubId": "athletic-club-de-bilbao",
+      "eaTeamId": 448
+    },
+    {
+      "clubId": "atlanta-united-fc",
+      "eaTeamId": 112885
+    },
+    {
+      "clubId": "atlas",
+      "eaTeamId": 101114
+    },
+    {
+      "clubId": "atletico-de-madrid",
+      "eaTeamId": 240
+    },
+    {
+      "clubId": "atletico-de-san-luis",
+      "eaTeamId": 112678
+    },
+    {
+      "clubId": "atletico-mineiro",
+      "eaTeamId": 1035
+    },
+    {
+      "clubId": "atletico-nacional",
+      "eaTeamId": 101100
+    },
+    {
+      "clubId": "atletico-tucuman",
+      "eaTeamId": 111708
+    },
+    {
+      "clubId": "audax-italiano",
+      "eaTeamId": 101097
+    },
+    {
+      "clubId": "austin-fc",
+      "eaTeamId": 114161
+    },
+    {
+      "clubId": "austria-wien",
+      "eaTeamId": 256
+    },
+    {
+      "clubId": "avellino",
+      "eaTeamId": 2038
+    },
+    {
+      "clubId": "az",
+      "eaTeamId": 1906
+    },
+    {
+      "clubId": "bahia",
+      "eaTeamId": 1598
+    },
+    {
+      "clubId": "banfield",
+      "eaTeamId": 110404
+    },
+    {
+      "clubId": "barcelona-sc-guayaquil",
+      "eaTeamId": 110981
+    },
+    {
+      "clubId": "barnet",
+      "eaTeamId": 135
+    },
+    {
+      "clubId": "barnsley",
+      "eaTeamId": 1932
+    },
+    {
+      "clubId": "barracas-central",
+      "eaTeamId": 113044
+    },
+    {
+      "clubId": "bayer-04-leverkusen",
+      "eaTeamId": 32
+    },
+    {
+      "clubId": "bayern-munchen",
+      "eaTeamId": 21
+    },
+    {
+      "clubId": "beijing-guoan",
+      "eaTeamId": 111768
+    },
+    {
+      "clubId": "belgrano-de-cordoba",
+      "eaTeamId": 111022
+    },
+    {
+      "clubId": "benfica",
+      "eaTeamId": 234
+    },
+    {
+      "clubId": "besiktas",
+      "eaTeamId": 327
+    },
+    {
+      "clubId": "birmingham-city",
+      "eaTeamId": 88
+    },
+    {
+      "clubId": "bk-hacken",
+      "eaTeamId": 711
+    },
+    {
+      "clubId": "blackburn-rovers",
+      "eaTeamId": 3
+    },
+    {
+      "clubId": "blackpool",
+      "eaTeamId": 1926
+    },
+    {
+      "clubId": "boca-juniors",
+      "eaTeamId": 1877
+    },
+    {
+      "clubId": "bohemians",
+      "eaTeamId": 305
+    },
+    {
+      "clubId": "bolivar",
+      "eaTeamId": 110968
+    },
+    {
+      "clubId": "bologna",
+      "eaTeamId": 189
+    },
+    {
+      "clubId": "bolton-wanderers",
+      "eaTeamId": 4
+    },
+    {
+      "clubId": "borussia-dortmund",
+      "eaTeamId": 22
+    },
+    {
+      "clubId": "borussia-m-gladbach",
+      "eaTeamId": 23
+    },
+    {
+      "clubId": "boston-river",
+      "eaTeamId": 112868
+    },
+    {
+      "clubId": "botafogo",
+      "eaTeamId": 517
+    },
+    {
+      "clubId": "bradford-city",
+      "eaTeamId": 1804
+    },
+    {
+      "clubId": "brentford",
+      "eaTeamId": 1925
+    },
+    {
+      "clubId": "brighton-hove-albion",
+      "eaTeamId": 1808
+    },
+    {
+      "clubId": "brisbane-roar",
+      "eaTeamId": 111395
+    },
+    {
+      "clubId": "bristol-city",
+      "eaTeamId": 1919
+    },
+    {
+      "clubId": "bristol-rovers",
+      "eaTeamId": 1962
+    },
+    {
+      "clubId": "bromley",
+      "eaTeamId": 112764
+    },
+    {
+      "clubId": "brondby-if",
+      "eaTeamId": 269
+    },
+    {
+      "clubId": "bsc-young-boys",
+      "eaTeamId": 900
+    },
+    {
+      "clubId": "burgos-cf",
+      "eaTeamId": 10846
+    },
+    {
+      "clubId": "burnley",
+      "eaTeamId": 1796
+    },
+    {
+      "clubId": "burton-albion",
+      "eaTeamId": 15015
+    },
+    {
+      "clubId": "ca-osasuna",
+      "eaTeamId": 479
+    },
+    {
+      "clubId": "cadiz-cf",
+      "eaTeamId": 1968
+    },
+    {
+      "clubId": "cagliari",
+      "eaTeamId": 1842
+    },
+    {
+      "clubId": "cambridge-united",
+      "eaTeamId": 1944
+    },
+    {
+      "clubId": "carabobo-fc",
+      "eaTeamId": 110991
+    },
+    {
+      "clubId": "caracas-fc",
+      "eaTeamId": 110989
+    },
+    {
+      "clubId": "cardiff-city",
+      "eaTeamId": 1961
+    },
+    {
+      "clubId": "carrarese",
+      "eaTeamId": 112493
+    },
+    {
+      "clubId": "casa-pia",
+      "eaTeamId": 114510
+    },
+    {
+      "clubId": "catanzaro",
+      "eaTeamId": 110908
+    },
+    {
+      "clubId": "caykur-rizespor",
+      "eaTeamId": 101037
+    },
+    {
+      "clubId": "cd-castellon",
+      "eaTeamId": 100852
+    },
+    {
+      "clubId": "cd-leganes",
+      "eaTeamId": 100888
+    },
+    {
+      "clubId": "celtic",
+      "eaTeamId": 78
+    },
+    {
+      "clubId": "central-coast-mariners",
+      "eaTeamId": 111396
+    },
+    {
+      "clubId": "central-cordoba",
+      "eaTeamId": 112965
+    },
+    {
+      "clubId": "cercle-brugge",
+      "eaTeamId": 1750
+    },
+    {
+      "clubId": "cerro-porteno",
+      "eaTeamId": 112716
+    },
+    {
+      "clubId": "cesena",
+      "eaTeamId": 110915
+    },
+    {
+      "clubId": "cf-montreal",
+      "eaTeamId": 111139
+    },
+    {
+      "clubId": "cfr-cluj",
+      "eaTeamId": 114385
+    },
+    {
+      "clubId": "charleroi",
+      "eaTeamId": 670
+    },
+    {
+      "clubId": "charlotte-fc",
+      "eaTeamId": 114640
+    },
+    {
+      "clubId": "charlton-athletic",
+      "eaTeamId": 89
+    },
+    {
+      "clubId": "chelsea",
+      "eaTeamId": 5
+    },
+    {
+      "clubId": "cheltenham-town",
+      "eaTeamId": 1936
+    },
+    {
+      "clubId": "chengdu-rongcheng-f-c",
+      "eaTeamId": 116360
+    },
+    {
+      "clubId": "chesterfield",
+      "eaTeamId": 1924
+    },
+    {
+      "clubId": "chicago-fire-fc",
+      "eaTeamId": 693
+    },
+    {
+      "clubId": "cienciano",
+      "eaTeamId": 111011
+    },
+    {
+      "clubId": "clermont-foot",
+      "eaTeamId": 1815
+    },
+    {
+      "clubId": "club-brugge",
+      "eaTeamId": 231
+    },
+    {
+      "clubId": "club-tijuana",
+      "eaTeamId": 111678
+    },
+    {
+      "clubId": "colchester-united",
+      "eaTeamId": 1935
+    },
+    {
+      "clubId": "colorado-rapids",
+      "eaTeamId": 694
+    },
+    {
+      "clubId": "columbus-crew",
+      "eaTeamId": 687
+    },
+    {
+      "clubId": "como",
+      "eaTeamId": 1745
+    },
+    {
+      "clubId": "coquimbo-unido",
+      "eaTeamId": 112705
+    },
+    {
+      "clubId": "cordoba-cf",
+      "eaTeamId": 1867
+    },
+    {
+      "clubId": "corendon-alanyaspor",
+      "eaTeamId": 113142
+    },
+    {
+      "clubId": "corinthians",
+      "eaTeamId": 1041
+    },
+    {
+      "clubId": "coventry-city",
+      "eaTeamId": 1800
+    },
+    {
+      "clubId": "cracovia",
+      "eaTeamId": 110747
+    },
+    {
+      "clubId": "crawley-town",
+      "eaTeamId": 110890
+    },
+    {
+      "clubId": "cremonese",
+      "eaTeamId": 111434
+    },
+    {
+      "clubId": "crewe-alexandra",
+      "eaTeamId": 121
+    },
+    {
+      "clubId": "cruz-azul",
+      "eaTeamId": 1878
+    },
+    {
+      "clubId": "cruzeiro",
+      "eaTeamId": 568
+    },
+    {
+      "clubId": "crystal-palace",
+      "eaTeamId": 1799
+    },
+    {
+      "clubId": "d-c-united",
+      "eaTeamId": 688
+    },
+    {
+      "clubId": "daejeon-hana-citizen",
+      "eaTeamId": 980
+    },
+    {
+      "clubId": "defensa-y-justicia",
+      "eaTeamId": 111710
+    },
+    {
+      "clubId": "degerfors-if",
+      "eaTeamId": 113892
+    },
+    {
+      "clubId": "deportes-tolima",
+      "eaTeamId": 111722
+    },
+    {
+      "clubId": "deportivo-alaves",
+      "eaTeamId": 463
+    },
+    {
+      "clubId": "deportivo-riestra",
+      "eaTeamId": 115472
+    },
+    {
+      "clubId": "derby-county",
+      "eaTeamId": 91
+    },
+    {
+      "clubId": "derry-city",
+      "eaTeamId": 445
+    },
+    {
+      "clubId": "dinamo-bucuresti",
+      "eaTeamId": 100757
+    },
+    {
+      "clubId": "dinamo-zagreb",
+      "eaTeamId": 211
+    },
+    {
+      "clubId": "djurgardens-if",
+      "eaTeamId": 710
+    },
+    {
+      "clubId": "doncaster-rovers",
+      "eaTeamId": 142
+    },
+    {
+      "clubId": "drogheda-united",
+      "eaTeamId": 1572
+    },
+    {
+      "clubId": "dundee-fc",
+      "eaTeamId": 180
+    },
+    {
+      "clubId": "dundee-united",
+      "eaTeamId": 181
+    },
+    {
+      "clubId": "dynamo-dresden",
+      "eaTeamId": 503
+    },
+    {
+      "clubId": "dynamo-kyiv",
+      "eaTeamId": 101047
+    },
+    {
+      "clubId": "eintracht-braunschweig",
+      "eaTeamId": 110500
+    },
+    {
+      "clubId": "eintracht-frankfurt",
+      "eaTeamId": 1824
+    },
+    {
+      "clubId": "elche-cf",
+      "eaTeamId": 468
+    },
+    {
+      "clubId": "empoli",
+      "eaTeamId": 1746
+    },
+    {
+      "clubId": "en-avant-guingamp",
+      "eaTeamId": 62
+    },
+    {
+      "clubId": "energie-cottbus",
+      "eaTeamId": 162
+    },
+    {
+      "clubId": "entella",
+      "eaTeamId": 113147
+    },
+    {
+      "clubId": "estac-troyes",
+      "eaTeamId": 294
+    },
+    {
+      "clubId": "estoril",
+      "eaTeamId": 10020
+    },
+    {
+      "clubId": "estrela-da-amadora",
+      "eaTeamId": 718
+    },
+    {
+      "clubId": "estudiantes-de-la-plata",
+      "eaTeamId": 101083
+    },
+    {
+      "clubId": "everton",
+      "eaTeamId": 7
+    },
+    {
+      "clubId": "excelsior",
+      "eaTeamId": 1971
+    },
+    {
+      "clubId": "exeter-city",
+      "eaTeamId": 143
+    },
+    {
+      "clubId": "falkirk",
+      "eaTeamId": 79
+    },
+    {
+      "clubId": "famalicao",
+      "eaTeamId": 112809
+    },
+    {
+      "clubId": "farul-constanta",
+      "eaTeamId": 110075
+    },
+    {
+      "clubId": "fc-andorra",
+      "eaTeamId": 114554
+    },
+    {
+      "clubId": "fc-anyang",
+      "eaTeamId": 112555
+    },
+    {
+      "clubId": "fc-arges",
+      "eaTeamId": 100759
+    },
+    {
+      "clubId": "fc-augsburg",
+      "eaTeamId": 100409
+    },
+    {
+      "clubId": "fc-barcelona",
+      "eaTeamId": 241
+    },
+    {
+      "clubId": "fc-basel",
+      "eaTeamId": 896
+    },
+    {
+      "clubId": "fc-botosani",
+      "eaTeamId": 110752
+    },
+    {
+      "clubId": "fc-cincinnati",
+      "eaTeamId": 113149
+    },
+    {
+      "clubId": "fc-dallas",
+      "eaTeamId": 695
+    },
+    {
+      "clubId": "fc-groningen",
+      "eaTeamId": 1915
+    },
+    {
+      "clubId": "fc-ingolstadt-04",
+      "eaTeamId": 111239
+    },
+    {
+      "clubId": "fc-juarez",
+      "eaTeamId": 113134
+    },
+    {
+      "clubId": "fc-kobenhavn",
+      "eaTeamId": 819
+    },
+    {
+      "clubId": "fc-lausanne-sport",
+      "eaTeamId": 1862
+    },
+    {
+      "clubId": "fc-lorient",
+      "eaTeamId": 217
+    },
+    {
+      "clubId": "fc-lugano",
+      "eaTeamId": 10032
+    },
+    {
+      "clubId": "fc-luzern",
+      "eaTeamId": 897
+    },
+    {
+      "clubId": "fc-metz",
+      "eaTeamId": 68
+    },
+    {
+      "clubId": "fc-midtjylland",
+      "eaTeamId": 1516
+    },
+    {
+      "clubId": "fc-nantes",
+      "eaTeamId": 71
+    },
+    {
+      "clubId": "fc-nordsjaelland",
+      "eaTeamId": 1788
+    },
+    {
+      "clubId": "fc-porto",
+      "eaTeamId": 236
+    },
+    {
+      "clubId": "fc-rapid",
+      "eaTeamId": 310
+    },
+    {
+      "clubId": "fc-schalke-04",
+      "eaTeamId": 34
+    },
+    {
+      "clubId": "fc-seoul",
+      "eaTeamId": 982
+    },
+    {
+      "clubId": "fc-sion",
+      "eaTeamId": 110770
+    },
+    {
+      "clubId": "fc-sochaux",
+      "eaTeamId": 226
+    },
+    {
+      "clubId": "fc-st-gallen",
+      "eaTeamId": 898
+    },
+    {
+      "clubId": "fc-st-pauli",
+      "eaTeamId": 110329
+    },
+    {
+      "clubId": "fc-thun",
+      "eaTeamId": 1715
+    },
+    {
+      "clubId": "fc-twente",
+      "eaTeamId": 1908
+    },
+    {
+      "clubId": "fc-utrecht",
+      "eaTeamId": 1903
+    },
+    {
+      "clubId": "fc-vaduz",
+      "eaTeamId": 286
+    },
+    {
+      "clubId": "fc-zurich",
+      "eaTeamId": 894
+    },
+    {
+      "clubId": "fcsb",
+      "eaTeamId": 100761
+    },
+    {
+      "clubId": "fenerbahce",
+      "eaTeamId": 326
+    },
+    {
+      "clubId": "ferencvarosi-tc",
+      "eaTeamId": 1874
+    },
+    {
+      "clubId": "feyenoord",
+      "eaTeamId": 246
+    },
+    {
+      "clubId": "fiorentina",
+      "eaTeamId": 110374
+    },
+    {
+      "clubId": "fk-bodo-glimt",
+      "eaTeamId": 918
+    },
+    {
+      "clubId": "fk-csikszereda-miercurea-ciuc",
+      "eaTeamId": 114546
+    },
+    {
+      "clubId": "flamengo",
+      "eaTeamId": 1043
+    },
+    {
+      "clubId": "fleetwood-town",
+      "eaTeamId": 112260
+    },
+    {
+      "clubId": "fluminense",
+      "eaTeamId": 567
+    },
+    {
+      "clubId": "fortuna-dusseldorf",
+      "eaTeamId": 110636
+    },
+    {
+      "clubId": "fortuna-sittard",
+      "eaTeamId": 634
+    },
+    {
+      "clubId": "fredrikstad-fk",
+      "eaTeamId": 2041
+    },
+    {
+      "clubId": "frosinone",
+      "eaTeamId": 111657
+    },
+    {
+      "clubId": "fulham",
+      "eaTeamId": 144
+    },
+    {
+      "clubId": "gais",
+      "eaTeamId": 111594
+    },
+    {
+      "clubId": "galatasaray",
+      "eaTeamId": 325
+    },
+    {
+      "clubId": "gallos-blancos-de-queretaro",
+      "eaTeamId": 110150
+    },
+    {
+      "clubId": "galway-united",
+      "eaTeamId": 1571
+    },
+    {
+      "clubId": "gangwon-fc",
+      "eaTeamId": 112115
+    },
+    {
+      "clubId": "gaziantep-fk",
+      "eaTeamId": 110776
+    },
+    {
+      "clubId": "genclerbirligi",
+      "eaTeamId": 101025
+    },
+    {
+      "clubId": "genk",
+      "eaTeamId": 673
+    },
+    {
+      "clubId": "genoa",
+      "eaTeamId": 110556
+    },
+    {
+      "clubId": "gent",
+      "eaTeamId": 674
+    },
+    {
+      "clubId": "getafe-cf",
+      "eaTeamId": 1860
+    },
+    {
+      "clubId": "gil-vicente-fc",
+      "eaTeamId": 1888
+    },
+    {
+      "clubId": "gillingham",
+      "eaTeamId": 1802
+    },
+    {
+      "clubId": "gimcheon-sangmu",
+      "eaTeamId": 2055
+    },
+    {
+      "clubId": "gimnasia-y-esgrima-la-plata",
+      "eaTeamId": 101084
+    },
+    {
+      "clubId": "girona-fc",
+      "eaTeamId": 110062
+    },
+    {
+      "clubId": "gks-katowice",
+      "eaTeamId": 110206
+    },
+    {
+      "clubId": "go-ahead-eagles",
+      "eaTeamId": 100632
+    },
+    {
+      "clubId": "gornik-zabrze",
+      "eaTeamId": 420
+    },
+    {
+      "clubId": "goztepe",
+      "eaTeamId": 101026
+    },
+    {
+      "clubId": "granada-cf",
+      "eaTeamId": 110832
+    },
+    {
+      "clubId": "grasshopper-club-zurich",
+      "eaTeamId": 322
+    },
+    {
+      "clubId": "grazer-ak",
+      "eaTeamId": 113616
+    },
+    {
+      "clubId": "gremio",
+      "eaTeamId": 1629
+    },
+    {
+      "clubId": "grenoble-foot-38",
+      "eaTeamId": 1805
+    },
+    {
+      "clubId": "grimsby-town",
+      "eaTeamId": 92
+    },
+    {
+      "clubId": "guadalajara",
+      "eaTeamId": 1880
+    },
+    {
+      "clubId": "gwangju-fc",
+      "eaTeamId": 112258
+    },
+    {
+      "clubId": "hajduk-split",
+      "eaTeamId": 263
+    },
+    {
+      "clubId": "halmstads-bk",
+      "eaTeamId": 321
+    },
+    {
+      "clubId": "hamburger-sv",
+      "eaTeamId": 28
+    },
+    {
+      "clubId": "hamkam-fotball",
+      "eaTeamId": 1756
+    },
+    {
+      "clubId": "hammarby-if",
+      "eaTeamId": 708
+    },
+    {
+      "clubId": "hannover-96",
+      "eaTeamId": 485
+    },
+    {
+      "clubId": "hansa-rostock",
+      "eaTeamId": 27
+    },
+    {
+      "clubId": "hartberg",
+      "eaTeamId": 2017
+    },
+    {
+      "clubId": "heart-of-midlothian",
+      "eaTeamId": 80
+    },
+    {
+      "clubId": "hellas-verona",
+      "eaTeamId": 206
+    },
+    {
+      "clubId": "henan-fc",
+      "eaTeamId": 111779
+    },
+    {
+      "clubId": "hertha-bsc",
+      "eaTeamId": 166
+    },
+    {
+      "clubId": "hibernian",
+      "eaTeamId": 81
+    },
+    {
+      "clubId": "hjk-helsinki",
+      "eaTeamId": 100325
+    },
+    {
+      "clubId": "holstein-kiel",
+      "eaTeamId": 576
+    },
+    {
+      "clubId": "houston-dynamo",
+      "eaTeamId": 698
+    },
+    {
+      "clubId": "huddersfield-town",
+      "eaTeamId": 1939
+    },
+    {
+      "clubId": "hull-city",
+      "eaTeamId": 1952
+    },
+    {
+      "clubId": "huracan",
+      "eaTeamId": 111711
+    },
+    {
+      "clubId": "if-brommapojkarna",
+      "eaTeamId": 111705
+    },
+    {
+      "clubId": "if-elfsborg",
+      "eaTeamId": 700
+    },
+    {
+      "clubId": "ifk-goteborg",
+      "eaTeamId": 319
+    },
+    {
+      "clubId": "ik-sirius",
+      "eaTeamId": 113458
+    },
+    {
+      "clubId": "independiente",
+      "eaTeamId": 110093
+    },
+    {
+      "clubId": "independiente-del-valle",
+      "eaTeamId": 112908
+    },
+    {
+      "clubId": "independiente-medellin",
+      "eaTeamId": 101103
+    },
+    {
+      "clubId": "independiente-rivadavia",
+      "eaTeamId": 111020
+    },
+    {
+      "clubId": "independiente-santa-fe",
+      "eaTeamId": 101104
+    },
+    {
+      "clubId": "instituto-de-cordoba",
+      "eaTeamId": 110953
+    },
+    {
+      "clubId": "inter-miami",
+      "eaTeamId": 112893
+    },
+    {
+      "clubId": "ipswich-town",
+      "eaTeamId": 94
+    },
+    {
+      "clubId": "istanbul-basaksehir-fk",
+      "eaTeamId": 101014
+    },
+    {
+      "clubId": "jagiellonia-bialystok",
+      "eaTeamId": 110745
+    },
+    {
+      "clubId": "jahn-regensburg",
+      "eaTeamId": 543
+    },
+    {
+      "clubId": "jeju-sk-fc",
+      "eaTeamId": 1478
+    },
+    {
+      "clubId": "jeonbuk-hyundai-motors",
+      "eaTeamId": 1477
+    },
+    {
+      "clubId": "junior-de-barranquilla",
+      "eaTeamId": 101101
+    },
+    {
+      "clubId": "juve-stabia",
+      "eaTeamId": 112124
+    },
+    {
+      "clubId": "juventus",
+      "eaTeamId": 45
+    },
+    {
+      "clubId": "karlsruher-sc",
+      "eaTeamId": 1832
+    },
+    {
+      "clubId": "kas-mpasa",
+      "eaTeamId": 111339
+    },
+    {
+      "clubId": "kilmarnock",
+      "eaTeamId": 82
+    },
+    {
+      "clubId": "kocaelispor",
+      "eaTeamId": 101032
+    },
+    {
+      "clubId": "konyaspor",
+      "eaTeamId": 101033
+    },
+    {
+      "clubId": "korona-kielce",
+      "eaTeamId": 111083
+    },
+    {
+      "clubId": "kristiansund-bk",
+      "eaTeamId": 113459
+    },
+    {
+      "clubId": "kv-mechelen",
+      "eaTeamId": 110724
+    },
+    {
+      "clubId": "lanus",
+      "eaTeamId": 110395
+    },
+    {
+      "clubId": "lask",
+      "eaTeamId": 252
+    },
+    {
+      "clubId": "ldu-quito",
+      "eaTeamId": 110986
+    },
+    {
+      "clubId": "le-havre-ac",
+      "eaTeamId": 1738
+    },
+    {
+      "clubId": "le-mans-fc",
+      "eaTeamId": 1739
+    },
+    {
+      "clubId": "lecce",
+      "eaTeamId": 347
+    },
+    {
+      "clubId": "lech-poznan",
+      "eaTeamId": 873
+    },
+    {
+      "clubId": "leeds-united",
+      "eaTeamId": 8
+    },
+    {
+      "clubId": "legia-warszawa",
+      "eaTeamId": 1871
+    },
+    {
+      "clubId": "leicester-city",
+      "eaTeamId": 95
+    },
+    {
+      "clubId": "leon",
+      "eaTeamId": 110781
+    },
+    {
+      "clubId": "levante-ud",
+      "eaTeamId": 1853
+    },
+    {
+      "clubId": "leyton-orient",
+      "eaTeamId": 1958
+    },
+    {
+      "clubId": "libertad",
+      "eaTeamId": 111008
+    },
+    {
+      "clubId": "lincoln-city",
+      "eaTeamId": 149
+    },
+    {
+      "clubId": "liverpool",
+      "eaTeamId": 9
+    },
+    {
+      "clubId": "los-angeles-fc",
+      "eaTeamId": 112996
+    },
+    {
+      "clubId": "los-angeles-galaxy",
+      "eaTeamId": 697
+    },
+    {
+      "clubId": "losc-lille",
+      "eaTeamId": 65
+    },
+    {
+      "clubId": "luton-town",
+      "eaTeamId": 1923
+    },
+    {
+      "clubId": "macarthur-fc",
+      "eaTeamId": 114604
+    },
+    {
+      "clubId": "malaga-cf",
+      "eaTeamId": 573
+    },
+    {
+      "clubId": "malmo-ff",
+      "eaTeamId": 320
+    },
+    {
+      "clubId": "manchester-city",
+      "eaTeamId": 10
+    },
+    {
+      "clubId": "manchester-united",
+      "eaTeamId": 11
+    },
+    {
+      "clubId": "mansfield-town",
+      "eaTeamId": 1940
+    },
+    {
+      "clubId": "mantova",
+      "eaTeamId": 111433
+    },
+    {
+      "clubId": "maritimo",
+      "eaTeamId": 1893
+    },
+    {
+      "clubId": "melbourne-city",
+      "eaTeamId": 112224
+    },
+    {
+      "clubId": "melbourne-victory",
+      "eaTeamId": 111397
+    },
+    {
+      "clubId": "middlesbrough",
+      "eaTeamId": 12
+    },
+    {
+      "clubId": "millonarios",
+      "eaTeamId": 101105
+    },
+    {
+      "clubId": "millwall",
+      "eaTeamId": 97
+    },
+    {
+      "clubId": "milton-keynes-dons",
+      "eaTeamId": 1798
+    },
+    {
+      "clubId": "minnesota-united-fc",
+      "eaTeamId": 111138
+    },
+    {
+      "clubId": "mirassol",
+      "eaTeamId": 111975
+    },
+    {
+      "clubId": "mjallby-aif",
+      "eaTeamId": 112072
+    },
+    {
+      "clubId": "modena",
+      "eaTeamId": 1744
+    },
+    {
+      "clubId": "molde-fk",
+      "eaTeamId": 417
+    },
+    {
+      "clubId": "monterrey",
+      "eaTeamId": 1032
+    },
+    {
+      "clubId": "montpellier-hsc",
+      "eaTeamId": 70
+    },
+    {
+      "clubId": "monza",
+      "eaTeamId": 111811
+    },
+    {
+      "clubId": "moreirense",
+      "eaTeamId": 1900
+    },
+    {
+      "clubId": "motherwell",
+      "eaTeamId": 83
+    },
+    {
+      "clubId": "motor-lublin",
+      "eaTeamId": 111097
+    },
+    {
+      "clubId": "msv-duisburg",
+      "eaTeamId": 1825
+    },
+    {
+      "clubId": "n-e-c-nijmegen",
+      "eaTeamId": 1910
+    },
+    {
+      "clubId": "nacional",
+      "eaTeamId": 111325
+    },
+    {
+      "clubId": "nacional-da-madeira",
+      "eaTeamId": 1891
+    },
+    {
+      "clubId": "napoli",
+      "eaTeamId": 48
+    },
+    {
+      "clubId": "nashville-sc",
+      "eaTeamId": 114162
+    },
+    {
+      "clubId": "necaxa",
+      "eaTeamId": 101121
+    },
+    {
+      "clubId": "new-england-revolution",
+      "eaTeamId": 691
+    },
+    {
+      "clubId": "new-york-city-fc",
+      "eaTeamId": 112828
+    },
+    {
+      "clubId": "newcastle-jets",
+      "eaTeamId": 111398
+    },
+    {
+      "clubId": "newcastle-united",
+      "eaTeamId": 13
+    },
+    {
+      "clubId": "newell-s-old-boys",
+      "eaTeamId": 110396
+    },
+    {
+      "clubId": "newport-county",
+      "eaTeamId": 112254
+    },
+    {
+      "clubId": "northampton-town",
+      "eaTeamId": 1930
+    },
+    {
+      "clubId": "norwich-city",
+      "eaTeamId": 1792
+    },
+    {
+      "clubId": "nottingham-forest",
+      "eaTeamId": 14
+    },
+    {
+      "clubId": "notts-county",
+      "eaTeamId": 1937
+    },
+    {
+      "clubId": "o-higgins",
+      "eaTeamId": 112116
+    },
+    {
+      "clubId": "odense-boldklub",
+      "eaTeamId": 272
+    },
+    {
+      "clubId": "ogc-nice",
+      "eaTeamId": 72
+    },
+    {
+      "clubId": "oh-leuven",
+      "eaTeamId": 100087
+    },
+    {
+      "clubId": "oldham-athletic",
+      "eaTeamId": 1920
+    },
+    {
+      "clubId": "olimpia-asuncion",
+      "eaTeamId": 101108
+    },
+    {
+      "clubId": "olympiacos",
+      "eaTeamId": 280
+    },
+    {
+      "clubId": "olympique-de-marseille",
+      "eaTeamId": 219
+    },
+    {
+      "clubId": "olympique-lyonnais",
+      "eaTeamId": 66
+    },
+    {
+      "clubId": "orlando-city-sc",
+      "eaTeamId": 112606
+    },
+    {
+      "clubId": "oxford-united",
+      "eaTeamId": 1951
+    },
+    {
+      "clubId": "pachuca",
+      "eaTeamId": 110147
+    },
+    {
+      "clubId": "padova",
+      "eaTeamId": 110912
+    },
+    {
+      "clubId": "palermo",
+      "eaTeamId": 1843
+    },
+    {
+      "clubId": "palestino",
+      "eaTeamId": 111328
+    },
+    {
+      "clubId": "palmeiras",
+      "eaTeamId": 383
+    },
+    {
+      "clubId": "panathinaikos",
+      "eaTeamId": 1884
+    },
+    {
+      "clubId": "paok",
+      "eaTeamId": 393
+    },
+    {
+      "clubId": "paris-fc",
+      "eaTeamId": 111817
+    },
+    {
+      "clubId": "paris-saint-germain",
+      "eaTeamId": 73
+    },
+    {
+      "clubId": "parma",
+      "eaTeamId": 50
+    },
+    {
+      "clubId": "pau-fc",
+      "eaTeamId": 110321
+    },
+    {
+      "clubId": "pec-zwolle",
+      "eaTeamId": 1914
+    },
+    {
+      "clubId": "penarol",
+      "eaTeamId": 101110
+    },
+    {
+      "clubId": "perth-glory",
+      "eaTeamId": 111399
+    },
+    {
+      "clubId": "peterborough-united",
+      "eaTeamId": 1938
+    },
+    {
+      "clubId": "petrolul-ploiesti",
+      "eaTeamId": 110078
+    },
+    {
+      "clubId": "philadelphia-union",
+      "eaTeamId": 112134
+    },
+    {
+      "clubId": "piast-gliwice",
+      "eaTeamId": 111086
+    },
+    {
+      "clubId": "pisa",
+      "eaTeamId": 110738
+    },
+    {
+      "clubId": "platense",
+      "eaTeamId": 112689
+    },
+    {
+      "clubId": "plymouth-argyle",
+      "eaTeamId": 1929
+    },
+    {
+      "clubId": "pogon-szczecin",
+      "eaTeamId": 110746
+    },
+    {
+      "clubId": "pohang-steelers",
+      "eaTeamId": 1474
+    },
+    {
+      "clubId": "port-vale",
+      "eaTeamId": 1928
+    },
+    {
+      "clubId": "portland-timbers",
+      "eaTeamId": 111140
+    },
+    {
+      "clubId": "portsmouth",
+      "eaTeamId": 1790
+    },
+    {
+      "clubId": "preston-north-end",
+      "eaTeamId": 1801
+    },
+    {
+      "clubId": "preussen-munster",
+      "eaTeamId": 531
+    },
+    {
+      "clubId": "psv",
+      "eaTeamId": 247
+    },
+    {
+      "clubId": "puebla",
+      "eaTeamId": 110152
+    },
+    {
+      "clubId": "pumas-u-n-a-m",
+      "eaTeamId": 1881
+    },
+    {
+      "clubId": "qarabag-fk",
+      "eaTeamId": 113888
+    },
+    {
+      "clubId": "queens-park-rangers",
+      "eaTeamId": 15
+    },
+    {
+      "clubId": "racing-club-de-avellaneda",
+      "eaTeamId": 101085
+    },
+    {
+      "clubId": "racing-de-santander",
+      "eaTeamId": 456
+    },
+    {
+      "clubId": "radomiak-radom",
+      "eaTeamId": 111088
+    },
+    {
+      "clubId": "rakow-czestochowa",
+      "eaTeamId": 114326
+    },
+    {
+      "clubId": "randers-fc",
+      "eaTeamId": 1786
+    },
+    {
+      "clubId": "rangers",
+      "eaTeamId": 86
+    },
+    {
+      "clubId": "rayo-vallecano",
+      "eaTeamId": 480
+    },
+    {
+      "clubId": "rb-bragantino",
+      "eaTeamId": 112472
+    },
+    {
+      "clubId": "rb-leipzig",
+      "eaTeamId": 112172
+    },
+    {
+      "clubId": "rb-salzburg",
+      "eaTeamId": 191
+    },
+    {
+      "clubId": "rc-celta-de-vigo",
+      "eaTeamId": 450
+    },
+    {
+      "clubId": "rc-deportivo",
+      "eaTeamId": 242
+    },
+    {
+      "clubId": "rc-lens",
+      "eaTeamId": 64
+    },
+    {
+      "clubId": "rc-strasbourg",
+      "eaTeamId": 76
+    },
+    {
+      "clubId": "rcd-espanyol",
+      "eaTeamId": 452
+    },
+    {
+      "clubId": "rcd-mallorca",
+      "eaTeamId": 453
+    },
+    {
+      "clubId": "reading",
+      "eaTeamId": 1793
+    },
+    {
+      "clubId": "real-betis-balompie",
+      "eaTeamId": 449
+    },
+    {
+      "clubId": "real-madrid",
+      "eaTeamId": 243
+    },
+    {
+      "clubId": "real-oviedo",
+      "eaTeamId": 110827
+    },
+    {
+      "clubId": "real-salt-lake",
+      "eaTeamId": 111065
+    },
+    {
+      "clubId": "real-sociedad",
+      "eaTeamId": 457
+    },
+    {
+      "clubId": "real-sociedad-b",
+      "eaTeamId": 110711
+    },
+    {
+      "clubId": "real-sporting-de-gijon",
+      "eaTeamId": 459
+    },
+    {
+      "clubId": "real-valladolid",
+      "eaTeamId": 462
+    },
+    {
+      "clubId": "red-bull-new-york",
+      "eaTeamId": 689
+    },
+    {
+      "clubId": "red-star-fc-france",
+      "eaTeamId": 111273
+    },
+    {
+      "clubId": "rio-ave",
+      "eaTeamId": 744
+    },
+    {
+      "clubId": "river-plate",
+      "eaTeamId": 1876
+    },
+    {
+      "clubId": "rodez-aveyron-football",
+      "eaTeamId": 111659
+    },
+    {
+      "clubId": "roma",
+      "eaTeamId": 52
+    },
+    {
+      "clubId": "rosario-central",
+      "eaTeamId": 110580
+    },
+    {
+      "clubId": "rosenborg-bk",
+      "eaTeamId": 298
+    },
+    {
+      "clubId": "rot-weiss-essen",
+      "eaTeamId": 526
+    },
+    {
+      "clubId": "rotherham-united",
+      "eaTeamId": 1797
+    },
+    {
+      "clubId": "salford-city",
+      "eaTeamId": 113926
+    },
+    {
+      "clubId": "sampdoria",
+      "eaTeamId": 1837
+    },
+    {
+      "clubId": "samsunspor",
+      "eaTeamId": 748
+    },
+    {
+      "clubId": "san-jose-earthquakes",
+      "eaTeamId": 111928
+    },
+    {
+      "clubId": "san-lorenzo-de-almagro",
+      "eaTeamId": 1013
+    },
+    {
+      "clubId": "sandefjord-fotball",
+      "eaTeamId": 1757
+    },
+    {
+      "clubId": "santa-clara",
+      "eaTeamId": 1438
+    },
+    {
+      "clubId": "santos",
+      "eaTeamId": 1053
+    },
+    {
+      "clubId": "santos-laguna",
+      "eaTeamId": 110144
+    },
+    {
+      "clubId": "sao-paulo",
+      "eaTeamId": 598
+    },
+    {
+      "clubId": "sarmiento",
+      "eaTeamId": 112713
+    },
+    {
+      "clubId": "sarpsborg-08",
+      "eaTeamId": 112199
+    },
+    {
+      "clubId": "sassuolo",
+      "eaTeamId": 111974
+    },
+    {
+      "clubId": "sc-freiburg",
+      "eaTeamId": 25
+    },
+    {
+      "clubId": "sc-heerenveen",
+      "eaTeamId": 1913
+    },
+    {
+      "clubId": "sc-otelul-galati",
+      "eaTeamId": 110072
+    },
+    {
+      "clubId": "sc-paderborn-07",
+      "eaTeamId": 10030
+    },
+    {
+      "clubId": "sc-verl",
+      "eaTeamId": 110501
+    },
+    {
+      "clubId": "sd-eibar",
+      "eaTeamId": 467
+    },
+    {
+      "clubId": "seattle-sounders",
+      "eaTeamId": 111144
+    },
+    {
+      "clubId": "servette-fc",
+      "eaTeamId": 324
+    },
+    {
+      "clubId": "sevilla-fc",
+      "eaTeamId": 481
+    },
+    {
+      "clubId": "shakhtar-donetsk",
+      "eaTeamId": 101059
+    },
+    {
+      "clubId": "shamrock-rovers",
+      "eaTeamId": 306
+    },
+    {
+      "clubId": "shandong-taishan",
+      "eaTeamId": 111724
+    },
+    {
+      "clubId": "shanghai-port",
+      "eaTeamId": 112540
+    },
+    {
+      "clubId": "shanghai-shenhua",
+      "eaTeamId": 110955
+    },
+    {
+      "clubId": "sheffield-united",
+      "eaTeamId": 1794
+    },
+    {
+      "clubId": "sheffield-wednesday",
+      "eaTeamId": 1807
+    },
+    {
+      "clubId": "shelbourne",
+      "eaTeamId": 834
+    },
+    {
+      "clubId": "shrewsbury-town",
+      "eaTeamId": 127
+    },
+    {
+      "clubId": "silkeborg-if",
+      "eaTeamId": 270
+    },
+    {
+      "clubId": "sint-truiden",
+      "eaTeamId": 680
+    },
+    {
+      "clubId": "sk-brann",
+      "eaTeamId": 919
+    },
+    {
+      "clubId": "sk-rapid",
+      "eaTeamId": 254
+    },
+    {
+      "clubId": "slavia-praha",
+      "eaTeamId": 266
+    },
+    {
+      "clubId": "sligo-rovers",
+      "eaTeamId": 563
+    },
+    {
+      "clubId": "sonderjyske-fodbold",
+      "eaTeamId": 1447
+    },
+    {
+      "clubId": "southampton",
+      "eaTeamId": 17
+    },
+    {
+      "clubId": "sparta-praha",
+      "eaTeamId": 267
+    },
+    {
+      "clubId": "sparta-rotterdam",
+      "eaTeamId": 100646
+    },
+    {
+      "clubId": "sporting-cp",
+      "eaTeamId": 237
+    },
+    {
+      "clubId": "sporting-cristal",
+      "eaTeamId": 111013
+    },
+    {
+      "clubId": "sporting-de-braga",
+      "eaTeamId": 1896
+    },
+    {
+      "clubId": "sporting-kc",
+      "eaTeamId": 696
+    },
+    {
+      "clubId": "spvgg-greuther-furth",
+      "eaTeamId": 165
+    },
+    {
+      "clubId": "st-louis-city-sc",
+      "eaTeamId": 113018
+    },
+    {
+      "clubId": "st-mirren",
+      "eaTeamId": 100805
+    },
+    {
+      "clubId": "st-patrick-s-athletic",
+      "eaTeamId": 423
+    },
+    {
+      "clubId": "stade-brestois-29",
+      "eaTeamId": 378
+    },
+    {
+      "clubId": "stade-de-reims",
+      "eaTeamId": 379
+    },
+    {
+      "clubId": "stade-lavallois-mfc",
+      "eaTeamId": 1814
+    },
+    {
+      "clubId": "stade-rennais",
+      "eaTeamId": 74
+    },
+    {
+      "clubId": "standard-liege",
+      "eaTeamId": 232
+    },
+    {
+      "clubId": "stevenage",
+      "eaTeamId": 361
+    },
+    {
+      "clubId": "stockport-county",
+      "eaTeamId": 1931
+    },
+    {
+      "clubId": "stoke-city",
+      "eaTeamId": 1806
+    },
+    {
+      "clubId": "sturm-graz",
+      "eaTeamId": 209
+    },
+    {
+      "clubId": "sudtirol",
+      "eaTeamId": 112494
+    },
+    {
+      "clubId": "sunderland",
+      "eaTeamId": 106
+    },
+    {
+      "clubId": "sv-darmstadt-98",
+      "eaTeamId": 110502
+    },
+    {
+      "clubId": "sv-elversberg",
+      "eaTeamId": 580
+    },
+    {
+      "clubId": "sv-ried",
+      "eaTeamId": 780
+    },
+    {
+      "clubId": "sv-waldhof-mannheim",
+      "eaTeamId": 110532
+    },
+    {
+      "clubId": "sv-wehen-wiesbaden",
+      "eaTeamId": 492
+    },
+    {
+      "clubId": "swansea-city",
+      "eaTeamId": 1960
+    },
+    {
+      "clubId": "swindon-town",
+      "eaTeamId": 1934
+    },
+    {
+      "clubId": "sydney-fc",
+      "eaTeamId": 111400
+    },
+    {
+      "clubId": "talleres-de-cordoba",
+      "eaTeamId": 112670
+    },
+    {
+      "clubId": "telstar",
+      "eaTeamId": 100638
+    },
+    {
+      "clubId": "tianjin-jinmen-tiger",
+      "eaTeamId": 111774
+    },
+    {
+      "clubId": "tigre",
+      "eaTeamId": 111715
+    },
+    {
+      "clubId": "tigres-u-a-n-l",
+      "eaTeamId": 1970
+    },
+    {
+      "clubId": "toluca",
+      "eaTeamId": 1882
+    },
+    {
+      "clubId": "torino",
+      "eaTeamId": 54
+    },
+    {
+      "clubId": "toronto-fc",
+      "eaTeamId": 111651
+    },
+    {
+      "clubId": "tottenham-hotspur",
+      "eaTeamId": 18
+    },
+    {
+      "clubId": "toulouse-fc",
+      "eaTeamId": 1809
+    },
+    {
+      "clubId": "trabzonspor",
+      "eaTeamId": 436
+    },
+    {
+      "clubId": "tranmere-rovers",
+      "eaTeamId": 15048
+    },
+    {
+      "clubId": "tromso-il",
+      "eaTeamId": 418
+    },
+    {
+      "clubId": "tsg-1899-hoffenheim",
+      "eaTeamId": 10029
+    },
+    {
+      "clubId": "tsg-1899-hoffenheim-ii",
+      "eaTeamId": 110685
+    },
+    {
+      "clubId": "tsv-havelse",
+      "eaTeamId": 110678
+    },
+    {
+      "clubId": "ud-almeria",
+      "eaTeamId": 1861
+    },
+    {
+      "clubId": "ud-las-palmas",
+      "eaTeamId": 472
+    },
+    {
+      "clubId": "udinese",
+      "eaTeamId": 55
+    },
+    {
+      "clubId": "ulsan-hd-fc",
+      "eaTeamId": 1473
+    },
+    {
+      "clubId": "union-de-santa-fe",
+      "eaTeamId": 111716
+    },
+    {
+      "clubId": "union-saint-gilloise",
+      "eaTeamId": 2014
+    },
+    {
+      "clubId": "universidad-catolica",
+      "eaTeamId": 110975
+    },
+    {
+      "clubId": "universitario-de-deportes",
+      "eaTeamId": 111014
+    },
+    {
+      "clubId": "universitatea-cluj",
+      "eaTeamId": 110751
+    },
+    {
+      "clubId": "universitatea-craiova",
+      "eaTeamId": 308
+    },
+    {
+      "clubId": "usl-dunkerque",
+      "eaTeamId": 111276
+    },
+    {
+      "clubId": "uta-arad",
+      "eaTeamId": 110750
+    },
+    {
+      "clubId": "valencia-cf",
+      "eaTeamId": 461
+    },
+    {
+      "clubId": "valerenga-fotball",
+      "eaTeamId": 920
+    },
+    {
+      "clubId": "vancouver-whitecaps",
+      "eaTeamId": 101112
+    },
+    {
+      "clubId": "vasco-da-gama",
+      "eaTeamId": 569
+    },
+    {
+      "clubId": "velez-sarsfield",
+      "eaTeamId": 101088
+    },
+    {
+      "clubId": "venezia",
+      "eaTeamId": 205
+    },
+    {
+      "clubId": "vfb-stuttgart",
+      "eaTeamId": 36
+    },
+    {
+      "clubId": "vfb-stuttgart-ii",
+      "eaTeamId": 110697
+    },
+    {
+      "clubId": "vfl-bochum",
+      "eaTeamId": 160
+    },
+    {
+      "clubId": "vfl-osnabruck",
+      "eaTeamId": 487
+    },
+    {
+      "clubId": "vfl-wolfsburg",
+      "eaTeamId": 175
+    },
+    {
+      "clubId": "viborg-ff",
+      "eaTeamId": 1443
+    },
+    {
+      "clubId": "vicenza",
+      "eaTeamId": 112954
+    },
+    {
+      "clubId": "viking-fk",
+      "eaTeamId": 300
+    },
+    {
+      "clubId": "viktoria-koln",
+      "eaTeamId": 110645
+    },
+    {
+      "clubId": "viktoria-plzen",
+      "eaTeamId": 110468
+    },
+    {
+      "clubId": "villarreal-cf",
+      "eaTeamId": 483
+    },
+    {
+      "clubId": "vitoria-de-guimaraes",
+      "eaTeamId": 1887
+    },
+    {
+      "clubId": "walsall",
+      "eaTeamId": 1803
+    },
+    {
+      "clubId": "waterford",
+      "eaTeamId": 753
+    },
+    {
+      "clubId": "watford",
+      "eaTeamId": 1795
+    },
+    {
+      "clubId": "wellington-phoenix",
+      "eaTeamId": 111766
+    },
+    {
+      "clubId": "werder-bremen",
+      "eaTeamId": 38
+    },
+    {
+      "clubId": "west-bromwich-albion",
+      "eaTeamId": 109
+    },
+    {
+      "clubId": "west-ham-united",
+      "eaTeamId": 19
+    },
+    {
+      "clubId": "westerlo",
+      "eaTeamId": 681
+    },
+    {
+      "clubId": "western-sydney-wanderers",
+      "eaTeamId": 112427
+    },
+    {
+      "clubId": "widzew-lodz",
+      "eaTeamId": 301
+    },
+    {
+      "clubId": "wigan-athletic",
+      "eaTeamId": 1917
+    },
+    {
+      "clubId": "wisla-plock",
+      "eaTeamId": 1569
+    },
+    {
+      "clubId": "wolfsberger-ac",
+      "eaTeamId": 111822
+    },
+    {
+      "clubId": "wolverhampton-wanderers",
+      "eaTeamId": 110
+    },
+    {
+      "clubId": "wrexham",
+      "eaTeamId": 1947
+    },
+    {
+      "clubId": "wsg-tirol",
+      "eaTeamId": 15040
+    },
+    {
+      "clubId": "wuhan-three-towns",
+      "eaTeamId": 116361
+    },
+    {
+      "clubId": "wycombe-wanderers",
+      "eaTeamId": 1933
+    },
+    {
+      "clubId": "zaglebie-lubin",
+      "eaTeamId": 110749
+    },
+    {
+      "clubId": "zhejiang-professional-fc",
+      "eaTeamId": 112163
+    },
+    {
+      "clubId": "zulte-waregem",
+      "eaTeamId": 15005
+    }
+  ]
+}

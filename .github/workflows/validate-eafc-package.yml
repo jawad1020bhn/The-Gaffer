@@ -17,6 +17,8 @@ on:
       - "src-tauri/crates/ofm-cli/**"
       - "src-tauri/crates/ofm_core/src/generator/**"
       - "tools/eafc-import/**"
+      - "crest16x16.zip"
+      - "scripts/build-club-badges.mjs"
       - ".github/workflows/validate-eafc-package.yml"
   pull_request:
     paths:
@@ -24,6 +26,8 @@ on:
       - "src-tauri/crates/ofm-cli/**"
       - "src-tauri/crates/ofm_core/src/generator/**"
       - "tools/eafc-import/**"
+      - "crest16x16.zip"
+      - "scripts/build-club-badges.mjs"
       - ".github/workflows/validate-eafc-package.yml"
   workflow_dispatch:
 
@@ -56,6 +60,13 @@ jobs:
           node --test tools/eafc-import/lib/*.test.mjs
           node tools/eafc-import/audit.mjs mods/eafc-fc27
 
+      # The club badges the world ships are built from `crest16x16.zip` and the
+      # recorded crosswalk, and are committed so a plain checkout has them. This
+      # proves the committed images are exactly what those two inputs produce —
+      # a stale or hand-edited badge fails here rather than in a career.
+      - name: Check the committed club badges are current
+        run: node scripts/build-club-badges.mjs --check
+
       - name: Checkout the recorded EA source revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -64,13 +75,39 @@ jobs:
           path: .eafc-db-kit
           persist-credentials: false
 
+      # The kit is a source checkout at a pinned revision, so its `dist/` does
+      # not exist until it is built: `npm ci` runs the package's `prepare`
+      # script, which compiles the TypeScript the importer loads. This has to
+      # come before any step that reads the kit, badge pack included — the
+      # badge step only needs club ids, but the importer it feeds needs builds.
+      - name: Build the pinned EA source revision
+        run: npm ci --prefix .eafc-db-kit
+
+      # The badge pack is built from the committed crest zip and the committed
+      # crosswalk, so the rebuilt package has to carry the same `logo` paths as
+      # the one in `mods/` — hence `--badges` here as well as in the real import.
+      - name: Build the badge pack from the recorded crosswalk
+        run: |
+          node tools/eafc-import/badges-from-crest-pack.mjs \
+            --kit .eafc-db-kit \
+            --crest-pack crest16x16.zip \
+            --competition-logos tools/eafc-import/test/fixtures/competition-logos \
+            --out "$RUNNER_TEMP/eafc-badges" \
+            --write-crosswalk "$RUNNER_TEMP/crest-crosswalk.json"
+          diff -u tools/eafc-import/data/fc27-crest-crosswalk.json \
+            "$RUNNER_TEMP/crest-crosswalk.json"
+
       - name: Reproduce the corrected package from pinned source bytes
         run: |
-          npm ci --prefix .eafc-db-kit
-          node tools/eafc-import/import.mjs --kit .eafc-db-kit --out "$RUNNER_TEMP/eafc-rebuilt"
+          node tools/eafc-import/import.mjs --kit .eafc-db-kit --out "$RUNNER_TEMP/eafc-rebuilt" \
+            --badges "$RUNNER_TEMP/eafc-badges"
           for file in package.json teams.json players.json competitions.json; do
             cmp "mods/eafc-fc27/$file" "$RUNNER_TEMP/eafc-rebuilt/$file"
           done
+          # Badge images and their provenance manifest are part of the package,
+          # so they are compared too: a club pointing at a path the archive does
+          # not carry is a badge that never appears.
+          diff -r mods/eafc-fc27/assets "$RUNNER_TEMP/eafc-rebuilt/assets"
           node tools/eafc-import/validate.mjs "$RUNNER_TEMP/eafc-rebuilt.ofm"
           node tools/eafc-import/audit.mjs "$RUNNER_TEMP/eafc-rebuilt.ofm"
 

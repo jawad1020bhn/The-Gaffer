@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
+
 import { useTranslation } from "react-i18next";
-import { usePackageAssetSrc } from "../../hooks/usePackageAssetSrc";
+import { usePackageAssetResolution } from "../../hooks/usePackageAssetSrc";
 import AssetImage from "./AssetImage";
 import { GeneratedCrest } from "./GeneratedCrest";
 
@@ -32,25 +33,33 @@ export function TeamLogo({
   style,
 }: TeamLogoProps) {
   const { t } = useTranslation();
-  const logoSrc = usePackageAssetSrc(team.media?.logo);
+  const { src: logoSrc, pending } = usePackageAssetResolution(team.media?.logo);
+
+  const crest = fallback ?? (
+    <GeneratedCrest
+      name={team.name}
+      label={team.short_name}
+      colors={team.colors}
+      className="h-full w-full"
+    />
+  );
 
   return (
     <div className={className} style={style}>
-      <AssetImage
-        src={logoSrc}
-        alt={t("common.teamLogoAlt", { team: team.name })}
-        className={imageClassName}
-        fallback={
-          fallback ?? (
-            <GeneratedCrest
-              name={team.name}
-              label={team.short_name}
-              colors={team.colors}
-              className="h-full w-full"
-            />
-          )
-        }
-      />
+      {pending ? (
+        // The club has a badge and its path is still resolving. Drawing the
+        // generated crest now and replacing it a tick later is a visible lie —
+        // every club would appear to change identity as the screen finishes
+        // loading. An empty box of the same size holds the layout instead.
+        <span aria-hidden="true" className={imageClassName} />
+      ) : (
+        <AssetImage
+          src={logoSrc}
+          alt={t("common.teamLogoAlt", { team: team.name })}
+          className={imageClassName}
+          fallback={crest}
+        />
+      )}
     </div>
   );
 }

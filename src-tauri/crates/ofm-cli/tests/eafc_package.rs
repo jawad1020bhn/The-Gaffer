@@ -98,6 +98,52 @@ fn the_package_builds_the_world_it_promises() {
 }
 
 #[test]
+fn every_club_badge_the_package_names_is_a_real_png_it_ships() {
+    // The user-visible failure this guards: a career opened on a package whose
+    // clubs name no artwork, so `TeamLogo` drew a generated crest for every one
+    // of them and the game never showed a real badge at all. Naming a path is
+    // only half of it — the archive has to carry the file at that exact path,
+    // or the `<img>` fails and the same fallback comes back.
+    let Some((package, world)) = built_world() else {
+        return;
+    };
+
+    let with_logo = world
+        .teams
+        .iter()
+        .filter(|team| team.media.logo.is_some())
+        .count();
+    assert!(
+        with_logo > 500,
+        "only {with_logo} of {} clubs carry a badge",
+        world.teams.len()
+    );
+
+    let png = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    let dir = package_dir().expect("the package directory");
+    for team in world.teams.iter().filter(|team| team.media.logo.is_some()) {
+        let path = team.media.logo.as_deref().unwrap();
+        let bytes = std::fs::read(dir.join(path))
+            .unwrap_or_else(|_| panic!("{} names {path}, which is not in the package", team.id));
+        assert_eq!(&bytes[..8], &png, "{} badge is not a PNG", team.id);
+        // 64×64, the size the crests are built at: a 16 px image is a smear at
+        // the 80 px the team page draws.
+        assert_eq!(
+            u32::from_be_bytes([bytes[16], bytes[17], bytes[18], bytes[19]]),
+            64
+        );
+    }
+
+    // A club with no badge path falls back to a generated crest, which is the
+    // honest outcome for a club EA ships no crest for.
+    assert!(
+        world.teams.iter().any(|team| team.media.logo.is_none()),
+        "the package is expected to leave some clubs without a badge"
+    );
+    let _ = package;
+}
+
+#[test]
 fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
     let Some((_, world)) = built_world() else {
         return;
