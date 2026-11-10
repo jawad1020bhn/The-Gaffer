@@ -564,6 +564,8 @@ The target is left out of the linear adjacent-tier swap so sibling regional grou
 
 `CupWinner`, `PlayoffWinner`, and `fallbackTo` targets do not take a league out of that ladder. `fallbackTo` is a continental cascade only — it never awards a domestic promotion place, because a club that misses its primary target simply stays in its own league.
 
+When the target is a continental competition, its berths decide its field at each rollover. A club takes the most senior competition (lowest `priority`) that any of its berths, or their `fallbackTo`, earns it, and no other. A field is its qualifiers ranked by reputation and cut to the size of the field it replaces (four at least). A field left short is topped up from the clubs of its regions (`requiredRegionIds`, or every region in the world when it names none) that have no continental place: the clubs that play in no league first, then the rest, each by reputation. Fields are filled most senior first, and a club that tops one up is not offered to the next. A world can therefore keep clubs for continental football alone, in no league: give the competition fewer berths than places and they take the rest.
+
 Regional groups feeding one Central League:
 
 ```json
