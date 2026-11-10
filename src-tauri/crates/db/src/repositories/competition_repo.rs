@@ -328,11 +328,9 @@ mod tests {
 
     fn stored_logo(db: &GameDatabase, id: &str) -> Option<String> {
         db.conn()
-            .query_row(
-                "SELECT logo FROM competitions WHERE id = ?1",
-                [id],
-                |row| row.get(0),
-            )
+            .query_row("SELECT logo FROM competitions WHERE id = ?1", [id], |row| {
+                row.get(0)
+            })
             .expect("the competitions table must have a logo column")
     }
 
