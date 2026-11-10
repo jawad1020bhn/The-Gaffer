@@ -295,11 +295,17 @@ where
         }
     }
 
+    // A club that tops one field up is taken too. Two fields short of clubs draw on the same
+    // pool, and without this the junior one was offered the very clubs the senior one had just
+    // been given: a club in two continental competitions at once.
+    let mut taken = all_placed;
     let mut fields = HashMap::new();
     for target in &targets {
         let qualified = raw.remove(&target.id).unwrap_or_default();
         let field = if options.fill {
-            seed_cap_and_fill(game, target, qualified, all_placed.clone())
+            let field = seed_cap_and_fill(game, target, qualified, taken.clone());
+            taken.extend(field.iter().cloned());
+            field
         } else {
             qualified
         };
@@ -327,7 +333,8 @@ pub fn resolve_continental_fields(game: &Game) -> std::collections::HashMap<Stri
 }
 
 /// Shared tail for both qualification paths: seed by reputation, cap to the
-/// target's field size, and top up a thin field from the feeder regions.
+/// target's field size, and top up a thin field from the feeder regions, with
+/// the clubs that play in no league first.
 fn seed_cap_and_fill(
     game: &Game,
     competition: &League,
@@ -348,6 +355,16 @@ fn seed_cap_and_fill(
     qualified.truncate(field_size);
 
     if qualified.len() < field_size {
+        // A club that plays in no league has no table to qualify from, and an open place is the
+        // only football it gets, so it is taken before a club that has a league. A world keeps
+        // such clubs for this: the continental regulars of countries it has no league for. In a
+        // world where every club has a league, this is the order by reputation it always was.
+        let in_a_league: std::collections::HashSet<&str> = game
+            .competitions
+            .iter()
+            .filter(|source| source.kind == CompetitionType::League)
+            .flat_map(|source| source.participant_ids.iter().map(String::as_str))
+            .collect();
         let mut fillers: Vec<_> = game
             .teams
             .iter()
@@ -357,8 +374,10 @@ fn seed_cap_and_fill(
             })
             .collect();
         fillers.sort_by(|a, b| {
-            b.reputation
-                .cmp(&a.reputation)
+            in_a_league
+                .contains(a.id.as_str())
+                .cmp(&in_a_league.contains(b.id.as_str()))
+                .then_with(|| b.reputation.cmp(&a.reputation))
                 .then_with(|| a.id.cmp(&b.id))
         });
         for team in fillers {

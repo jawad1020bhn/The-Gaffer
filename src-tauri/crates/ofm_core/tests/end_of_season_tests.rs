@@ -793,6 +793,110 @@ fn a_continental_fallback_places_a_club_no_other_route_would() {
     );
 }
 
+/// Given two continental cups that league places fill only in part, in a country with clubs to
+/// spare,
+/// When their fields are worked out,
+/// Then the open places of the two go to different clubs: a club that tops up the senior cup is
+/// not offered to the junior one as well.
+#[test]
+fn two_thin_continental_fields_are_not_topped_up_with_the_same_club() {
+    let clubs = [
+        "es-a", "es-b", "es-c", "es-d", "es-e", "es-f", "es-g", "es-h",
+    ];
+    let teams: Vec<Team> = clubs
+        .iter()
+        .enumerate()
+        .map(|(rank, id)| make_club(id, "ES", 900 - rank as u32 * 50))
+        .collect();
+    let clock = GameClock::new(Utc.with_ymd_and_hms(2026, 5, 20, 12, 0, 0).unwrap());
+    let mut manager = Manager::new(
+        "mgr".to_string(),
+        "Test".to_string(),
+        "Manager".to_string(),
+        "1980-01-01".to_string(),
+        "England".to_string(),
+    );
+    manager.hire("es-a".to_string());
+    let mut game = Game::new(clock, manager, teams, vec![], vec![], vec![]);
+
+    let mut first = first_division("es-1", "ES", "europe", &clubs);
+    first.berths = vec![
+        Berth {
+            target: "ucl".to_string(),
+            rule: BerthRule::PositionRange { from: 1, to: 1 },
+            fallback_to: None,
+        },
+        Berth {
+            target: "uel".to_string(),
+            rule: BerthRule::PositionRange { from: 2, to: 2 },
+            fallback_to: None,
+        },
+    ];
+    let mut ucl = continental_cup("ucl", "europe", 4);
+    ucl.priority = 100;
+    let mut uel = continental_cup("uel", "europe", 4);
+    uel.priority = 101;
+    game.competitions = vec![first, ucl, uel];
+
+    let fields = resolve_continental_fields(&game);
+
+    assert_eq!(
+        fields["ucl"],
+        ["es-a", "es-c", "es-d", "es-e"],
+        "the champion, then the best three clubs without a place"
+    );
+    assert_eq!(
+        fields["uel"],
+        ["es-b", "es-f", "es-g", "es-h"],
+        "the runner-up, then the best three the senior cup did not take"
+    );
+}
+
+/// Given a continental cup with places no league position fills, and two clubs of its region
+/// that play in no league,
+/// When its field is worked out,
+/// Then those two take the open places ahead of a stronger club that has a league: an open place
+/// is the only football they get, and a club with a league still has its season.
+#[test]
+fn an_open_continental_place_goes_to_a_club_with_no_league_first() {
+    let league_clubs = ["es-a", "es-b", "es-c", "es-d"];
+    let mut teams: Vec<Team> = league_clubs
+        .iter()
+        .enumerate()
+        .map(|(rank, id)| make_club(id, "ES", 900 - rank as u32 * 50))
+        .collect();
+    teams.push(make_club("gr-a", "GR", 400));
+    teams.push(make_club("gr-b", "GR", 300));
+    let clock = GameClock::new(Utc.with_ymd_and_hms(2026, 5, 20, 12, 0, 0).unwrap());
+    let mut manager = Manager::new(
+        "mgr".to_string(),
+        "Test".to_string(),
+        "Manager".to_string(),
+        "1980-01-01".to_string(),
+        "England".to_string(),
+    );
+    manager.hire("es-a".to_string());
+    let mut game = Game::new(clock, manager, teams, vec![], vec![], vec![]);
+
+    let mut first = first_division("es-1", "ES", "europe", &league_clubs);
+    first.berths = vec![Berth {
+        target: "ucl".to_string(),
+        rule: BerthRule::PositionRange { from: 1, to: 1 },
+        fallback_to: None,
+    }];
+    let mut ucl = continental_cup("ucl", "europe", 4);
+    ucl.priority = 100;
+    game.competitions = vec![first, ucl];
+
+    let fields = resolve_continental_fields(&game);
+
+    assert_eq!(
+        fields["ucl"],
+        ["es-a", "gr-a", "gr-b", "es-b"],
+        "the champion, the two clubs with no league, then the best club that has one"
+    );
+}
+
 #[test]
 fn region_for_country_prefers_world_data_over_the_catalog() {
     let clock = GameClock::new(Utc.with_ymd_and_hms(2026, 5, 20, 12, 0, 0).unwrap());
