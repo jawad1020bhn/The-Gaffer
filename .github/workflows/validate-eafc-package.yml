@@ -18,6 +18,7 @@ on:
       - "src-tauri/crates/ofm_core/src/generator/**"
       - "tools/eafc-import/**"
       - "crest50x50.zip"
+      - "leagues.zip"
       - "scripts/build-club-badges.mjs"
       - ".github/workflows/validate-eafc-package.yml"
   pull_request:
@@ -27,6 +28,7 @@ on:
       - "src-tauri/crates/ofm_core/src/generator/**"
       - "tools/eafc-import/**"
       - "crest50x50.zip"
+      - "leagues.zip"
       - "scripts/build-club-badges.mjs"
       - ".github/workflows/validate-eafc-package.yml"
   workflow_dispatch:
@@ -61,10 +63,11 @@ jobs:
           node tools/eafc-import/audit.mjs mods/eafc-fc27
 
       # The club badges the world ships are built from `crest50x50.zip` and the
-      # recorded crosswalk, and are committed so a plain checkout has them. This
-      # proves the committed images are exactly what those two inputs produce —
-      # a stale or hand-edited badge fails here rather than in a career.
-      - name: Check the committed club badges are current
+      # recorded crosswalk, and its competition logos from `leagues.zip` and
+      # theirs. Both are committed so a plain checkout has them. This proves the
+      # committed images are exactly what those inputs produce — a stale or
+      # hand-edited image fails here rather than in a career.
+      - name: Check the committed club badges and competition logos are current
         run: node scripts/build-club-badges.mjs --check
 
       - name: Checkout the recorded EA source revision
@@ -86,16 +89,24 @@ jobs:
       # The badge pack is built from the committed crest zip and the committed
       # crosswalk, so the rebuilt package has to carry the same `logo` paths as
       # the one in `mods/` — hence `--badges` here as well as in the real import.
-      - name: Build the badge pack from the recorded crosswalk
+      #
+      # Both crosswalks are regenerated from the pinned database and compared
+      # with the committed ones. For league logos that checks every pair the
+      # database can stand behind; the logos named by hand (`authored`) are
+      # carried over as written, since no table lists the cups they belong to.
+      - name: Build the badge pack from the recorded crosswalks
         run: |
           node tools/eafc-import/badges-from-crest-pack.mjs \
             --kit .eafc-db-kit \
             --crest-pack crest50x50.zip \
-            --competition-logos tools/eafc-import/test/fixtures/competition-logos \
+            --league-logos leagues.zip \
             --out "$RUNNER_TEMP/eafc-badges" \
-            --write-crosswalk "$RUNNER_TEMP/crest-crosswalk.json"
+            --write-crosswalk "$RUNNER_TEMP/crest-crosswalk.json" \
+            --write-league-crosswalk "$RUNNER_TEMP/league-logo-crosswalk.json"
           diff -u tools/eafc-import/data/fc27-crest-crosswalk.json \
             "$RUNNER_TEMP/crest-crosswalk.json"
+          diff -u tools/eafc-import/data/fc27-league-logo-crosswalk.json \
+            "$RUNNER_TEMP/league-logo-crosswalk.json"
 
       - name: Reproduce the corrected package from pinned source bytes
         run: |
@@ -104,9 +115,9 @@ jobs:
           for file in package.json teams.json players.json competitions.json; do
             cmp "mods/eafc-fc27/$file" "$RUNNER_TEMP/eafc-rebuilt/$file"
           done
-          # Badge images and their provenance manifest are part of the package,
-          # so they are compared too: a club pointing at a path the archive does
-          # not carry is a badge that never appears.
+          # Badge and logo images and their provenance manifest are part of the
+          # package, so they are compared too: a club or competition pointing at
+          # a path the archive does not carry is artwork that never appears.
           diff -r mods/eafc-fc27/assets "$RUNNER_TEMP/eafc-rebuilt/assets"
           node tools/eafc-import/validate.mjs "$RUNNER_TEMP/eafc-rebuilt.ofm"
           node tools/eafc-import/audit.mjs "$RUNNER_TEMP/eafc-rebuilt.ofm"

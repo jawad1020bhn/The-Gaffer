@@ -4,6 +4,9 @@ An unofficial Openfoot Manager database of **684 clubs**, **18,875 player
 rows** and **38 competitions**, imported from the EA FC 27 database by
 [`tools/eafc-import`](../../tools/eafc-import/README.md).
 
+**Competition logos (0.3.0):** all **38 competitions** now carry their logo,
+converted from EA's league-logo pack. See [Competition logos](#competition-logos).
+
 **Real club badges (0.2.0):** every club EA ships a crest for now carries one —
 **588 of 684**. The 96 without are clubs EA's crest pack has no entry for, and
 they keep the generated crest. See [Club badges](#club-badges).
@@ -109,10 +112,9 @@ does not carry are authored from club reputation: the **UEFA Champions League**
 fields are written out club by club, because the engine's reputation selector
 requires a single country and a continent-wide cup has not got one.
 
-The two authored European cups carry a competition logo, taken from the
-checked-in fixture pack under `tools/eafc-import/test/fixtures/`. Per-asset
-source, licence, attribution and checksum travel inside the `.ofm` at
-`assets/clubs/manifest.json`. The other competitions render with no badge.
+Every competition carries a logo, converted from EA's league-logo pack (see
+[Competition logos](#competition-logos)). Per-asset source, licence, attribution
+and checksum travel inside the `.ofm` at `assets/clubs/manifest.json`.
 
 Every club has at least 18 source players, the median is 27, and the engine's
 floor is 15. The game tops up squads below 22 (its `SQUAD_SLOTS`); 36 clubs here
@@ -158,7 +160,7 @@ the paths live in the package rather than being stamped on by a build script.
 teams.json                     "logo": "assets/clubs/1.png"
 assets/clubs/1.png             50×50 PNG, Arsenal
 assets/clubs/manifest.json     eaTeamId ↔ club id, source, licence, checksum
-assets/competitions/*.svg      the two European cup badges
+assets/competitions/*.png      competition logos, see below
 ```
 
 **Where the images come from.** EA's `crest50x50.zip`: `crest50x50/l<eaTeamId>.dds`
@@ -185,6 +187,56 @@ node scripts/build-club-badges.mjs --check  # what CI runs: fail if stale
 like the rest of this package. The manifest says `PersonalUseOnly` rather than
 inventing a licence the art does not carry. Read `VISION.md` before
 redistributing a build.
+
+## Competition logos
+
+`competitions.json` names `assets/competitions/<competitionId>.png` on each
+competition, and those PNGs are committed beside it, the same arrangement as the
+club badges.
+
+```
+competitions.json                              "logo": "assets/competitions/eng-premier-league.png"
+assets/competitions/eng-premier-league.png     the Premier League's logo
+assets/clubs/manifest.json                     competitionLogos: source, licence, checksum
+```
+
+**Where the images come from.** EA's `leagues.zip`: `leagues/l<eaLeagueId>.dds`,
+137 textures with no names in them. Most are 1024×1024 with the artwork centred
+in a transparent margin, and most are wrapped in EA's `chunkzip` container. Each
+one used is unwrapped, cropped to its artwork and scaled to fit 160×160. They
+are not recoloured: EA draws them for a dark interface, as this game's is.
+
+**87 logos are shipped**, and they are matched to competitions in two ways,
+recorded apart in
+[`tools/eafc-import/data/fc27-league-logo-crosswalk.json`](../../tools/eafc-import/data/fc27-league-logo-crosswalk.json):
+
+- **36 through the database.** Each league and the two CONMEBOL cups was
+  imported from a row of EA's `leagues` table, and that row's id names its logo.
+  CI regenerates these pairs from the pinned database and compares them.
+- **51 by looking at the artwork.** EA's table has no rows for cups, super cups
+  or UEFA competitions, so nothing in the data says what `l201.dds` is. Two of
+  these are the **UEFA Champions League** and **UEFA Europa League** this
+  package authors. The other **49 belong to competitions this package does not
+  have**: domestic cups and super cups, the EFL play-offs, and continental and
+  world competitions such as the Conference League and the Club World Cup. Their
+  images are packed under the id each competition is expected to get
+  (`eng-fa-cup`), so they appear once it is added, and nothing draws them until
+  then.
+
+The remaining 50 textures in the zip are not used: national-team tournaments,
+leagues of countries this package has no clubs from, alternate versions, and
+EA's generic emblems.
+
+The two UEFA logos replace the SVGs this package carried before. Those were
+drawn in navy and black for a light page and were close to invisible on the
+game's dark surfaces.
+
+**Rebuild the images** with the same script as the club badges; it needs only
+`leagues.zip` and the committed crosswalk.
+
+**Licensing.** As for the crests: EA's artwork, converted for personal use, and
+marked `PersonalUseOnly`. Competition logos are also their organisers'
+trademarks.
 
 ## Known gaps
 

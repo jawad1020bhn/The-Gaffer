@@ -5298,20 +5298,700 @@
   ],
   "competitionLogos": [
     {
+      "competitionId": "dk-superliga",
+      "asset": "assets/competitions/dk-superliga.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:3d44dbc33b9a2dbb2f01b8a50c29db3fe57c6a48facc7f3ef8eae39137d75dba"
+    },
+    {
+      "competitionId": "be-pro-league",
+      "asset": "assets/competitions/be-pro-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:1957841e1765bac385552ea3da8f0ac941abfae9191d3cacd819ba000ad148e5"
+    },
+    {
+      "competitionId": "nl-eredivisie",
+      "asset": "assets/competitions/nl-eredivisie.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:9758ed34efbd9dfe8147ebfe4382ba03d78bf021e82bdabaee060b21f968ead7"
+    },
+    {
+      "competitionId": "eng-premier-league",
+      "asset": "assets/competitions/eng-premier-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:9ba6957b9e5a9146c3df4bf2da31028b8b7f8b8c58255f7017203bee437e56b2"
+    },
+    {
+      "competitionId": "eng-championship",
+      "asset": "assets/competitions/eng-championship.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:da066a95ca94eb91b82a2c542886794ab3f15cae6f81752582e5f4257cdd41e6"
+    },
+    {
+      "competitionId": "fr-ligue-1",
+      "asset": "assets/competitions/fr-ligue-1.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:7f4fabb1d18d59f19b0b18b737a48ae4b4758e585d81c0542748787fb94c7370"
+    },
+    {
+      "competitionId": "fr-ligue-2",
+      "asset": "assets/competitions/fr-ligue-2.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:ea10cc1b1ccff4a4dc68aa20957f3d248d39cc3eab92129117b14464f6fc6abc"
+    },
+    {
+      "competitionId": "de-1-bundesliga",
+      "asset": "assets/competitions/de-1-bundesliga.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:0943a75117bc666c238e3fe0b541f5fa00728919acce3052be7accd32b564be4"
+    },
+    {
+      "competitionId": "de-2-bundesliga",
+      "asset": "assets/competitions/de-2-bundesliga.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:308d9b6ba54d842ff648cd2f2487aa480152124e0a801db78cd4e9f4f4618c26"
+    },
+    {
+      "competitionId": "it-serie-a",
+      "asset": "assets/competitions/it-serie-a.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:4bb13fcde1ed43bee0367a754e53c8466f4ad662997210409429c9d191d095c9"
+    },
+    {
+      "competitionId": "it-serie-b",
+      "asset": "assets/competitions/it-serie-b.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:3b591877a9a5ec3379ca36532e872e617bc3281548f9b6e76bdedd90e785e84c"
+    },
+    {
+      "competitionId": "us-major-league-soccer",
+      "asset": "assets/competitions/us-major-league-soccer.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:8138fb0b65f3ed3a835f5480c06891dc2178e6c41bf84a4e552a2c19d3a7f8d9"
+    },
+    {
+      "competitionId": "no-eliteserien",
+      "asset": "assets/competitions/no-eliteserien.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:759e8dce5655cb92f606e8d7e2dbf456d414fa68cf141dc4057b987bf0808d4a"
+    },
+    {
+      "competitionId": "sco-premiership",
+      "asset": "assets/competitions/sco-premiership.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:11f20ef846d67740d985f9971a093746482f322c7a5c61260fc85a5e612ad99d"
+    },
+    {
+      "competitionId": "es-primera-division",
+      "asset": "assets/competitions/es-primera-division.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:5388b9056a58e37449eb272a1cb6cb7ea60518c6af550c0768d7fa9f61a4eeaa"
+    },
+    {
+      "competitionId": "es-segunda-division",
+      "asset": "assets/competitions/es-segunda-division.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:863dd27fa0b1aea79e9b179bb60e4ab0a2c56d4c835f6e36bd97077e6203c561"
+    },
+    {
+      "competitionId": "se-allsvenskan",
+      "asset": "assets/competitions/se-allsvenskan.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:f7a9d93f1cb7af81f0b383424d9c2dc3bc32dda94aea21a2c289c77af159a3d5"
+    },
+    {
+      "competitionId": "eng-league-one",
+      "asset": "assets/competitions/eng-league-one.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:7889f87c61673ae6682902a207871f6727057b8aae134e11cba3b552d02ef5d3"
+    },
+    {
+      "competitionId": "eng-league-two",
+      "asset": "assets/competitions/eng-league-two.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:f0f356047f4959ee860659a79e1be3b41fbb309c3cbbdf29f58dca40ad1ba485"
+    },
+    {
+      "competitionId": "ie-premier-division",
+      "asset": "assets/competitions/ie-premier-division.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:cd92c079e3923ab0eb64f0d0ffc14af587471a28c278d6063c72f7153860db3f"
+    },
+    {
+      "competitionId": "pl-ekstraklasa",
+      "asset": "assets/competitions/pl-ekstraklasa.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:0b092f417ccb593118e833c0123db4a944dfd25eed5f94237176970bb9a6d4be"
+    },
+    {
+      "competitionId": "tr-super-lig",
+      "asset": "assets/competitions/tr-super-lig.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:45f7ed0993cd380f98a5faad9b706f3ea13c7e16edf3c745772d16552a8193fb"
+    },
+    {
+      "competitionId": "at-bundesliga",
+      "asset": "assets/competitions/at-bundesliga.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:637ee286ba71cecff646ac291eb5fe06486f3b6e7fd4363f33e6555ef5c995db"
+    },
+    {
+      "competitionId": "kr-k-league-1",
+      "asset": "assets/competitions/kr-k-league-1.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:0337b1bbc9503712f4d507810a55158023028724eb79350b6218fb1030e444f8"
+    },
+    {
+      "competitionId": "ch-super-league",
+      "asset": "assets/competitions/ch-super-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:de5de099e1516480cdce9401c4992e119d143cfccfd5728bc9d742d7bec86b12"
+    },
+    {
+      "competitionId": "pt-primeira-liga",
+      "asset": "assets/competitions/pt-primeira-liga.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:47a6aa6afa54926a1854177276d3d5eef5910e92504e7dfea9596af2003704aa"
+    },
+    {
+      "competitionId": "ro-liga-i",
+      "asset": "assets/competitions/ro-liga-i.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:675215ea410c21ef4bcb4ea3b60f0ea250588e8706a7291e19f3501a190a955f"
+    },
+    {
+      "competitionId": "mx-liga-mx",
+      "asset": "assets/competitions/mx-liga-mx.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:2a1a91944262769c66c21af6cc55839c81d7873140b02de0ace259f285400344"
+    },
+    {
+      "competitionId": "sa-saudi-pro-league",
+      "asset": "assets/competitions/sa-saudi-pro-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:fda48784b97ac366a07a88b26a737159fc90dc7e846f4164670af53610b3cbff"
+    },
+    {
+      "competitionId": "au-a-league",
+      "asset": "assets/competitions/au-a-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:fd155765f8320cd49aadc609a0c469a47498b2a38cfdca559de607a1c5d33025"
+    },
+    {
+      "competitionId": "ar-primera-division",
+      "asset": "assets/competitions/ar-primera-division.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:e72b2f44c9168c2f7d106404ef405483d11d9d4d7f6cc74310465a6e421612d8"
+    },
+    {
+      "competitionId": "conmebol-libertadores",
+      "asset": "assets/competitions/conmebol-libertadores.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:d4d2517f0662beb105a938376a84441f4b3e18ac017f787d09f6875f49d8d5b2"
+    },
+    {
+      "competitionId": "conmebol-sudamericana",
+      "asset": "assets/competitions/conmebol-sudamericana.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:8086418bdb55702e08788a2360d191293cd800e648a6e8d853345409c89e921b"
+    },
+    {
+      "competitionId": "cn-super-league",
+      "asset": "assets/competitions/cn-super-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:7123fb80b1422f7cfe755b712e42f973d7a68ab541a54b25ccee8acff0673b40"
+    },
+    {
+      "competitionId": "de-3-liga",
+      "asset": "assets/competitions/de-3-liga.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:99ec50a710f74056de47556def9f1fc83ffb49dc18ceb3d7db76e5538c88c4d3"
+    },
+    {
+      "competitionId": "in-indian-super-league",
+      "asset": "assets/competitions/in-indian-super-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:254e31c6114494958fcf911ca39cb82aac70a78efcfcae4567d734c693a88eae"
+    },
+    {
+      "competitionId": "ru-russian-cup",
+      "asset": "assets/competitions/ru-russian-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:a35d84965a306e5c44d4bafaba28a4bbd290924b136caa68566028aaf9e05bb4"
+    },
+    {
+      "competitionId": "fifa-club-world-cup",
+      "asset": "assets/competitions/fifa-club-world-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:f348cd60ef152bd85130e74fff44a4ad978734a3ef24dc318a362ee962c36cb4"
+    },
+    {
+      "competitionId": "fifa-intercontinental-cup",
+      "asset": "assets/competitions/fifa-intercontinental-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:42dfffd475c2e074f52b8eb7ea40f41db3eb0eb82677c817054b9885ff9f65b8"
+    },
+    {
+      "competitionId": "eng-fa-cup",
+      "asset": "assets/competitions/eng-fa-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:be88f86ff391959c8e193af8b98c2cdbe37f447aac7027018810eb2faace8270"
+    },
+    {
+      "competitionId": "eng-efl-cup",
+      "asset": "assets/competitions/eng-efl-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:eeabaa3552bcd60437c829b6ac2188aca7b95668d08273c60cbb582c3243b34e"
+    },
+    {
+      "competitionId": "eng-efl-trophy",
+      "asset": "assets/competitions/eng-efl-trophy.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:454196dab980623b02bd13c5a2517551450cfd32e760fcabb031bc98ff4f3db8"
+    },
+    {
+      "competitionId": "fr-coupe-de-france",
+      "asset": "assets/competitions/fr-coupe-de-france.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:e2d72f7f6408968289c9075011a27dfd71c10b05294daae40fd157a319089a4b"
+    },
+    {
+      "competitionId": "de-dfb-pokal",
+      "asset": "assets/competitions/de-dfb-pokal.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:ea87e1a699816c832827e8f6fc7c2bb5500ce661486eb5fdd5ef70be385f5668"
+    },
+    {
+      "competitionId": "de-supercup",
+      "asset": "assets/competitions/de-supercup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:feae3b31540b36a76d50f4f36b555f3cd85f3f36293e25fdc5275432d798122b"
+    },
+    {
+      "competitionId": "es-copa-del-rey",
+      "asset": "assets/competitions/es-copa-del-rey.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:7239ed5e918282c59d114d200dd08e70ef110e9bda22be91e2b94b3034a7876b"
+    },
+    {
+      "competitionId": "it-coppa-italia",
+      "asset": "assets/competitions/it-coppa-italia.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:754aca80861d4effbc465750c4784f9473f73df4dfa526b7a98128ce6cb5b73d"
+    },
+    {
+      "competitionId": "it-supercoppa-italiana",
+      "asset": "assets/competitions/it-supercoppa-italiana.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:5dd2b36f875555a5927d16346b0e5803d5fc513628ed4761ad9df0b42676a8c8"
+    },
+    {
+      "competitionId": "at-ofb-cup",
+      "asset": "assets/competitions/at-ofb-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:028cf2c83c5037f16def0803975649f2a3a4436239c4f992cdc4d0c2be3fb735"
+    },
+    {
+      "competitionId": "be-belgian-cup",
+      "asset": "assets/competitions/be-belgian-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:1d56f8614a47cb71425ba651ed8cd4de8b1a36fbd28b72bedca0b8cfc5ebea80"
+    },
+    {
+      "competitionId": "dk-danish-cup",
+      "asset": "assets/competitions/dk-danish-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:904f67e4f129a0ce0ef4e7de9007cbba850ce7933bfa14235fa1ca5e59642923"
+    },
+    {
+      "competitionId": "no-norwegian-cup",
+      "asset": "assets/competitions/no-norwegian-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:e9bd40e92c1b98562e9e53c3b757996f83004ee11e612f984145fb4b83b17a1e"
+    },
+    {
+      "competitionId": "pt-taca-de-portugal",
+      "asset": "assets/competitions/pt-taca-de-portugal.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:ac8f76fff23fa4da4d684f716859d97f07c4ba006722075f1a5172396e00a0f0"
+    },
+    {
+      "competitionId": "sco-scottish-cup",
+      "asset": "assets/competitions/sco-scottish-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:12f5d2fd1cca110c7f9240dbd2d80ca37860117d563397281cc6612c3c35fa40"
+    },
+    {
+      "competitionId": "se-svenska-cupen",
+      "asset": "assets/competitions/se-svenska-cupen.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:363adfe190ddadbb2b5efa9db8c122b44a8e341fb8c80f53a5ead60d896f2355"
+    },
+    {
+      "competitionId": "ch-schweizer-cup",
+      "asset": "assets/competitions/ch-schweizer-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:1eff275e338abcd187bd2a37bb2337e6deca125d10dd8d9b550de26b51c86b43"
+    },
+    {
       "competitionId": "uefa-champions-league",
-      "asset": "assets/competitions/uefa-champions-league.svg",
-      "source": "https://github.com/JoseArroyave/football-logos/raw/main/logos/tournaments/UEFA_Champions_League.svg",
-      "licence": "MIT (repository code); artwork remains the property of UEFA — trademarks apply",
-      "attribution": "JoseArroyave/football-logos via GitHub",
-      "checksum": "sha256:6b1f33e6750e228f1dc354c6288cd16da6d00189630e1ce4d4079c868e6994dc"
+      "asset": "assets/competitions/uefa-champions-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:a736ccc35b91be973076ff67b303fa605675226501dc50104380e4920a4cb24c"
     },
     {
       "competitionId": "uefa-europa-league",
-      "asset": "assets/competitions/uefa-europa-league.svg",
-      "source": "https://github.com/JoseArroyave/football-logos/raw/main/logos/tournaments/UEFA_Europa_League.svg",
-      "licence": "MIT (repository code); artwork remains the property of UEFA — trademarks apply",
-      "attribution": "JoseArroyave/football-logos via GitHub",
-      "checksum": "sha256:bd5e2c3b5b7eb52514f3e013e5e1b6af4242014396d9dac77fafae21f3cd7b9c"
+      "asset": "assets/competitions/uefa-europa-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:d21accaf70d915b2dfb72d98c56a86242b54057d83845ed34bbe6020dce297f9"
+    },
+    {
+      "competitionId": "es-supercopa-de-espana",
+      "asset": "assets/competitions/es-supercopa-de-espana.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:b35d750a278753acd027ade9aa556aaf4d36fbaa2390417339cd2837b2e66040"
+    },
+    {
+      "competitionId": "uefa-conference-league",
+      "asset": "assets/competitions/uefa-conference-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:63ad19b0e9723f63442c77c2c9072fd81c18aff048c05ac85c55c11251b77726"
+    },
+    {
+      "competitionId": "eng-community-shield",
+      "asset": "assets/competitions/eng-community-shield.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:a3f6d9da0aa306fb6de7a1e34c3ffc6af781047c79e1f46acf6746688ce4bcc7"
+    },
+    {
+      "competitionId": "br-copa-do-brasil",
+      "asset": "assets/competitions/br-copa-do-brasil.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:2c585deaa2a0d3830c5474e546942c0d7d7d3e58be424fd552eaae3acc17775b"
+    },
+    {
+      "competitionId": "ar-copa-argentina",
+      "asset": "assets/competitions/ar-copa-argentina.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:c045cb93d68316bebb5ce72fbb3cbaa8a5e92778805b21199a2433dc095b0ba4"
+    },
+    {
+      "competitionId": "uefa-super-cup",
+      "asset": "assets/competitions/uefa-super-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:4c2d3aca76d4098dad2c5214926f7b76a80909a75f2d23c350c706efba0697ca"
+    },
+    {
+      "competitionId": "fr-trophee-des-champions",
+      "asset": "assets/competitions/fr-trophee-des-champions.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:bbb7f71a6e44e8070b48f0428918a2849f91482abedfb30c7da5e20af8401e57"
+    },
+    {
+      "competitionId": "us-open-cup",
+      "asset": "assets/competitions/us-open-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:0edfebfaad55433922cfc3a8e3aba4a42a5cbbfc6d977c741cbd256b71d1ebad"
+    },
+    {
+      "competitionId": "gr-greek-cup",
+      "asset": "assets/competitions/gr-greek-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:2418b6950a96000af99230bc4e797c9e5a5f696a3a2f1d918b69f434297b51c5"
+    },
+    {
+      "competitionId": "tr-turkiye-kupasi",
+      "asset": "assets/competitions/tr-turkiye-kupasi.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:f0e746071a0f806b9309c7cb8364efdbc6c6d7d108f07a2d271eaf2671f3a61f"
+    },
+    {
+      "competitionId": "tr-super-kupa",
+      "asset": "assets/competitions/tr-super-kupa.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:9fcdacd527da5d273184b80f0b4888adb0de06429e2b6c3ff4b042cdf99c3d9a"
+    },
+    {
+      "competitionId": "nl-johan-cruijff-schaal",
+      "asset": "assets/competitions/nl-johan-cruijff-schaal.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:a9d557d8ebe55e7235d4e39152480008b31a2cb40180a93a46b44511019e26ba"
+    },
+    {
+      "competitionId": "pl-superpuchar",
+      "asset": "assets/competitions/pl-superpuchar.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:dd7d54510f3ccac8597acf8c5893c91651aa28da9cdd9d6f1382644019213673"
+    },
+    {
+      "competitionId": "nl-knvb-beker",
+      "asset": "assets/competitions/nl-knvb-beker.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:89f97119701a77ae556cca432043239368ae71e16a7d432fa1470a623b6b6f76"
+    },
+    {
+      "competitionId": "eng-league-one-play-offs",
+      "asset": "assets/competitions/eng-league-one-play-offs.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:8921fd93ba5935cd7bf18c4b3a4f313b35cb77023d7df14d5e85ddf22b7533bd"
+    },
+    {
+      "competitionId": "eng-league-two-play-offs",
+      "asset": "assets/competitions/eng-league-two-play-offs.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:b652e80ef8b14a3939f9dbdf45892fef15e74def5dfb962b6050ba3598a311d4"
+    },
+    {
+      "competitionId": "ie-fai-cup",
+      "asset": "assets/competitions/ie-fai-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:9bb082268e3ac89b7a6b9a685b2ba387492ad3e4c6b9c95404781759b5d380cf"
+    },
+    {
+      "competitionId": "pl-puchar-polski",
+      "asset": "assets/competitions/pl-puchar-polski.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:0189fbf1c399c03921567780140b69ce17e8fbe347b8515bc2c9f11d42f7ef6f"
+    },
+    {
+      "competitionId": "eng-championship-play-offs",
+      "asset": "assets/competitions/eng-championship-play-offs.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:3e65be0c4673132793fa9e95d29f6f23b5c073795da74d4f45e915d9871e7fcd"
+    },
+    {
+      "competitionId": "sa-kings-cup",
+      "asset": "assets/competitions/sa-kings-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:674e76991ac6f95a5ca6c2bea84546c25d8d2d3e579e546957582efe321b6159"
+    },
+    {
+      "competitionId": "ro-cupa-romaniei",
+      "asset": "assets/competitions/ro-cupa-romaniei.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:f8c4e57e69818b731720a3c9c596c73e73937bc5771316fcd2e839f4664f2357"
+    },
+    {
+      "competitionId": "afc-champions-league",
+      "asset": "assets/competitions/afc-champions-league.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:9539e6970cbfc308608addbeec1283c45cb2cf46b3e2090d4b074bb18c961f39"
+    },
+    {
+      "competitionId": "conmebol-sudamericana-legacy",
+      "asset": "assets/competitions/conmebol-sudamericana-legacy.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:89807740c7b43b59793da00fd9ae38814efe0a40cd468e3f3be4dcb75ac5240e"
+    },
+    {
+      "competitionId": "conmebol-recopa-legacy",
+      "asset": "assets/competitions/conmebol-recopa-legacy.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:0281651732197e306e052bd43f77903cd0f27035e32b128cb01c58a08adaca4f"
+    },
+    {
+      "competitionId": "supercopa-euroamericana",
+      "asset": "assets/competitions/supercopa-euroamericana.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:e695d96b8ec60e5c2cc337a410563e818079641e0a07f3395e334d8d4e2347e2"
+    },
+    {
+      "competitionId": "conmebol-recopa",
+      "asset": "assets/competitions/conmebol-recopa.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:2876a0b6e2750c254afb321a148240567df1ea3b6f3ffe4939843f409b644a28"
+    },
+    {
+      "competitionId": "concacaf-champions-cup",
+      "asset": "assets/competitions/concacaf-champions-cup.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:8321fdfb273233f1f27a1984bf88e3f16d996ad2afaa8243ea09ee0e6a0d82df"
+    },
+    {
+      "competitionId": "afc-champions-league-elite",
+      "asset": "assets/competitions/afc-champions-league-elite.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:d8dd355f4fa19e013e6b91a2eb5693a766a37bb3887b8effe3ba481a81c801d2"
+    },
+    {
+      "competitionId": "ar-copa-de-la-liga",
+      "asset": "assets/competitions/ar-copa-de-la-liga.png",
+      "source": "https://www.ea.com/games/ea-sports-fc",
+      "licence": "PersonalUseOnly",
+      "attribution": "EA Sports FC league logos",
+      "checksum": "sha256:5185da3433cb545dc7290c5f04b86131c8700281706b35cdc798160133b33be0"
     }
   ],
   "playerFaces": []

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Rebuild the bundled world's club badges from `crest50x50.zip`.
+ * Rebuild the bundled world's club badges from `crest50x50.zip`, and its
+ * competition logos from `leagues.zip`.
  *
  * The world `mods/eafc-fc27` ships real crests: each club in `teams.json`
  * names `assets/clubs/<eaTeamId>.png`, and those PNGs live beside it. Both the
@@ -10,8 +11,11 @@
  * against a fresh import, so the paths have to be part of the package itself
  * rather than something a build script stamps on afterwards.
  *
+ * Competition logos work the same way: a competition in `competitions.json`
+ * names `assets/competitions/<competitionId>.png`.
+ *
  * This script is the reproducible way to produce those PNGs. It needs only the
- * checked-in crest zip and the recorded crosswalk:
+ * checked-in zips and the recorded crosswalks:
  *
  *   node scripts/build-club-badges.mjs            # write the PNGs and manifest
  *   node scripts/build-club-badges.mjs --check    # verify they are current
@@ -19,10 +23,11 @@
  * `--check` is what CI runs: it re-derives every file and fails if any image,
  * path or checksum has drifted, so a stale badge cannot ship silently.
  *
- * The crosswalk (`tools/eafc-import/data/fc27-crest-crosswalk.json`) is
- * regenerated from the EA database by
- * `tools/eafc-import/badges-from-crest-pack.mjs --write-crosswalk` when the
- * world is re-imported; this script never guesses a club's EA id.
+ * The crosswalks (`tools/eafc-import/data/fc27-crest-crosswalk.json` and
+ * `fc27-league-logo-crosswalk.json`) are regenerated from the EA database by
+ * `tools/eafc-import/badges-from-crest-pack.mjs --write-crosswalk
+ * --write-league-crosswalk` when the world is re-imported; this script never
+ * guesses an EA id.
  */
 
 import { createHash } from "node:crypto";
@@ -34,15 +39,22 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { listCrests } from "../tools/eafc-import/lib/crestPack.mjs";
 import { CREST_SIZE, crestDdsToPng } from "../tools/eafc-import/lib/dds.mjs";
+import {
+  buildLeagueLogos,
+  readLeagueLogoCrosswalk,
+} from "../tools/eafc-import/lib/leagueLogos.mjs";
 import { readZipEntries } from "../tools/eafc-import/lib/zip.mjs";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WORLD_DIR = "mods/eafc-fc27";
 const CREST_ZIP = "crest50x50.zip";
 const CROSSWALK = "tools/eafc-import/data/fc27-crest-crosswalk.json";
+const LEAGUE_LOGO_ZIP = "leagues.zip";
+const LEAGUE_LOGO_CROSSWALK = "tools/eafc-import/data/fc27-league-logo-crosswalk.json";
 
-/** The checked-in pack of competition logos the authored European cups reference. */
-const COMPETITION_LOGO_PACK = "tools/eafc-import/test/fixtures/competition-logos";
+/** The folders this build owns inside the world. */
+const CLUB_ASSETS = "assets/clubs";
+const COMPETITION_ASSETS = "assets/competitions";
 
 const sha256 = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
 
@@ -53,57 +65,38 @@ const ARTWORK_SOURCE = "https://www.ea.com/games/ea-sports-fc";
 const LICENCE = "PersonalUseOnly";
 
 /**
- * The competition logos the world references, copied from the checked-in
- * fixture pack.
+ * The world's competition logos, converted from EA's league-logo pack.
  *
- * Two authored European cups name a badge in `competitions.json`, so the images
- * those paths point at have to be in the package too — a path with no file is
- * the same missing badge under a different name. The fixtures are the pack the
- * importer's own tests use, which is what makes them safe to ship.
+ * Every entry of the recorded crosswalk becomes one image, in the crosswalk's
+ * order: the leagues the database stands behind, then the logos named by hand.
+ * That includes logos for competitions the world does not have yet — the
+ * importer packs every logo in its pack, and this has to write the same files.
+ *
+ * `derived` marks the first kind. Such a pair exists only because its
+ * competition was imported, which is what lets a stale one be told apart from a
+ * logo that is simply ahead of its competition.
  */
 async function planCompetitionLogos(repoRoot) {
-  const competitions = JSON.parse(
-    await readFile(path.join(repoRoot, WORLD_DIR, "competitions.json"), "utf8"),
-  );
-  const referenced = (competitions.items ?? [])
-    .map((competition) => competition.logo ?? null)
-    .filter((logo) => typeof logo === "string" && logo.startsWith("assets/competitions/"))
-    // A world may reference no competition badge at all, which is the common case.
-    .sort();
-  if (referenced.length === 0) return [];
-
-  const dir = path.join(repoRoot, COMPETITION_LOGO_PACK);
-  const pack = JSON.parse(await readFile(path.join(dir, "manifest.json"), "utf8"));
-  const byId = new Map((pack.competitionLogos ?? []).map((entry) => [entry.competitionId, entry]));
-
-  const logos = [];
-  for (const asset of referenced.sort()) {
-    const competitionId = path.basename(asset, path.extname(asset));
-    const entry = byId.get(competitionId);
-    if (!entry) {
-      throw new Error(
-        `${WORLD_DIR}/competitions.json names ${asset}, but ${COMPETITION_LOGO_PACK} has no logo for "${competitionId}"`,
-      );
-    }
-    const bytes = await readFile(path.join(dir, entry.file));
-    logos.push({
-      competitionId,
-      asset,
-      bytes,
-      source: entry.source,
-      licence: entry.licence,
-      attribution: entry.attribution,
-      checksum: sha256(bytes),
-    });
-  }
-  return logos;
+  const crosswalk = JSON.parse(await readFile(path.join(repoRoot, LEAGUE_LOGO_CROSSWALK), "utf8"));
+  const zip = readZipEntries(await readFile(path.join(repoRoot, LEAGUE_LOGO_ZIP)));
+  const derived = new Set((crosswalk.leagues ?? []).map((entry) => entry.competitionId));
+  return buildLeagueLogos(readLeagueLogoCrosswalk(crosswalk), zip).map((logo) => ({
+    competitionId: logo.competitionId,
+    asset: `${COMPETITION_ASSETS}/${logo.file}`,
+    bytes: logo.bytes,
+    derived: derived.has(logo.competitionId),
+    source: logo.source,
+    licence: logo.licence,
+    attribution: logo.attribution,
+    checksum: logo.checksum,
+  }));
 }
 
 /**
  * The image files the world should contain, as `{ name, data }`.
  *
- * Pure apart from reading its three inputs, so the check and the write path
- * cannot disagree about what "current" means.
+ * Pure apart from reading its inputs, so the check and the write path cannot
+ * disagree about what "current" means.
  */
 export async function planBadges(repoRoot = REPO_ROOT) {
   const crosswalk = JSON.parse(await readFile(path.join(repoRoot, CROSSWALK), "utf8"));
@@ -130,7 +123,7 @@ export async function planBadges(repoRoot = REPO_ROOT) {
       throw new Error(`no 50×50 crest for EA team ${eaTeamId} (club ${clubId})`);
     }
     const data = crestDdsToPng(entries.get(crest), { size: CREST_SIZE, darkBackground: true });
-    const name = `assets/clubs/${eaTeamId}.png`;
+    const name = `${CLUB_ASSETS}/${eaTeamId}.png`;
     files.set(name, data);
     badges.push({
       eaTeamId,
@@ -154,9 +147,12 @@ export async function planBadges(repoRoot = REPO_ROOT) {
       source: ARTWORK_SOURCE,
       licence: LICENCE,
       badges: badges.map(({ crosswalkSource: _crosswalkSource, ...entry }) => entry),
-      // The importer's own manifest shape: `bytes` is the file the build writes,
-      // not part of the provenance the archive documents.
-      competitionLogos: competitionLogos.map(({ bytes: _bytes, ...entry }) => entry),
+      // The importer's own manifest shape: `bytes` is the file the build writes
+      // and `derived` is this script's bookkeeping, neither part of the
+      // provenance the archive documents.
+      competitionLogos: competitionLogos.map(
+        ({ bytes: _bytes, derived: _derived, ...entry }) => entry,
+      ),
       playerFaces: [],
     },
     null,
@@ -165,7 +161,7 @@ export async function planBadges(repoRoot = REPO_ROOT) {
   for (const logo of competitionLogos) {
     files.set(logo.asset, logo.bytes);
   }
-  files.set("assets/clubs/manifest.json", Buffer.from(manifest));
+  files.set(`${CLUB_ASSETS}/manifest.json`, Buffer.from(manifest));
   return { files, badges, competitionLogos, unknownClubs };
 }
 
@@ -197,15 +193,85 @@ export function disagreements(badges, clubs) {
   return problems;
 }
 
+/**
+ * The same agreement for competitions: one that has a logo built for it must
+ * name that image in `competitions.json`, and one that has none must name none.
+ *
+ * A logo with no competition is allowed when it was named by hand: EA ships
+ * artwork for cups this world does not carry yet, and it is packed ahead of
+ * them. A logo the crosswalk derived from the database is different — that pair
+ * was written because the competition was imported, so its absence means the
+ * crosswalk is older than the world.
+ */
+export function competitionDisagreements(logos, competitions) {
+  const built = new Map(logos.map((logo) => [logo.competitionId, logo.asset]));
+  const problems = [];
+  for (const competition of competitions) {
+    const asset = built.get(competition.id) ?? null;
+    const named = competition.logo ?? null;
+    if (named === asset) continue;
+    problems.push(
+      asset
+        ? `${competition.id}: competitions.json has ${named ?? "no logo"}, the crosswalk builds ${asset}`
+        : `${competition.id}: competitions.json names ${named}, the crosswalk builds nothing`,
+    );
+  }
+  const present = new Set(competitions.map((competition) => competition.id));
+  for (const logo of logos) {
+    if (logo.derived && !present.has(logo.competitionId)) {
+      problems.push(
+        `${logo.competitionId}: the crosswalk derives a logo for it, but competitions.json has no such competition`,
+      );
+    }
+  }
+  return problems;
+}
+
+/**
+ * Artwork in the world's folders that the build does not produce: an image left
+ * behind by a club that lost its badge, or a logo in a format no longer written.
+ *
+ * The competition folder holds nothing but what this build writes, so any other
+ * file there is a leftover. The club folder is only checked for images.
+ *
+ * @param {string} worldDir the world's directory
+ * @param {Map<string, Buffer>} files the planned files, by package-relative path
+ * @returns {Promise<string[]>} package-relative paths, sorted
+ */
+export async function leftoverFiles(worldDir, files) {
+  const leftovers = [];
+  for (const [folder, owned] of [
+    [CLUB_ASSETS, (name) => name.endsWith(".png")],
+    [COMPETITION_ASSETS, () => true],
+  ]) {
+    const dir = path.join(worldDir, folder);
+    const present = existsSync(dir) ? await readdir(dir) : [];
+    for (const name of present.sort()) {
+      if (owned(name) && !files.has(`${folder}/${name}`)) leftovers.push(`${folder}/${name}`);
+    }
+  }
+  return leftovers;
+}
+
 async function main() {
   const check = process.argv.includes("--check");
-  const { files, badges, unknownClubs } = await planBadges();
+  const { files, badges, competitionLogos, unknownClubs } = await planBadges();
 
   const world = JSON.parse(await readFile(path.join(REPO_ROOT, WORLD_DIR, "teams.json"), "utf8"));
   const problems = disagreements(badges, world.items ?? []);
   if (problems.length > 0) {
     throw new Error(
       `${problems.length} club(s) disagree with the crosswalk:\n  ${problems.slice(0, 5).join("\n  ")}\n` +
+        "Re-run tools/eafc-import/import.mjs --badges with a pack built from this crosswalk.",
+    );
+  }
+  const competitions = JSON.parse(
+    await readFile(path.join(REPO_ROOT, WORLD_DIR, "competitions.json"), "utf8"),
+  );
+  const logoProblems = competitionDisagreements(competitionLogos, competitions.items ?? []);
+  if (logoProblems.length > 0) {
+    throw new Error(
+      `${logoProblems.length} competition(s) disagree with the league-logo crosswalk:\n  ${logoProblems.slice(0, 5).join("\n  ")}\n` +
         "Re-run tools/eafc-import/import.mjs --badges with a pack built from this crosswalk.",
     );
   }
@@ -227,23 +293,25 @@ async function main() {
 
   if (check) {
     // The other direction: an image left behind by a club that lost its badge.
-    const dir = path.join(REPO_ROOT, WORLD_DIR, "assets/clubs");
-    const present = existsSync(dir) ? await readdir(dir) : [];
-    for (const name of present) {
-      if (name.endsWith(".png") && !files.has(`assets/clubs/${name}`)) {
-        console.error(
-          `build-club-badges: ${WORLD_DIR}/assets/clubs/${name} is not in the crosswalk`,
-        );
-        stale += 1;
-      }
+    // Rewriting cannot fix these, so they are named apart from the stale files.
+    const leftovers = await leftoverFiles(path.join(REPO_ROOT, WORLD_DIR), files);
+    for (const name of leftovers) {
+      console.error(`build-club-badges: ${WORLD_DIR}/${name} is not in the crosswalk`);
     }
     if (stale > 0) {
       console.error(
         `build-club-badges: ${stale} file(s) out of date. Run: node scripts/build-club-badges.mjs`,
       );
-      process.exit(1);
     }
-    console.log(`build-club-badges: ${badges.length} club badges are current.`);
+    if (leftovers.length > 0) {
+      console.error(
+        `build-club-badges: ${leftovers.length} file(s) no crosswalk produces. Delete them.`,
+      );
+    }
+    if (stale > 0 || leftovers.length > 0) process.exit(1);
+    console.log(
+      `build-club-badges: ${badges.length} club badges and ${competitionLogos.length} competition logos are current.`,
+    );
     return;
   }
 
@@ -251,7 +319,7 @@ async function main() {
     console.warn(`build-club-badges: crosswalk names ${clubId}, which is not in the world`);
   }
   console.log(
-    `build-club-badges: wrote ${badges.length} club badges (${CREST_SIZE}×${CREST_SIZE}).`,
+    `build-club-badges: wrote ${badges.length} club badges (${CREST_SIZE}×${CREST_SIZE}) and ${competitionLogos.length} competition logos.`,
   );
 }
 

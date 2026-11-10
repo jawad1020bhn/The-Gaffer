@@ -1033,7 +1033,7 @@ async function main() {
     name: PACKAGE_NAME,
     description:
       "Clubs, players and leagues imported from the EA FC 27 database by tools/eafc-import. Unofficial; not affiliated with EA.",
-    version: "0.2.0",
+    version: "0.3.0",
     author: "tools/eafc-import",
     license: "NOASSERTION",
     packageType: "database",
