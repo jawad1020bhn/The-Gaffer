@@ -200,6 +200,18 @@ assets/competitions/eng-premier-league.png     the Premier League's logo
 assets/clubs/manifest.json                     competitionLogos: source, licence, checksum
 ```
 
+**Where the game shows them.** A career draws a competition's logo beside its
+name: in the header of the Tournaments screen and in its list of competitions,
+above the league table on the Tournaments and Schedule screens, and in the list
+of competitions on the team-selection screen. A competition with no logo gets a
+trophy instead.
+
+**Earlier careers keep their trophies.** A career records each competition's
+logo when it is created, and its save stores it from then on. A career begun
+before the game kept logos, or on a version of this package older than 0.3.0,
+has nothing recorded, so it goes on drawing trophies even though the images are
+installed. A new career gets all 38.
+
 **Where the images come from.** EA's `leagues.zip`: `leagues/l<eaLeagueId>.dds`,
 137 textures with no names in them. Most are 1024×1024 with the artwork centred
 in a transparent margin, and most are wrapped in EA's `chunkzip` container. Each

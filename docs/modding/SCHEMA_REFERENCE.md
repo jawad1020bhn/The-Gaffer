@@ -479,7 +479,7 @@ Competitions are the most complex entity. A competition defines a league, cup, o
 | `calendar.division.phase` | enum | `"annual"` | `"annual"`, `"opening"` or `"closing"`. Opening/closing declarations require `windowEnd`. |
 | `calendar.windowEnd` | object | absent | Optional valid `{ "month": 6, "day": 30 }` end date. An end before the opener belongs to the following year. |
 | `nameKey` | string or null | `null` | i18n key for a translated competition name. |
-| `logo` | string or null | `null` | Relative path to the competition's badge image inside the package. |
+| `logo` | string or null | `null` | Relative path to the competition's logo image inside the package. Example: `"assets/competitions/eng-premier-league.png"`. A career draws it beside the competition's name on the Tournaments and Schedule screens and in the competition list at team selection; a competition without one gets a trophy. The image is scaled to fit a square box whatever its shape, on a dark surface, so use a transparent background and artwork that reads on dark. A career records the path when it is created: a logo added to a package later shows in new careers only. |
 
 ### Competition Types
 
