@@ -11,6 +11,7 @@ cd ../eafc-db-kit && npm ci   # builds the kit, which ships the databases
 cd ../the-gaffer-v0.4
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out mods/eafc-fc27
 node tools/eafc-import/validate.mjs mods/eafc-fc27
+```
 
 Add club badges and competition logos from separate graphics packs:
 
@@ -83,12 +84,15 @@ they are known in different ways:
   logo leave the competition without one rather than guessing.
 - **`authored`** — named by hand. EA's `leagues` table lists no cups, super cups
   or UEFA competitions, so their logos can only be identified by looking at
-  them; `name` records what each one shows. The two UEFA entries belong to the
-  competitions this importer authors. The rest are logos for competitions the
-  package does not have yet: they are packed under the id that competition is
-  expected to get, and the importer sets `logo` on its own the day a competition
-  with that id exists. Those ids are a naming convention, not a checked fact —
-  nothing can verify them until the competition is authored.
+  them; `name` records what each one shows. This list is also where a cup gets
+  its id and its name: the importer authors a cup or a continental competition
+  under the `competitionId` recorded for its EA league id (see
+  [Cups, continental competitions and qualification](#cups-continental-competitions-and-qualification)).
+  27 of the 51 entries are competitions the FC 27 package has. The other 24 are
+  logos for competitions it does not have: they are packed under the id that
+  competition is expected to get, and the importer sets `logo` on its own the
+  day a competition with that id exists. Those ids are a naming convention, not
+  a checked fact — nothing can verify them until the competition is authored.
 
 `--competition-logos <pack dir>` still copies logos from another pack through
 unchanged. A competition may get its logo from one source only; an id supplied
@@ -197,11 +201,10 @@ sets `competition.logo` so the UI renders each competition's logo. Competition
 logos share the same provenance manifest as club badges, so the archive
 documents where each asset came from.
 
-The two European competitions authored by this importer (UEFA Champions
-League, UEFA Europa League) match on their OFM competition id
-(`uefa-champions-league`, `uefa-europa-league`). Without a logo pack they
-render with no badge. The bundled world takes both from EA's league folder (see
-above), which draws them in white for a dark interface.
+The cups and continental competitions this importer authors match on their OFM
+competition id (`uefa-champions-league`, `eng-fa-cup`). Without a logo pack
+they render with no badge. The bundled world takes them from EA's league folder
+(see above), which draws them for a dark interface.
 
 ### Player mini-faces
 
@@ -247,11 +250,14 @@ From the bundled **FC 27** database:
 |---|---|
 | Clubs | 684 |
 | Players | 18,875 |
-| Competitions | 38 (34 domestic leagues, 4 continental) |
+| Competitions | 63 (34 leagues, 22 domestic cups, 7 continental) |
 | Countries | 46 |
 
 The FC 25 and FC 26 databases work too (`--version "FC 26"`); the encodings below
-are shared, and only the table contents differ.
+are shared, and only the table contents differ. Their packages have leagues and
+no cups or continental competitions unless that version's `compdata` folder is
+passed with `--compdata` (see below): the kit carries the databases, not the
+competition structure.
 
 ## What is imported
 
@@ -266,13 +272,94 @@ can belong to more than one team (a club and a national side); a package allows
 one club, so the first domestic-league club wins.
 
 **Competitions** — one league per domestic competition, with its real clubs,
-tier (`priority`) and season start. The database's continental rows become
-competitions of their own: CONMEBOL Libertadores and Sudamericana. Two European
-club competitions the database does not carry are authored from reputation:
-the *UEFA Champions League* (top 32 European clubs) and the *UEFA Europa League*
-(the next 32, excluding the first cup's field). Every competition's logo comes
-from the optional graphics pack (`--badges`, or `--competition-logos` for a
-separate one); without one they render with no logo.
+tier (`priority`) and season start. Cups, continental competitions and the
+places that qualify a club for them come from EA's career-mode competition
+structure, which is the next section. Every competition's logo comes from the
+optional graphics pack (`--badges`, or `--competition-logos` for a separate
+one); without one they render with no logo.
+
+## Cups, continental competitions and qualification
+
+The database says which clubs are in which league and nothing about a season
+beyond that. Which cups exist, who enters them, how each is played and what a
+league place or a cup win is worth is in EA's `compdata` folder, the files
+career mode builds its calendar from. FC 27's is committed at
+`data/fc27-compdata/` and is read by default for an FC 27 import;
+`--compdata <dir>` reads another one. [`data/README.md`](data/README.md) lists
+the files.
+
+`lib/compdata.mjs` parses the folder and `lib/competitions.mjs` decides what
+the package authors from it. For FC 27:
+
+| | |
+|---|---|
+| Domestic cups | 22, each with every club of the divisions EA enters in it that the package has |
+| Continental | UEFA Champions League, Europa League and Conference League (32 clubs each); CONMEBOL Libertadores and Sudamericana (32 each); Concacaf Champions Cup (8); AFC Champions League Elite (16) |
+| Berths from leagues | the positions EA fills each continental competition from, on every top division but India's |
+| Berths from cups | the winner's place: 12 cups into the Europa League, 7 into the Conference League; the Europa League's winner into the Champions League, the Conference League's into the Europa League, the Sudamericana's into the Libertadores |
+| League legs | how many times a division plays itself: 3 for the twelve-club leagues, 4 for Ireland's ten clubs, 1 for the thirty of MLS and Argentina, 2 elsewhere |
+
+**What is EA's.** Which competitions exist; which divisions enter a cup; the
+league positions and cup wins that earn a continental place, in EA's order;
+whether a cup has a group stage, with how many groups and how many go through;
+the first match day of each competition; the number of rounds a league plays.
+
+**What is not, and why.** The engine plays three formats: a round robin, a
+single-tie knockout, and groups followed by a single-tie knockout. It plays a
+league round or a group matchday every seven days and a knockout round a
+fortnight after the one before, one tie a day. None of that can be authored, so:
+
+- **No two-legged ties, no league phase, no qualifying rounds.** The three UEFA
+  competitions are eight groups of four and a knockout, the format they had
+  until 2024, in place of a 36-club league phase behind three qualifying
+  rounds. EA's places are shared out to fit: each competition takes them in
+  EA's order until its 32 are full and the rest pass to the competition below,
+  which is where a club that loses a Champions League qualifier ends up in EA's
+  game too. Six of EA's league places find no room anywhere (third in Denmark,
+  Poland, Sweden, Romania and Ireland, fourth in Ireland) and are dropped.
+- **No staged entry to a cup.** EA brings the lower divisions in first and the
+  top division in a later round. The engine draws a whole field at once and
+  gives the byes it needs, so a cup is one draw of every club in it. The order
+  of that draw is fixed per competition by a hash, so that a top division is
+  not paired against itself in the first round.
+- **Whole round robins only.** A league with a split, conferences or two short
+  tournaments plays the nearest whole number of round robins to the rounds EA
+  schedules. The six play-offs EA describes (the three EFL play-offs, Germany's
+  two relegation play-offs, Spain's promotion play-off) are not played;
+  promotion and relegation follow the table.
+- **The engine's pace, not EA's dates.** A competition's length follows from
+  its size, so a final does not fall on EA's day. What is chosen is the start.
+  A cup keeps EA's first match day when it is then over a fortnight before its
+  country's top division is, and otherwise starts as late as still lets it; a
+  continental competition starts on the day nearest EA's on which it is not
+  under way when any league that sends clubs to it ends its season. The cups of
+  Norway and Sweden move with their leagues, which this package plays from
+  August rather than through the calendar year.
+- **The holder has no place of its own.** EA keeps one for the Champions League
+  holder. The engine refuses a competition that qualifies its own winner.
+- **A cup gives its winner and no one else.** Where the winner already has a
+  place, EA passes the cup's place down the league table. Nothing is passed
+  down here; the engine tops the field up instead.
+
+**Places no berth fills.** EA fills the rest of a continental field from a
+fixed list of clubs it keeps outside any league: Olympiacos, Dinamo Zagreb,
+Flamengo. The package authors those places as nothing at all. From the second
+season the engine tops a short field up itself, from the clubs of the
+confederation that have no place yet: the ones that play in no league first,
+by reputation, then the others, the senior competition served first and no club
+in two fields. For the first season the importer does that sum
+(`resolveFields`), with one source the engine does not have: last season's
+tables and cup holders run through the berths, then the clubs EA files under
+the competition's own league id (the two CONMEBOL competitions have such a
+list), then clubs that play in no league, by reputation, then any other club of
+the confederation. The run prints how many places of each field were earned.
+
+**Left out.** The seven super cups: the engine renews a domestic cup with the
+field it already has, and a super cup's field is new every season. The Russian
+Cup and the Copa do Brasil, because the database has no Russian or Brazilian
+league to fill them. And the competitions the logo list reserves an id for that
+career mode has no structure for at all, such as the Greek Cup, the Copa
+Argentina and the Club World Cup.
 
 ### Field mapping
 
@@ -449,10 +536,17 @@ node --test "tools/eafc-import/lib/*.test.mjs"
 `lib/rating.mjs` is the engine's player rating, checked against the Rust source;
 `lib/mapping.mjs` holds the rules as pure functions (dates, positions, colours,
 country codes, ranges) and `lib/zip.mjs` writes the `.ofm` archive; both are
-covered there. `validate.mjs` checks the documented package schema — ids,
-references, enums, participant lists and the per-country priority pyramid —
-because `ofm-cli validate` needs a Rust toolchain. It also re-derives the engine's
-own rating for every player, so a `potential` the loader would reject cannot ship.
+covered there. `lib/compdata.test.mjs` reads EA's committed structure files and
+`lib/competitions.test.mjs` plans from them, against an invented set of clubs
+so that neither needs the database; `lib/package.test.mjs` then checks the
+committed package holds what that plan says. `validate.mjs` checks the
+documented package schema — ids, references, enums, participant lists and the
+per-country priority pyramid — because `ofm-cli validate` needs a Rust
+toolchain. It mirrors the engine's checks on a competition's region, format,
+group sizes, start date and berths (`lib/validate.test.mjs`), since those are
+what a cup or a continental competition can get wrong. It also re-derives the
+engine's own rating for every player, so a `potential` the loader would reject
+cannot ship.
 
 Point it at the directory or straight at the archive:
 

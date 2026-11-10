@@ -1,7 +1,7 @@
 # FC 27 data corrections and remaining limitations
 
-Audited and rebuilt on 2026-11-08. **Loadable does not mean complete or
-season-ready.** Source coverage, schema/reference validity and actual world
+Audited and rebuilt on 2026-11-08; competitions rebuilt on 2026-11-10 (0.4.0).
+**Loadable does not mean complete or season-ready.** Source coverage, schema/reference validity and actual world
 building are separate checks.
 
 ```bash
@@ -24,6 +24,9 @@ node tools/eafc-import/audit.mjs mods/eafc-fc27.ofm --json
 | Positive wage values | 441 | 440; the removed fake roster had one wage |
 | Missing weak-foot values | 2,079 | 2,074; all remaining omissions are goalkeepers |
 | Authored staff / national tournaments | 0 / 0 | 0 / 0 |
+
+The table is the 0.1.1 cleanup. Since 0.4.0 the package has 63 competitions and
+2 clubs in none; see [Clubs with no league](#clubs-with-no-league).
 
 The stale-contract count drops by one only because a fake player was removed;
 **no real contract was extended or corrected without evidence**. Likewise, no
@@ -72,34 +75,45 @@ The directory and installable `.ofm` archive are regenerated together.
 See [the recorded sources and mapping rules](../../tools/eafc-import/data/README.md)
 for reproduction commands, provenance and the precise correction scope.
 
-## Competition gaps that cannot be repaired from current data
+## Clubs with no league
 
-All 20 unassigned real clubs have **no domestic competition for their country
-in this package**. The pinned EA source links them to **Rest of World Men**,
-which is a roster grouping, not evidence of domestic/continental qualification.
-Moving them into an unrelated supported league or inventing a cup field would
-make the data less accurate.
+73 real clubs have **no domestic league in this package**. The pinned EA source
+links them to **Rest of World Men** or to a continental competition's own
+league id, which are roster groupings, not leagues. Moving them into an
+unrelated league would make the data less accurate, and none has been moved.
 
-| Country | Unassigned clubs |
+EA does not keep them to play league football. Its career-mode competition
+structure fills the places of a continental competition that no league position
+earns from these clubs, and since 0.4.0 the package authors those competitions
+(see the [README](README.md#cups-and-continental-competitions)). So 71 of the 73
+start a career in one continental competition and play nothing else:
+
+| Competition | Clubs with no league |
 | --- | --- |
-| Greece | AEK, Panathinaikos, PAOK |
-| United Arab Emirates | Al Ain FC (UAE) |
-| Cyprus | APOEL Nicosia FC, Omonia Nicosia FC |
-| Colombia | Atlético Nacional |
-| Brazil | Bahia |
-| Thailand | Buriram United |
-| Croatia | Dinamo Zagreb, Hajduk Split |
-| Ukraine | Dynamo Kyiv, Shakhtar Donetsk |
-| Hungary | Ferencvárosi TC |
-| Finland | HJK Helsinki |
-| Bulgaria | Ludogorets Razgrad |
-| Azerbaijan | Qarabağ FK |
-| Czechia | Slavia Praha, Sparta Praha, Viktoria Plzeň |
+| UEFA Champions League | Olympiacos, AEK |
+| UEFA Europa League | Panathinaikos, PAOK, Slavia Praha, Sparta Praha, Dinamo Zagreb, Dynamo Kyiv, Shakhtar Donetsk, Ludogorets Razgrad, Viktoria Plzeň |
+| UEFA Conference League | Ferencvárosi TC, Qarabağ FK, APOEL Nicosia FC, Hajduk Split, Omonia Nicosia FC, HJK Helsinki |
+| CONMEBOL Libertadores | 26 clubs, the ones EA files under it |
+| CONMEBOL Sudamericana | 28 clubs: the 26 EA files under it, Bahia and Atlético Nacional |
 
-These clubs are retained without fabricated schedules. Making them playable in
-competitions requires verified fields/new league data or an explicit gameplay
-scope decision; this data-only cleanup does not implement an inactive-club or
-transfer-only game mode.
+**What is and is not sourced.** That these clubs fill continental places is
+EA's structure. Which European club is in which UEFA competition is not: EA's
+own list is one season stale and is not read, so the 17 are placed by
+reputation, best first, into the places last season's tables left open. Bahia
+and Atlético Nacional are filed under neither CONMEBOL competition and take
+open Sudamericana places the same way. None of this is a record of who
+qualified in 2026/27.
+
+**Two clubs are in no competition:** Al Ain FC (UAE) and Buriram United
+(Thailand). The AFC Champions League Elite's 16 places are all earned by league
+position in Saudi Arabia, South Korea, China and Australia, so it has no open
+place, and neither club has a league here. They are kept without fabricated
+fixtures.
+
+Before 0.4.0, 20 clubs were in no competition: these two and 18 of the clubs
+named above, all but Olympiacos, which the Europa League had by reputation. The
+other 52 were in the two CONMEBOL competitions, whose fields of 26 came straight
+from the database.
 
 ## Other unresolved issues
 

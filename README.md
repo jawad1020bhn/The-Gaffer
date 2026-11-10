@@ -106,7 +106,8 @@ The engine ships **no licensed football data**, but this fork ships a world besi
 is nothing to import before you play.
 
 **1. The default: EA FC 27.** [`mods/eafc-fc27`](mods/eafc-fc27/README.md) is an unofficial
-database of **684 clubs, 18,875 player rows and 38 competitions**, imported by
+database of **684 clubs, 18,875 player rows and 63 competitions** (34 leagues, 22 domestic cups
+and 7 continental competitions), imported by
 [`tools/eafc-import`](tools/eafc-import/README.md). **Every build ships it** — installer, portable
 zip and `tauri dev` alike — in `packages/`, and the game installs and pre-selects it on first run,
 so a new career starts with real clubs instead of generated ones. There is no import step.
