@@ -49,3 +49,24 @@ setupLambdaEnvironment("/tmp/al2023/lib");
 
 Then `puppeteer-core` with `chromium.executablePath()` and `chromium.args`. On a normal machine
 `docs/DESIGN_SYSTEM.md` §8 has the plain `google-chrome --headless` recipe.
+
+
+## Automated accessibility sweep
+
+Install `puppeteer-core` and `axe-core` in an external tooling directory, not this project's dependencies.
+With the dev server running:
+
+```sh
+node scripts/audit-ui-accessibility.mjs \
+  --puppeteer /absolute/path/to/puppeteer-core/lib/puppeteer/puppeteer-core.js \
+  --axe /absolute/path/to/axe-core/axe.min.js \
+  --output docs/ui-redesign/accessibility-audit.json
+```
+
+Uses the same `UI_AUDIT_CHROMIUM` and `UI_AUDIT_CHROMIUM_ARGS` environment variables as the viewport
+check. Runs at 1600×900; saves incomplete rules as well as violations. Zero violations does not mean
+WCAG conformance: layered/translucent scenes require manual contrast review. The four fixture-crashing
+screens are outside this sweep, just as they are outside the viewport sweep.
+
+Panel navigation: **Alt+arrows** in the workspace. Regular arrows retain their normal widget behavior.
+Tactics comparison demonstrates the right-side drawer; destructive confirmation dialogs remain centered.

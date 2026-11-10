@@ -83,6 +83,7 @@ export default function PlayersListTab({
         trailing={
           <div className="flex items-center gap-3">
             <Select
+              aria-label={t("players.allTeams")}
               value={query.team_id ?? ""}
               onChange={(e) => patchQuery({ team_id: e.target.value || null })}
               selectSize="sm"

@@ -558,3 +558,17 @@ describe("DialogCloseButton", () => {
     expect(screen.getByRole("button", { name: "common.close" })).toBeDisabled();
   });
 });
+
+it("uses the same named, focus-trapped shell for right-side drawers", () => {
+  const close = vi.fn();
+  render(
+    <Dialog label="Comparison" placement="right" onClose={close}>
+      <button type="button">Action</button>
+    </Dialog>,
+  );
+  const dialog = screen.getByRole("dialog", { name: "Comparison" });
+  expect(dialog).toHaveClass("drawer-in");
+  expect(dialog).toHaveFocus();
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(close).toHaveBeenCalledOnce();
+});

@@ -1,0 +1,157 @@
+{
+  "generatedAt": "2026-11-10T00:54:27.493Z",
+  "viewport": "1600x900",
+  "standard": "WCAG 2.1 A/AA (automated only)",
+  "screens": [
+    {
+      "tab": "Home",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 88
+        }
+      ]
+    },
+    {
+      "tab": "Manager",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 52
+        }
+      ]
+    },
+    {
+      "tab": "Squad",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 152
+        }
+      ]
+    },
+    {
+      "tab": "Tactics",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 46
+        }
+      ]
+    },
+    {
+      "tab": "Training",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 30
+        }
+      ]
+    },
+    {
+      "tab": "Staff",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 38
+        }
+      ]
+    },
+    {
+      "tab": "Transfers",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 123
+        }
+      ]
+    },
+    {
+      "tab": "Transfer Centre",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 40
+        }
+      ]
+    },
+    {
+      "tab": "Scouting",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 29
+        }
+      ]
+    },
+    {
+      "tab": "Players",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 116
+        }
+      ]
+    },
+    {
+      "tab": "Schedule",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 36
+        }
+      ]
+    },
+    {
+      "tab": "Tournaments",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 50
+        }
+      ]
+    },
+    {
+      "tab": "Inbox",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 61
+        }
+      ]
+    },
+    {
+      "tab": "News",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 42
+        }
+      ]
+    },
+    {
+      "tab": "Finances",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "count": 31
+        }
+      ]
+    }
+  ]
+}

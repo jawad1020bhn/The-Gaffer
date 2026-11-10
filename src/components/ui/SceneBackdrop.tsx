@@ -132,7 +132,12 @@ export function SceneBackdrop({
       className={`pointer-events-none absolute inset-0 -z-10 overflow-hidden room-fallback ${className}`}
     >
       {failed ? null : (
-        <picture key={shown}>
+        <picture
+          key={shown}
+          className={
+            strength === "ambient" ? "room-drift block h-full w-full" : "block h-full w-full"
+          }
+        >
           <source srcSet={`/assets/scenes/${plate.stem}.avif`} type="image/avif" />
           <source srcSet={`/assets/scenes/${plate.stem}.webp`} type="image/webp" />
           <img

@@ -339,7 +339,53 @@ later is one file's work. The hook's doc comment says how.
 
 ---
 
-## 10. NOT done — the remaining work
+## 10. Remaining interaction pass
+
+- **Panel keyboard navigation:** Alt+Left/Right or Alt+Up/Down moves focus between visible Cards
+  in reading order, wrapping at the ends. Ordinary arrows remain available to dropdowns, tables
+  and text editing. Dialogs are excluded; hidden/inert panels are skipped. Cards are programmatic
+  focus targets, not extra Tab stops. The shortcut appears in the footer when space permits.
+- **Keyboard scrolling:** CardBody adds a Tab stop only when its content actually overflows,
+  observed with ResizeObserver. Read-only results can now be scrolled without a mouse, with a
+  visible inset focus ring. Non-overflowing content adds no Tab stop.
+- **Drawer/modal split:** Dialog now accepts `placement="right"`. Tactics comparison uses the
+  right-side drawer, with the existing accessible name, focus trap, Escape and focus restoration.
+  Destructive confirmations remain centred. This is one shared shell, not a second overlay system.
+- **Room drift:** ambient photographs ease through a subtle scale/translation once on arrival.
+  The drift stops at 4.8 seconds, rather than running indefinitely and requiring a pause control
+  under WCAG 2.2.2. Hero/panel plates, readability scrims and UI stay stationary. Reduced motion
+  disables both drift and drawer entrance.
+- **Finances:** headline asset values, total value and wage expenditure now use Ticker. Fixed an
+  interrupted ticker starting from its old target rather than its actual last rendered frame.
+- **Home:** unavailable players and board objectives share a stacked, contained-scroll column,
+  instead of stretching two sparse cards to the entire bottom band's height. Getting Started
+  uses tighter insets and unshrinking text/stepper content: its intro now reads in full at 1600×900.
+  Evidence: `docs/ui-redesign/home-final.png`.
+- **Accessible dropdowns:** added names for tactical phase, position, role and team filters;
+  closed Selects no longer reference an unmounted listbox in `aria-controls`.
+- **Sound:** side-rail navigation now calls the same deliberately silent central hook.
+
+### Accessibility evidence (automated, not a conformance claim)
+
+`scripts/audit-ui-accessibility.mjs` runs axe-core WCAG 2.1 A/AA checks on the 15 measurable
+screens at 1600×900. Like the viewport check, browser tooling is externally installed; it adds
+no runtime or development dependency. It writes violations **and incomplete findings**, and
+exits non-zero on a violation or preview crash.
+
+The initial sweep found keyboard-inaccessible scroll regions on Home/Training and unnamed
+comboboxes on Tactics/Players. After the fixes the final sweep reports **0 violations on all 15**.
+Full results are in `docs/ui-redesign/accessibility-audit.json`. **Color contrast is incomplete
+on every screen:** axe cannot resolve the scene/mask/translucency layers. This is not a WCAG AA
+certificate or a substitute for manual contrast checks over the actual composed pixels.
+
+Verification: viewport audit **30/30** at 1600×900 and 1280×720; full suite **3256 passed**, same
+three pre-existing unloadable suites; targeted Card/Select/Home rerun **83/83** after adding
+conditional scroll focus. TypeScript remains at the **17 pre-existing errors**. Native WebViews
+and Windows display scaling still require device testing.
+
+---
+
+## 11. Limits and deferred work
 
 Honest list, in the brief's own order:
 
@@ -355,19 +401,12 @@ states).
   decision, not outstanding work.
 - **2560×1440 plate variants.** Sources are 1915–2172px wide; upscaling would add weight for no
   detail. Shipped one size at native resolution instead.
-- **Ken Burns drift** on the room plates.
-- **Arrow-key navigation between panels**, slide-over drawers, and the modal/drawer split. Tab order
-  and Esc already work; roving arrow keys do not.
-- **Ticker coverage** — the component exists and is used on Manager's stats. Money and league
-  figures elsewhere still jump.
+- **Ticker coverage** — Manager and Finances headline figures animate. Other figures remain
+  static; counters were not indiscriminately applied to data-table cells.
 - **`backdrop-filter` hero panels** — skipped deliberately; §3 caps them at 1–3 per screen and
   warns about WebKitGTK cost, and no screen has needed one yet.
-- **Contrast audit across all text.** The Manager name is fixed and the root-size floor is
-  asserted, but a full WCAG AA sweep is not done.
-- **Two panels still over 40% empty** on Home at 1600×900: Unavailable Players (one injury) and
-  Board Objectives. They need content or a re-grid, not a smaller box.
-- **Getting Started's intro line is masked mid-line** by `scroll-fade`. It is a real contained
-  scroll area with a cue, so it is not silent clipping, but it reads badly and should be shortened.
+- **Manual contrast verification.** Automated WCAG 2.1 A/AA checks are complete for the 15 measurable
+  screens with no violations, but contrast requires composed-pixel review (see §10).
 
 **Verification limits.** Everything above is **Chromium only**, against the Vite dev server — not
 `npm run tauri dev`. Untested on WebView2, WKWebView and WebKitGTK. Specific WebKit risks:

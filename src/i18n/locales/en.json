@@ -26,7 +26,8 @@
     "menu": "Menu",
     "title": "Keyboard shortcuts",
     "select": "Select",
-    "sections": "Sections"
+    "sections": "Sections",
+    "panels": "Panels"
   },
   "pause": {
     "title": "Paused",

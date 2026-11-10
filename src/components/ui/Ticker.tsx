@@ -42,7 +42,7 @@ export function Ticker({
     const from = fromRef.current;
     if (from === value) return;
 
-    if (reducedMotion() || typeof requestAnimationFrame !== "function") {
+    if (durationMs <= 0 || reducedMotion() || typeof requestAnimationFrame !== "function") {
       fromRef.current = value;
       setShown(value);
       return;
@@ -53,7 +53,9 @@ export function Ticker({
       const t = Math.min(1, (now - start) / durationMs);
       // Ease-out: fast away from the old value, settling into the new one.
       const eased = 1 - (1 - t) ** 3;
-      setShown(from + (value - from) * eased);
+      const next = from + (value - from) * eased;
+      fromRef.current = next;
+      setShown(next);
       if (t < 1) {
         frameRef.current = requestAnimationFrame(step);
       } else {
@@ -66,7 +68,6 @@ export function Ticker({
     return () => {
       if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
       // Resume from wherever it got to, so a rapid second change does not snap back.
-      fromRef.current = value;
       frameRef.current = null;
     };
   }, [value, durationMs]);

@@ -14,6 +14,7 @@ const HINTS: { keys: string[]; labelKey: string }[] = [
   { keys: ["Ctrl", "K"], labelKey: "gameNav.search" },
   { keys: ["Enter"], labelKey: "gameHint.select" },
   { keys: ["Alt", "1-5"], labelKey: "gameHint.sections" },
+  { keys: ["Alt", "←/→"], labelKey: "gameHint.panels" },
 ];
 
 const GAP_PX = 16;

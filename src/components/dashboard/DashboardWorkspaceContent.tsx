@@ -1,3 +1,4 @@
+import { navigatePanels } from "../ui/panelNavigation";
 import type { GameStateData, PlayerSelectionOptions } from "../../store/gameStore";
 import { useRetiredPlayer } from "../playerProfile/useRetiredPlayer";
 import PlayerProfile from "../playerProfile/PlayerProfile";
@@ -82,6 +83,7 @@ export default function DashboardWorkspaceContent({
     // nowhere but the outer gutters.
     <div
       key={dashboardTabContentModel.activeTab}
+      onKeyDown={navigatePanels}
       className="scrollbar-thin animate-route-in min-h-0 flex-1 overflow-auto p-3 motion-reduce:animate-none"
     >
       {isUnemployed && (

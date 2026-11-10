@@ -1030,3 +1030,18 @@ input[type="number"] {
     animation: none;
   }
 }
+
+/* Animate the decorative plate only: scrims and all UI remain stationary. */
+@keyframes room-drift {
+  from { transform: scale(1.02) translateX(-0.3%); }
+  to { transform: scale(1.055) translateX(0.3%); }
+}
+.room-drift { animation: room-drift 4800ms ease-out both; }
+@keyframes drawer-in {
+  from { opacity: 0; transform: translateX(1.5rem); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.drawer-in { animation: drawer-in 180ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .room-drift, .drawer-in { animation: none; opacity: 1; transform: none; }
+}

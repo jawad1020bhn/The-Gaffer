@@ -551,6 +551,7 @@ export default function TacticsPitch({
                                   className="w-full"
                                 >
                                   <Select
+                                    aria-label={`${player.full_name} — ${t("tactics.teamRoles")}`}
                                     selectSize="sm"
                                     variant="ghost"
                                     fullWidth

@@ -379,19 +379,21 @@ export default function HomeTab({
           onNavigate={onNavigate}
           className="col-span-3"
         />
-        <HomeUnavailablePlayersCard
-          players={unavailablePlayers}
-          resolveInjuryName={resolveInjuryName}
-          onNavigate={onNavigate}
-          className={boardObjectives.length > 0 ? "col-span-3" : "col-span-6"}
-        />
-        {boardObjectives.length > 0 ? (
-          <HomeBoardObjectivesCard
-            objectives={boardObjectives}
-            satisfaction={gameState.manager.satisfaction}
-            className="col-span-3"
+        <div className="scrollbar-thin scroll-fade col-span-6 flex min-h-0 flex-col gap-3 overflow-y-auto">
+          <HomeUnavailablePlayersCard
+            players={unavailablePlayers}
+            resolveInjuryName={resolveInjuryName}
+            onNavigate={onNavigate}
+            className="shrink-0"
           />
-        ) : null}
+          {boardObjectives.length > 0 ? (
+            <HomeBoardObjectivesCard
+              objectives={boardObjectives}
+              satisfaction={gameState.manager.satisfaction}
+              className="shrink-0"
+            />
+          ) : null}
+        </div>
       </div>
     </div>
   );

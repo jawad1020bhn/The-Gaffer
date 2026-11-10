@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { Badge } from "./Badge";
 
 interface CardProps {
@@ -25,12 +25,14 @@ export function Card({ children, className = "", accent = "none" }: CardProps) {
 
   return (
     <div
+      data-panel
+      tabIndex={-1}
       className={`
         flex min-h-0 flex-col overflow-hidden
         bg-panel-glass surface-panel
         ${accent === "none" ? accentBorder : `border ${accentBorder} border-line`}
         rounded-panel shadow-panel
-        transition-shadow duration-200 motion-reduce:transition-none
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus transition-shadow duration-200 motion-reduce:transition-none
         ${className}
       `}
     >
@@ -91,9 +93,24 @@ interface CardBodyProps {
 
 /** The panel's content. Scrolls on its own once the parent has given the card a height. */
 export function CardBody({ children, className = "", padded = true }: CardBodyProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scrollable, setScrollable] = useState(false);
+  useLayoutEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const measure = () => setScrollable(node.scrollHeight > node.clientHeight + 1);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    for (const child of node.children) observer.observe(child);
+    return () => observer.disconnect();
+  }, [children]);
   return (
     <div
-      className={`scrollbar-thin scroll-fade min-h-0 flex-1 overflow-auto ${padded ? "p-4" : ""} ${className}`}
+      ref={ref}
+      tabIndex={scrollable ? 0 : undefined}
+      className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus scrollbar-thin scroll-fade min-h-0 flex-1 overflow-auto ${padded ? "p-4" : ""} ${className}`}
     >
       {children}
     </div>

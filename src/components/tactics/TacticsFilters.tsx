@@ -44,6 +44,7 @@ export default function TacticsFilters({
         />
         <div className="flex gap-2">
           <Select
+            aria-label={t("common.position")}
             value={positionFilter}
             onChange={(event) => onPositionFilterChange(event.target.value)}
             fullWidth

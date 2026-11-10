@@ -474,7 +474,7 @@ export function Select({
         role="combobox"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        aria-controls={listboxId}
+        aria-controls={isOpen ? listboxId : undefined}
         aria-activedescendant={activeIndex >= 0 ? optionId(activeIndex) : undefined}
         tabIndex={tabIndex}
         className={`${base} ${variants[variant]} ${sizes[selectSize]} ${leftPadding} ${rightPadding} ${fullWidth ? "w-full" : ""} ${className} flex items-center justify-between text-left`}

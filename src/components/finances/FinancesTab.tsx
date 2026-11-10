@@ -13,6 +13,7 @@ import {
   Tabs,
   TabPanel,
   SceneState,
+  Ticker,
 } from "../ui";
 import {
   contractExpiryLabel,
@@ -532,7 +533,7 @@ function FinancesTabLoaded({
                     {item.label}
                   </p>
                   <p className={`font-heading font-bold text-title ${item.color}`}>
-                    {formatVal(item.value)}
+                    {<Ticker value={item.value} format={formatVal} />}
                   </p>
                 </div>
               ))}
@@ -540,7 +541,9 @@ function FinancesTabLoaded({
                 <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle mb-1">
                   {t("finances.squadValue")}
                 </p>
-                <p className="font-heading font-bold text-title text-fg">{formatVal(totalValue)}</p>
+                <p className="font-heading font-bold text-title text-fg">
+                  {<Ticker value={totalValue} format={formatVal} />}
+                </p>
               </div>
             </div>
           </CardBody>
@@ -555,7 +558,12 @@ function FinancesTabLoaded({
                 {t("finances.weeklyTotal")}
               </p>
               <p className="font-heading font-bold text-title text-fg mt-1">
-                {formatWeeklyWage(totalWages, "compact")}
+                {
+                  <Ticker
+                    value={totalWages}
+                    format={(n) => formatWeeklyWage(Math.round(n), "compact")}
+                  />
+                }
               </p>
               <p className="text-caption text-fg-subtle mt-1">
                 {t("finances.budget")}: {formatWeeklyWage(weeklyWageBudget, "compact")} —{" "}

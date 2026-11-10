@@ -23,10 +23,12 @@ export default function TacticsCompareDialog({
 }: TacticsCompareDialogProps) {
   return (
     <Dialog
+      placement="right"
+      overlayClassName="bg-overlay"
       labelledBy={TACTICS_INSPECTOR_TITLE_ID}
       onClose={onClose}
       dismissOnBackdrop
-      className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-panel"
+      className="w-full max-w-xl overflow-y-auto"
     >
       <TacticsPlayerFocusPanel
         canConfirmSwap={canConfirmSwap}
