@@ -22,7 +22,7 @@ import {
 } from "../../services/scheduleService";
 import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/errorMessage";
 import ContextMenu, { type ContextMenuItem } from "../ContextMenu";
-import { Badge, Card, CardBody, SceneState, Select } from "../ui";
+import { Badge, Card, CardBody, CompetitionLogo, SceneState, Select } from "../ui";
 import ScheduleCalendarGrid from "./ScheduleCalendarGrid";
 import MovedFromNote from "./MovedFromNote";
 
@@ -701,7 +701,11 @@ function StandingsView({
     <Card>
       <div className="rounded-t-xl border-b border-line bg-panel p-5">
         <h3 className="flex items-center gap-2 font-heading text-lead font-bold uppercase tracking-label text-fg">
-          <Trophy className="h-5 w-5 text-warning" />
+          <CompetitionLogo
+            logo={competition?.logo}
+            className="h-7 w-7"
+            fallback={<Trophy className="h-5 w-5 text-warning" />}
+          />
           {(competition && competitionDisplayName(competition, t)) || t("schedule.fixtures")} –{" "}
           {t("schedule.season", { number: competition?.season ?? 0 })}
         </h3>

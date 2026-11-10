@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import type { CompetitionProgress } from "./TournamentsTab.helpers";
 import { competitionDisplayName } from "../../lib/competitionName";
-import { Card, Select } from "../ui";
+import { Card, CompetitionLogo, Select } from "../ui";
 import type { LeagueData, WorldCupChampionData } from "../../store/types";
 
 interface TournamentsLeagueHeaderProps {
@@ -51,9 +51,15 @@ export default function TournamentsLeagueHeader({
     <Card accent="primary" className="mb-5">
       <div className="bg-panel p-6 rounded-t-xl">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-          <div className="w-14 h-14 rounded-panel bg-warning-tint flex items-center justify-center">
-            <Trophy className="w-7 h-7 text-warning" />
-          </div>
+          <CompetitionLogo
+            logo={league.logo}
+            className="h-14 w-14"
+            fallback={
+              <div className="w-14 h-14 rounded-panel bg-warning-tint flex items-center justify-center">
+                <Trophy className="w-7 h-7 text-warning" />
+              </div>
+            }
+          />
           <div className="flex-1">
             <h2 className="text-title font-heading font-bold text-on-brand uppercase tracking-label">
               {competitionDisplayName(league, t)}

@@ -8,7 +8,7 @@ import TournamentsPreseasonNote from "./TournamentsPreseasonNote";
 import { localizedRoundName } from "./TournamentsTab.helpers";
 import type { TournamentsTeamLookup } from "./teamLookup";
 import { competitionDisplayName } from "../../lib/competitionName";
-import { Card, CardBody } from "../ui";
+import { Card, CardBody, CompetitionLogo } from "../ui";
 import type { LeagueData, StandingData } from "../../store/gameStore";
 
 type Group = NonNullable<LeagueData["groups"]>[number];
@@ -107,7 +107,11 @@ export default function TournamentsStandingsView({
     <Card>
       <div className="p-5 border-b border-line bg-panel rounded-t-xl">
         <h3 className="text-lead font-heading font-bold text-fg flex items-center gap-2 uppercase tracking-label">
-          <Trophy className="text-warning w-5 h-5" />
+          <CompetitionLogo
+            logo={league.logo}
+            className="h-7 w-7"
+            fallback={<Trophy className="text-warning w-5 h-5" />}
+          />
           {competitionDisplayName(league, t)} — {t("schedule.season", { number: league.season })}
         </h3>
       </div>

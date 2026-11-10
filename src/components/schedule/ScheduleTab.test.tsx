@@ -411,6 +411,31 @@ describe("ScheduleTab", () => {
     expect(onSelectTeam).toHaveBeenCalledWith("team-2");
   });
 
+  it("heads the standings with the competition's logo", async () => {
+    const state = makeGameState(true);
+    state.competitions = state.competitions?.map((competition) => ({
+      ...competition,
+      logo: "/assets/competitions/premier.png",
+    }));
+    render(<ScheduleTab gameState={state} onSelectTeam={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Standings/i }));
+    const heading = await screen.findByRole("heading", { name: /Premier League/ });
+
+    expect(heading.querySelector("img")).toHaveAttribute("src", "/assets/competitions/premier.png");
+    expect(heading.querySelector("svg")).not.toBeInTheDocument();
+  });
+
+  it("heads the standings of a competition without a logo with a trophy", async () => {
+    render(<ScheduleTab gameState={makeGameState(true)} onSelectTeam={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Standings/i }));
+    const heading = await screen.findByRole("heading", { name: /Premier League/ });
+
+    expect(heading.querySelector("img")).not.toBeInTheDocument();
+    expect(heading.querySelector("svg")).toBeInTheDocument();
+  });
+
   it("marks promotion and relegation zones in standings", async () => {
     const state = makeGameState(true);
     const standing = (teamId: string, points: number) => ({
