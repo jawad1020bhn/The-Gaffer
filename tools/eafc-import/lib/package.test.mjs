@@ -7,6 +7,7 @@ import {
   readPackageDocuments,
   validatePackage,
   loadCountryCatalog,
+  loadRegionCatalog,
 } from "../validate.mjs";
 import { auditQuality } from "./quality.mjs";
 import { isSyntheticTeam } from "./corrections.mjs";
@@ -49,7 +50,12 @@ it("applies every reviewed stadium mapping to the intended imported club", () =>
 it("keeps unresolved source gaps visible without fabricating data", () => {
   // Given all possible verified corrections, when audited, then unresolved contracts and coverage still reflect source limitations.
   const report = auditQuality(documents);
-  assert.equal(report.clubsWithoutExplicitCompetition.length, 20);
+  // Every club is in a league or a continental field except two that EA files
+  // under no league and whose confederation's one competition is full.
+  assert.deepEqual(report.clubsWithoutExplicitCompetition.map((club) => club.id).sort(), [
+    "al-ain-fc-uae",
+    "buriram-united",
+  ]);
   assert.equal(report.contractsBeforeBaseYear.length, 1877);
   assert.equal(report.coverage.wage.present, 440);
   assert.equal(report.coverage.weakFoot.missing, 2074);
@@ -66,5 +72,42 @@ it("keeps unresolved source gaps visible without fabricating data", () => {
 it("retains valid references and loader-compatible attributes after corrections", async () => {
   // Given the corrected package, when schema and references are checked, then no removed club is still referenced.
   const countryCodes = await loadCountryCatalog(fileURLToPath(root));
-  assert.deepEqual(validatePackage({ documents, countryCodes }), []);
+  const regionIds = await loadRegionCatalog(fileURLToPath(root));
+  assert.deepEqual(validatePackage({ documents, countryCodes, regionIds }), []);
+});
+
+it("ships the competitions EA's structure files describe", () => {
+  // Given the rebuilt package, when its competitions are counted by kind, then
+  // every division has its cup and every confederation its competitions.
+  const competitions = entities.get("competition");
+  const count = (type) => competitions.filter((competition) => competition.type === type).length;
+  assert.equal(competitions.length, 63);
+  assert.equal(count("League"), 34);
+  assert.equal(count("Cup"), 22);
+  assert.equal(count("ContinentalClub"), 7);
+  // A logo for each, so none falls back to a generated tile.
+  assert.deepEqual(
+    competitions.filter((competition) => !competition.logo).map((competition) => competition.id),
+    [],
+  );
+  // Every top division of a confederation with a competition qualifies for it.
+  const withoutBerths = competitions
+    .filter((competition) => competition.type === "League" && competition.priority === 0)
+    .filter((competition) => (competition.berths ?? []).length === 0)
+    .map((competition) => competition.id);
+  assert.deepEqual(withoutBerths, ["in-indian-super-league"]);
+});
+
+it("puts no club in two continental competitions of one confederation", () => {
+  // Given the first season's fields, when they are compared, then no club is
+  // listed twice: the engine would otherwise have it play two group stages.
+  const seen = new Map();
+  for (const competition of entities.get("competition")) {
+    if (competition.type !== "ContinentalClub") continue;
+    for (const club of competition.participants.explicit) {
+      const key = `${competition.regionId}/${club}`;
+      assert.equal(seen.get(key), undefined, `${club} is in ${seen.get(key)} too`);
+      seen.set(key, competition.id);
+    }
+  }
 });

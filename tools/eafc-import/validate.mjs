@@ -5,7 +5,8 @@
  * The authoritative checker is `ofm-cli validate` (Rust). This one exists so the
  * importer can be checked in environments without a Rust toolchain, and it
  * covers the rules the importer can actually break: ids, references, enums,
- * positions, participant lists and the per-country priority pyramid.
+ * positions, participant lists, competition formats, qualification berths and
+ * the per-country priority pyramid.
  *
  *   node tools/eafc-import/validate.mjs mods/eafc-fc27
  */
@@ -14,7 +15,8 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
-import { SPECIFIC_POSITIONS } from "./lib/mapping.mjs";
+import { groupFormatFits } from "./lib/competitions.mjs";
+import { SPECIFIC_POSITIONS, parseNationRegions } from "./lib/mapping.mjs";
 
 /** `SelectorKind` in `competition_def.rs`. */
 const SELECTOR_KINDS = ["topByReputation", "allInCountry", "allInRegion", "championsOf"];
@@ -42,6 +44,11 @@ const COMPETITION_TYPES = new Set([
 ]);
 const COMPETITION_SCOPES = new Set(["Domestic", "Regional", "Continental", "International"]);
 const FORMAT_KINDS = new Set(["LeagueTable", "Knockout", "GroupAndKnockout"]);
+/** `MIN_GROUP_SIZE` and `DEFAULT_GROUP_SIZE` in `domain/league.rs`. */
+const MIN_GROUP_SIZE = 2;
+const DEFAULT_GROUP_SIZE = 4;
+const DEFAULT_GROUP_QUALIFIERS = 2;
+const GROUP_SETTINGS = ["groupSize", "qualifiersPerGroup", "bestThirdQualifiers"];
 const PACKAGE_TYPES = new Set(["database", "patch", "assets"]);
 
 const isPlainObject = (value) =>
@@ -67,6 +74,19 @@ export async function loadCountryCatalog(repoRoot) {
   const codes = new Set([...source.matchAll(/"([A-Z]{2,3})"/g)].map((m) => m[1]));
   return codes;
 }
+
+/** Region ids the game knows, read from the same catalog. */
+export async function loadRegionCatalog(repoRoot) {
+  const source = await readFile(
+    path.join(repoRoot, "src-tauri/crates/ofm_core/src/nations.rs"),
+    "utf8",
+  );
+  return new Set(parseNationRegions(source).values());
+}
+
+/** A day that exists in some year: 29 February does, 31 April does not. */
+const isDayOfMonth = (month, day) =>
+  day >= 1 && day <= new Date(Date.UTC(2000, month, 0)).getUTCDate();
 
 async function readPackageFiles(dir) {
   const files = [];
@@ -96,7 +116,11 @@ export function collectEntities(documents) {
   return bySchema;
 }
 
-export function validatePackage({ documents, countryCodes }) {
+/**
+ * @param {{ documents: object[], countryCodes?: Set<string>, regionIds?: Set<string> }} input
+ *   Without `countryCodes` or `regionIds` the references to them go unchecked.
+ */
+export function validatePackage({ documents, countryCodes, regionIds }) {
   const problems = [];
   const error = (where, message) => problems.push({ where, message });
   const bySchema = collectEntities(documents);
@@ -264,6 +288,8 @@ export function validatePackage({ documents, countryCodes }) {
 
   const competitions = bySchema.get("competition") ?? [];
   const competitionIds = new Set();
+  // A berth may name a competition listed after its own.
+  const knownCompetitionIds = new Set(competitions.map((competition) => competition.id));
   for (const competition of competitions) {
     const where = `competition:${competition.id}`;
     if (!competition.id || !isSlug(competition.id))
@@ -289,6 +315,65 @@ export function validatePackage({ documents, countryCodes }) {
     if (competition.logo != null && !isContainedAssetPath(competition.logo)) {
       error(where, `logo "${competition.logo}" must be a relative path inside the package`);
     }
+    if (regionIds) {
+      // Mirrors `validate_region_and_country` in competition_def.rs.
+      const named = [competition.regionId, ...(competition.requiredRegionIds ?? [])];
+      for (const region of named) {
+        if (region != null && !regionIds.has(region)) error(where, `unknown region "${region}"`);
+      }
+    }
+
+    // Mirrors `validate_format` in competition_def.rs.
+    const format = isPlainObject(competition.format) ? competition.format : {};
+    const grouped = format.kind === "GroupAndKnockout";
+    if (!grouped && GROUP_SETTINGS.some((key) => format[key] != null)) {
+      error(where, `format ${format.kind} has no groups, but group settings are set`);
+    }
+    if (format.legs != null && !(Number.isInteger(format.legs) && format.legs >= 1)) {
+      error(where, `format.legs ${format.legs} must be at least 1`);
+    }
+    const month = competition.seasonStartMonth;
+    const day = competition.seasonStartDay;
+    if (month != null && !(Number.isInteger(month) && month >= 1 && month <= 12)) {
+      error(where, `seasonStartMonth ${month} is not 1-12`);
+    } else if (day != null && !(Number.isInteger(day) && day >= 1 && day <= 31)) {
+      error(where, `seasonStartDay ${day} is not 1-31`);
+    } else if (month != null && day != null && !isDayOfMonth(month, day)) {
+      error(where, `seasonStartDay ${day} is not a day of month ${month}`);
+    }
+
+    // Mirrors `validate_berths` in competition_def.rs.
+    for (const berth of competition.berths ?? []) {
+      // `target` is required; `fallbackTo` is checked only where it is set.
+      const targets = [berth?.target];
+      if (berth?.fallbackTo != null) targets.push(berth.fallbackTo);
+      for (const target of targets) {
+        if (!knownCompetitionIds.has(target)) {
+          error(where, `berth names unknown competition "${target}"`);
+        } else if (target === competition.id) {
+          error(where, "a berth cannot point at its own competition");
+        }
+      }
+      const rule = isPlainObject(berth?.rule) ? berth.rule : {};
+      if (rule.kind === "positionRange" || rule.kind === "playoffWinner") {
+        const { from, to } = rule;
+        if (!(Number.isInteger(from) && Number.isInteger(to) && from >= 1 && to >= from)) {
+          error(where, `berth range ${from}-${to} is not valid`);
+        } else if (rule.kind === "playoffWinner" && to - from + 1 < 2) {
+          error(where, "a play-off berth needs at least 2 places");
+        }
+        if (format.kind !== "LeagueTable") {
+          error(where, `a ${rule.kind} berth needs a LeagueTable format`);
+        }
+      } else if (rule.kind === "cupWinner") {
+        if (format.kind !== "Knockout" && format.kind !== "GroupAndKnockout") {
+          error(where, "a cupWinner berth needs a Knockout or GroupAndKnockout format");
+        }
+      } else {
+        error(where, `unknown berth rule "${rule.kind}"`);
+      }
+    }
+
     const participants = competition.participants ?? {};
     const hasExplicit = Array.isArray(participants.explicit);
     const hasSelector = isPlainObject(participants.selector);
@@ -302,6 +387,26 @@ export function validatePackage({ documents, countryCodes }) {
       }
       for (const teamId of participants.explicit) {
         if (!teamIds.has(teamId)) error(where, `participant "${teamId}" does not exist`);
+      }
+    }
+    if (grouped) {
+      // Mirrors `validate_group_qualification`: every group has to be able to
+      // supply its qualifiers. A selector's field is only known to the engine,
+      // so for one of those only the shape itself is checked.
+      const groupSize = format.groupSize ?? DEFAULT_GROUP_SIZE;
+      const qualifiers = format.qualifiersPerGroup ?? DEFAULT_GROUP_QUALIFIERS;
+      if (!(Number.isInteger(groupSize) && groupSize >= MIN_GROUP_SIZE)) {
+        error(where, `format.groupSize ${groupSize} must be at least ${MIN_GROUP_SIZE}`);
+      } else if (
+        hasExplicit
+          ? !groupFormatFits(participants.explicit.length, format)
+          : !(qualifiers >= 1 && qualifiers <= groupSize)
+      ) {
+        error(
+          where,
+          `groups of ${groupSize} with ${qualifiers} qualifiers do not fit ` +
+            `${hasExplicit ? `${participants.explicit.length} clubs` : "any field"}`,
+        );
       }
     }
     if (hasSelector) {
@@ -405,7 +510,8 @@ async function main() {
   const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
   const { documents, fileCount, fromArchive } = await readPackageDocuments(target);
   const countryCodes = await loadCountryCatalog(repoRoot);
-  const problems = validatePackage({ documents, countryCodes });
+  const regionIds = await loadRegionCatalog(repoRoot);
+  const problems = validatePackage({ documents, countryCodes, regionIds });
   const counts = collectEntities(documents);
   console.log(
     `checked ${fileCount} files${fromArchive ? " in the archive" : ""}: ${(counts.get("team") ?? []).length} teams, ` +
