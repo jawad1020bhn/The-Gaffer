@@ -771,6 +771,12 @@ export interface LeagueData {
   transfer_rumours?: TransferRumourData[];
   priority?: number;
   name_key?: string;
+  /**
+   * Where the competition's logo is, as its package names it (`<package id>/assets/...`).
+   * Absent for a competition with no logo of its own: one the game generated, or one in a
+   * career saved before logos were kept.
+   */
+  logo?: string | null;
 }
 
 export interface WorldCupChampionData {

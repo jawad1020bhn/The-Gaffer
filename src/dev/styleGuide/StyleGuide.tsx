@@ -10,6 +10,7 @@ import {
   CardGrid,
   CardHeader,
   Checkbox,
+  CompetitionLogo,
   ConditionMeter,
   CountryFlag,
   DataTable,
@@ -444,6 +445,13 @@ function DisplaySection() {
             colors: { primary: "#1e3a8a", secondary: "#dc2626" },
           }}
         />
+        {/* A competition with no logo of its own, then artwork fitted to the box: square, wide,
+            and wide in the large box. A real logo is read from an installed package and the guide
+            has none, so the game's own marks stand in for one. */}
+        <CompetitionLogo />
+        <CompetitionLogo logo="/openfootball.svg" />
+        <CompetitionLogo logo="/openfootlogo.svg" />
+        <CompetitionLogo logo="/openfootlogo.svg" className="h-14 w-14" />
         <PlayerAvatar
           player={{ full_name: "Callum Fraser", match_name: "Fraser" }}
           enableRuntimePortrait={false}
