@@ -275,6 +275,36 @@ export function cleanLeagueName(raw) {
   return name.replace(/\s*\(\d+\)\s*$/, "").trim() || name;
 }
 
+/** EA rows that are continental club competitions rather than domestic leagues. */
+export const CONTINENTAL_LEAGUE =
+  /conmebol|libertadores|sudamericana|champions league|europa league/i;
+
+/**
+ * The id of the competition the importer builds from one EA `leagues` row.
+ *
+ * A continental cup is named by its own name alone (`conmebol-libertadores`); a
+ * domestic league by its country code and its name without EA's country label
+ * (`eng-premier-league`). A domestic row whose nation the database does not
+ * know has no id, and the importer leaves it out.
+ *
+ * It lives here rather than in `import.mjs` because the league-logo crosswalk
+ * has to find the same competition from the same row, and a second copy of the
+ * rule would be free to drift from this one.
+ *
+ * @param {string} rawName `leagues.leaguename`
+ * @param {{ isocountrycode?: string, nationname?: string } | undefined} nation the `nations` row for `leagues.countryid`
+ * @returns {string | null}
+ */
+export function leagueCompetitionId(rawName, nation) {
+  const leagueName = cleanLeagueName(rawName);
+  if (CONTINENTAL_LEAGUE.test(leagueName)) return slugify(leagueName);
+  const countryCode = nation ? nationCode(nation.isocountrycode, nation.nationname) : "";
+  if (!countryCode) return null;
+  const label = countryLabelOf(leagueName, nation?.nationname);
+  const stripped = label ? leagueName.slice(label.length).trim() : leagueName;
+  return `${countryCode.toLowerCase()}-${slugify(stripped || leagueName)}`;
+}
+
 /** Short name for standings: prefer EA's own abbreviation ("ARS"), else initials. */
 export function shortName(abbreviation, clubName) {
   const abbr = String(abbreviation ?? "").trim();

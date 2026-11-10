@@ -19,6 +19,7 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 
 import {
+  CONTINENTAL_LEAGUE,
   alternatePositions,
   attributesFor,
   cleanLeagueName,
@@ -29,6 +30,7 @@ import {
   footedness,
   hexColor,
   isSpecificPosition,
+  leagueCompetitionId,
   nationCode,
   playerId as buildPlayerId,
   playStyle,
@@ -65,9 +67,6 @@ const PACKAGE_NAME = "EA FC 27 Clubs & Players";
 /** Leagues that are not competitions: EA's scratch, fantasy and placeholder rows. */
 const NON_COMPETITIONS =
   /^(international|international women|rest of world|rest of world women|otp generics|free agents league|create player league|creation zone league|youth squad league|fifa career saved teams|fifa twist|5v5 league)$/i;
-
-/** EA rows that are continental club competitions rather than domestic leagues. */
-const CONTINENTAL = /conmebol|libertadores|sudamericana|champions league|europa league/i;
 
 /**
  * City names for clubs whose name contains one. EA stores `cityid` only, and the
@@ -839,7 +838,10 @@ async function main() {
   // first link into an imported domestic league wins.
   const domesticTeamIds = new Set();
   for (const { league } of selectedLeagues) {
-    if (CONTINENTAL.test(String(league.leaguename ?? "")) || isRosterGroup(league.leaguename))
+    if (
+      CONTINENTAL_LEAGUE.test(String(league.leaguename ?? "")) ||
+      isRosterGroup(league.leaguename)
+    )
       continue;
     for (const link of leagueTeamLinks.filter((l) => l.leagueid === league.leagueid)) {
       domesticTeamIds.add(link.teamid);
@@ -909,7 +911,7 @@ async function main() {
   };
 
   for (const { league, rawName } of selectedLeagues) {
-    const continental = CONTINENTAL.test(cleanLeagueName(rawName));
+    const continental = CONTINENTAL_LEAGUE.test(cleanLeagueName(rawName));
     const nation = nationById.get(league.countryid);
     const countryCode = nation ? nationCode(nation.isocountrycode, nation.nationname) : "";
     const participants = leagueTeamLinks
@@ -918,11 +920,14 @@ async function main() {
       .filter(Boolean);
     if (participants.length < 2) continue;
     const leagueName = cleanLeagueName(rawName);
+    // The id comes from the one rule the league-logo crosswalk also uses, so a
+    // logo recorded for this EA league lands on this competition.
+    const id = leagueCompetitionId(rawName, nation);
     if (continental) {
       const isSouthAmerica = /conmebol|libertadores|sudamericana/i.test(leagueName);
       pushCompetition({
         schema: "competition",
-        id: slugify(leagueName),
+        id,
         name: leagueName,
         type: "ContinentalClub",
         scope: "Continental",
@@ -939,7 +944,7 @@ async function main() {
     const stripped = label ? leagueName.slice(label.length).trim() : leagueName;
     pushCompetition({
       schema: "competition",
-      id: `${countryCode.toLowerCase()}-${slugify(stripped || leagueName)}`,
+      id,
       name: stripped || leagueName,
       countryName: nation?.nationname ?? countryCode,
       type: "League",
