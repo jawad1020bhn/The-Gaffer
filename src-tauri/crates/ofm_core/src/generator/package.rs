@@ -3232,6 +3232,26 @@ mod tests {
         std::fs::remove_file(&archive).ok();
     }
 
+    /// The smallest package the loader accepts, so a test about *which files
+    /// are scanned* is not really a test about a missing licence field.
+    fn valid_package_skeleton(dir: &Path) {
+        write(
+            dir,
+            "world.yaml",
+            "schema: world\nid: badge-world\nname: Badge World\nversion: 1.0.0\nlicense: CC0-1.0\n",
+        );
+        write(
+            dir,
+            "confed.yaml",
+            "schema: confederation\nid: europe\nname: Europe\n",
+        );
+        write(
+            dir,
+            "country.yaml",
+            "schema: country\nid: GB\nname: England\nconfederation: europe\n",
+        );
+    }
+
     #[test]
     fn a_provenance_manifest_beside_the_badges_is_not_a_definition_file() {
         // The shipped world carries `assets/clubs/manifest.json` next to the
@@ -3240,11 +3260,7 @@ mod tests {
         // dropped from the installed list, so the world would have vanished
         // entirely rather than merely lost its badges.
         let dir = temp_package();
-        write(
-            &dir,
-            "world.json",
-            r#"{"schema":"world","id":"badge-world","name":"Badge World"}"#,
-        );
+        valid_package_skeleton(&dir);
         write(
             &dir,
             "teams.json",
@@ -3275,16 +3291,12 @@ mod tests {
         // folder of the author's choosing keeps loading, which is why the skip
         // is anchored at the package root rather than at any `assets/` segment.
         let dir = temp_package();
-        write(
-            &dir,
-            "world.json",
-            r#"{"schema":"world","id":"nested","name":"Nested"}"#,
-        );
+        valid_package_skeleton(&dir);
         write(
             &dir,
             "clubs/england/teams.json",
             r##"{"schema":"team","items":[{"id":"arsenal","name":"Arsenal","city":"London",
-                 "country":"GB","colors":{"primary":"#fff","secondary":"#000"}}]"##,
+                 "country":"GB","colors":{"primary":"#fff","secondary":"#000"}}]}"##,
         );
         write(&dir, "assets/clubs/manifest.json", r#"{"badges":[]}"#);
 
