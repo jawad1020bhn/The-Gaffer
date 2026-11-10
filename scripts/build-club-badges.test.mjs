@@ -133,7 +133,12 @@ beforeAll(async () => {
     JSON.stringify({
       schema: "team",
       items: [
-        { schema: "team", id: "afc-bournemouth", name: "AFC Bournemouth", logo: "assets/clubs/1943.png" },
+        {
+          schema: "team",
+          id: "afc-bournemouth",
+          name: "AFC Bournemouth",
+          logo: "assets/clubs/1943.png",
+        },
         { schema: "team", id: "arsenal", name: "Arsenal", logo: "assets/clubs/1.png" },
         { schema: "team", id: "aalesunds-fk", name: "Aalesunds FK" },
       ],

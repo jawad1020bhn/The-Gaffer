@@ -133,7 +133,11 @@ function decodeDxt5(view, dataOffset, width, height) {
           Math.round((b0 + 2 * b1) / 3),
         ];
       } else {
-        palette[2] = [Math.round((r0 + r1) / 2), Math.round((g0 + g1) / 2), Math.round((b0 + b1) / 2)];
+        palette[2] = [
+          Math.round((r0 + r1) / 2),
+          Math.round((g0 + g1) / 2),
+          Math.round((b0 + b1) / 2),
+        ];
         palette[3] = [0, 0, 0];
       }
       const colourBits = view.getUint32(block + 12, true);
@@ -141,7 +145,8 @@ function decodeDxt5(view, dataOffset, width, height) {
       for (let texel = 0; texel < 16; texel += 1) {
         const bitIndex = texel * 3;
         const alphaIndex =
-          (alphaBits[bitIndex >>> 3] >>> (bitIndex & 7)) | (alphaBits[(bitIndex >>> 3) + 1] << (8 - (bitIndex & 7)));
+          (alphaBits[bitIndex >>> 3] >>> (bitIndex & 7)) |
+          (alphaBits[(bitIndex >>> 3) + 1] << (8 - (bitIndex & 7)));
         const [r, g, b] = palette[(colourBits >>> (texel * 2)) & 0x3];
         colour[texel] = [r, g, b, alphaPalette[(alphaIndex >>> 0) & 0x7]];
       }
@@ -192,7 +197,14 @@ export function decodeDds(data) {
   if (!(pfFlags & DDPF_RGB)) {
     throw new Error("unsupported DDS pixel format (not RGB and not DXT5)");
   }
-  return decodeUncompressed(view, HEADER_BYTES, width, height, masks, Boolean(pfFlags & DDPF_ALPHAPIXELS));
+  return decodeUncompressed(
+    view,
+    HEADER_BYTES,
+    width,
+    height,
+    masks,
+    Boolean(pfFlags & DDPF_ALPHAPIXELS),
+  );
 }
 
 /* ── PNG encoding ────────────────────────────────────────────────────────── */

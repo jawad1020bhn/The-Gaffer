@@ -54,9 +54,7 @@ export interface PackageAssetSrc {
  * world badges every club from a package, that later tick is now the common
  * case rather than the exception, which is why callers can tell it apart.
  */
-export function usePackageAssetResolution(
-  path: string | null | undefined,
-): PackageAssetSrc {
+export function usePackageAssetResolution(path: string | null | undefined): PackageAssetSrc {
   const qualified = isPackageQualifiedAsset(path);
   const bundled = qualified ? null : resolveLocalMediaPath(path);
   // Track which path the src belongs to, so a path that changes does not

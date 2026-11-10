@@ -244,7 +244,9 @@ async function main() {
     const present = existsSync(dir) ? await readdir(dir) : [];
     for (const name of present) {
       if (name.endsWith(".png") && !files.has(`assets/clubs/${name}`)) {
-        console.error(`build-club-badges: ${WORLD_DIR}/assets/clubs/${name} is not in the crosswalk`);
+        console.error(
+          `build-club-badges: ${WORLD_DIR}/assets/clubs/${name} is not in the crosswalk`,
+        );
         stale += 1;
       }
     }
@@ -261,7 +263,9 @@ async function main() {
   for (const { clubId } of unknownClubs) {
     console.warn(`build-club-badges: crosswalk names ${clubId}, which is not in the world`);
   }
-  console.log(`build-club-badges: wrote ${badges.length} club badges (${TARGET_PIXELS}×${TARGET_PIXELS}).`);
+  console.log(
+    `build-club-badges: wrote ${badges.length} club badges (${TARGET_PIXELS}×${TARGET_PIXELS}).`,
+  );
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

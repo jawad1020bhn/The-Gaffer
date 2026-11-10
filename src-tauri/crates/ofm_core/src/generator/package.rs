@@ -3260,12 +3260,12 @@ mod tests {
 
         let (package, errors) = load_world_package(&dir);
 
-        assert!(errors.is_empty(), "the artwork manifest must be ignored: {errors:?}");
-        assert_eq!(package.teams.len(), 1);
-        assert_eq!(
-            package.teams[0].logo.as_deref(),
-            Some("assets/clubs/1.png")
+        assert!(
+            errors.is_empty(),
+            "the artwork manifest must be ignored: {errors:?}"
         );
+        assert_eq!(package.teams.len(), 1);
+        assert_eq!(package.teams[0].logo.as_deref(), Some("assets/clubs/1.png"));
         std::fs::remove_dir_all(&dir).ok();
     }
 

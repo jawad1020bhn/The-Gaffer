@@ -114,7 +114,11 @@ describe("decodeDds", () => {
   });
 
   it("refuses pixel data that stops short", () => {
-    const truncated = bgraDds(2, 2, Array.from({ length: 4 }, () => [0, 0, 0, 255]));
+    const truncated = bgraDds(
+      2,
+      2,
+      Array.from({ length: 4 }, () => [0, 0, 0, 255]),
+    );
     assert.throws(() => decodeDds(truncated.subarray(0, 128 + 8)), /truncated/);
   });
 });
