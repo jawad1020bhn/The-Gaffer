@@ -76,7 +76,14 @@ function decodeUncompressed(view, dataOffset, width, height, masks, hasAlpha) {
 const expand5 = (value) => (value << 3) | (value >>> 2);
 const expand6 = (value) => (value << 2) | (value >>> 4);
 
-/** Decode DXT5/BC3: 4×4 blocks of interpolated alpha then interpolated colour. */
+/**
+ * Decode DXT5/BC3: 4×4 blocks of interpolated alpha then interpolated colour.
+ *
+ * The palettes are two buffers reused for every block rather than arrays built
+ * per block. A 64×64 crest has 256 blocks and does not care; a 1024×1024 league
+ * logo has 65,536, and allocating a dozen arrays for each made one logo cost
+ * what the whole crest pack does.
+ */
 function decodeDxt5(view, dataOffset, width, height) {
   const pixels = new Uint8Array(width * height * 4);
   const blocksWide = Math.ceil(width / 4);
@@ -86,7 +93,9 @@ function decodeDxt5(view, dataOffset, width, height) {
     throw new Error("DDS DXT5 data is truncated");
   }
 
-  const colour = Array.from({ length: 16 }, () => [0, 0, 0, 255]);
+  /** Eight alpha values, then four RGB triples, for the block being decoded. */
+  const alphaPalette = new Uint8Array(8);
+  const palette = new Uint8Array(12);
 
   for (let blockY = 0; blockY < blocksHigh; blockY += 1) {
     for (let blockX = 0; blockX < blocksWide; blockX += 1) {
@@ -95,7 +104,6 @@ function decodeDxt5(view, dataOffset, width, height) {
       // Alpha: two endpoint bytes, then 48 bits of 3-bit indices.
       const alpha0 = view.getUint8(block);
       const alpha1 = view.getUint8(block + 1);
-      const alphaPalette = new Array(8).fill(255);
       alphaPalette[0] = alpha0;
       alphaPalette[1] = alpha1;
       if (alpha0 > alpha1) {
@@ -109,7 +117,17 @@ function decodeDxt5(view, dataOffset, width, height) {
         alphaPalette[6] = 0;
         alphaPalette[7] = 255;
       }
-      const alphaBits = Array.from({ length: 6 }, (_, index) => view.getUint8(block + 2 + index));
+      // The 48 index bits as two 24-bit halves, eight texels each: a 3-bit
+      // index never straddles the halves, and 24 bits stay inside the 32 a
+      // bitwise operator works on.
+      const alphaLow =
+        view.getUint8(block + 2) |
+        (view.getUint8(block + 3) << 8) |
+        (view.getUint8(block + 4) << 16);
+      const alphaHigh =
+        view.getUint8(block + 5) |
+        (view.getUint8(block + 6) << 8) |
+        (view.getUint8(block + 7) << 16);
 
       // Colour: two RGB565 endpoints and 16 2-bit indices.
       const colour0 = view.getUint16(block + 8, true);
@@ -120,52 +138,41 @@ function decodeDxt5(view, dataOffset, width, height) {
       const r1 = expand5((colour1 >>> 11) & 0x1f);
       const g1 = expand6((colour1 >>> 5) & 0x3f);
       const b1 = expand5(colour1 & 0x1f);
-      const palette = [
-        [r0, g0, b0],
-        [r1, g1, b1],
-        [0, 0, 0],
-        [0, 0, 0],
-      ];
+      palette[0] = r0;
+      palette[1] = g0;
+      palette[2] = b0;
+      palette[3] = r1;
+      palette[4] = g1;
+      palette[5] = b1;
       if (colour0 > colour1) {
-        palette[2] = [
-          Math.round((2 * r0 + r1) / 3),
-          Math.round((2 * g0 + g1) / 3),
-          Math.round((2 * b0 + b1) / 3),
-        ];
-        palette[3] = [
-          Math.round((r0 + 2 * r1) / 3),
-          Math.round((g0 + 2 * g1) / 3),
-          Math.round((b0 + 2 * b1) / 3),
-        ];
+        palette[6] = Math.round((2 * r0 + r1) / 3);
+        palette[7] = Math.round((2 * g0 + g1) / 3);
+        palette[8] = Math.round((2 * b0 + b1) / 3);
+        palette[9] = Math.round((r0 + 2 * r1) / 3);
+        palette[10] = Math.round((g0 + 2 * g1) / 3);
+        palette[11] = Math.round((b0 + 2 * b1) / 3);
       } else {
-        palette[2] = [
-          Math.round((r0 + r1) / 2),
-          Math.round((g0 + g1) / 2),
-          Math.round((b0 + b1) / 2),
-        ];
-        palette[3] = [0, 0, 0];
+        palette[6] = Math.round((r0 + r1) / 2);
+        palette[7] = Math.round((g0 + g1) / 2);
+        palette[8] = Math.round((b0 + b1) / 2);
+        palette[9] = 0;
+        palette[10] = 0;
+        palette[11] = 0;
       }
       const colourBits = view.getUint32(block + 12, true);
 
       for (let texel = 0; texel < 16; texel += 1) {
-        const bitIndex = texel * 3;
-        const alphaIndex =
-          (alphaBits[bitIndex >>> 3] >>> (bitIndex & 7)) |
-          (alphaBits[(bitIndex >>> 3) + 1] << (8 - (bitIndex & 7)));
-        const [r, g, b] = palette[(colourBits >>> (texel * 2)) & 0x3];
-        colour[texel] = [r, g, b, alphaPalette[(alphaIndex >>> 0) & 0x7]];
-      }
-
-      for (let texel = 0; texel < 16; texel += 1) {
-        const x = blockX * 4 + (texel % 4);
-        const y = blockY * 4 + Math.floor(texel / 4);
+        const x = blockX * 4 + (texel & 3);
+        const y = blockY * 4 + (texel >>> 2);
         if (x >= width || y >= height) continue;
-        const [r, g, b, a] = colour[texel];
+        const alphaIndex =
+          texel < 8 ? (alphaLow >>> (texel * 3)) & 0x7 : (alphaHigh >>> ((texel - 8) * 3)) & 0x7;
+        const colourIndex = ((colourBits >>> (texel * 2)) & 0x3) * 3;
         const offset = (y * width + x) * 4;
-        pixels[offset] = r;
-        pixels[offset + 1] = g;
-        pixels[offset + 2] = b;
-        pixels[offset + 3] = a;
+        pixels[offset] = palette[colourIndex];
+        pixels[offset + 1] = palette[colourIndex + 1];
+        pixels[offset + 2] = palette[colourIndex + 2];
+        pixels[offset + 3] = alphaPalette[alphaIndex];
       }
     }
   }
