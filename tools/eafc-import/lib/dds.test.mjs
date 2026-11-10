@@ -1,16 +1,25 @@
 /**
- * Decoding EA's crest DDS files and encoding them as PNG.
+ * Decoding EA's 50×50 crest DDS files, cropping from 64×64, adapting dark crests
+ * for dark surfaces, and encoding as PNG.
  *
- * These are the two steps between `crest16x16/l<id>.dds` and a file a browser
- * can draw, so each is checked against bytes whose pixels are known exactly —
- * no EA files are needed to run this.
+ * These are the steps between `crest50x50/l<id>.dds` and a file a browser can
+ * draw, so each is checked against bytes whose pixels are known exactly — no EA
+ * files are needed to run this.
  */
 
 import assert from "node:assert/strict";
 import { inflateSync } from "node:zlib";
 import { describe, it } from "node:test";
 
-import { decodeDds, ddsToPng, encodePng, upscaleToAtLeast } from "./dds.mjs";
+import {
+  CREST_SIZE,
+  adaptForDarkBackground,
+  crestDdsToPng,
+  cropImage,
+  decodeDds,
+  ddsToPng,
+  encodePng,
+} from "./dds.mjs";
 
 /** A DDS header for an uncompressed 32-bit image, masks in the order EA ships. */
 function bgraDds(width, height, pixels) {
@@ -57,7 +66,6 @@ function dxt5Dds(r, g, b, a) {
   const block = Buffer.alloc(16);
   block[0] = a;
   block[1] = a;
-  // Six bytes of zero alpha indices, then the colour endpoints and indices.
   const colour = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
   block.writeUInt16LE(colour, 8);
   block.writeUInt16LE(colour, 10);
@@ -69,6 +77,17 @@ const pixelAt = (image, x, y) => {
   const offset = (y * image.width + x) * 4;
   return [...image.pixels.subarray(offset, offset + 4)];
 };
+
+function solidImage(width, height, [r, g, b, a]) {
+  const pixels = new Uint8Array(width * height * 4);
+  for (let i = 0; i < width * height; i += 1) {
+    pixels[i * 4] = r;
+    pixels[i * 4 + 1] = g;
+    pixels[i * 4 + 2] = b;
+    pixels[i * 4 + 3] = a;
+  }
+  return { width, height, pixels };
+}
 
 describe("decodeDds", () => {
   it("swaps the BGRA byte order EA writes into RGBA", () => {
@@ -85,8 +104,6 @@ describe("decodeDds", () => {
 
   it("decodes a DXT5 block", () => {
     const image = decodeDds(dxt5Dds(200, 100, 50, 255));
-    // 5/6-bit endpoints cannot represent every 8-bit value; a few levels of
-    // quantisation is the format, not an error.
     const [r, g, b, a] = pixelAt(image, 1, 1);
     assert.ok(r >= 196, `red ${r}`);
     assert.ok(g >= 96, `green ${g}`);
@@ -123,6 +140,79 @@ describe("decodeDds", () => {
   });
 });
 
+describe("cropImage", () => {
+  it("extracts the top-left 50×50 crest from a padded 64×64 image", () => {
+    const pixels = new Uint8Array(64 * 64 * 4);
+    // Mark a corner inside the 50×50 region and another pixel in the 64×64 padding.
+    const insideOffset = (49 * 64 + 49) * 4;
+    pixels[insideOffset] = 210;
+    pixels[insideOffset + 3] = 255;
+    const paddingOffset = (50 * 64 + 50) * 4;
+    pixels[paddingOffset] = 99;
+    pixels[paddingOffset + 3] = 255;
+
+    const cropped = cropImage({ width: 64, height: 64, pixels }, CREST_SIZE, CREST_SIZE);
+    assert.equal(cropped.width, 50);
+    assert.equal(cropped.height, 50);
+    assert.deepEqual(pixelAt(cropped, 49, 49), [210, 0, 0, 255]);
+  });
+
+  it("refuses to crop when the source is smaller than the target box", () => {
+    assert.throws(
+      () => cropImage(solidImage(16, 16, [255, 255, 255, 255]), 50, 50),
+      /cannot crop 16×16/,
+    );
+  });
+});
+
+describe("adaptForDarkBackground", () => {
+  it("lifts near-black monochrome crests to crisp neutral light ink without colour cast", () => {
+    // Include slight near-black compression noise (0, 2, 1) like EA's DXT5 crests.
+    const lifted = adaptForDarkBackground(solidImage(8, 8, [0, 2, 1, 255]));
+    const [r, g, b, a] = pixelAt(lifted, 4, 4);
+    assert.equal(a, 255);
+    assert.ok(r >= 215 && g >= 215 && b >= 215, `expected bright ink, got ${[r, g, b]}`);
+    assert.equal(r, g);
+    assert.equal(g, b);
+  });
+
+  it("adds a subtle light perimeter edge to dark-bordered crests without washing out their core", () => {
+    // 10×10 canvas with a 4×4 near-black badge centered inside transparent padding.
+    const pixels = new Uint8Array(10 * 10 * 4);
+    for (let y = 3; y <= 6; y += 1) {
+      for (let x = 3; x <= 6; x += 1) {
+        const i = (y * 10 + x) * 4;
+        pixels[i] = 10;
+        pixels[i + 1] = 14;
+        pixels[i + 2] = 20;
+        pixels[i + 3] = 255;
+      }
+    }
+    // Give the interior bright detail so it uses the perimeter halo path rather than full lift.
+    for (const [x, y] of [
+      [4, 4],
+      [5, 4],
+      [4, 5],
+      [5, 5],
+    ]) {
+      const i = (y * 10 + x) * 4;
+      pixels[i] = 220;
+      pixels[i + 1] = 190;
+      pixels[i + 2] = 80;
+    }
+    const adapted = adaptForDarkBackground({ width: 10, height: 10, pixels });
+    // Center bright gold stays intact; pixel just outside the dark rim gains light halo alpha.
+    assert.deepEqual(pixelAt(adapted, 4, 4), [220, 190, 80, 255]);
+    assert.ok(pixelAt(adapted, 2, 3)[3] > 0, "expected outer rim pixel to gain halo alpha");
+  });
+
+  it("leaves already-bright colourful crests untouched", () => {
+    const bright = solidImage(8, 8, [220, 35, 45, 255]);
+    const result = adaptForDarkBackground(bright);
+    assert.equal(result, bright);
+  });
+});
+
 describe("encodePng", () => {
   it("writes a PNG whose IDAT is a zlib stream", () => {
     const png = encodePng({ width: 1, height: 1, pixels: new Uint8Array([1, 2, 3, 255]) });
@@ -133,35 +223,30 @@ describe("encodePng", () => {
     // Raw deflate here would throw: a PNG IDAT is zlib-wrapped (RFC 2083 §10.1).
     assert.deepEqual([...inflateSync(body)], [0, 1, 2, 3, 255]);
   });
-
-  it("upscales by whole pixels so a crest stays sharp", () => {
-    const image = { width: 2, height: 1, pixels: new Uint8Array([1, 1, 1, 255, 2, 2, 2, 255]) };
-    const png = encodePng(image, { scale: 2 });
-    assert.equal(png.readUInt32BE(16), 4); // IHDR width
-    assert.equal(png.readUInt32BE(20), 2); // IHDR height
-  });
 });
 
-describe("upscaleToAtLeast", () => {
-  it("rounds up to a whole multiple", () => {
-    assert.equal(upscaleToAtLeast({ width: 16, height: 16 }, 64), 4);
-    assert.equal(upscaleToAtLeast({ width: 16, height: 16 }, 65), 5);
-    assert.equal(upscaleToAtLeast({ width: 16, height: 16 }, 16), 1);
-    assert.equal(upscaleToAtLeast({ width: 16, height: 16 }, 8), 1);
-  });
-});
-
-describe("ddsToPng", () => {
-  it("turns DDS bytes into a PNG of the scaled size", () => {
+describe("ddsToPng & crestDdsToPng", () => {
+  it("encodes DDS bytes directly to PNG at native dimensions", () => {
     const png = ddsToPng(
       bgraDds(
-        16,
-        16,
-        Array.from({ length: 256 }, () => [1, 2, 3, 255]),
+        8,
+        8,
+        Array.from({ length: 64 }, () => [1, 2, 3, 255]),
       ),
-      { scale: 4 },
     );
-    assert.equal(png.readUInt32BE(16), 64);
-    assert.equal(png.readUInt32BE(20), 64);
+    assert.equal(png.readUInt32BE(16), 8);
+    assert.equal(png.readUInt32BE(20), 8);
+  });
+
+  it("crops a 64×64 crest DDS down to a crisp 50×50 PNG", () => {
+    const png = crestDdsToPng(
+      bgraDds(
+        64,
+        64,
+        Array.from({ length: 64 * 64 }, () => [200, 30, 40, 255]),
+      ),
+    );
+    assert.equal(png.readUInt32BE(16), 50);
+    assert.equal(png.readUInt32BE(20), 50);
   });
 });

@@ -1,7 +1,7 @@
 /**
- * The crosswalk between EA's crest pack and a package's clubs.
+ * The crosswalk between EA's 50×50 crest pack and a package's clubs.
  *
- * `crest16x16/l<id>.dds` names a crest by EA team id and nothing else, while a
+ * `crest50x50/l<id>.dds` names a crest by EA team id and nothing else, while a
  * package's clubs are keyed by the OFM slug the importer derives from the EA
  * team name. Recovering the pair is therefore exact in both directions, but
  * only against the database the package was built from — so everything here
@@ -10,22 +10,21 @@
 
 import { slugify } from "./mapping.mjs";
 
+const CREST_PREFIX = "crest50x50/";
+
 /**
- * Every crest in the pack for one variant, keyed by EA team id.
+ * Every 50×50 crest in the pack, keyed by EA team id.
  *
- * The zip holds `crest16x16/l<id>.dds` (light) and `crest16x16/dark/l<id>.dds`
- * (a recoloured sibling) at the same ids.
+ * The zip holds `crest50x50/l<id>.dds`.
  *
  * @param {Iterable<string>} names archive entry names
- * @param {"light" | "dark"} variant
  * @returns {Map<number, string>} EA team id → entry name
  */
-export function listCrests(names, variant) {
-  const prefix = variant === "dark" ? "crest16x16/dark/" : "crest16x16/";
+export function listCrests(names) {
   const crests = new Map();
   for (const name of names) {
-    if (!name.startsWith(prefix) || !name.endsWith(".dds")) continue;
-    const match = /^l(\d+)\.dds$/.exec(name.slice(prefix.length));
+    if (!name.startsWith(CREST_PREFIX) || !name.endsWith(".dds")) continue;
+    const match = /^l(\d+)\.dds$/.exec(name.slice(CREST_PREFIX.length));
     if (!match) continue;
     crests.set(Number(match[1]), name);
   }

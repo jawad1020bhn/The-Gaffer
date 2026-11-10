@@ -17,7 +17,7 @@ on:
       - "src-tauri/crates/ofm-cli/**"
       - "src-tauri/crates/ofm_core/src/generator/**"
       - "tools/eafc-import/**"
-      - "crest16x16.zip"
+      - "crest50x50.zip"
       - "scripts/build-club-badges.mjs"
       - ".github/workflows/validate-eafc-package.yml"
   pull_request:
@@ -26,7 +26,7 @@ on:
       - "src-tauri/crates/ofm-cli/**"
       - "src-tauri/crates/ofm_core/src/generator/**"
       - "tools/eafc-import/**"
-      - "crest16x16.zip"
+      - "crest50x50.zip"
       - "scripts/build-club-badges.mjs"
       - ".github/workflows/validate-eafc-package.yml"
   workflow_dispatch:
@@ -60,7 +60,7 @@ jobs:
           node --test tools/eafc-import/lib/*.test.mjs
           node tools/eafc-import/audit.mjs mods/eafc-fc27
 
-      # The club badges the world ships are built from `crest16x16.zip` and the
+      # The club badges the world ships are built from `crest50x50.zip` and the
       # recorded crosswalk, and are committed so a plain checkout has them. This
       # proves the committed images are exactly what those two inputs produce —
       # a stale or hand-edited badge fails here rather than in a career.
@@ -90,7 +90,7 @@ jobs:
         run: |
           node tools/eafc-import/badges-from-crest-pack.mjs \
             --kit .eafc-db-kit \
-            --crest-pack crest16x16.zip \
+            --crest-pack crest50x50.zip \
             --competition-logos tools/eafc-import/test/fixtures/competition-logos \
             --out "$RUNNER_TEMP/eafc-badges" \
             --write-crosswalk "$RUNNER_TEMP/crest-crosswalk.json"

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Rebuild the bundled world's club badges from `crest16x16.zip`.
+ * Rebuild the bundled world's club badges from `crest50x50.zip`.
  *
  * The world `mods/eafc-fc27` ships real crests: each club in `teams.json`
  * names `assets/clubs/<eaTeamId>.png`, and those PNGs live beside it. Both the
@@ -33,25 +33,16 @@ import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { listCrests } from "../tools/eafc-import/lib/crestPack.mjs";
-import { ddsToPng } from "../tools/eafc-import/lib/dds.mjs";
+import { CREST_SIZE, crestDdsToPng } from "../tools/eafc-import/lib/dds.mjs";
 import { readZipEntries } from "../tools/eafc-import/lib/zip.mjs";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WORLD_DIR = "mods/eafc-fc27";
-const CREST_ZIP = "crest16x16.zip";
+const CREST_ZIP = "crest50x50.zip";
 const CROSSWALK = "tools/eafc-import/data/fc27-crest-crosswalk.json";
 
 /** The checked-in pack of competition logos the authored European cups reference. */
 const COMPETITION_LOGO_PACK = "tools/eafc-import/test/fixtures/competition-logos";
-
-/**
- * The recoloured `dark/` crests: the game has one presentation and it is dark
- * (`ThemeProvider` forces it), so these are the variant that stays legible.
- */
-const VARIANT = "dark";
-
-/** Every crest is upscaled by a whole number to this size (a real 64×64 PNG, not a 16 px one stretched by the browser). */
-const TARGET_PIXELS = 64;
 
 const sha256 = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
 
@@ -118,14 +109,10 @@ export async function planBadges(repoRoot = REPO_ROOT) {
   const crosswalk = JSON.parse(await readFile(path.join(repoRoot, CROSSWALK), "utf8"));
   const world = JSON.parse(await readFile(path.join(repoRoot, WORLD_DIR, "teams.json"), "utf8"));
   const zip = readZipEntries(await readFile(path.join(repoRoot, CREST_ZIP)));
-  const crests = listCrests(
-    zip.map((entry) => entry.name),
-    VARIANT,
-  );
+  const crests = listCrests(zip.map((entry) => entry.name));
   const entries = new Map(zip.map((entry) => [entry.name, entry.data]));
 
   const clubIds = new Set((world.items ?? []).map((club) => club.id));
-  const scale = Math.max(1, Math.ceil(TARGET_PIXELS / 16));
   const competitionLogos = await planCompetitionLogos(repoRoot);
 
   const files = new Map();
@@ -140,9 +127,9 @@ export async function planBadges(repoRoot = REPO_ROOT) {
     }
     const crest = crests.get(eaTeamId);
     if (!crest) {
-      throw new Error(`no ${VARIANT} crest for EA team ${eaTeamId} (club ${clubId})`);
+      throw new Error(`no 50×50 crest for EA team ${eaTeamId} (club ${clubId})`);
     }
-    const data = ddsToPng(entries.get(crest), { scale });
+    const data = crestDdsToPng(entries.get(crest), { size: CREST_SIZE, darkBackground: true });
     const name = `assets/clubs/${eaTeamId}.png`;
     files.set(name, data);
     badges.push({
@@ -264,7 +251,7 @@ async function main() {
     console.warn(`build-club-badges: crosswalk names ${clubId}, which is not in the world`);
   }
   console.log(
-    `build-club-badges: wrote ${badges.length} club badges (${TARGET_PIXELS}×${TARGET_PIXELS}).`,
+    `build-club-badges: wrote ${badges.length} club badges (${CREST_SIZE}×${CREST_SIZE}).`,
   );
 }
 
