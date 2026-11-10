@@ -179,6 +179,11 @@ pub struct League {
     /// translates via `t(name_key, { year })` instead of displaying `name` raw.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name_key: Option<String>,
+    /// Path of the competition's logo, as its package names it once the package is loaded
+    /// (`<package id>/assets/...`). `None` when the package gave none, for a competition the
+    /// game generates itself, and in a save written before logos were stored.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub logo: Option<String>,
     /// Durable authoring identity and edition provenance. Absent in legacy saves.
     #[serde(default)]
     pub calendar: Option<crate::competition_calendar::CalendarMetadata>,
@@ -215,6 +220,7 @@ impl Default for League {
             season_start_month: default_season_start_month(),
             season_start_day: default_season_start_day(),
             name_key: None,
+            logo: None,
             calendar: None,
         }
     }
@@ -572,6 +578,7 @@ impl League {
             season_start_month: default_season_start_month(),
             season_start_day: default_season_start_day(),
             name_key: None,
+            logo: None,
             calendar: None,
         }
     }
@@ -763,6 +770,27 @@ mod tests {
             serde_json::to_value(CompetitionRules::default()).unwrap()["group_size"],
             4
         );
+    }
+
+    /// Given a competition with a logo and one without
+    /// When each is written and read back
+    /// Then the logo survives, and the one without writes no `logo` field: its JSON is what it
+    ///      was before logos existed, and a competition written then still loads.
+    #[test]
+    fn a_competition_keeps_its_logo_and_one_without_writes_no_logo_field() {
+        let logo = "pack/assets/competitions/pl.png";
+        let mut league = League::new("pl".into(), "Premier League".into(), 2026, &[]);
+        league.logo = Some(logo.into());
+
+        let written = serde_json::to_value(&league).unwrap();
+        assert_eq!(written["logo"], logo);
+        let read: League = serde_json::from_value(written).unwrap();
+        assert_eq!(read.logo.as_deref(), Some(logo));
+
+        let plain = serde_json::to_value(League::default()).unwrap();
+        assert!(plain.get("logo").is_none());
+        let read: League = serde_json::from_value(plain).unwrap();
+        assert_eq!(read.logo, None);
     }
 
     fn entry(team: &str, wins: u32, goals_for: u8, goals_against: u8) -> StandingEntry {

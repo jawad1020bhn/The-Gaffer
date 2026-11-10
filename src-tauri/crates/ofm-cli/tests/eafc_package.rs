@@ -144,6 +144,46 @@ fn every_club_badge_the_package_names_is_a_real_png_it_ships() {
 }
 
 #[test]
+fn every_competition_starts_a_career_with_a_logo_the_package_ships() {
+    // The user-visible failure this guards: the package named a logo for every
+    // competition and a career drew none, because the path stopped at the
+    // definition and never reached the competition a career plays. So this
+    // follows it the whole way: definition, built competition, file on disk.
+    let Some((_, world)) = built_world() else {
+        return;
+    };
+    let definitions = world
+        .competition_definitions
+        .as_ref()
+        .expect("the package's competitions reach the world as definitions");
+
+    // What a new career does with them, on the day a 2027 career opens.
+    let opening = ofm_core::world::start_date_for_year(2027).expect("a valid start year");
+    let built = ofm_core::generator::resolve_definitions(definitions, &world, 2027, opening);
+    assert_eq!(
+        built.len(),
+        definitions.competitions.len(),
+        "every authored competition is built"
+    );
+
+    let png = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    let dir = package_dir().expect("the package directory");
+    for comp in &built {
+        let Some(path) = comp.logo.as_deref() else {
+            panic!("{} starts a career without a logo", comp.id);
+        };
+        let bytes = std::fs::read(dir.join(path))
+            .unwrap_or_else(|_| panic!("{} names {path}, which is not in the package", comp.id));
+        assert_eq!(&bytes[..8], &png, "{} logo is not a PNG", comp.id);
+        // 160 px on its longer side: EA's league logos are trimmed and scaled
+        // down to that, which stays sharp on the 56 px tile the game draws.
+        let width = u32::from_be_bytes([bytes[16], bytes[17], bytes[18], bytes[19]]);
+        let height = u32::from_be_bytes([bytes[20], bytes[21], bytes[22], bytes[23]]);
+        assert_eq!(width.max(height), 160, "{} logo size", comp.id);
+    }
+}
+
+#[test]
 fn clubs_keep_the_city_ground_and_style_they_were_authored_with() {
     let Some((_, world)) = built_world() else {
         return;

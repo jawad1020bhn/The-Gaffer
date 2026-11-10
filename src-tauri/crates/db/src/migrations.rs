@@ -15,7 +15,7 @@ pub const MIGRATION_COUNT: usize = MIGRATIONS.len();
 /// **Lowering this is almost always wrong.** A save written by a release with N migrations
 /// reports `user_version = N` and expects every column those migrations added; a build with
 /// fewer can neither open it nor recreate it.
-const EXPECTED_MIGRATION_COUNT: usize = 63;
+const EXPECTED_MIGRATION_COUNT: usize = 64;
 
 // Compile-time rather than a test: adding or removing a migration should fail the build, not
 // merely turn a suite red.
@@ -188,6 +188,8 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "v063_unreadable_records.sql",
         include_str!("sql/v063_unreadable_records.sql"),
     ),
+    // V64: The path of a competition's logo
+    ("v064_competition_logo.sql", include_str!("sql/v064_competition_logo.sql")),
 ];
 
 /// All migrations for a per-save game database.
@@ -1031,6 +1033,40 @@ mod tests {
         }
     }
 
+    /// Given a real v063 save holding a competition, when migrated twice, then the competition is
+    /// still there and its logo is NULL: the column arrives empty.
+    #[test]
+    fn logo_v064_upgrades_a_v063_save_and_leaves_its_competitions_without_one() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        Migrations::new(
+            MIGRATIONS
+                .iter()
+                .take(63)
+                .map(|(_, sql)| M::up(sql))
+                .collect(),
+        )
+        .to_latest(&mut conn)
+        .unwrap();
+        conn.execute(
+            "INSERT INTO competitions (id, name, season) VALUES ('old', 'Old League', 2033)",
+            [],
+        )
+        .unwrap();
+        assert!(conn.prepare("SELECT logo FROM competitions").is_err());
+
+        for _ in 0..2 {
+            all_migrations().to_latest(&mut conn).unwrap();
+            let stored: Vec<(String, Option<String>)> = conn
+                .prepare("SELECT id, logo FROM competitions")
+                .unwrap()
+                .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))
+                .unwrap()
+                .collect::<Result<_, _>>()
+                .unwrap();
+            assert_eq!(stored, vec![("old".to_string(), None)]);
+        }
+    }
+
     #[test]
     fn test_schema_version_after_migration() {
         let mut conn = Connection::open_in_memory().unwrap();
@@ -1126,6 +1162,7 @@ mod tests {
     ("v061_last_season_rollover.sql", 0x111c4c4f40b3952a),
     ("v062_scouted_potential_opinion.sql", 0xd409624c4d0ca76f),
     ("v063_unreadable_records.sql", 0xf03c1e895ee13d83),
+    ("v064_competition_logo.sql", 0x05854758b097062d),
     ];
 
     /// Given the migrations already shipped

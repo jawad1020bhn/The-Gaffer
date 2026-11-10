@@ -1157,6 +1157,7 @@ fn build_competition(
     competition.season_start_month = def.season_start_month.unwrap_or(8);
     competition.season_start_day = def.season_start_day.unwrap_or(1);
     competition.name_key = def.name_key.clone();
+    competition.logo = def.logo.clone();
     crate::calendar_identity::attach_definition_calendar(&mut competition, def, season_start);
     // Rebuild standings to match the resolved participants for table formats.
     if def.format.kind == CompetitionFormat::LeagueTable {
@@ -1861,6 +1862,33 @@ mod tests {
         // The generated id was rewritten to the stable definition id everywhere.
         assert!(afc.fixtures.iter().all(|f| f.competition_id == "afc"));
         assert!(afc.groups.iter().all(|g| g.id.starts_with("afc-group-")));
+    }
+
+    /// Given a definition that names a logo, in each of the three formats
+    /// When the competition is built
+    /// Then the competition carries the logo, so a career can draw it; and a definition without
+    ///      one builds a competition without one.
+    #[test]
+    fn a_built_competition_carries_its_definitions_logo() {
+        let clubs = ["team-a", "team-b", "team-c", "team-d"];
+        let logo = "pack/assets/competitions/tr-cup.png";
+        for format in [
+            CompetitionFormat::LeagueTable,
+            CompetitionFormat::Knockout,
+            CompetitionFormat::GroupAndKnockout,
+        ] {
+            let mut def = explicit("tr-cup", &clubs);
+            def.format.kind = format.clone();
+            def.logo = Some(logo.to_string());
+
+            let built = build_explicit_competition(&def, 2026, start()).unwrap();
+
+            assert_eq!(built.logo.as_deref(), Some(logo), "{format:?}");
+        }
+
+        let plain = explicit("tr-1", &clubs);
+        let built = build_explicit_competition(&plain, 2026, start()).unwrap();
+        assert_eq!(built.logo, None);
     }
 
     #[test]
