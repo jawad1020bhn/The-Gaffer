@@ -189,8 +189,16 @@ function wireSnapshot(
 
 async function renderFinances(ui: ReactElement) {
   const result = render(ui);
-  await screen.findByText("Facilities");
+  await screen.findByRole("tab", { name: "Facilities" });
   return result;
+}
+
+/**
+ * The detail sections live behind in-panel tabs so Finances fits one viewport. Tests reach them the
+ * way a manager does rather than expecting all seven sections on screen at once.
+ */
+function openDetailTab(label: string) {
+  fireEvent.click(screen.getByRole("tab", { name: label }));
 }
 
 function createTeam(overrides: Partial<TeamData> = {}): TeamData {
@@ -410,8 +418,9 @@ describe("FinancesTab facilities", () => {
     );
 
     await renderFinances(<FinancesTab gameState={gameState} />);
+    openDetailTab("Facilities");
 
-    expect(screen.getByText("Facilities")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Facilities" })).toBeInTheDocument();
     expect(screen.getByText("Training Facility")).toBeInTheDocument();
     expect(screen.getByText("Medical Facility")).toBeInTheDocument();
     expect(screen.getByText("Scouting Facility")).toBeInTheDocument();
@@ -452,6 +461,7 @@ describe("FinancesTab facilities", () => {
     });
 
     await renderFinances(<FinancesTab gameState={initialState} onGameUpdate={onGameUpdate} />);
+    openDetailTab("Facilities");
 
     const upgradeButtons = screen.getAllByRole("button", { name: "Upgrade" });
     fireEvent.click(upgradeButtons[1]);
@@ -479,8 +489,9 @@ describe("FinancesTab facilities", () => {
     );
 
     await renderFinances(<FinancesTab gameState={gameState} />);
+    openDetailTab("Sponsors");
 
-    expect(screen.getByText("Sponsors")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Sponsors" })).toBeInTheDocument();
     expect(screen.getByText("Active Sponsor")).toBeInTheDocument();
     expect(screen.getByText("Acme Corp")).toBeInTheDocument();
     expect(screen.getByText("Weekly value: €125,000")).toBeInTheDocument();
@@ -523,6 +534,7 @@ describe("FinancesTab facilities", () => {
     });
 
     await renderFinances(<FinancesTab gameState={initialState} onGameUpdate={onGameUpdate} />);
+    openDetailTab("Sponsors");
 
     fireEvent.click(screen.getByRole("button", { name: "Accept the deal" }));
 
@@ -597,6 +609,7 @@ describe("FinancesTab facilities", () => {
     });
 
     await renderFinances(<FinancesTab gameState={initialState} onGameUpdate={onGameUpdate} />);
+    openDetailTab("Sponsors");
 
     fireEvent.click(screen.getByRole("button", { name: "Pitch Sponsor" }));
 
@@ -670,6 +683,7 @@ describe("FinancesTab facilities", () => {
     });
 
     await renderFinances(<FinancesTab gameState={initialState} onGameUpdate={onGameUpdate} />);
+    openDetailTab("Sponsors");
 
     fireEvent.click(screen.getByRole("button", { name: "Launch Campaign" }));
 
@@ -739,6 +753,7 @@ describe("FinancesTab facilities", () => {
     });
 
     await renderFinances(<FinancesTab gameState={initialState} />);
+    openDetailTab("Cash Flow");
 
     await waitFor(() => {
       expect(
@@ -748,6 +763,7 @@ describe("FinancesTab facilities", () => {
       ).toBeInTheDocument();
     });
 
+    openDetailTab("Sponsors");
     expect(screen.getByText("Summit Capital will pay €85,000 for 12 weeks")).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -792,6 +808,7 @@ describe("FinancesTab facilities", () => {
     });
 
     await renderFinances(<FinancesTab gameState={initialState} />);
+    openDetailTab("Sponsors");
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "Launch Campaign" })).toBeDisabled();
@@ -829,6 +846,7 @@ describe("FinancesTab facilities", () => {
       });
 
       await renderFinances(<FinancesTab gameState={gameState} />);
+      openDetailTab("Facilities");
 
       const upgradeButtons = await screen.findAllByRole("button", { name: "Upgrade" });
       expect(upgradeButtons).toHaveLength(3);
@@ -868,8 +886,9 @@ describe("FinancesTab facilities", () => {
     );
 
     await renderFinances(<FinancesTab gameState={gameState} />);
+    openDetailTab("Cash Flow");
 
-    expect(screen.getByText("Cash Flow")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Cash Flow" })).toBeInTheDocument();
     expect(screen.getByText("Weekly Wage Spend")).toBeInTheDocument();
     expect(screen.getByText("Weekly Sponsor Income")).toBeInTheDocument();
     expect(screen.getByText("Projected Weekly Net")).toBeInTheDocument();
@@ -913,6 +932,7 @@ describe("FinancesTab facilities", () => {
     );
 
     await renderFinances(<FinancesTab gameState={gameState} onSelectPlayer={onSelectPlayer} />);
+    openDetailTab("Wage Pressure");
 
     expect(screen.getAllByText("Wage Pressure").length).toBeGreaterThan(0);
     expect(screen.getByText("130% of wage budget used")).toBeInTheDocument();
@@ -969,6 +989,7 @@ describe("FinancesTab facilities", () => {
         <FinancesTab gameState={createGameState({ wage_budget: 50000 }, [], riskyPlayers)} />
       </Profiler>,
     );
+    openDetailTab("Wage Pressure");
 
     expect(checkedOnFirstAppearance).toBe(true);
   });
@@ -995,6 +1016,7 @@ describe("FinancesTab facilities", () => {
     await renderFinances(
       <FinancesTab gameState={createGameState({ wage_budget: 50000 }, [], riskyPlayers)} />,
     );
+    openDetailTab("Wage Pressure");
     const critical = screen.getByLabelText("Select Alex Critical");
     const warning = screen.getByLabelText("Select Ben Warning");
 
@@ -1034,6 +1056,7 @@ describe("FinancesTab facilities", () => {
     await renderFinances(
       <FinancesTab gameState={createGameState({ wage_budget: 50000 }, [], riskyPlayers)} />,
     );
+    openDetailTab("Wage Pressure");
 
     fireEvent.click(screen.getByLabelText("Select Ben Warning"));
     fireEvent.click(screen.getByLabelText("Select Ben Warning"));
@@ -1106,6 +1129,7 @@ describe("FinancesTab facilities", () => {
     });
 
     await renderFinances(<FinancesTab gameState={initialState} onGameUpdate={onGameUpdate} />);
+    openDetailTab("Wage Pressure");
 
     fireEvent.click(screen.getByLabelText("Select Ben Warning"));
 
@@ -1242,13 +1266,13 @@ describe("FinancesTab backend snapshot", () => {
     });
 
     const { rerender } = render(<FinancesTab gameState={createGameState()} />);
-    await screen.findByText("Facilities");
+    await screen.findByRole("tab", { name: "Facilities" });
     const sponsorFigure = screen.getByText(/777/);
 
     rerender(<FinancesTab gameState={createGameState({ finance: 123_456 })} />);
 
     await waitFor(() => expect(calls).toBe(2));
-    expect(screen.getByText("Facilities")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Facilities" })).toBeInTheDocument();
     expect(sponsorFigure).toBeInTheDocument();
     expect(screen.queryByText("common.loading")).not.toBeInTheDocument();
   });
@@ -1306,16 +1330,20 @@ describe("FinancesTab backend snapshot", () => {
         : pendingPromise();
     });
     const { rerender } = render(<FinancesTab gameState={createGameState()} />);
-    await screen.findByText("Facilities");
+    await screen.findByRole("tab", { name: "Facilities" });
+    openDetailTab("Facilities");
     const fresh = screen.getAllByRole("button", { name: "Upgrade" });
     expect(fresh.every((button) => !(button as HTMLButtonElement).disabled)).toBe(true);
+    openDetailTab("Cash Flow");
     expect(screen.getByRole("button", { name: "finances.requestBoardSupport" })).toBeEnabled();
 
     rerender(<FinancesTab gameState={createGameState({ finance: 123_456 })} />);
 
     await waitFor(() => expect(calls).toBe(2));
+    openDetailTab("Facilities");
     const stale = screen.getAllByRole("button", { name: "Upgrade" });
     expect(stale.every((button) => (button as HTMLButtonElement).disabled)).toBe(true);
+    openDetailTab("Cash Flow");
     expect(screen.getByRole("button", { name: "finances.requestBoardSupport" })).toBeDisabled();
   });
 

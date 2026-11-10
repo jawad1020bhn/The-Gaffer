@@ -28,7 +28,7 @@ export function ChartContainer({
   }
 
   return (
-    <div className={`w-full ${className}`} style={{ height }}>
+    <div className={`chart-surface w-full ${className}`} style={{ height }}>
       {children}
     </div>
   );

@@ -4,12 +4,17 @@ import ReactDOM from "react-dom/client";
 import "../../App.css";
 import { ThemeProvider } from "../../context/ThemeContext";
 import { i18nReady } from "../../i18n";
+import { installNativeChrome } from "../../lib/nativeChrome";
 import { readHarnessLanguage, readHarnessPage } from "../pageHarness/harnessPage";
 import { readShellPreview } from "../shellPreview/readShellPreview";
 import { readMatchPreview } from "../matchPreview/readMatchPreview";
 import { readOnboardingPreview } from "../onboardingPreview/readOnboardingPreview";
 import { StyleGuide } from "./StyleGuide";
 import { applyStyleGuideOptions, readStyleGuideOptions } from "./styleGuideOptions";
+
+// The harness is hardened exactly like the game, so a screenshot or a keyboard check here means
+// the same thing it would in the Tauri window.
+installNativeChrome();
 
 const options = readStyleGuideOptions(window.location.search);
 applyStyleGuideOptions(options, document.documentElement, localStorage);

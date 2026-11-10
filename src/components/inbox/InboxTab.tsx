@@ -124,6 +124,26 @@ export default function InboxTab({
     }
   }, [allMessages, selectedMessageId]);
 
+  /**
+   * Open something rather than showing a "select a message" void.
+   *
+   * The first unread in the current view, or the newest when everything is read. This goes through
+   * the same path as a click, so the message is marked read exactly as it would be if the player
+   * had picked it — being opened is what marks it. It only fires when nothing is selected, so it
+   * never overrides a choice, and closing a message leaves it closed until the view changes.
+   */
+  const autoOpenRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (selectedMessageId !== null || filteredMessages.length === 0) return;
+    const candidate = filteredMessages.find((message) => !message.read) ?? filteredMessages[0];
+    // One attempt per message: a failed mark-read must not retry on every render.
+    if (autoOpenRef.current === candidate.id) return;
+    autoOpenRef.current = candidate.id;
+    void handleSelectMessage(candidate.id);
+    // handleSelectMessage is re-created each render; the ref above is what makes this fire once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredMessages, selectedMessageId]);
+
   useEffect(() => {
     if (effectFeedback === null) return;
     const id = setTimeout(() => setEffectFeedback(null), 4000);
@@ -347,7 +367,7 @@ export default function InboxTab({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-3">
       <InboxToolbar
         allMessagesCount={allMessages.length}
         bulkSelectionEnabled={bulkSelectionEnabled}
@@ -378,27 +398,33 @@ export default function InboxTab({
         onToggleCategory={handleToggleCategory}
       />
 
-      <div className="flex-1 flex gap-0 rounded-panel overflow-hidden border border-line bg-panel min-h-0">
-        <InboxMessageListPane
-          bulkSelectionEnabled={bulkSelectionEnabled}
-          filteredMessages={filteredMessages}
-          hasSelectedMessage={selectedMessage !== null}
-          language={i18n.language}
-          selectedMessageId={selectedMessageId}
-          selectedMessageIds={selectedMessageIds}
-          onRequestDeleteMessage={(message) => {
-            handleRequestDeleteMessage(message.id, message.subject);
-          }}
-          onRequestMarkMessageRead={(messageId) => {
-            void handleSelectMessage(messageId);
-          }}
-          onSelectMessage={(messageId) => {
-            void handleSelectMessage(messageId);
-          }}
-          onToggleMessageSelection={handleToggleMessageSelection}
-        />
+      <div className="grid min-h-0 grid-cols-12 overflow-hidden rounded-panel border border-line bg-panel-glass surface-panel shadow-panel">
+        <div className="col-span-4 flex min-h-0 flex-col border-r border-line">
+          <InboxMessageListPane
+            bulkSelectionEnabled={bulkSelectionEnabled}
+            filteredMessages={filteredMessages}
+            language={i18n.language}
+            selectedMessageId={selectedMessageId}
+            selectedMessageIds={selectedMessageIds}
+            onRequestDeleteMessage={(message) => {
+              handleRequestDeleteMessage(message.id, message.subject);
+            }}
+            onRequestMarkMessageRead={(messageId) => {
+              void handleSelectMessage(messageId);
+            }}
+            onSelectMessage={(messageId) => {
+              void handleSelectMessage(messageId);
+            }}
+            onToggleMessageSelection={handleToggleMessageSelection}
+          />
+          {/* Older mail lives in the list column, not under the whole screen where it sat below
+              the fold. Its own scroll keeps a long archive from pushing the button out of reach. */}
+          <div className="scrollbar-thin max-h-52 shrink-0 overflow-auto border-t border-line bg-sunken surface-well px-4 pb-3">
+            <ArchivedMessages />
+          </div>
+        </div>
 
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="col-span-8 flex min-h-0 min-w-0 flex-col">
           <InboxMessageDetailPane
             effectFeedback={effectFeedback}
             currentTeamId={currentTeamId}
@@ -415,8 +441,6 @@ export default function InboxTab({
           />
         </div>
       </div>
-
-      <ArchivedMessages />
 
       <InboxDeleteConfirmModal
         deleteModalState={deleteModalState}

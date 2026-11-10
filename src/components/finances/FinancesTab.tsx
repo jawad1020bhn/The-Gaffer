@@ -1,8 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { FinanceCashFlowChart } from "./FinanceCashFlowChart";
 import { useContractRiskLevels } from "../../hooks/useContractWarningStages";
 import type { GameStateData, PlayerSelectionOptions, TeamData } from "../../store/gameStore";
-import { Card, CardHeader, CardBody, Badge, ProgressBar, Button, Checkbox } from "../ui";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Badge,
+  ProgressBar,
+  Button,
+  Checkbox,
+  Tabs,
+  TabPanel,
+  SceneState,
+  Ticker,
+} from "../ui";
 import {
   contractExpiryLabel,
   formatExactMoney,
@@ -55,6 +67,9 @@ interface FinancesTabProps {
  *
  * The two components can be merged again once the tab no longer needs state.
  */
+/** The detail sections, in the order a manager reads them. */
+type FinanceDetailTab = "cashFlow" | "wagePressure" | "sponsors" | "facilities" | "payroll";
+
 export default function FinancesTab({ gameState, onGameUpdate, onSelectPlayer }: FinancesTabProps) {
   const { t } = useTranslation();
   const myTeam = gameState.teams.find((tm) => tm.id === gameState.manager.team_id);
@@ -122,17 +137,40 @@ function FinancesTabContent({
   const ownData = remoteFinanceData?.teamId === myTeam.id ? remoteFinanceData : null;
   const failedForThisState =
     loadFailure?.teamId === myTeam.id && loadFailure.key === financeSnapshotKey;
+  const retry = (
+    <Button size="sm" variant="outline" onClick={() => setLoadAttempt((n) => n + 1)}>
+      {t("common.retry")}
+    </Button>
+  );
   const failureBanner = failedForThisState ? (
     <div className="flex items-center gap-3 text-body text-fg-muted">
       <p role="alert">{t("finances.snapshotLoadFailed")}</p>
-      <Button size="sm" variant="outline" onClick={() => setLoadAttempt((n) => n + 1)}>
-        {t("common.retry")}
-      </Button>
+      {retry}
     </div>
   ) : null;
 
   if (!ownData) {
-    return failureBanner ?? <p className="text-fg-muted">{t("common.loading")}</p>;
+    // With no snapshot there is nothing to lay out, so the room carries the screen and the one
+    // useful action sits in it — not a bare line of text at the top of an empty page.
+    return failedForThisState ? (
+      <div role="alert" className="h-full">
+        <SceneState title={t("finances.snapshotLoadFailed")} action={retry} className="h-full" />
+      </div>
+    ) : (
+      <div
+        className="panel-stagger grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1fr)_auto_minmax(0,1.2fr)] gap-4"
+        role="status"
+        aria-busy="true"
+        aria-label={t("common.loading")}
+      >
+        <p className="sr-only">{t("common.loading")}</p>
+        {/* Skeletons in the shape of the panels that are coming, so nothing jumps when they land. */}
+        <div className="col-span-8 animate-pulse rounded-panel border border-line bg-panel-glass motion-reduce:animate-none" />
+        <div className="col-span-4 animate-pulse rounded-panel border border-line bg-panel-glass motion-reduce:animate-none" />
+        <div className="col-span-12 h-8 animate-pulse rounded-control bg-panel-glass motion-reduce:animate-none" />
+        <div className="col-span-12 animate-pulse rounded-panel border border-line bg-panel-glass motion-reduce:animate-none" />
+      </div>
+    );
   }
 
   return (
@@ -165,6 +203,8 @@ function FinancesTabLoaded({
   onSelectPlayer,
 }: FinancesTabLoadedProps) {
   const { t, i18n } = useTranslation();
+  const detailTabId = useId();
+  const [detailTab, setDetailTab] = useState<FinanceDetailTab>("cashFlow");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [delegatedRenewalsSummary, setDelegatedRenewalsSummary] = useState<string | null>(null);
   // What the manager has switched off, not what is switched on: everyone at risk is selected until
@@ -469,441 +509,509 @@ function FinancesTabLoaded({
     },
   ];
 
+  const detailTabs = [
+    { id: "cashFlow", label: t("finances.cashFlow") },
+    { id: "wagePressure", label: t("finances.wagePressure") },
+    { id: "sponsors", label: t("finances.sponsors") },
+    { id: "facilities", label: t("finances.facilities") },
+    { id: "payroll", label: t("finances.payroll") },
+  ];
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      {/* Financial overview */}
-      <Card accent="accent" className="lg:col-span-2">
-        <CardHeader>{t("finances.overview")}</CardHeader>
-        <CardBody>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {financeItems.map((item) => (
-              <div key={item.label} className="bg-sunken rounded-panel p-4 text-center">
+    <div className="panel-stagger grid h-full min-h-0 grid-cols-12 grid-rows-[minmax(0,1fr)_auto_minmax(0,1.2fr)] gap-4">
+      {/* Archetype A: two headline panels, then the detail behind in-panel tabs. Seven full-width
+          sections used to stack into a page that scrolled. Nothing is removed — every section is
+          one tab away, which is the brief's second overflow remedy. */}
+      <div className="col-span-8 min-h-0">
+        <Card accent="accent">
+          <CardHeader>{t("finances.overview")}</CardHeader>
+          <CardBody>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {financeItems.map((item) => (
+                <div key={item.label} className="bg-sunken rounded-panel p-4 text-center">
+                  <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle mb-1">
+                    {item.label}
+                  </p>
+                  <p className={`font-heading font-bold text-title ${item.color}`}>
+                    {<Ticker value={item.value} format={formatVal} />}
+                  </p>
+                </div>
+              ))}
+              <div className="bg-sunken rounded-panel p-4 text-center">
                 <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle mb-1">
-                  {item.label}
+                  {t("finances.squadValue")}
                 </p>
-                <p className={`font-heading font-bold text-title ${item.color}`}>
-                  {formatVal(item.value)}
+                <p className="font-heading font-bold text-title text-fg">
+                  {<Ticker value={totalValue} format={formatVal} />}
                 </p>
               </div>
-            ))}
-            <div className="bg-sunken rounded-panel p-4 text-center">
-              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle mb-1">
-                {t("finances.squadValue")}
-              </p>
-              <p className="font-heading font-bold text-title text-fg">{formatVal(totalValue)}</p>
             </div>
-          </div>
-        </CardBody>
-      </Card>
+          </CardBody>
+        </Card>
+      </div>
+      <div className="col-span-4 min-h-0">
+        <Card>
+          <CardHeader>{t("finances.wageBill")}</CardHeader>
+          <CardBody>
+            <div className="text-center mb-4">
+              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle">
+                {t("finances.weeklyTotal")}
+              </p>
+              <p className="font-heading font-bold text-title text-fg mt-1">
+                {
+                  <Ticker
+                    value={totalWages}
+                    format={(n) => formatWeeklyWage(Math.round(n), "compact")}
+                  />
+                }
+              </p>
+              <p className="text-caption text-fg-subtle mt-1">
+                {t("finances.budget")}: {formatWeeklyWage(weeklyWageBudget, "compact")} —{" "}
+                {totalWages <= weeklyWageBudget ? (
+                  <span className="text-selected">{t("finances.underBudget")}</span>
+                ) : (
+                  <span className="text-danger">{t("finances.overBudget")}</span>
+                )}
+              </p>
+            </div>
+            <ProgressBar
+              value={Math.min(100, Math.round((totalWages / Math.max(1, weeklyWageBudget)) * 100))}
+              variant={totalWages <= weeklyWageBudget ? "success" : "danger"}
+              size="md"
+              showLabel
+            />
+          </CardBody>
+        </Card>
+      </div>
 
-      {/* Wage summary */}
-      <Card>
-        <CardHeader>{t("finances.wageBill")}</CardHeader>
-        <CardBody>
-          <div className="text-center mb-4">
-            <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-subtle">
-              {t("finances.weeklyTotal")}
-            </p>
-            <p className="font-heading font-bold text-title text-fg mt-1">
-              {formatWeeklyWage(totalWages, "compact")}
-            </p>
-            <p className="text-caption text-fg-subtle mt-1">
-              {t("finances.budget")}: {formatWeeklyWage(weeklyWageBudget, "compact")} —{" "}
-              {totalWages <= weeklyWageBudget ? (
-                <span className="text-selected">{t("finances.underBudget")}</span>
-              ) : (
-                <span className="text-danger">{t("finances.overBudget")}</span>
-              )}
-            </p>
-          </div>
-          <ProgressBar
-            value={Math.min(100, Math.round((totalWages / Math.max(1, weeklyWageBudget)) * 100))}
-            variant={totalWages <= weeklyWageBudget ? "success" : "danger"}
-            size="md"
-            showLabel
-          />
-        </CardBody>
-      </Card>
+      <div className="col-span-12">
+        <Tabs
+          idPrefix={detailTabId}
+          label={t("finances.overview")}
+          tabs={detailTabs}
+          selectedId={detailTab}
+          onSelect={(id) => setDetailTab(id as FinanceDetailTab)}
+        />
+      </div>
 
-      <Card className="lg:col-span-3">
-        <CardHeader>{t("finances.cashFlow")}</CardHeader>
-        <CardBody>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="rounded-panel border border-line bg-sunken p-4 text-center">
-              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
-                {t("finances.weeklyWageSpend")}
-              </p>
-              <p className="font-heading font-bold text-title text-danger">
-                {formatWeeklyAmount(formatSignedAmount(-totalWages))}
-              </p>
-            </div>
-            <div className="rounded-panel border border-line bg-sunken p-4 text-center">
-              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
-                {t("finances.weeklySponsorIncome")}
-              </p>
-              <p className="font-heading font-bold text-title text-selected">
-                {formatWeeklyAmount(formatSignedAmount(weeklySponsorIncome))}
-              </p>
-            </div>
-            <div className="rounded-panel border border-line bg-sunken p-4 text-center">
-              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
-                {t("finances.projectedWeeklyNet")}
-              </p>
-              <p
-                className={`font-heading font-bold text-title ${projectedWeeklyNet >= 0 ? "text-selected" : "text-danger"}`}
-              >
-                {formatWeeklyAmount(formatSignedAmount(projectedWeeklyNet))}
-              </p>
-            </div>
-            <div className="rounded-panel border border-line bg-sunken p-4 text-center">
-              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
-                {t("finances.cashRunway")}
-              </p>
-              <p className="font-heading font-bold text-body text-fg">
-                {cashRunwayWeeks === null
-                  ? t("finances.runwayStable")
-                  : t("finances.runwayWeeks", { count: cashRunwayWeeks })}
-              </p>
-            </div>
-          </div>
-          {financeSnapshot.cashFlow.length > 0 && (
-            <div className="mt-4">
-              <FinanceCashFlowChart
-                weeks={financeSnapshot.cashFlow}
-                // The weeks hold every movement, transfer and loan fees included, which the season
-                // figures beside them leave out: so the series are money in and out, not the season's.
-                incomeLabel={t("finances.moneyIn")}
-                expensesLabel={t("finances.moneyOut")}
-              />
-            </div>
-          )}
-          <div className="mt-4 rounded-panel border border-line bg-sunken p-4 space-y-3">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-1">
-                <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
-                  {t("finances.boardSupport")}
-                </p>
-                <p className="text-body text-fg-muted">{t("finances.boardSupportDescription")}</p>
-                {boardSupportPreviewText ? (
-                  <p className="text-caption text-fg-muted">{boardSupportPreviewText}</p>
-                ) : null}
-              </div>
-              <Button
-                disabled={!canRequestBoardSupport || actionLoading === "board-support"}
-                onClick={() => void handleRequestBoardSupport()}
-                size="sm"
-              >
-                {t("finances.requestBoardSupport")}
-              </Button>
-            </div>
-            {boardSupportFeedback ? (
-              <p
-                className={`text-body ${boardSupportFeedback.tone === "error" ? "text-danger" : "text-selected"}`}
-              >
-                {boardSupportFeedback.text}
-              </p>
-            ) : null}
-            {previewsCurrent && !canRequestBoardSupport ? (
-              <p className="text-caption text-fg-muted">{t("finances.boardSupportUnavailable")}</p>
-            ) : null}
-          </div>
-        </CardBody>
-      </Card>
-
-      <Card className="lg:col-span-3">
-        <CardHeader>{t("finances.wagePressure")}</CardHeader>
-        <CardBody>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
-              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
-                {t("finances.wagePressure")}
-              </p>
-              <p className="font-heading font-bold text-title text-fg">
-                {t("finances.wageBudgetUsed", {
-                  percent: wageBudgetUsagePercent,
-                })}
-              </p>
-              <ProgressBar
-                value={Math.min(100, wageBudgetUsagePercent)}
-                variant={totalWages <= weeklyWageBudget ? "success" : "danger"}
-                size="md"
-                showLabel
-              />
-            </div>
-
-            <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
-                    {t("finances.contractRisk")}
-                  </p>
-                  {delegatedRenewalsSummary ? (
-                    <p className="text-caption text-fg-muted">{delegatedRenewalsSummary}</p>
-                  ) : null}
-                </div>
-                <div className="flex items-center gap-2">
-                  <p className="text-body font-semibold text-fg">
-                    {t("finances.atRiskWages", {
-                      amount: formatExactMoney(atRiskWages),
-                    })}
-                  </p>
-                  {contractRiskPlayers.length > 0 ? (
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline" onClick={handleToggleAllRiskPlayers}>
-                        {t("finances.selectAllAtRisk")}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => void handleDelegateRenewals()}
-                        disabled={
-                          actionLoading === "delegate-renewals" || selectedRiskPlayers.length === 0
-                        }
-                      >
-                        {t("finances.delegateSelectedRenewals")}
-                      </Button>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-
-              {contractRiskPlayers.length > 0 ? (
-                <div className="space-y-3">
-                  {contractRiskPlayers.map(({ player, riskLevel }) => (
-                    <div
-                      key={player.id}
-                      className="rounded-control border border-line bg-panel p-3 flex items-start justify-between gap-3"
+      <div className="col-span-12 min-h-0">
+        <TabPanel
+          idPrefix={detailTabId}
+          tabId={detailTab}
+          hidden={false}
+          className="h-full min-h-0"
+        >
+          {detailTab === "cashFlow" && (
+            <Card>
+              <CardHeader>{t("finances.cashFlow")}</CardHeader>
+              <CardBody>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="rounded-panel border border-line bg-sunken p-4 text-center">
+                    <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
+                      {t("finances.weeklyWageSpend")}
+                    </p>
+                    <p className="font-heading font-bold text-title text-danger">
+                      {formatWeeklyAmount(formatSignedAmount(-totalWages))}
+                    </p>
+                  </div>
+                  <div className="rounded-panel border border-line bg-sunken p-4 text-center">
+                    <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
+                      {t("finances.weeklySponsorIncome")}
+                    </p>
+                    <p className="font-heading font-bold text-title text-selected">
+                      {formatWeeklyAmount(formatSignedAmount(weeklySponsorIncome))}
+                    </p>
+                  </div>
+                  <div className="rounded-panel border border-line bg-sunken p-4 text-center">
+                    <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
+                      {t("finances.projectedWeeklyNet")}
+                    </p>
+                    <p
+                      className={`font-heading font-bold text-title ${projectedWeeklyNet >= 0 ? "text-selected" : "text-danger"}`}
                     >
-                      <div className="flex items-start gap-3">
-                        <Checkbox
-                          checked={!deselectedRiskPlayerIds.includes(player.id)}
-                          onChange={() => handleToggleRiskPlayer(player.id)}
-                          aria-label={t("finances.selectRiskPlayer", {
-                            player: player.full_name,
-                          })}
-                          className="mt-1"
-                        />
-                        <div className="space-y-1">
-                          <p className="font-semibold text-body text-fg">{player.full_name}</p>
-                          <p className="text-caption text-fg-muted">
-                            {player.contract_end
-                              ? contractExpiryLabel(player.contract_end, i18n.language, t)
-                              : null}
-                          </p>
-                          <p className="text-caption text-fg-muted">
-                            {t("playerProfile.yearsRemaining")}:{" "}
-                            {getContractYearsRemaining(
-                              player.contract_end,
-                              gameState.clock.current_date,
-                            )}
-                          </p>
-                        </div>
+                      {formatWeeklyAmount(formatSignedAmount(projectedWeeklyNet))}
+                    </p>
+                  </div>
+                  <div className="rounded-panel border border-line bg-sunken p-4 text-center">
+                    <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted mb-1">
+                      {t("finances.cashRunway")}
+                    </p>
+                    <p className="font-heading font-bold text-body text-fg">
+                      {cashRunwayWeeks === null
+                        ? t("finances.runwayStable")
+                        : t("finances.runwayWeeks", { count: cashRunwayWeeks })}
+                    </p>
+                  </div>
+                </div>
+                {financeSnapshot.cashFlow.length > 0 && (
+                  <div className="mt-4">
+                    <FinanceCashFlowChart
+                      weeks={financeSnapshot.cashFlow}
+                      // The weeks hold every movement, transfer and loan fees included, which the season
+                      // figures beside them leave out: so the series are money in and out, not the season's.
+                      incomeLabel={t("finances.moneyIn")}
+                      expensesLabel={t("finances.moneyOut")}
+                    />
+                  </div>
+                )}
+                <div className="mt-4 rounded-panel border border-line bg-sunken p-4 space-y-3">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="space-y-1">
+                      <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
+                        {t("finances.boardSupport")}
+                      </p>
+                      <p className="text-body text-fg-muted">
+                        {t("finances.boardSupportDescription")}
+                      </p>
+                      {boardSupportPreviewText ? (
+                        <p className="text-caption text-fg-muted">{boardSupportPreviewText}</p>
+                      ) : null}
+                    </div>
+                    <Button
+                      disabled={!canRequestBoardSupport || actionLoading === "board-support"}
+                      onClick={() => void handleRequestBoardSupport()}
+                      size="sm"
+                    >
+                      {t("finances.requestBoardSupport")}
+                    </Button>
+                  </div>
+                  {boardSupportFeedback ? (
+                    <p
+                      className={`text-body ${boardSupportFeedback.tone === "error" ? "text-danger" : "text-selected"}`}
+                    >
+                      {boardSupportFeedback.text}
+                    </p>
+                  ) : null}
+                  {previewsCurrent && !canRequestBoardSupport ? (
+                    <p className="text-caption text-fg-muted">
+                      {t("finances.boardSupportUnavailable")}
+                    </p>
+                  ) : null}
+                </div>
+              </CardBody>
+            </Card>
+          )}
+          {detailTab === "wagePressure" && (
+            <Card>
+              <CardHeader>{t("finances.wagePressure")}</CardHeader>
+              <CardBody>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
+                    <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
+                      {t("finances.wagePressure")}
+                    </p>
+                    <p className="font-heading font-bold text-title text-fg">
+                      {t("finances.wageBudgetUsed", {
+                        percent: wageBudgetUsagePercent,
+                      })}
+                    </p>
+                    <ProgressBar
+                      value={Math.min(100, wageBudgetUsagePercent)}
+                      variant={totalWages <= weeklyWageBudget ? "success" : "danger"}
+                      size="md"
+                      showLabel
+                    />
+                  </div>
+
+                  <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
+                          {t("finances.contractRisk")}
+                        </p>
+                        {delegatedRenewalsSummary ? (
+                          <p className="text-caption text-fg-muted">{delegatedRenewalsSummary}</p>
+                        ) : null}
                       </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <Badge variant={getContractRiskBadgeVariant(riskLevel)}>
-                          {riskLevel === "critical"
-                            ? t("finances.contractRiskCritical")
-                            : t("finances.contractRiskWarning")}
-                        </Badge>
-                        <span className="text-caption font-semibold text-fg">
-                          {formatWeeklyWage(weeklyWageAmount(player.wage))}
-                        </span>
-                        {onSelectPlayer ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              onSelectPlayer(player.id, {
-                                openRenewal: true,
-                              });
-                            }}
-                          >
-                            {t("common.renewContract")}
-                          </Button>
+                      <div className="flex items-center gap-2">
+                        <p className="text-body font-semibold text-fg">
+                          {t("finances.atRiskWages", {
+                            amount: formatExactMoney(atRiskWages),
+                          })}
+                        </p>
+                        {contractRiskPlayers.length > 0 ? (
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleToggleAllRiskPlayers}
+                            >
+                              {t("finances.selectAllAtRisk")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => void handleDelegateRenewals()}
+                              disabled={
+                                actionLoading === "delegate-renewals" ||
+                                selectedRiskPlayers.length === 0
+                              }
+                            >
+                              {t("finances.delegateSelectedRenewals")}
+                            </Button>
+                          </div>
                         ) : null}
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-body text-fg-muted">{t("finances.noContractRisks")}</p>
-              )}
-            </div>
-          </div>
-        </CardBody>
-      </Card>
 
-      <Card className="lg:col-span-3">
-        <CardHeader>{t("finances.sponsors")}</CardHeader>
-        <CardBody>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded-panel border border-line bg-sunken p-4 space-y-2">
-              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
-                {t("finances.activeSponsor")}
-              </p>
-              {activeSponsorship ? (
-                <>
-                  <h3 className="font-heading font-bold text-body text-fg uppercase tracking-label">
-                    {activeSponsorship.sponsor_name}
-                  </h3>
-                  <p className="text-body text-fg-muted">
-                    {t("finances.sponsorWeeklyValue", {
-                      amount: formatExactMoney(activeSponsorship.base_value),
-                    })}
-                  </p>
-                  <p className="text-body text-fg-muted">
-                    {t("finances.sponsorRemainingWeeks", {
-                      count: activeSponsorship.remaining_weeks,
-                    })}
-                  </p>
-                </>
-              ) : (
-                <p className="text-body text-fg-muted">{t("finances.noActiveSponsor")}</p>
-              )}
-            </div>
-
-            <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
-              <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
-                {t("finances.pendingSponsorOffers")}
-              </p>
-              <div className="rounded-control border border-line bg-panel p-4 space-y-3">
-                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-body text-fg">
-                      {t("finances.pitchSponsor")}
-                    </h3>
-                    <p className="text-body text-fg-muted">
-                      {t("finances.sponsorPitchDescription")}
-                    </p>
-                    {sponsorPitchPreviewText ? (
-                      <p className="text-caption text-fg-muted">{sponsorPitchPreviewText}</p>
-                    ) : null}
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => void handleRequestSponsorPitch()}
-                    disabled={actionLoading === "sponsor-pitch" || !canRequestSponsorPitch}
-                  >
-                    {t("finances.pitchSponsor")}
-                  </Button>
-                </div>
-                {sponsorPitchDisabledReason ? (
-                  <p className="text-caption text-fg-muted">{sponsorPitchDisabledReason}</p>
-                ) : null}
-                {sponsorPitchFeedback ? (
-                  <p
-                    className={
-                      sponsorPitchFeedback.tone === "error"
-                        ? "text-body text-danger"
-                        : "text-body text-selected"
-                    }
-                  >
-                    {sponsorPitchFeedback.text}
-                  </p>
-                ) : null}
-              </div>
-              <div className="rounded-control border border-line bg-panel p-4 space-y-3">
-                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-body text-fg">
-                      {t("finances.marketingCampaign")}
-                    </h3>
-                    <p className="text-body text-fg-muted">
-                      {t("finances.marketingCampaignDescription")}
-                    </p>
-                    {marketingCampaignPreviewText ? (
-                      <p className="text-caption text-fg-muted">{marketingCampaignPreviewText}</p>
-                    ) : null}
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => void handleRequestMarketingCampaign()}
-                    disabled={
-                      actionLoading === "marketing-campaign" || !canRequestMarketingCampaign
-                    }
-                  >
-                    {t("finances.launchMarketingCampaign")}
-                  </Button>
-                </div>
-                {marketingCampaignDisabledReason ? (
-                  <p className="text-caption text-fg-muted">{marketingCampaignDisabledReason}</p>
-                ) : null}
-                {marketingCampaignFeedback ? (
-                  <p
-                    className={
-                      marketingCampaignFeedback.tone === "error"
-                        ? "text-body text-danger"
-                        : "text-body text-selected"
-                    }
-                  >
-                    {marketingCampaignFeedback.text}
-                  </p>
-                ) : null}
-              </div>
-              {sponsorOffers.length > 0 ? (
-                sponsorOffers.map((message) => {
-                  const sponsorAction = message.actions.find(
-                    (action) => !action.resolved && isChooseOptionAction(action.action_type),
-                  );
-
-                  if (!sponsorAction || !isChooseOptionAction(sponsorAction.action_type)) {
-                    return null;
-                  }
-
-                  return (
-                    <div
-                      key={message.id}
-                      className="rounded-control border border-line bg-panel p-4 space-y-3"
-                    >
-                      <div className="space-y-1">
-                        <h3 className="font-semibold text-body text-fg">{message.subject}</h3>
-                        <p className="text-body text-fg-muted">{message.body}</p>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {sponsorAction.action_type.ChooseOption.options.map((option) => {
-                          const optionLoadingKey = `sponsor:${message.id}:${option.id}`;
-                          return (
-                            <div
-                              key={option.id}
-                              className="min-w-55 flex-1 rounded-control border border-line bg-sunken p-3 space-y-2"
-                            >
-                              <p className="text-caption text-fg-muted">{option.description}</p>
-                              <Button
-                                disabled={actionLoading === optionLoadingKey}
-                                onClick={() =>
-                                  void handleSponsorOption(message.id, sponsorAction.id, option.id)
-                                }
-                                size="sm"
-                                variant={option.id === "decline" ? "outline" : "primary"}
-                              >
-                                {option.label}
-                              </Button>
+                    {contractRiskPlayers.length > 0 ? (
+                      <div className="space-y-3">
+                        {contractRiskPlayers.map(({ player, riskLevel }) => (
+                          <div
+                            key={player.id}
+                            className="rounded-control border border-line bg-panel p-3 flex items-start justify-between gap-3"
+                          >
+                            <div className="flex items-start gap-3">
+                              <Checkbox
+                                checked={!deselectedRiskPlayerIds.includes(player.id)}
+                                onChange={() => handleToggleRiskPlayer(player.id)}
+                                aria-label={t("finances.selectRiskPlayer", {
+                                  player: player.full_name,
+                                })}
+                                className="mt-1"
+                              />
+                              <div className="space-y-1">
+                                <p className="font-semibold text-body text-fg">
+                                  {player.full_name}
+                                </p>
+                                <p className="text-caption text-fg-muted">
+                                  {player.contract_end
+                                    ? contractExpiryLabel(player.contract_end, i18n.language, t)
+                                    : null}
+                                </p>
+                                <p className="text-caption text-fg-muted">
+                                  {t("playerProfile.yearsRemaining")}:{" "}
+                                  {getContractYearsRemaining(
+                                    player.contract_end,
+                                    gameState.clock.current_date,
+                                  )}
+                                </p>
+                              </div>
                             </div>
-                          );
-                        })}
+                            <div className="flex flex-col items-end gap-2">
+                              <Badge variant={getContractRiskBadgeVariant(riskLevel)}>
+                                {riskLevel === "critical"
+                                  ? t("finances.contractRiskCritical")
+                                  : t("finances.contractRiskWarning")}
+                              </Badge>
+                              <span className="text-caption font-semibold text-fg">
+                                {formatWeeklyWage(weeklyWageAmount(player.wage))}
+                              </span>
+                              {onSelectPlayer ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    onSelectPlayer(player.id, {
+                                      openRenewal: true,
+                                    });
+                                  }}
+                                >
+                                  {t("common.renewContract")}
+                                </Button>
+                              ) : null}
+                            </div>
+                          </div>
+                        ))}
                       </div>
+                    ) : (
+                      <p className="text-body text-fg-muted">{t("finances.noContractRisks")}</p>
+                    )}
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          )}
+          {detailTab === "sponsors" && (
+            <Card>
+              <CardHeader>{t("finances.sponsors")}</CardHeader>
+              <CardBody>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="rounded-panel border border-line bg-sunken p-4 space-y-2">
+                    <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
+                      {t("finances.activeSponsor")}
+                    </p>
+                    {activeSponsorship ? (
+                      <>
+                        <h3 className="font-heading font-bold text-body text-fg uppercase tracking-label">
+                          {activeSponsorship.sponsor_name}
+                        </h3>
+                        <p className="text-body text-fg-muted">
+                          {t("finances.sponsorWeeklyValue", {
+                            amount: formatExactMoney(activeSponsorship.base_value),
+                          })}
+                        </p>
+                        <p className="text-body text-fg-muted">
+                          {t("finances.sponsorRemainingWeeks", {
+                            count: activeSponsorship.remaining_weeks,
+                          })}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-body text-fg-muted">{t("finances.noActiveSponsor")}</p>
+                    )}
+                  </div>
+
+                  <div className="rounded-panel border border-line bg-sunken p-4 space-y-3">
+                    <p className="text-caption font-heading font-bold uppercase tracking-label text-fg-muted">
+                      {t("finances.pendingSponsorOffers")}
+                    </p>
+                    <div className="rounded-control border border-line bg-panel p-4 space-y-3">
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div className="space-y-1">
+                          <h3 className="font-semibold text-body text-fg">
+                            {t("finances.pitchSponsor")}
+                          </h3>
+                          <p className="text-body text-fg-muted">
+                            {t("finances.sponsorPitchDescription")}
+                          </p>
+                          {sponsorPitchPreviewText ? (
+                            <p className="text-caption text-fg-muted">{sponsorPitchPreviewText}</p>
+                          ) : null}
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => void handleRequestSponsorPitch()}
+                          disabled={actionLoading === "sponsor-pitch" || !canRequestSponsorPitch}
+                        >
+                          {t("finances.pitchSponsor")}
+                        </Button>
+                      </div>
+                      {sponsorPitchDisabledReason ? (
+                        <p className="text-caption text-fg-muted">{sponsorPitchDisabledReason}</p>
+                      ) : null}
+                      {sponsorPitchFeedback ? (
+                        <p
+                          className={
+                            sponsorPitchFeedback.tone === "error"
+                              ? "text-body text-danger"
+                              : "text-body text-selected"
+                          }
+                        >
+                          {sponsorPitchFeedback.text}
+                        </p>
+                      ) : null}
                     </div>
-                  );
-                })
-              ) : (
-                <p className="text-body text-fg-muted">{t("finances.noPendingSponsorOffers")}</p>
-              )}
-            </div>
-          </div>
-        </CardBody>
-      </Card>
+                    <div className="rounded-control border border-line bg-panel p-4 space-y-3">
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div className="space-y-1">
+                          <h3 className="font-semibold text-body text-fg">
+                            {t("finances.marketingCampaign")}
+                          </h3>
+                          <p className="text-body text-fg-muted">
+                            {t("finances.marketingCampaignDescription")}
+                          </p>
+                          {marketingCampaignPreviewText ? (
+                            <p className="text-caption text-fg-muted">
+                              {marketingCampaignPreviewText}
+                            </p>
+                          ) : null}
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => void handleRequestMarketingCampaign()}
+                          disabled={
+                            actionLoading === "marketing-campaign" || !canRequestMarketingCampaign
+                          }
+                        >
+                          {t("finances.launchMarketingCampaign")}
+                        </Button>
+                      </div>
+                      {marketingCampaignDisabledReason ? (
+                        <p className="text-caption text-fg-muted">
+                          {marketingCampaignDisabledReason}
+                        </p>
+                      ) : null}
+                      {marketingCampaignFeedback ? (
+                        <p
+                          className={
+                            marketingCampaignFeedback.tone === "error"
+                              ? "text-body text-danger"
+                              : "text-body text-selected"
+                          }
+                        >
+                          {marketingCampaignFeedback.text}
+                        </p>
+                      ) : null}
+                    </div>
+                    {sponsorOffers.length > 0 ? (
+                      sponsorOffers.map((message) => {
+                        const sponsorAction = message.actions.find(
+                          (action) => !action.resolved && isChooseOptionAction(action.action_type),
+                        );
 
-      <FinancesFacilitiesCard
-        facilities={facilities}
-        facilityUpgrades={financeData.previews.facilityUpgrades}
-        previewsCurrent={previewsCurrent}
-        facilityUpgradeError={facilityUpgradeError}
-        actionLoading={actionLoading}
-        onUpgrade={(facility) => void handleUpgradeFacility(facility)}
-      />
+                        if (!sponsorAction || !isChooseOptionAction(sponsorAction.action_type)) {
+                          return null;
+                        }
 
-      <FinancesPayrollTable roster={roster} onSelectPlayer={onSelectPlayer} />
+                        return (
+                          <div
+                            key={message.id}
+                            className="rounded-control border border-line bg-panel p-4 space-y-3"
+                          >
+                            <div className="space-y-1">
+                              <h3 className="font-semibold text-body text-fg">{message.subject}</h3>
+                              <p className="text-body text-fg-muted">{message.body}</p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {sponsorAction.action_type.ChooseOption.options.map((option) => {
+                                const optionLoadingKey = `sponsor:${message.id}:${option.id}`;
+
+                                return (
+                                  <div
+                                    key={option.id}
+                                    className="min-w-55 flex-1 rounded-control border border-line bg-sunken p-3 space-y-2"
+                                  >
+                                    <p className="text-caption text-fg-muted">
+                                      {option.description}
+                                    </p>
+                                    <Button
+                                      disabled={actionLoading === optionLoadingKey}
+                                      onClick={() =>
+                                        void handleSponsorOption(
+                                          message.id,
+                                          sponsorAction.id,
+                                          option.id,
+                                        )
+                                      }
+                                      size="sm"
+                                      variant={option.id === "decline" ? "outline" : "primary"}
+                                    >
+                                      {option.label}
+                                    </Button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="text-body text-fg-muted">
+                        {t("finances.noPendingSponsorOffers")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          )}
+          {detailTab === "facilities" && (
+            <FinancesFacilitiesCard
+              facilities={facilities}
+              facilityUpgrades={financeData.previews.facilityUpgrades}
+              previewsCurrent={previewsCurrent}
+              facilityUpgradeError={facilityUpgradeError}
+              actionLoading={actionLoading}
+              onUpgrade={(facility) => void handleUpgradeFacility(facility)}
+            />
+          )}
+          {detailTab === "payroll" && (
+            <FinancesPayrollTable roster={roster} onSelectPlayer={onSelectPlayer} />
+          )}
+        </TabPanel>
+      </div>
     </div>
   );
 }

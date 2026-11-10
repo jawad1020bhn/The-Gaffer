@@ -35,6 +35,8 @@ type DialogProps = (NamedBy | Labelled) & {
   className?: string;
   /** Panel colours in both themes, for a dialog whose contents sit on a different surface. */
   surfaceClassName?: string;
+  /** Secondary information slides in; destructive confirmations stay centred. */
+  placement?: "center" | "right";
   children: ReactNode;
 };
 
@@ -54,6 +56,7 @@ export function Dialog({
   className = "",
   surfaceClassName = "bg-panel",
   children,
+  placement = "center",
 }: DialogProps) {
   // A press that starts inside the panel (selecting text in a field) and ends on the backdrop is
   // not a click on the backdrop, though the browser reports one.
@@ -71,7 +74,7 @@ export function Dialog({
   return (
     <div
       data-testid="dialog-backdrop"
-      className={`fixed inset-0 z-50 flex items-center justify-center ${overlayClassName}`}
+      className={`fixed inset-0 z-50 flex ${placement === "right" ? "items-stretch justify-end" : "items-center justify-center"} ${overlayClassName}`}
       onMouseDown={(event) => {
         pressStartedOnBackdrop.current = event.target === event.currentTarget;
       }}
@@ -93,7 +96,7 @@ export function Dialog({
         aria-describedby={describedBy}
         aria-busy={busy}
         tabIndex={-1}
-        className={`${surfaceClassName} border border-line shadow-2xl focus:outline-none ${className}`}
+        className={`${surfaceClassName} border border-line shadow-2xl focus:outline-none ${className} ${placement === "right" ? "drawer-in h-full rounded-none" : ""}`}
       >
         {children}
       </div>

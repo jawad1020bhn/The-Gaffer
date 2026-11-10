@@ -102,7 +102,7 @@ export default function TacticsTab({
   }
 
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className="panel-stagger grid h-full min-h-0 w-full grid-rows-[auto_auto_minmax(0,1fr)] gap-4">
       <div
         ref={dragPreviewRef}
         aria-hidden="true"
@@ -145,100 +145,109 @@ export default function TacticsTab({
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[260px_1fr_270px] xl:items-start">
-        {/* Left: player list */}
-        <TacticsPlayerList
-          bench={filteredBench}
-          comparePlayerId={comparePlayerId}
-          dragState={dragState}
-          matchRoles={effectiveMatchRoles}
-          onAssignMatchRole={(role, playerId) => {
-            void handleAssignMatchRole(role, playerId);
-          }}
-          onClearFilters={handleClearFilters}
-          onDemoteStarter={(playerId) => {
-            void handleDemoteStarter(playerId);
-          }}
-          onDragEnd={resetDragState}
-          onDragStart={handleDragStart}
-          onOpenPlayerProfile={onSelectPlayer}
-          onPlayerSearchChange={setPlayerSearch}
-          onPositionFilterChange={setPositionFilter}
-          onPromoteBench={(playerId) => {
-            void handlePromoteBenchPlayer(playerId);
-          }}
-          onTacticalSelect={(playerId, section) => {
-            void handleLineupPlayerClick(playerId, section);
-          }}
-          playerSearch={playerSearch}
-          positionFilter={positionFilter}
-          selectedPlayerId={selectedPlayerId}
-          starters={filteredStartingXI}
-          xiActivePosition={xiActivePosition}
-        />
+      {/* Archetype E — the board. List left, pitch centre, instructions right, all filling one
+          viewport. The columns are fixed proportions rather than an xl: breakpoint: the window has
+          a 1280px minimum, so there is no narrow case to collapse into a single column for. */}
+      <div className="grid min-h-0 grid-cols-12 items-stretch gap-4">
+        <div className="col-span-3 min-h-0">
+          {/* Left: player list */}
+          <TacticsPlayerList
+            bench={filteredBench}
+            comparePlayerId={comparePlayerId}
+            dragState={dragState}
+            matchRoles={effectiveMatchRoles}
+            onAssignMatchRole={(role, playerId) => {
+              void handleAssignMatchRole(role, playerId);
+            }}
+            onClearFilters={handleClearFilters}
+            onDemoteStarter={(playerId) => {
+              void handleDemoteStarter(playerId);
+            }}
+            onDragEnd={resetDragState}
+            onDragStart={handleDragStart}
+            onOpenPlayerProfile={onSelectPlayer}
+            onPlayerSearchChange={setPlayerSearch}
+            onPositionFilterChange={setPositionFilter}
+            onPromoteBench={(playerId) => {
+              void handlePromoteBenchPlayer(playerId);
+            }}
+            onTacticalSelect={(playerId, section) => {
+              void handleLineupPlayerClick(playerId, section);
+            }}
+            playerSearch={playerSearch}
+            positionFilter={positionFilter}
+            selectedPlayerId={selectedPlayerId}
+            starters={filteredStartingXI}
+            xiActivePosition={xiActivePosition}
+          />
+        </div>
 
-        {/* Center: pitch */}
-        <TacticsPitch
-          familiarity={familiarity}
-          lineupReady={lineupReady}
-          dragState={dragState}
-          formation={formation}
-          comparePlayerId={comparePlayerId}
-          hoveredSlot={hoveredSlot}
-          matchRoles={effectiveMatchRoles}
-          onRoleChange={(playerId, role) => {
-            void setPlayerRole(playerId, role)
-              .then(onGameUpdate)
-              .catch((error: unknown) => {
-                console.error("Failed to set player role:", error);
-              });
-          }}
-          playerRoles={team?.player_roles}
-          tacticsPhase={team?.tactics_phase}
-          onAssignBestFit={(playerId) => {
-            void handleAssignBestFit(playerId);
-          }}
-          onAssignMatchRole={(role, playerId) => {
-            void handleAssignMatchRole(role, playerId);
-          }}
-          onClearSelection={clearLineupSelection}
-          onDemoteStarter={(playerId) => {
-            void handleDemoteStarter(playerId);
-          }}
-          onDragEnd={resetDragState}
-          onDragStart={handleDragStart}
-          onLineupPlayerClick={(playerId, section) => {
-            void handleLineupPlayerClick(playerId, section);
-          }}
-          onOpenPlayerProfile={(playerId) => {
-            onSelectPlayer(playerId);
-          }}
-          onPromoteBench={(playerId) => {
-            void handlePromoteBenchPlayer(playerId);
-          }}
-          onSlotDragLeave={handleSlotDragLeave}
-          onSlotDragOver={handleSlotDragOver}
-          onSlotDrop={(event, slotIndex) => {
-            void handleSlotDrop(event, slotIndex);
-          }}
-          outOfPositionCount={outOfPositionCount}
-          pitchSlots={pitchSlots}
-          selectedPlayer={selectedPlayer}
-          selectedPlayerId={selectedPlayerId}
-        />
+        {/* Centre: the pitch. It owns the most space and must never scroll. */}
+        <div className="col-span-6 min-h-0">
+          <TacticsPitch
+            familiarity={familiarity}
+            lineupReady={lineupReady}
+            dragState={dragState}
+            formation={formation}
+            comparePlayerId={comparePlayerId}
+            hoveredSlot={hoveredSlot}
+            matchRoles={effectiveMatchRoles}
+            onRoleChange={(playerId, role) => {
+              void setPlayerRole(playerId, role)
+                .then(onGameUpdate)
+                .catch((error: unknown) => {
+                  console.error("Failed to set player role:", error);
+                });
+            }}
+            playerRoles={team?.player_roles}
+            tacticsPhase={team?.tactics_phase}
+            onAssignBestFit={(playerId) => {
+              void handleAssignBestFit(playerId);
+            }}
+            onAssignMatchRole={(role, playerId) => {
+              void handleAssignMatchRole(role, playerId);
+            }}
+            onClearSelection={clearLineupSelection}
+            onDemoteStarter={(playerId) => {
+              void handleDemoteStarter(playerId);
+            }}
+            onDragEnd={resetDragState}
+            onDragStart={handleDragStart}
+            onLineupPlayerClick={(playerId, section) => {
+              void handleLineupPlayerClick(playerId, section);
+            }}
+            onOpenPlayerProfile={(playerId) => {
+              onSelectPlayer(playerId);
+            }}
+            onPromoteBench={(playerId) => {
+              void handlePromoteBenchPlayer(playerId);
+            }}
+            onSlotDragLeave={handleSlotDragLeave}
+            onSlotDragOver={handleSlotDragOver}
+            onSlotDrop={(event, slotIndex) => {
+              void handleSlotDrop(event, slotIndex);
+            }}
+            outOfPositionCount={outOfPositionCount}
+            pitchSlots={pitchSlots}
+            selectedPlayer={selectedPlayer}
+            selectedPlayerId={selectedPlayerId}
+          />
+        </div>
 
         {/* Right: roles + phase blueprint */}
-        <TacticsRightPanel
-          allSquad={roster}
-          autoSetPieces={autoSetPieces}
-          matchRoles={team.match_roles}
-          onGameUpdate={onGameUpdate}
-          onTacticsPhaseChange={(patch) => {
-            void handleTacticsPhaseChange(patch);
-          }}
-          startingPlayers={startingXI}
-          tacticsPhase={team?.tactics_phase}
-        />
+        <div className="col-span-3 min-h-0">
+          <TacticsRightPanel
+            allSquad={roster}
+            autoSetPieces={autoSetPieces}
+            matchRoles={team.match_roles}
+            onGameUpdate={onGameUpdate}
+            onTacticsPhaseChange={(patch) => {
+              void handleTacticsPhaseChange(patch);
+            }}
+            startingPlayers={startingXI}
+            tacticsPhase={team?.tactics_phase}
+          />
+        </div>
       </div>
 
       {/* Inspector modal — only when both players are selected for comparison */}

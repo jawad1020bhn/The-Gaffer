@@ -405,7 +405,8 @@ export default function SquadRosterView({
   });
 
   return (
-    <div className="flex flex-col gap-4">
+    // Archetype C: filters keep their height, the roster takes the rest and scrolls inside itself.
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4">
       <Card>
         <div className="p-4 grid grid-cols-1 lg:grid-cols-[minmax(0,1.3fr)_220px_220px_auto_auto] gap-3 items-end">
           <div>
@@ -527,8 +528,8 @@ export default function SquadRosterView({
         )}
       </Card>
 
-      <Card>
-        <div className="p-4 border-b border-line bg-panel rounded-t-xl">
+      <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+        <div className="shrink-0 border-b border-line bg-panel p-4 rounded-t-panel">
           <h3 className="text-body font-heading font-bold text-fg uppercase tracking-label flex items-center gap-2">
             <Users className="w-4 h-4 text-warning" />
             {t("squad.title", { team: team.name })}
@@ -584,82 +585,85 @@ export default function SquadRosterView({
             </div>
           ) : null}
         </div>
-        {view === "cards" ? (
-          <SquadCardsView
-            players={filteredRoster}
-            teamName={team.name}
-            kit={team.colors}
-            isStarter={(player) => xiIds.has(player.id)}
-            deployedPositionOf={deployedPositionOf}
-            riskLevelOf={riskLevelOf}
-            menuItemsFor={(player) => squadRowMenuItems(player, menuContextFor(player))}
-            onSelectPlayer={onSelectPlayer}
-            sortKey={sortKey}
-            sortDir={sortDir}
-            onSort={toggleSort}
-          />
-        ) : (
-          <DataTable
-            label={t("squad.title", { team: team.name })}
-            columns={columns}
-            rows={filteredRoster}
-            rowKey={(player) => player.id}
-            rowName={(player) => player.match_name}
-            sort={{ key: sortKey, direction: sortDir }}
-            onSortChange={(key) => toggleSort(key as SquadListSortKey)}
-            onOpen={(player) => onSelectPlayer(player.id)}
-            rowAccent={(player) =>
-              xiIds.has(player.id) ? "selected" : isRuledOutOfMatchDay(player) ? "danger" : null
-            }
-            onRowContextMenu={(player, event) => {
-              const point = contextMenuPoint(event, event.currentTarget);
-              menuRefs.current.get(player.id)?.open(point.x, point.y);
-            }}
-            primaryAside={(player) => (
-              <SquadNameAside player={player} starting={xiIds.has(player.id)} t={t} />
-            )}
-            rowAction={{
-              header: t("common.actions"),
-              cell: (player) => (
-                <ContextMenu
-                  items={squadRowMenuItems(player, menuContextFor(player))}
-                  ref={(handle) => {
-                    if (handle) menuRefs.current.set(player.id, handle);
-                    else menuRefs.current.delete(player.id);
-                  }}
-                  onOpenChange={(open) => {
-                    setOpenMenuPlayerId((prev) => {
-                      if (open) return player.id;
-                      return prev === player.id ? null : prev;
-                    });
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      menuRefs.current.get(player.id)?.open(rect.left, rect.bottom + 4);
+        {/* The roster is the only scrolling region, and the fade is its cue (§5). */}
+        <div className="scrollbar-thin scroll-fade min-h-0 flex-1 overflow-y-auto">
+          {view === "cards" ? (
+            <SquadCardsView
+              players={filteredRoster}
+              teamName={team.name}
+              kit={team.colors}
+              isStarter={(player) => xiIds.has(player.id)}
+              deployedPositionOf={deployedPositionOf}
+              riskLevelOf={riskLevelOf}
+              menuItemsFor={(player) => squadRowMenuItems(player, menuContextFor(player))}
+              onSelectPlayer={onSelectPlayer}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={toggleSort}
+            />
+          ) : (
+            <DataTable
+              label={t("squad.title", { team: team.name })}
+              columns={columns}
+              rows={filteredRoster}
+              rowKey={(player) => player.id}
+              rowName={(player) => player.match_name}
+              sort={{ key: sortKey, direction: sortDir }}
+              onSortChange={(key) => toggleSort(key as SquadListSortKey)}
+              onOpen={(player) => onSelectPlayer(player.id)}
+              rowAccent={(player) =>
+                xiIds.has(player.id) ? "selected" : isRuledOutOfMatchDay(player) ? "danger" : null
+              }
+              onRowContextMenu={(player, event) => {
+                const point = contextMenuPoint(event, event.currentTarget);
+                menuRefs.current.get(player.id)?.open(point.x, point.y);
+              }}
+              primaryAside={(player) => (
+                <SquadNameAside player={player} starting={xiIds.has(player.id)} t={t} />
+              )}
+              rowAction={{
+                header: t("common.actions"),
+                cell: (player) => (
+                  <ContextMenu
+                    items={squadRowMenuItems(player, menuContextFor(player))}
+                    ref={(handle) => {
+                      if (handle) menuRefs.current.set(player.id, handle);
+                      else menuRefs.current.delete(player.id);
                     }}
-                    aria-label={t("common.playerActions", { name: player.match_name })}
-                    aria-haspopup="menu"
-                    aria-expanded={openMenuPlayerId === player.id}
-                    className="relative rounded-md p-1.5 text-fg-subtle transition-colors hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus"
+                    onOpenChange={(open) => {
+                      setOpenMenuPlayerId((prev) => {
+                        if (open) return player.id;
+                        return prev === player.id ? null : prev;
+                      });
+                    }}
                   >
-                    <MoreVertical className="h-4 w-4" />
-                    {player.injury || riskLevelOf(player.id) !== "stable" ? (
-                      // Decoration: the injury and the contract stage are said in words in the row.
-                      <span
-                        aria-hidden="true"
-                        className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-warning-solid"
-                      />
-                    ) : null}
-                  </button>
-                </ContextMenu>
-              ),
-            }}
-            empty={t("squad.noPlayers")}
-          />
-        )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        menuRefs.current.get(player.id)?.open(rect.left, rect.bottom + 4);
+                      }}
+                      aria-label={t("common.playerActions", { name: player.match_name })}
+                      aria-haspopup="menu"
+                      aria-expanded={openMenuPlayerId === player.id}
+                      className="relative rounded-md p-1.5 text-fg-subtle transition-colors hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                      {player.injury || riskLevelOf(player.id) !== "stable" ? (
+                        // Decoration: the injury and the contract stage are said in words in the row.
+                        <span
+                          aria-hidden="true"
+                          className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-warning-solid"
+                        />
+                      ) : null}
+                    </button>
+                  </ContextMenu>
+                ),
+              }}
+              empty={t("squad.noPlayers")}
+            />
+          )}
+        </div>
       </Card>
 
       {contractActionError ? (

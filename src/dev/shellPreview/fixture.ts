@@ -126,7 +126,7 @@ function player(index: number, teamId: string): PlayerData {
     },
     condition,
     morale: index === 3 ? 32 : index === 9 ? 88 : 70,
-    injury: index === 5 ? { name: "hamstring_strain", days_remaining: 12 } : null,
+    injury: index === 5 ? { name: "hamstringTear", days_remaining: 12 } : null,
     team_id: teamId,
     retired: false,
     contract_end: "2028-06-30",

@@ -126,6 +126,44 @@ scale `@split` is 576px and fits the 655px workspace, so two panels show; at ext
 720px and they stack. Choose breakpoints by computing them at a 20px root, not by the name of
 the class.
 
+### Materials, depth and scenes
+
+A screen is a lit stage, not a document. Three layers do that, and all three live in `App.css`, so
+no screen invents its own finish. The full brief and the per-screen plan are in
+[UI_REDESIGN.md](UI_REDESIGN.md); the style guide draws all of it under **Materials, depth and
+scenes**.
+
+**Finishes** are `@utility` classes that lay a lit gradient over whatever role colour the element
+already carries, so they theme and high-contrast for free:
+
+| Utility | On | Pair with |
+|---|---|---|
+| `surface-panel` | a panel resting on the stage | `shadow-panel`, `border-line` |
+| `surface-well` | a table body, a meter track, anything recessed | `shadow-well` |
+| `surface-chrome` | the shell's top bar and hint strip | — |
+| `surface-brand` | a filled button, as a moulded key | `shadow-panel` |
+| `edge-lit` | one lit hairline along the top of a part | — |
+
+**Depth** is three physical steps, each a contact shadow plus an ambient one so nothing floats:
+`shadow-panel` resting → `shadow-raised` under the pointer → `shadow-well` cut in. `shadow-hud` is
+longer and softer because the action dock genuinely floats. `shadow-glow` is the accent as emitted
+light, for a primary action under the pointer.
+
+**Scenes** come only through `SceneBackdrop`, never an `<img>` in a screen. It resolves one of eleven
+plates, layers plate → veil → vignette → grain, and is `aria-hidden` and `pointer-events-none`, so
+atmosphere cannot change what a screen does. The caller owns the stacking context
+(`relative isolate`). Three strengths: `ambient` behind a workspace, `hero` behind a band with the
+words on the left, `panel` for an art-headed working panel — and an art-headed panel must pass
+`banded={false}` to its `CardHeader`, or the opaque band covers the plate exactly where the veil is
+thin enough to see it. `sceneForTab()` picks the room from the tab.
+
+**States** come only through `SceneState` — empty, loading and error on one stage, with the copy
+supplied by the caller so the primitive holds no strings.
+
+**Motion** is three speeds: `animate-scene-in` (420ms, the room settling), `animate-panel-in` (200ms,
+a control arriving), and a 150ms 1px press on a key. `animate-live-pulse` breathes a halo and never
+moves or blinks a label. All are disabled under `prefers-reduced-motion`.
+
 ## 3. Components
 
 Use the primitive; never rebuild one. All are exported from `src/components/ui/index.ts` and

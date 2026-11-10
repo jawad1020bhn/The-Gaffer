@@ -6,22 +6,19 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardGrid,
   CardHeader,
   Checkbox,
   ConditionMeter,
   CountryFlag,
-  FormDots,
   DataTable,
-  SortHeaderButton,
-  type DataTableColumn,
   DatePicker,
   Dialog,
-  EntityCard,
   DialogCloseButton,
+  EntityCard,
+  FormDots,
   InjuryBadge,
-  UnreadBadge,
-  ViewSwitch,
   JerseyIcon,
   PageToolbar,
   PitchToken,
@@ -30,16 +27,24 @@ import {
   PositionBadges,
   ProgressBar,
   RatingChip,
+  SceneBackdrop,
+  SceneState,
   SegmentedControl,
   Select,
   SortControl,
-  type SortDirection,
+  SortHeaderButton,
   Switch,
+  TONE_TEXT,
   TabPanel,
   Tabs,
   TeamLocation,
   TeamLogo,
-  TONE_TEXT,
+  Ticker,
+  UnreadBadge,
+  ViewSwitch,
+  type DataTableColumn,
+  type SceneId,
+  type SortDirection,
 } from "../../components/ui";
 import { ChartContainer } from "../../components/ui/charts/ChartContainer";
 import type { ListView } from "../../store/settingsStore";
@@ -904,6 +909,146 @@ function DialogSection({ open }: { open: boolean }) {
   );
 }
 
+/**
+ * The material layer: the tokens that make a screen a lit stage rather than a document. Named as
+ * literals so the token-coverage test sees them, and each drawn on the thing it is for.
+ */
+const MATERIAL_TOKENS = [
+  { token: "--color-veil", use: "the wash between a scene and the panels on it (bg-veil)" },
+  { token: "--color-room-tint", use: "the shared lime-teal grade every room takes (room-tint)" },
+  { token: "--color-panel-glass", use: "a panel over a room, 90% opaque (bg-panel-glass)" },
+  { token: "--color-edge-light", use: "the lit top edge of a raised part (edge-lit)" },
+  { token: "--color-edge-dark", use: "the shaded underside of a raised part" },
+  { token: "--color-glow", use: "the accent as emitted light, not pigment" },
+  { token: "--shadow-panel", use: "a panel resting on the stage (shadow-panel)" },
+  { token: "--shadow-raised", use: "a panel under the pointer (shadow-raised)" },
+  { token: "--shadow-well", use: "a well cut into a panel (shadow-well)" },
+  { token: "--shadow-hud", use: "the floating action dock (shadow-hud)" },
+  { token: "--shadow-glow", use: "a primary action under the pointer (shadow-glow)" },
+  { token: "--animate-scene-in", use: "the room arriving on a section change (animate-scene-in)" },
+  { token: "--animate-panel-in", use: "a panel arriving under it (animate-panel-in)" },
+  { token: "--animate-live-pulse", use: "something live, waiting on the player" },
+  { token: "--animate-route-in", use: "arriving at a section (animate-route-in)" },
+  { token: "--stagger-step", use: "gap between panels assembling (panel-stagger)" },
+];
+
+const SCENE_STRENGTHS = [
+  { strength: "ambient", scene: "career", use: "behind a whole workspace" },
+  { strength: "hero", scene: "competitions", use: "behind one band, words on the left" },
+  { strength: "panel", scene: "team", use: "an art-headed working panel" },
+] as const satisfies readonly {
+  strength: "ambient" | "hero" | "panel";
+  scene: SceneId;
+  use: string;
+}[];
+
+function MaterialsSection() {
+  const [tickerValue, setTickerValue] = useState(16_500_000);
+  return (
+    <Section title="Materials, depth and scenes">
+      <Row>
+        {SCENE_STRENGTHS.map(({ strength, scene, use }) => (
+          <Card key={strength} className="relative isolate h-40 w-72">
+            <SceneBackdrop scene={scene} strength={strength} />
+            {/* An art-headed panel drops the header's band, or it covers the plate exactly where
+                the veil is thin enough to see it. */}
+            <CardHeader banded={false}>{strength}</CardHeader>
+            <CardBody>
+              <p className="text-caption text-fg-muted">{use}</p>
+            </CardBody>
+          </Card>
+        ))}
+      </Row>
+      <Row>
+        <div className="w-56 rounded-panel border border-line bg-panel surface-panel p-3 shadow-panel">
+          <p className="text-body text-fg">surface-panel + shadow-panel</p>
+          <p className="text-caption text-fg-muted">a panel resting on the stage</p>
+        </div>
+        <div className="w-56 rounded-panel border border-line bg-sunken surface-well p-3 shadow-well">
+          <p className="text-body text-fg">surface-well + shadow-well</p>
+          <p className="text-caption text-fg-muted">a well cut into a panel</p>
+        </div>
+        <div className="w-56 rounded-panel border border-line bg-chrome surface-chrome p-3 shadow-hud">
+          <p className="text-body text-chrome-fg">surface-chrome + shadow-hud</p>
+          <p className="text-caption text-chrome-fg-muted">the shell's machined bars</p>
+        </div>
+        <div className="flex w-56 flex-col items-start gap-2 rounded-panel border border-line bg-panel surface-panel p-3 shadow-raised">
+          <p className="text-body text-fg">shadow-raised · edge-lit</p>
+          <Button className="animate-live-pulse motion-reduce:animate-none">live</Button>
+        </div>
+      </Row>
+      <Row>
+        <Card className="w-72">
+          <CardHeader count={4}>messages</CardHeader>
+          <CardBody>
+            <p className="text-body text-fg">A header count, and a footer that stays put.</p>
+          </CardBody>
+          <CardFooter>
+            <span className="text-caption text-fg-muted">CardFooter</span>
+          </CardFooter>
+        </Card>
+        <div className="relative isolate h-40 w-72 overflow-hidden rounded-panel border border-line room-fallback">
+          <p className="p-3 text-caption text-fg-muted">
+            room-fallback — the designed gradient a room falls back to when its plate fails.
+          </p>
+        </div>
+      </Row>
+      <Row>
+        <div className="w-full">
+          <p className="mb-2 text-caption text-fg-muted">
+            panel-stagger — a screen assembles top-down on arrival, 35ms apart, once per mount.
+            Reduced motion switches it off without leaving anything invisible.
+          </p>
+          <div className="panel-stagger grid grid-cols-4 gap-3">
+            {["Next match", "Season", "Squad", "Results"].map((label) => (
+              <Card key={label}>
+                <CardBody className="text-caption">{label}</CardBody>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </Row>
+      <Row>
+        <div>
+          <p className="mb-2 text-caption text-fg-muted">
+            Ticker — a figure counts to its new value; the box never reflows.
+          </p>
+          <p className="font-heading text-display font-bold text-fg">
+            <Ticker value={tickerValue} format={(n) => `€${(n / 1_000_000).toFixed(1)}M`} />
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="mt-2"
+            onClick={() => setTickerValue((v) => v + 2_500_000)}
+          >
+            advance
+          </Button>
+        </div>
+      </Row>
+      <Row>
+        {(["empty", "loading", "error"] as const).map((variant) => (
+          <SceneState
+            key={variant}
+            variant={variant}
+            className="w-72"
+            title={variant}
+            detail="The scouting list is clear. Send a scout to start a report."
+            action={variant === "error" ? <Button size="sm">retry</Button> : undefined}
+          />
+        ))}
+      </Row>
+      <div className="grid gap-2 rounded-panel border border-line bg-panel surface-panel p-4 text-caption text-fg-muted shadow-panel">
+        {MATERIAL_TOKENS.map(({ token, use }) => (
+          <p key={token}>
+            <span className="text-fg">{token.replace("--", "")}</span>: {use}
+          </p>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
 export function StyleGuide({ options }: { options: StyleGuideOptions }) {
   return (
     <main className="min-h-screen bg-page px-6 py-8 text-fg">
@@ -917,6 +1062,7 @@ export function StyleGuide({ options }: { options: StyleGuideOptions }) {
           </p>
         </header>
         <TokensSection />
+        <MaterialsSection />
         <NavigationSection />
         <ControlsSection />
         <DisplaySection />

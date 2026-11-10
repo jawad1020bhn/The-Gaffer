@@ -26,7 +26,8 @@
     "menu": "Menu",
     "title": "Keyboard shortcuts",
     "select": "Select",
-    "sections": "Sections"
+    "sections": "Sections",
+    "panels": "Panels"
   },
   "pause": {
     "title": "Paused",
@@ -308,7 +309,8 @@
     "daysUnavailable": "{{count}} day(s) remaining",
     "setTactics": "Set tactics",
     "fixtures": "Fixtures",
-    "form": "Form"
+    "form": "Form",
+    "noMatchesYetDetail": "Your results will appear here after the first match."
   },
   "season": {
     "preseasonStatus": "Preseason Status",
@@ -1320,7 +1322,9 @@
     "fanBehind": "Fans are behind the team.",
     "fanMixed": "Fan sentiment is mixed.",
     "fanRestless": "Fans are growing restless.",
-    "fanUnrest": "Fan unrest — protests likely."
+    "fanUnrest": "Fan unrest — protests likely.",
+    "noHistoryTitle": "No appointments yet",
+    "noHistoryDetail": "This is your first club. Every result you manage here becomes the first line of your record."
   },
   "managersWorld": {
     "title": "Managers",
@@ -1705,7 +1709,9 @@
       "InjuryNews": "Injury",
       "SeasonPreview": "Season Preview",
       "Editorial": "Editorial",
-      "ManagerialChange": "Managerial"
+      "ManagerialChange": "Managerial",
+      "general": "General",
+      "General": "General"
     }
   },
   "playerProfile": {

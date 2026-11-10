@@ -157,9 +157,9 @@ export default function TacticsCommandBar({
 
   return (
     <Card className="overflow-visible">
-      <div ref={wrapperRef} className="p-4 sm:p-5">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+      <div ref={wrapperRef} className="p-3">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-caption font-heading font-bold uppercase tracking-[0.24em] text-fg-muted">
@@ -174,7 +174,12 @@ export default function TacticsCommandBar({
                   {isDirty ? t("tactics.unsavedChanges") : t("tactics.synced")}
                 </Badge>
               </div>
-              <p className="mt-2 max-w-3xl text-body text-fg-muted">{activeTactic.description}</p>
+              <p
+                className="mt-1 truncate text-caption text-fg-muted"
+                title={activeTactic.description}
+              >
+                {activeTactic.description}
+              </p>
             </div>
 
             <div className="flex flex-wrap gap-2 xl:justify-end">
@@ -219,9 +224,9 @@ export default function TacticsCommandBar({
             </div>
           </div>
 
-          <div className="grid gap-3 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)_minmax(0,1.2fr)]">
-            <div className="relative rounded-panel border bg-sunken p-3 border-line/8">
-              <div className="mb-2 flex items-center justify-between gap-3">
+          <div className="grid gap-3 grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)_minmax(0,1.2fr)]">
+            <div className="relative rounded-panel border bg-sunken p-2 border-line/8">
+              <div className="mb-1 flex items-center justify-between gap-3">
                 <div className="text-caption font-heading font-bold uppercase tracking-[0.24em] text-fg-muted">
                   {t("tactics.chooseTactic")}
                 </div>
@@ -236,7 +241,7 @@ export default function TacticsCommandBar({
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
                 onClick={() => setIsOpen((open) => !open)}
-                className="flex w-full items-center justify-between rounded-panel border bg-panel px-3 py-3 text-left transition-colors hover:border-selected/40 border-line/10"
+                className="flex w-full items-center justify-between rounded-panel border bg-panel px-3 py-2 text-left transition-colors hover:border-selected/40 border-line/10"
               >
                 <div className="min-w-0">
                   <div className="truncate text-body font-heading font-bold text-fg">

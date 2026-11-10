@@ -48,10 +48,12 @@ export default function HomeOnboardingChecklistCard({
         <Lightbulb className="h-4 w-4 text-warning" aria-hidden="true" />
         {t("onboarding.title")}
       </CardHeader>
-      <CardBody className="flex flex-col gap-3">
-        <p className="line-clamp-2 text-caption text-fg-muted">{t("onboarding.description")}</p>
+      <CardBody className="flex flex-col gap-2" padded={false}>
+        <p className="shrink-0 px-3 pt-2 text-caption text-fg-muted">
+          {t("onboarding.description")}
+        </p>
 
-        <ol className="flex items-start justify-between gap-1">
+        <ol className="flex shrink-0 items-start justify-between gap-1 px-3 pb-2">
           {steps.map((step, index) => {
             const isNext = nextStep?.id === step.id;
             return (

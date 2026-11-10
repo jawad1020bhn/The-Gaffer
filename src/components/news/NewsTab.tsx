@@ -14,11 +14,12 @@ import {
   Filter,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { newsCategoryLabel } from "../../lib/newsCategory";
 import { resolveNewsArticle } from "../../utils/backendI18n";
 import ContextMenu, { type ContextMenuItem } from "../ContextMenu";
 import { buildViewTeamMenuItem } from "../playerActions/playerContextMenuItems";
 import AwardsCeremonyScreen from "../season/AwardsCeremonyScreen";
-import { Select } from "../ui";
+import { SceneBackdrop, SceneState, Select } from "../ui";
 import { fetchNewsFeed, type NewsFeed } from "../../services/newsService";
 import { isNewsArticleVisible } from "../../utils/newsVisibility";
 import { formatMatchDate as fmtMatchDate } from "../../lib/helpers";
@@ -62,7 +63,7 @@ interface NewsTabProps {
   onSelectTeam?: (id: string) => void;
 }
 
-const PAGE_SIZE = 13; // 1 hero + 12 grid (4x3)
+const PAGE_SIZE = 5; // 1 hero + 4 secondary (2x2) — one viewport, no page scroll
 
 function buildArticleTeamMenuItems(
   t: ReturnType<typeof useTranslation>["t"],
@@ -158,11 +159,7 @@ export default function NewsTab({ gameState, onSelectTeam }: NewsTabProps) {
   // Empty state
   if (sortedNews.length === 0) {
     return (
-      <div className="text-center py-16">
-        <Newspaper className="w-12 h-12 text-fg-subtle mx-auto mb-3" />
-        <p className="text-fg-muted text-body">{t("news.noNews")}</p>
-        <p className="text-fg-subtle text-caption mt-1">{t("news.newsWillAppear")}</p>
-      </div>
+      <SceneState title={t("news.noNews")} detail={t("news.newsWillAppear")} className="h-full" />
     );
   }
 
@@ -192,7 +189,7 @@ export default function NewsTab({ gameState, onSelectTeam }: NewsTabProps) {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="panel-stagger grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto_auto] gap-4">
       {/* Filters row */}
       <div className="flex items-center gap-2 flex-wrap">
         {/* Category pills */}
@@ -224,7 +221,7 @@ export default function NewsTab({ gameState, onSelectTeam }: NewsTabProps) {
                 : "bg-hover text-fg-muted hover:bg-hover"
             }`}
           >
-            {t(`news.categories.${cat}`)}
+            {newsCategoryLabel(t, cat)}
           </button>
         ))}
 
@@ -271,7 +268,7 @@ export default function NewsTab({ gameState, onSelectTeam }: NewsTabProps) {
 
       {/* Article grid */}
       {pageArticles.length > 1 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 items-start gap-4">
           {pageArticles.slice(1).map((article) => (
             <ArticleCard
               key={article.id}
@@ -330,7 +327,7 @@ function HeroArticle({
     icon: CAT_ICONS[article.category] || <FileText className="w-4 h-4" />,
     color: CAT_COLORS[article.category] || "text-fg-muted",
     bg: CAT_BG[article.category] || "bg-hover",
-    label: t(`news.categories.${article.category}`),
+    label: newsCategoryLabel(t, article.category),
   };
 
   const articleButton = (
@@ -338,8 +335,11 @@ function HeroArticle({
       type="button"
       data-testid={`news-article-${article.id}`}
       onClick={onSelect}
-      className="w-full text-left bg-panel rounded-panel border border-line shadow-sm overflow-hidden hover:shadow-md transition-all group"
+      className="group relative isolate h-full w-full overflow-hidden rounded-panel border border-line bg-panel-glass surface-panel text-left shadow-panel transition-shadow duration-150 hover:shadow-raised motion-reduce:transition-none"
     >
+      {/* The featured story sits in the press room. Words on the left in shadow, the room on the
+          right — so a short wire item does not leave three quarters of a panel empty. */}
+      <SceneBackdrop scene="press" strength="hero" />
       <div className="p-6">
         <div className="flex items-center gap-2 mb-3">
           <span
@@ -425,7 +425,7 @@ function ArticleCard({
     icon: CAT_ICONS[article.category] || <FileText className="w-4 h-4" />,
     color: CAT_COLORS[article.category] || "text-fg-muted",
     bg: CAT_BG[article.category] || "bg-hover",
-    label: t(`news.categories.${article.category}`),
+    label: newsCategoryLabel(t, article.category),
   };
 
   const articleButton = (
@@ -433,7 +433,7 @@ function ArticleCard({
       type="button"
       data-testid={`news-article-${article.id}`}
       onClick={onSelect}
-      className="w-full text-left bg-panel rounded-panel border border-line shadow-sm overflow-hidden hover:shadow-md transition-all group flex flex-col"
+      className="group flex w-full flex-col overflow-hidden rounded-panel border border-line bg-panel-glass surface-panel text-left shadow-panel transition-shadow duration-150 hover:shadow-raised motion-reduce:transition-none"
     >
       <div className="p-4 flex-1 flex flex-col">
         <div className="flex items-center gap-2 mb-2">
@@ -504,7 +504,7 @@ function ArticleDetail({
     icon: CAT_ICONS[article.category] || <FileText className="w-4 h-4" />,
     color: CAT_COLORS[article.category] || "text-fg-muted",
     bg: CAT_BG[article.category] || "bg-hover",
-    label: t(`news.categories.${article.category}`),
+    label: newsCategoryLabel(t, article.category),
   };
 
   return (

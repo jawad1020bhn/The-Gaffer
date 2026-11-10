@@ -214,7 +214,7 @@ export default function TacticsPlayerList({
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex h-full min-h-0 flex-col gap-3">
       <TacticsFilters
         onClear={onClearFilters}
         onPlayerSearchChange={onPlayerSearchChange}
@@ -223,71 +223,76 @@ export default function TacticsPlayerList({
         positionFilter={positionFilter}
       />
 
-      <div className="rounded-panel border border-line bg-panel">
-        <div className="border-b border-line px-3 py-2">
-          <span className="text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
-            {t("preMatch.startingXI")} · {starters.length}
-          </span>
-        </div>
-        <div className="p-1.5 space-y-0.5">
-          {starters.map((player) => (
-            <PlayerRow
-              key={player.id}
-              comparePlayerId={comparePlayerId}
-              deployedPosition={xiActivePosition.get(player.id)}
-              isSelected={selectedPlayerId === player.id}
-              matchRoles={matchRoles}
-              onAssignMatchRole={onAssignMatchRole}
-              onClearSelection={clearSelection}
-              onDemoteStarter={onDemoteStarter}
-              onDragEnd={onDragEnd}
-              onDragStart={onDragStart}
-              onOpenPlayerProfile={onOpenPlayerProfile}
-              onPromoteBench={undefined}
-              onTacticalSelect={onTacticalSelect}
-              player={player}
-              section="xi"
-              selectedPlayerId={selectedPlayerId}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="rounded-panel border border-line bg-panel">
-        <div className="border-b border-line px-3 py-2">
-          <span className="text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
-            {t("preMatch.substitutes")} · {bench.length}
-          </span>
-        </div>
-        <div className="p-1.5 space-y-0.5">
-          {bench.length === 0 ? (
-            <p className="px-2 py-3 text-caption text-fg-muted">{t("preMatch.noBench")}</p>
-          ) : (
-            bench.map((player) => (
+      {/* The squad lists are the only part of this column that scrolls, and the fade says so. */}
+      <div className="scrollbar-thin scroll-fade min-h-0 flex-1 space-y-3 overflow-y-auto">
+        <div className="rounded-panel border border-line bg-panel">
+          <div className="border-b border-line px-3 py-2">
+            <span className="text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
+              {t("preMatch.startingXI")} · {starters.length}
+            </span>
+          </div>
+          <div className="p-1.5 space-y-0.5">
+            {starters.map((player) => (
               <PlayerRow
                 key={player.id}
                 comparePlayerId={comparePlayerId}
+                deployedPosition={xiActivePosition.get(player.id)}
                 isSelected={selectedPlayerId === player.id}
                 matchRoles={matchRoles}
                 onAssignMatchRole={onAssignMatchRole}
                 onClearSelection={clearSelection}
-                onDemoteStarter={undefined}
+                onDemoteStarter={onDemoteStarter}
                 onDragEnd={onDragEnd}
                 onDragStart={onDragStart}
                 onOpenPlayerProfile={onOpenPlayerProfile}
-                onPromoteBench={onPromoteBench}
+                onPromoteBench={undefined}
                 onTacticalSelect={onTacticalSelect}
                 player={player}
-                section="bench"
+                section="xi"
                 selectedPlayerId={selectedPlayerId}
               />
-            ))
-          )}
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-panel border border-line bg-panel">
+          <div className="border-b border-line px-3 py-2">
+            <span className="text-caption font-heading font-bold uppercase tracking-[0.22em] text-fg-muted">
+              {t("preMatch.substitutes")} · {bench.length}
+            </span>
+          </div>
+          <div className="p-1.5 space-y-0.5">
+            {bench.length === 0 ? (
+              <p className="px-2 py-3 text-caption text-fg-muted">{t("preMatch.noBench")}</p>
+            ) : (
+              bench.map((player) => (
+                <PlayerRow
+                  key={player.id}
+                  comparePlayerId={comparePlayerId}
+                  isSelected={selectedPlayerId === player.id}
+                  matchRoles={matchRoles}
+                  onAssignMatchRole={onAssignMatchRole}
+                  onClearSelection={clearSelection}
+                  onDemoteStarter={undefined}
+                  onDragEnd={onDragEnd}
+                  onDragStart={onDragStart}
+                  onOpenPlayerProfile={onOpenPlayerProfile}
+                  onPromoteBench={onPromoteBench}
+                  onTacticalSelect={onTacticalSelect}
+                  player={player}
+                  section="bench"
+                  selectedPlayerId={selectedPlayerId}
+                />
+              ))
+            )}
+          </div>
         </div>
       </div>
 
       {draggedPlayerId ? (
-        <p className="text-center text-caption text-fg-subtle">{t("squad.dropPlayerHere")}</p>
+        <p className="shrink-0 text-center text-caption text-fg-subtle">
+          {t("squad.dropPlayerHere")}
+        </p>
       ) : null}
     </div>
   );

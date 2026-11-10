@@ -48,6 +48,7 @@ function PhaseButtonGroup({
         {t(`tactics.phaseSettings.${labelKey}`)}
       </span>
       <Select
+        aria-label={t(`tactics.phaseSettings.${labelKey}`)}
         selectSize="sm"
         variant="subtle"
         fullWidth

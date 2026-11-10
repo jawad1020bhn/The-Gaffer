@@ -1,7 +1,7 @@
 import { Trophy } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Badge, Card, CardBody, CardHeader, FormDots } from "../ui";
+import { Badge, Card, CardBody, CardHeader, FormDots, SceneBackdrop } from "../ui";
 
 interface LeagueStandingSnapshot {
   team_id: string;
@@ -61,7 +61,10 @@ export default function HomeLeaguePositionCard({
       </CardHeader>
       <CardBody>
         {isPreseason ? (
-          <div className="flex flex-col items-center gap-2 py-4 text-center">
+          /* The table does not exist yet, so the panel is a room with the unlock date in it
+             rather than three lines floating in a box. */
+          <div className="relative isolate flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-panel text-center">
+            <SceneBackdrop scene="empty" strength="panel" />
             <Badge variant="accent" size="sm">
               {t(`season.phases.${phase}`)}
             </Badge>

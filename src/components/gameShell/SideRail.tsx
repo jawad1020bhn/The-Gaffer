@@ -1,3 +1,4 @@
+import { useUiSound } from "../../hooks/useUiSound";
 import { type JSX, useRef, type KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -32,6 +33,7 @@ export default function SideRail({
   onNavigate,
 }: SideRailProps): JSX.Element {
   const { t } = useTranslation();
+  const playSound = useUiSound();
   const buttons = useRef(new Map<number, HTMLButtonElement>());
   const tabs = destinationsForSection(activeSection, isUnemployed);
 
@@ -45,7 +47,7 @@ export default function SideRail({
   return (
     <nav
       aria-label={t("gameNav.context")}
-      className="no-select flex w-game-rail shrink-0 flex-col gap-1 overflow-y-auto overflow-x-hidden border-r border-line bg-sunken p-1.5"
+      className="no-select flex w-game-rail shrink-0 flex-col gap-1 overflow-y-auto overflow-x-hidden border-r border-line bg-sunken surface-well p-1.5"
     >
       {tabs.map((tab, index) => {
         const entry = destinationForTab(tab);
@@ -65,7 +67,10 @@ export default function SideRail({
             aria-current={active ? "page" : undefined}
             tabIndex={active ? 0 : -1}
             onKeyDown={(event) => onKeyDown(event, index)}
-            onClick={() => onNavigate(tab)}
+            onClick={() => {
+              playSound("navigate");
+              onNavigate(tab);
+            }}
             title={label}
             className={`relative flex shrink-0 flex-col items-center gap-1 rounded-control px-1 py-2 transition-colors motion-reduce:transition-none ${FOCUS_RING} ${
               active
