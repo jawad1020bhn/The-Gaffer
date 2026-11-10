@@ -245,10 +245,11 @@ to the Champions League, nine more to the Europa League, the last six to the
 Conference League. Its final two places went to the best clubs still without
 one, Chelsea and Tottenham. In South America six Argentine clubs earned a
 Libertadores place and two a Sudamericana one. The rest of both fields is the
-54 South American clubs that play in no league here, each in the competition
-EA files it under, and the two best Argentine clubs still without a place.
-Which club tops up which competition is this package's choice, not a record of
-who qualified.
+54 South American clubs that play in no league here and the two best Argentine
+clubs still without a place. EA files 52 of the 54 under one of the two
+competitions, and each plays that one. Bahia and Atlético Nacional are filed
+under neither and take open Sudamericana places. Which club tops up which
+competition is this package's choice, not a record of who qualified.
 
 **Later seasons** are the engine's sum, and it does not have EA's lists. The
 senior competition of a confederation is served first, so the 26 strongest of
