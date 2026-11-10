@@ -22,6 +22,29 @@ The source checksum lock and the supplemental mappings only apply to FC 27;
 FC 25/26 imports do not borrow FC 27 corrections. Source datasets are not copied
 here; the EA data's existing licensing restrictions still apply.
 
+## Artwork crosswalks
+
+`fc27-crest-crosswalk.json` records `clubId → eaTeamId` for every club whose
+crest EA ships, and `fc27-league-logo-crosswalk.json` records
+`competitionId → eaLeagueId` for every competition logo taken from EA's
+league-logo folder. They are committed so the bundled world's artwork can be
+rebuilt, and reviewed, without the EA database:
+`scripts/build-club-badges.mjs` needs only these two files and the two zips.
+
+Both are regenerated from the pinned kit revision by
+`badges-from-crest-pack.mjs --write-crosswalk --write-league-crosswalk`, and CI
+compares the result with the committed files.
+
+The league-logo crosswalk has one part that comparison cannot check. Its
+`leagues` list is derived from EA's `leagues` table, like the crest crosswalk.
+Its `authored` list is not: that table has no rows for cups, super cups or UEFA
+competitions, so each of those logos was identified by looking at the artwork,
+and `name` says what it shows. Apart from the two UEFA competitions, the
+`authored` ids belong to competitions this package does not have yet. They
+follow the importer's naming (`eng-fa-cup`), so a competition later authored
+under that id picks its logo up, but until then they are a convention. Correct
+one here if a competition is authored under a different id.
+
 ## Supplemental club fields
 
 `fc27-club-corrections.json` contains **95 reviewed missing-stadium mappings**

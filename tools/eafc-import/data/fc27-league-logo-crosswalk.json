@@ -1,0 +1,411 @@
+{
+  "version": 1,
+  "source": "https://github.com/ViniMacacari/eafc-db-kit",
+  "gameVersion": "FC 27",
+  "revision": "1464907bf4e726504d8b3ce15ffd0a552990565e",
+  "recordedOn": "2026-11-10",
+  "note": "OFM competition id -> EA league id for every competition logo built from EA's league-logo pack (leagues/l<id>.dds in leagues.zip). `leagues` is derived: each pair is a row of the pinned FC 27 leagues table and the competition the importer builds from it (leagueCompetitionId in lib/mapping.mjs); tools/eafc-import/badges-from-crest-pack.mjs --write-league-crosswalk regenerates it and CI diffs the result against this file. `authored` cannot be derived -- that table lists no cups, super cups or UEFA competitions -- so each entry was identified by looking at the artwork, and `name` records what it shows. Only uefa-champions-league and uefa-europa-league are competitions this package has today; the other authored ids are reserved for the day the importer authors that competition, and are a naming convention rather than a checked fact. Committed so the logos can be rebuilt -- and reviewed -- without the EA database: scripts/build-club-badges.mjs consumes it.",
+  "leagues": [
+    {
+      "competitionId": "dk-superliga",
+      "eaLeagueId": 1
+    },
+    {
+      "competitionId": "be-pro-league",
+      "eaLeagueId": 4
+    },
+    {
+      "competitionId": "nl-eredivisie",
+      "eaLeagueId": 10
+    },
+    {
+      "competitionId": "eng-premier-league",
+      "eaLeagueId": 13
+    },
+    {
+      "competitionId": "eng-championship",
+      "eaLeagueId": 14
+    },
+    {
+      "competitionId": "fr-ligue-1",
+      "eaLeagueId": 16
+    },
+    {
+      "competitionId": "fr-ligue-2",
+      "eaLeagueId": 17
+    },
+    {
+      "competitionId": "de-1-bundesliga",
+      "eaLeagueId": 19
+    },
+    {
+      "competitionId": "de-2-bundesliga",
+      "eaLeagueId": 20
+    },
+    {
+      "competitionId": "it-serie-a",
+      "eaLeagueId": 31
+    },
+    {
+      "competitionId": "it-serie-b",
+      "eaLeagueId": 32
+    },
+    {
+      "competitionId": "us-major-league-soccer",
+      "eaLeagueId": 39
+    },
+    {
+      "competitionId": "no-eliteserien",
+      "eaLeagueId": 41
+    },
+    {
+      "competitionId": "sco-premiership",
+      "eaLeagueId": 50
+    },
+    {
+      "competitionId": "es-primera-division",
+      "eaLeagueId": 53
+    },
+    {
+      "competitionId": "es-segunda-division",
+      "eaLeagueId": 54
+    },
+    {
+      "competitionId": "se-allsvenskan",
+      "eaLeagueId": 56
+    },
+    {
+      "competitionId": "eng-league-one",
+      "eaLeagueId": 60
+    },
+    {
+      "competitionId": "eng-league-two",
+      "eaLeagueId": 61
+    },
+    {
+      "competitionId": "ie-premier-division",
+      "eaLeagueId": 65
+    },
+    {
+      "competitionId": "pl-ekstraklasa",
+      "eaLeagueId": 66
+    },
+    {
+      "competitionId": "tr-super-lig",
+      "eaLeagueId": 68
+    },
+    {
+      "competitionId": "at-bundesliga",
+      "eaLeagueId": 80
+    },
+    {
+      "competitionId": "kr-k-league-1",
+      "eaLeagueId": 83
+    },
+    {
+      "competitionId": "ch-super-league",
+      "eaLeagueId": 189
+    },
+    {
+      "competitionId": "pt-primeira-liga",
+      "eaLeagueId": 308
+    },
+    {
+      "competitionId": "ro-liga-i",
+      "eaLeagueId": 330
+    },
+    {
+      "competitionId": "mx-liga-mx",
+      "eaLeagueId": 341
+    },
+    {
+      "competitionId": "sa-saudi-pro-league",
+      "eaLeagueId": 350
+    },
+    {
+      "competitionId": "au-a-league",
+      "eaLeagueId": 351
+    },
+    {
+      "competitionId": "ar-primera-division",
+      "eaLeagueId": 353
+    },
+    {
+      "competitionId": "conmebol-libertadores",
+      "eaLeagueId": 1003
+    },
+    {
+      "competitionId": "conmebol-sudamericana",
+      "eaLeagueId": 1014
+    },
+    {
+      "competitionId": "cn-super-league",
+      "eaLeagueId": 2012
+    },
+    {
+      "competitionId": "de-3-liga",
+      "eaLeagueId": 2076
+    },
+    {
+      "competitionId": "in-indian-super-league",
+      "eaLeagueId": 2149
+    }
+  ],
+  "authored": [
+    {
+      "competitionId": "ru-russian-cup",
+      "eaLeagueId": 8,
+      "name": "Russian Cup"
+    },
+    {
+      "competitionId": "fifa-club-world-cup",
+      "eaLeagueId": 74,
+      "name": "FIFA Club World Cup"
+    },
+    {
+      "competitionId": "fifa-intercontinental-cup",
+      "eaLeagueId": 200,
+      "name": "FIFA Intercontinental Cup"
+    },
+    {
+      "competitionId": "eng-fa-cup",
+      "eaLeagueId": 201,
+      "name": "FA Cup"
+    },
+    {
+      "competitionId": "eng-efl-cup",
+      "eaLeagueId": 202,
+      "name": "EFL Cup (Carabao Cup)"
+    },
+    {
+      "competitionId": "eng-efl-trophy",
+      "eaLeagueId": 203,
+      "name": "EFL Trophy (Vertu Trophy)"
+    },
+    {
+      "competitionId": "fr-coupe-de-france",
+      "eaLeagueId": 204,
+      "name": "Coupe de France"
+    },
+    {
+      "competitionId": "de-dfb-pokal",
+      "eaLeagueId": 206,
+      "name": "DFB-Pokal"
+    },
+    {
+      "competitionId": "de-supercup",
+      "eaLeagueId": 207,
+      "name": "DFL-Supercup (Franz Beckenbauer Supercup)"
+    },
+    {
+      "competitionId": "es-copa-del-rey",
+      "eaLeagueId": 208,
+      "name": "Copa del Rey"
+    },
+    {
+      "competitionId": "it-coppa-italia",
+      "eaLeagueId": 210,
+      "name": "Coppa Italia"
+    },
+    {
+      "competitionId": "it-supercoppa-italiana",
+      "eaLeagueId": 211,
+      "name": "Supercoppa Italiana"
+    },
+    {
+      "competitionId": "at-ofb-cup",
+      "eaLeagueId": 212,
+      "name": "ÖFB-Cup"
+    },
+    {
+      "competitionId": "be-belgian-cup",
+      "eaLeagueId": 213,
+      "name": "Belgian Cup (Croky Cup)"
+    },
+    {
+      "competitionId": "dk-danish-cup",
+      "eaLeagueId": 215,
+      "name": "Danish Cup (Sydbank Pokalen)"
+    },
+    {
+      "competitionId": "no-norwegian-cup",
+      "eaLeagueId": 217,
+      "name": "Norwegian Cup (Cupen)"
+    },
+    {
+      "competitionId": "pt-taca-de-portugal",
+      "eaLeagueId": 218,
+      "name": "Taça de Portugal"
+    },
+    {
+      "competitionId": "sco-scottish-cup",
+      "eaLeagueId": 219,
+      "name": "Scottish Cup"
+    },
+    {
+      "competitionId": "se-svenska-cupen",
+      "eaLeagueId": 220,
+      "name": "Svenska Cupen"
+    },
+    {
+      "competitionId": "ch-schweizer-cup",
+      "eaLeagueId": 221,
+      "name": "Schweizer Cup"
+    },
+    {
+      "competitionId": "uefa-champions-league",
+      "eaLeagueId": 223,
+      "name": "UEFA Champions League"
+    },
+    {
+      "competitionId": "uefa-europa-league",
+      "eaLeagueId": 224,
+      "name": "UEFA Europa League"
+    },
+    {
+      "competitionId": "es-supercopa-de-espana",
+      "eaLeagueId": 225,
+      "name": "Supercopa de España"
+    },
+    {
+      "competitionId": "uefa-conference-league",
+      "eaLeagueId": 226,
+      "name": "UEFA Conference League"
+    },
+    {
+      "competitionId": "eng-community-shield",
+      "eaLeagueId": 228,
+      "name": "FA Community Shield"
+    },
+    {
+      "competitionId": "br-copa-do-brasil",
+      "eaLeagueId": 229,
+      "name": "Copa do Brasil"
+    },
+    {
+      "competitionId": "ar-copa-argentina",
+      "eaLeagueId": 230,
+      "name": "Copa Argentina"
+    },
+    {
+      "competitionId": "uefa-super-cup",
+      "eaLeagueId": 232,
+      "name": "UEFA Super Cup"
+    },
+    {
+      "competitionId": "fr-trophee-des-champions",
+      "eaLeagueId": 233,
+      "name": "Trophée des Champions"
+    },
+    {
+      "competitionId": "us-open-cup",
+      "eaLeagueId": 234,
+      "name": "U.S. Open Cup"
+    },
+    {
+      "competitionId": "gr-greek-cup",
+      "eaLeagueId": 263,
+      "name": "Greek Cup"
+    },
+    {
+      "competitionId": "tr-turkiye-kupasi",
+      "eaLeagueId": 268,
+      "name": "Türkiye Kupası"
+    },
+    {
+      "competitionId": "tr-super-kupa",
+      "eaLeagueId": 269,
+      "name": "Turkish Super Cup (Süper Kupa)"
+    },
+    {
+      "competitionId": "nl-johan-cruijff-schaal",
+      "eaLeagueId": 270,
+      "name": "Johan Cruijff Schaal"
+    },
+    {
+      "competitionId": "pl-superpuchar",
+      "eaLeagueId": 273,
+      "name": "Superpuchar Polski"
+    },
+    {
+      "competitionId": "nl-knvb-beker",
+      "eaLeagueId": 314,
+      "name": "KNVB Beker"
+    },
+    {
+      "competitionId": "eng-league-one-play-offs",
+      "eaLeagueId": 360,
+      "name": "EFL League One play-offs"
+    },
+    {
+      "competitionId": "eng-league-two-play-offs",
+      "eaLeagueId": 361,
+      "name": "EFL League Two play-offs"
+    },
+    {
+      "competitionId": "ie-fai-cup",
+      "eaLeagueId": 365,
+      "name": "FAI Cup"
+    },
+    {
+      "competitionId": "pl-puchar-polski",
+      "eaLeagueId": 366,
+      "name": "Puchar Polski"
+    },
+    {
+      "competitionId": "eng-championship-play-offs",
+      "eaLeagueId": 414,
+      "name": "EFL Championship play-offs"
+    },
+    {
+      "competitionId": "sa-kings-cup",
+      "eaLeagueId": 550,
+      "name": "King's Cup"
+    },
+    {
+      "competitionId": "ro-cupa-romaniei",
+      "eaLeagueId": 1004,
+      "name": "Cupa României"
+    },
+    {
+      "competitionId": "afc-champions-league",
+      "eaLeagueId": 1005,
+      "name": "AFC Champions League (logo used until 2024)"
+    },
+    {
+      "competitionId": "conmebol-sudamericana-legacy",
+      "eaLeagueId": 1007,
+      "name": "Copa Sudamericana (earlier logo)"
+    },
+    {
+      "competitionId": "conmebol-recopa-legacy",
+      "eaLeagueId": 1009,
+      "name": "Recopa Sudamericana (earlier logo)"
+    },
+    {
+      "competitionId": "supercopa-euroamericana",
+      "eaLeagueId": 1010,
+      "name": "Supercopa Euroamericana"
+    },
+    {
+      "competitionId": "conmebol-recopa",
+      "eaLeagueId": 1015,
+      "name": "CONMEBOL Recopa"
+    },
+    {
+      "competitionId": "concacaf-champions-cup",
+      "eaLeagueId": 3004,
+      "name": "Concacaf Champions Cup"
+    },
+    {
+      "competitionId": "afc-champions-league-elite",
+      "eaLeagueId": 3005,
+      "name": "AFC Champions League Elite"
+    },
+    {
+      "competitionId": "ar-copa-de-la-liga",
+      "eaLeagueId": 5067,
+      "name": "Copa de la Liga Profesional"
+    }
+  ]
+}

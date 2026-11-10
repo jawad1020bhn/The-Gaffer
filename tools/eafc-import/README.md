@@ -34,9 +34,10 @@ resolving the ids against the database `import.mjs` reads:
 ```bash
 node tools/eafc-import/badges-from-crest-pack.mjs \
   --kit ../eafc-db-kit --crest-pack crest50x50.zip \
-  --competition-logos tools/eafc-import/test/fixtures/competition-logos \
+  --league-logos leagues.zip \
   --out ../eafc-fc27-badges \
-  --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json
+  --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json \
+  --write-league-crosswalk tools/eafc-import/data/fc27-league-logo-crosswalk.json
 ```
 
 It decodes both formats the pack contains (uncompressed 32-bit BGRA and DXT5),
@@ -52,6 +53,50 @@ rebuild the bundled world's badges.
 The crosswalk never guesses. Two EA rows can share a name (a club and its
 "rest of world" duplicate); the crest breaks the tie, and if both candidates
 have one the club is left out — a wrong badge is worse than a generated crest.
+
+## Competition logos from EA's league folder
+
+EA ships competition logos as `leagues/l<eaLeagueId>.dds`, again with no names
+in the pack. `--league-logos <leagues.zip>` adds them to the same graphics pack
+as `competitionLogos`, each named after the competition it belongs to
+(`eng-premier-league.png`).
+
+Most of these files are not DDS textures on disk. EA wraps them in a `chunkzip`
+container — the texture cut into blocks, each deflated on its own — and keeps
+the `.dds` name, so the importer checks the magic and unwraps first
+(`lib/chunkzip.mjs`). The texture inside is usually 1024×1024 with the artwork
+centred in a wide transparent margin. Each logo is cropped to its artwork and
+scaled down until its longer side is 160 pixels, by area averaging weighted by
+alpha so transparent pixels do not tint the edges. A logo already smaller than
+that is left at its own size. Unlike crests they are not adapted for dark
+surfaces: EA draws them for a dark interface already.
+
+Which logo belongs to which competition is recorded in
+`data/fc27-league-logo-crosswalk.json`, in two lists that are kept apart because
+they are known in different ways:
+
+- **`leagues`** — derived. A competition's id comes from one row of EA's
+  `leagues` table (`leagueCompetitionId` in `lib/mapping.mjs`), so the row that
+  derives the same id is the league it was imported from, and that row's logo is
+  its logo. `--write-league-crosswalk` regenerates this list and CI compares it
+  with the committed file. As with crests, two candidate rows that both have a
+  logo leave the competition without one rather than guessing.
+- **`authored`** — named by hand. EA's `leagues` table lists no cups, super cups
+  or UEFA competitions, so their logos can only be identified by looking at
+  them; `name` records what each one shows. The two UEFA entries belong to the
+  competitions this importer authors. The rest are logos for competitions the
+  package does not have yet: they are packed under the id that competition is
+  expected to get, and the importer sets `logo` on its own the day a competition
+  with that id exists. Those ids are a naming convention, not a checked fact —
+  nothing can verify them until the competition is authored.
+
+`--competition-logos <pack dir>` still copies logos from another pack through
+unchanged. A competition may get its logo from one source only; an id supplied
+by both is an error.
+
+`leagues.zip` and the crosswalk are all
+[`scripts/build-club-badges.mjs`](../../scripts/build-club-badges.mjs) needs to
+rebuild the bundled world's competition logos.
 
 ## Club badges (optional graphics pack)
 
@@ -155,7 +200,8 @@ documents where each asset came from.
 The two European competitions authored by this importer (UEFA Champions
 League, UEFA Europa League) match on their OFM competition id
 (`uefa-champions-league`, `uefa-europa-league`). Without a logo pack they
-render with no badge.
+render with no badge. The bundled world takes both from EA's league folder (see
+above), which draws them in white for a dark interface.
 
 ### Player mini-faces
 
@@ -224,9 +270,9 @@ tier (`priority`) and season start. The database's continental rows become
 competitions of their own: CONMEBOL Libertadores and Sudamericana. Two European
 club competitions the database does not carry are authored from reputation:
 the *UEFA Champions League* (top 32 European clubs) and the *UEFA Europa League*
-(the next 32, excluding the first cup's field). Their logos come from a
-separate optional graphics pack via `--competition-logos`; without one they
-render with no badge.
+(the next 32, excluding the first cup's field). Every competition's logo comes
+from the optional graphics pack (`--badges`, or `--competition-logos` for a
+separate one); without one they render with no logo.
 
 ### Field mapping
 
