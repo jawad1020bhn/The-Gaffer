@@ -78,7 +78,15 @@ fn calendar_fingerprint(game: &Game, blackout: &BTreeSet<NaiveDate>) -> u64 {
 /// Settles the world's calendar at the end of `today`, and tells the user about their own club's
 /// moved matches. A calendar that cannot be settled is a defect: it is logged and left as it is.
 /// Returns whether it ran: it is skipped when nothing it looks at has changed since it last did.
-pub(super) fn reconcile_calendar(game: &mut Game, today: &str, shown: &ShownFixtures) -> bool {
+///
+/// `renewed` names the competitions drawn for their next edition today. Their dates were never
+/// shown, so moving one of their fixtures is placing it, not postponing it.
+pub(super) fn reconcile_calendar(
+    game: &mut Game,
+    today: &str,
+    shown: &ShownFixtures,
+    renewed: &[String],
+) -> bool {
     let Ok(day) = NaiveDate::parse_from_str(today, "%Y-%m-%d") else {
         return false;
     };
@@ -87,7 +95,7 @@ pub(super) fn reconcile_calendar(game: &mut Game, today: &str, shown: &ShownFixt
     if game.calendar_fingerprint == Some(before) {
         return false;
     }
-    let moved_after_being_shown = settle_calendar_today(game, day, &blackout, shown);
+    let moved_after_being_shown = settle_calendar_today(game, day, &blackout, shown, renewed);
     let after = calendar_fingerprint(game, &blackout);
     if after != before {
         // Something moved or was dropped, announced or not: the mirror the dashboard reads has to
@@ -110,6 +118,7 @@ fn settle_calendar_today(
     day: NaiveDate,
     blackout: &BTreeSet<NaiveDate>,
     shown: &ShownFixtures,
+    renewed: &[String],
 ) -> Vec<calendar_reconcile::Move> {
     let Some(tomorrow) = day.succ_opt() else {
         return Vec::new();
@@ -121,8 +130,9 @@ fn settle_calendar_today(
         .map(|competition| competition.id.clone())
         .collect();
     calendar_reconcile::settle_calendar(&mut game.competitions, blackout, tomorrow, |planned| {
-        !bracket_competitions.contains(&planned.competition_id)
-            || shown.contains(&(planned.competition_id.clone(), planned.fixture_id.clone()))
+        !renewed.contains(&planned.competition_id)
+            && (!bracket_competitions.contains(&planned.competition_id)
+                || shown.contains(&(planned.competition_id.clone(), planned.fixture_id.clone())))
     })
 }
 
@@ -219,7 +229,7 @@ mod tests {
         ];
         let shown = shown_bracket_fixtures(&game);
 
-        reconcile_calendar(&mut game, "2033-03-01", &shown);
+        reconcile_calendar(&mut game, "2033-03-01", &shown, &[]);
 
         assert_eq!(date_of(&game, "cup", "t1"), "2033-03-10");
         assert_ne!(date_of(&game, "league", "l1"), "2033-03-10");
@@ -247,7 +257,7 @@ mod tests {
         // The sweep's snapshot predates the draw: nothing was shown.
         let shown = ShownFixtures::new();
 
-        reconcile_calendar(&mut game, "2033-09-01", &shown);
+        reconcile_calendar(&mut game, "2033-09-01", &shown, &[]);
 
         assert_ne!(date_of(&game, "cup", "t1"), "2033-09-09");
         assert!(game.competitions[0].fixtures[0].postponement.is_none());
@@ -269,7 +279,7 @@ mod tests {
         )]])];
         let shown = shown_bracket_fixtures(&game);
 
-        reconcile_calendar(&mut game, "2033-09-01", &shown);
+        reconcile_calendar(&mut game, "2033-09-01", &shown, &[]);
 
         let tie = &game.competitions[0].fixtures[0];
         assert_ne!(tie.date, "2033-09-09");
@@ -292,7 +302,7 @@ mod tests {
         ])];
         let shown = ShownFixtures::new();
 
-        reconcile_calendar(&mut game, "2033-09-01", &shown);
+        reconcile_calendar(&mut game, "2033-09-01", &shown, &[]);
 
         let feeder = date_of(&game, "cup", "r1");
         let successor = date_of(&game, "cup", "r2");
@@ -312,7 +322,7 @@ mod tests {
         let before = serde_json::to_string(&game.competitions).unwrap();
 
         let shown = shown_bracket_fixtures(&game);
-        reconcile_calendar(&mut game, "2033-03-01", &shown);
+        reconcile_calendar(&mut game, "2033-03-01", &shown, &[]);
 
         assert_eq!(serde_json::to_string(&game.competitions).unwrap(), before);
         assert_eq!(moved_message_count(&game), 0);
@@ -356,7 +366,7 @@ mod tests {
         game.active_competition_ids = vec!["league".to_string()];
 
         let shown = shown_bracket_fixtures(&game);
-        reconcile_calendar(&mut game, "2033-03-01", &shown);
+        reconcile_calendar(&mut game, "2033-03-01", &shown, &[]);
 
         assert_ne!(date_of(&game, "league", "l1"), "2033-03-10");
         assert_eq!(date_of(&game, "cup", "t1"), "2033-03-10");
@@ -374,11 +384,11 @@ mod tests {
         let shown = shown_bracket_fixtures(&game);
 
         assert!(
-            reconcile_calendar(&mut game, "2033-03-01", &shown),
+            reconcile_calendar(&mut game, "2033-03-01", &shown, &[]),
             "first sweep"
         );
         assert!(
-            !reconcile_calendar(&mut game, "2033-03-02", &shown),
+            !reconcile_calendar(&mut game, "2033-03-02", &shown, &[]),
             "nothing changed"
         );
 
@@ -386,7 +396,7 @@ mod tests {
             .fixtures
             .push(fixture("cup", "t2", "2033-03-20", "c", "d"));
         assert!(
-            reconcile_calendar(&mut game, "2033-03-03", &shown),
+            reconcile_calendar(&mut game, "2033-03-03", &shown, &[]),
             "a draw was made"
         );
 
@@ -394,14 +404,14 @@ mod tests {
         game.competitions[1].fixtures[0].status = domain::league::FixtureStatus::Completed;
         game.competitions[1].fixtures[0].result = Some(domain::league::MatchResult::default());
         assert!(
-            !reconcile_calendar(&mut game, "2033-03-04", &shown),
+            !reconcile_calendar(&mut game, "2033-03-04", &shown, &[]),
             "only a result"
         );
 
         // Anything that moves a fixture, whatever moved it, is seen.
         game.competitions[0].fixtures[0].date = "2033-03-21".to_string();
         assert!(
-            reconcile_calendar(&mut game, "2033-03-05", &shown),
+            reconcile_calendar(&mut game, "2033-03-05", &shown, &[]),
             "a date changed"
         );
 
@@ -415,7 +425,7 @@ mod tests {
             "z",
         ));
         assert!(
-            reconcile_calendar(&mut game, "2033-03-06", &shown),
+            reconcile_calendar(&mut game, "2033-03-06", &shown, &[]),
             "regenerated"
         );
     }
@@ -434,7 +444,7 @@ mod tests {
         )]])];
         game.league = Some(game.competitions[0].clone());
 
-        reconcile_calendar(&mut game, "2033-09-01", &ShownFixtures::new());
+        reconcile_calendar(&mut game, "2033-09-01", &ShownFixtures::new(), &[]);
 
         let mirrored = &game.league.as_ref().unwrap().fixtures[0].date;
         assert_ne!(mirrored, "2033-09-09");
@@ -456,15 +466,15 @@ mod tests {
         let shown = ShownFixtures::new();
 
         assert!(
-            reconcile_calendar(&mut game, "2033-12-30", &shown),
+            reconcile_calendar(&mut game, "2033-12-30", &shown, &[]),
             "first sweep"
         );
         assert!(
-            !reconcile_calendar(&mut game, "2033-12-31", &shown),
+            !reconcile_calendar(&mut game, "2033-12-31", &shown, &[]),
             "same windows"
         );
         assert!(
-            reconcile_calendar(&mut game, "2034-01-02", &shown),
+            reconcile_calendar(&mut game, "2034-01-02", &shown, &[]),
             "a new year of windows"
         );
     }
@@ -483,7 +493,7 @@ mod tests {
             "b",
         )])];
 
-        reconcile_calendar(&mut game, "2034-01-10", &ShownFixtures::new());
+        reconcile_calendar(&mut game, "2034-01-10", &ShownFixtures::new(), &[]);
 
         assert_ne!(date_of(&game, "league", "l1"), "2034-03-24");
     }
@@ -499,10 +509,35 @@ mod tests {
             cup(vec![vec![fixture("cup", "t1", "2033-03-10", "a", "b")]]),
         ];
 
-        reconcile_calendar(&mut game, "2033-03-01", &ShownFixtures::new());
+        reconcile_calendar(&mut game, "2033-03-01", &ShownFixtures::new(), &[]);
 
         assert!(game.competitions[0].fixtures[0].postponement.is_some());
         assert_eq!(moved_message_count(&game), 1);
+    }
+
+    /// Given a league drawn for its next season today, one of whose matches clashes with a cup
+    /// tie of the user's club,
+    /// When the sweep runs,
+    /// Then the league match is placed on a free day without being marked postponed or
+    ///      announced: the player was never shown the date it was first given.
+    #[test]
+    fn a_match_of_a_league_renewed_today_is_placed_not_postponed() {
+        let mut game = game_on(2033, 3, 1, "a");
+        game.competitions = vec![
+            league(vec![fixture("league", "l1", "2033-03-10", "a", "z")]),
+            cup(vec![vec![fixture("cup", "t1", "2033-03-10", "a", "b")]]),
+        ];
+
+        reconcile_calendar(
+            &mut game,
+            "2033-03-01",
+            &ShownFixtures::new(),
+            &["league".to_string()],
+        );
+
+        assert_ne!(date_of(&game, "league", "l1"), "2033-03-10");
+        assert!(game.competitions[0].fixtures[0].postponement.is_none());
+        assert_eq!(moved_message_count(&game), 0);
     }
 
     /// Given a sweep that has run, When the calendar changes (a draw), Then the sweep runs
@@ -518,7 +553,7 @@ mod tests {
             "z",
         )])];
         let shown = ShownFixtures::new();
-        assert!(reconcile_calendar(&mut game, "2033-03-01", &shown));
+        assert!(reconcile_calendar(&mut game, "2033-03-01", &shown, &[]));
 
         game.competitions.push(cup(vec![vec![fixture(
             "cup",
@@ -528,7 +563,7 @@ mod tests {
             "b",
         )]]));
 
-        assert!(reconcile_calendar(&mut game, "2033-03-02", &shown));
+        assert!(reconcile_calendar(&mut game, "2033-03-02", &shown, &[]));
         assert_ne!(date_of(&game, "league", "l1"), "2033-03-10");
     }
 

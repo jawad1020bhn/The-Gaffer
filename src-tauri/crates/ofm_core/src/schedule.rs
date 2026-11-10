@@ -516,6 +516,16 @@ pub fn generate_preseason_friendlies(
 /// A friendly that clashes with anything else is not handled here: the calendar
 /// sweep drops it, because a friendly always yields.
 pub fn append_preseason_friendlies(competitions: &mut [League], current_date: DateTime<Utc>) {
+    append_preseason_friendlies_where(competitions, current_date, |_| true);
+}
+
+/// [`append_preseason_friendlies`] for the divisions `wanted` names: the ones renewed on a day
+/// of their own, when every other division's preseason is already settled.
+pub(crate) fn append_preseason_friendlies_where(
+    competitions: &mut [League],
+    current_date: DateTime<Utc>,
+    wanted: impl Fn(&League) -> bool,
+) {
     let today = current_date.date_naive();
     let competitive_dates: Vec<(String, chrono::NaiveDate)> = competitions
         .iter()
@@ -537,6 +547,7 @@ pub fn append_preseason_friendlies(competitions: &mut [League], current_date: Da
     for competition in competitions.iter_mut().filter(|competition| {
         competition.kind == CompetitionType::League
             && competition.scope == CompetitionScope::Domestic
+            && wanted(competition)
     }) {
         if competition
             .fixtures

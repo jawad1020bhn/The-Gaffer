@@ -265,6 +265,19 @@ one for the thirty clubs of MLS and of Argentina, two for everyone else. MLS
 and Argentina played 58 rounds before, which ran past the end of the year they
 started in.
 
+**When a season starts.** Each competition starts its next season on its own
+date. The day the player's season ends renews his own country and every
+country that has already finished. A country still playing that day is renewed
+later, four weeks before its first match, once all its divisions have finished:
+that is the day its clubs are paid, go up and go down. A continental
+competition is drawn four weeks before its first match, from the last season
+each league finished and the holder of each cup, together with the other
+competitions of its confederation so that no club is in two. In a French
+career that is 20 March for France and the leagues that end with it, 4 July
+for England, Germany, Italy and Spain, and 22 August for the three UEFA
+competitions. Those leagues used to wait for the same day a year on and went a
+year without football.
+
 **What a career does not have.** Two-legged ties, the 36-club league phase and
 qualifying rounds of the UEFA competitions, league splits and play-offs, a
 staged cup draw, and super cups. The competitions keep EA's first match day
@@ -382,23 +395,13 @@ trademarks.
   play-offs**, and a domestic cup keeps its field and its draw from one season
   to the next. See
   [what a career does not have](#cups-and-continental-competitions).
-- **A league that ends late can go a year without football.** The engine
-  starts every league's next season on one day, the day the player's own
-  country finishes, and leaves alone a league that is still playing. That
-  league ends some weeks later and then waits for the same day a year on. The
-  European leagues start on 1 August and play one round a week, so the day one
-  ends follows from its size: about 20 February for 16 clubs, 20 March for 18,
-  17 April for 20, 15 May for Spain's second division and 12 June for the
-  three EFL divisions. Only a career in England finds every other European
-  league finished. In Spain the EFL divisions wait a year; in Italy or Germany
-  so does Spain's second division; in France, the Netherlands or Portugal so
-  do the Premier League, La Liga and Serie A. A competition that has finished
-  and whose start date has passed begins four weeks after that day. So in a
-  European career the Libertadores, MLS and the other calendar-year leagues
-  finish the edition they are in, wait for that day, and from then on start in
-  spring or summer. This is the engine's rollover (`TODO(hemisphere-stall)` in
-  `end_of_season/mod.rs`) and it predates the cups. It is worked out from the
-  fixture dates and the engine's tests, not seen in a played career.
+- **A manager with no club has no season of his own.** Each competition starts
+  its next season on its own date (see
+  [when a season starts](#cups-and-continental-competitions)), but the day the
+  player's season ends is taken from his club's league. Out of work, or at one
+  of the clubs that play in no league, he has none: every league then waits for
+  the day they have all finished, and a league that ends early starts its next
+  season late.
 - **73 clubs play in no league.** 71 of them play a continental competition and
   nothing else, in the seasons a place is open for them; Al Ain and Buriram
   United play nothing. See

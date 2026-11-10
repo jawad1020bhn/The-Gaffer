@@ -22,8 +22,12 @@ use chrono::NaiveDate;
 
 use domain::league::{CompetitionFormat, CompetitionType, FixtureCompetition, FixtureStatus};
 use domain::player::PlayerSeasonStats;
-use ofm_core::end_of_season::{EndOfSeasonSummary, has_full_schedule, is_regenerated_at_rollover};
+use ofm_core::end_of_season::{
+    EndOfSeasonSummary, competitions_renewed_at_rollover, has_full_schedule,
+    is_regenerated_at_rollover,
+};
 use ofm_core::game::Game;
+use ofm_core::generator::next_season_start;
 use ofm_core::nations::is_split_season_country;
 use ofm_core::world::ladder::{
     division_sizes, domestic_tables_by_country, is_ladder_table, ladder_violations,
@@ -78,6 +82,10 @@ const EVERY_DAY: &[(&str, DayRule)] = &[
     ),
     ("standings-are-consistent", standings_are_consistent),
     (CLUB_RESTS_BETWEEN_MATCHES, club_rests_between_matches),
+    (
+        "finished-leagues-start-their-next-season",
+        finished_leagues_start_their_next_season,
+    ),
 ];
 
 const AT_ROLLOVER: &[(&str, RolloverRule)] = &[
@@ -96,6 +104,22 @@ const AT_ROLLOVER: &[(&str, RolloverRule)] = &[
     ),
 ];
 
+/// What a day that renewed a competition is held to, comparing the day before with the day
+/// itself. A competition is renewed on a day of its own as well as at the rollover (a country
+/// the rollover left playing, a cup, a continental competition), and what is true of one
+/// renewed at the rollover is true of it there.
+const ON_A_RENEWAL_DAY: &[(&str, RolloverRule)] = &[
+    ("ladder-holds", ladder_holds),
+    ("competitions-survive", competitions_survive),
+    ("renewals-advance-one-season", renewals_advance_one_season),
+    ("regenerated-tables-are-fresh", regenerated_tables_are_fresh),
+    ("renewed-ladders-move-clubs", renewed_ladders_move_clubs),
+    (
+        "managers-take-their-league-season",
+        managers_take_their_league_season,
+    ),
+];
+
 /// Violations kept per rule: enough to name what is wrong, not enough for one systemic failure
 /// to bury a report under thousands of copies of itself. Per rule, so a rule that fails
 /// everywhere cannot hide another.
@@ -105,6 +129,8 @@ const MAX_RECORDED: usize = 200;
 pub struct Invariants {
     authored_sizes: BTreeMap<String, usize>,
     before: Option<Before>,
+    /// The world at the end of the day before, to compare a day's renewals with.
+    yesterday: Option<Before>,
     violations: Vec<Violation>,
     seen: BTreeSet<(&'static str, String)>,
     dropped: BTreeMap<&'static str, usize>,
@@ -117,6 +143,7 @@ impl Invariants {
         let mut invariants = Self {
             authored_sizes: division_sizes(game),
             before: None,
+            yesterday: None,
             violations: Vec::new(),
             seen: BTreeSet::new(),
             dropped: BTreeMap::new(),
@@ -126,6 +153,7 @@ impl Invariants {
         for message in ladder_violations(game, &sizes) {
             invariants.record(0, None, "ladder-holds", message, false);
         }
+        invariants.yesterday = Some(Before::capture(game, &sizes));
         invariants
     }
 
@@ -203,6 +231,18 @@ impl Invariants {
 impl SeasonObserver for Invariants {
     fn on_day_end(&mut self, game: &Game, season: u32, day: u32) {
         self.check_every_day(game, season, Some(day));
+        if let Some(yesterday) = self.yesterday.take()
+            && yesterday.was_renewed_since(game)
+        {
+            for (rule, check) in ON_A_RENEWAL_DAY {
+                for message in check(&yesterday, game) {
+                    // Deduplicated: a fault of the world as it stands (a ladder that does not
+                    // hold) is found again at every renewal after it.
+                    self.record(season, Some(day), rule, message, true);
+                }
+            }
+        }
+        self.yesterday = Some(Before::capture(game, &self.authored_sizes));
     }
 
     fn on_before_rollover(&mut self, game: &Game, _season: u32) {
@@ -219,6 +259,7 @@ impl SeasonObserver for Invariants {
                 self.record(season, None, rule, message, false);
             }
         }
+        self.yesterday = Some(Before::capture(game, &self.authored_sizes));
     }
 }
 
@@ -246,12 +287,15 @@ struct ManagerBefore {
 
 struct CompetitionBefore {
     season: u32,
-    complete: bool,
+    /// Whether a rollover run at that moment would have started its next edition: it had played
+    /// its edition out, and was not left to a day of its own.
+    renewed_at_rollover: bool,
     world_cup: bool,
 }
 
 impl Before {
     fn capture(game: &Game, authored_sizes: &BTreeMap<String, usize>) -> Self {
+        let renewed_at_rollover = competitions_renewed_at_rollover(game);
         let competitions = game
             .competitions
             .iter()
@@ -260,7 +304,7 @@ impl Before {
                     competition.id.clone(),
                     CompetitionBefore {
                         season: competition.season,
-                        complete: is_regenerated_at_rollover(competition),
+                        renewed_at_rollover: renewed_at_rollover.contains(&competition.id),
                         world_cup: is_world_cup_competition(competition)
                             || is_world_cup_qualifying(competition),
                     },
@@ -307,6 +351,15 @@ impl Before {
             archived_editions: game.edition_archive.len(),
             managers,
         }
+    }
+
+    /// Whether any competition has started another edition since this was read.
+    fn was_renewed_since(&self, game: &Game) -> bool {
+        game.competitions.iter().any(|competition| {
+            self.competitions
+                .get(&competition.id)
+                .is_some_and(|was| !was.world_cup && was.season != competition.season)
+        })
     }
 }
 
@@ -579,6 +632,57 @@ fn standings_are_consistent(game: &Game) -> Vec<String> {
     faults
 }
 
+/// Given a division that has played its season out,
+/// When the day its next season is configured to start has come and it is still waiting,
+/// Then that is reported.
+///
+/// A league used to be renewed only at the player's rollover. One that ended a few weeks after
+/// the player's own waited for the rollover a year later, and went eleven months without a
+/// match. A division is renewed with its country, at the rollover or four weeks before its own
+/// first match, so the day it is due to start never finds it still finished. A competition with
+/// no configured start is not held to one.
+///
+/// Nor is a split-season country. Its two tables are one division played twice, each a whole
+/// season of its own that overlaps the other, and they are renewed together when the second is
+/// over: the first has always started its next season some weeks after the day it is
+/// configured for, at home or abroad.
+fn finished_leagues_start_their_next_season(game: &Game) -> Vec<String> {
+    let today = game.clock.current_date;
+    game.competitions
+        .iter()
+        .filter(|competition| is_ladder_table(competition) && competition.season_start_month != 0)
+        .filter(|table| {
+            !table
+                .country_id
+                .as_deref()
+                .is_some_and(is_split_season_country)
+        })
+        .filter(|table| is_regenerated_at_rollover(table))
+        .filter_map(|table| {
+            let last_match = table
+                .fixtures
+                .iter()
+                .filter(|fixture| fixture.status == FixtureStatus::Completed)
+                .filter_map(|fixture| NaiveDate::parse_from_str(&fixture.date, "%Y-%m-%d").ok())
+                .max()?;
+            let due = next_season_start(
+                last_match.and_hms_opt(0, 0, 0)?.and_utc(),
+                table.season_start_month,
+                table.season_start_day,
+            );
+            (today > due).then(|| {
+                format!(
+                    "{} played the last match of season {} on {last_match} and has not started \
+                     the season that was due on {}",
+                    table.id,
+                    table.season,
+                    due.format("%Y-%m-%d")
+                )
+            })
+        })
+        .collect()
+}
+
 // ── At each rollover ────────────────────────────────────────────────────────
 
 /// Given a country with a pyramid, before and after a rollover,
@@ -609,25 +713,63 @@ fn competitions_survive(before: &Before, after: &Game) -> Vec<String> {
         .collect()
 }
 
-/// Given a competition the rollover judged complete,
-/// When its season is not exactly one more afterwards,
+/// Given the competitions a rollover is due to renew,
+/// When the season of one is not exactly one more afterwards, or one it was not due to renew
+///      has changed season,
 /// Then that is reported (#654).
 ///
-/// A competition the rollover regenerates moves on by exactly one season. Only
-/// those the rollover itself judged complete: a league still mid-season on a
-/// hemisphere calendar is left as it is, by design.
+/// A competition the rollover regenerates moves on by exactly one season, and nothing else
+/// moves at all. What a rollover is due to renew is the game's own rule
+/// (`competitions_renewed_at_rollover`): a league still mid-season on a hemisphere calendar is
+/// left as it is, by design, and so is one that has finished and is renewed on a day of its
+/// own, like a division waiting for the one beside it or a continental cup months from its
+/// first match.
 fn completed_competitions_advance_one_season(before: &Before, after: &Game) -> Vec<String> {
     after
         .competitions
         .iter()
         .filter_map(|competition| {
             let was = before.competitions.get(&competition.id)?;
-            (was.complete && !was.world_cup && competition.season != was.season + 1).then(|| {
-                format!(
-                    "{} was complete in season {} and is now season {}",
-                    competition.id, was.season, competition.season
-                )
-            })
+            if was.world_cup {
+                return None;
+            }
+            if was.renewed_at_rollover {
+                (competition.season != was.season + 1).then(|| {
+                    format!(
+                        "{} was complete in season {} and is now season {}",
+                        competition.id, was.season, competition.season
+                    )
+                })
+            } else {
+                (competition.season != was.season).then(|| {
+                    format!(
+                        "{} was not due to be renewed in season {} and is now season {}",
+                        competition.id, was.season, competition.season
+                    )
+                })
+            }
+        })
+        .collect()
+}
+
+/// Given a day on which a competition started another edition,
+/// When its season is not exactly one more than the day before,
+/// Then that is reported: an edition is never skipped and never played twice.
+fn renewals_advance_one_season(before: &Before, after: &Game) -> Vec<String> {
+    after
+        .competitions
+        .iter()
+        .filter_map(|competition| {
+            let was = before.competitions.get(&competition.id)?;
+            (!was.world_cup
+                && competition.season != was.season
+                && competition.season != was.season + 1)
+                .then(|| {
+                    format!(
+                        "{} went from season {} to season {} in one day",
+                        competition.id, was.season, competition.season
+                    )
+                })
         })
         .collect()
 }
@@ -760,22 +902,55 @@ fn season_stats_are_reset(_before: &Before, after: &Game) -> Vec<String> {
 /// divisions. Promotion and relegation that never run is a bug that leaves the
 /// world looking healthy, and it shipped once.
 fn finished_ladders_move_clubs(before: &Before, after: &Game) -> Vec<String> {
+    let countries = before.finished_countries.iter().map(String::as_str);
+    unmoved_ladders(countries, before, after)
+        .map(|country| format!("{country}'s divisions all finished but no club changed division"))
+        .collect()
+}
+
+/// Given a country with a ladder whose every division started its next season on one day,
+/// When no club changed division that day,
+/// Then that is reported: a country the rollover left playing ends its season on a day of its
+///      own, and its clubs go up and down then as they would have at the rollover.
+fn renewed_ladders_move_clubs(before: &Before, after: &Game) -> Vec<String> {
     let tables = domestic_tables_by_country(after);
-    before
-        .finished_countries
-        .iter()
-        .filter_map(|country| {
-            let tables = tables.get(country.as_str())?;
-            let moved = tables.iter().any(|table| {
-                table
-                    .participant_ids
-                    .iter()
-                    .any(|club| before.membership.get(club) != Some(&table.id))
-            });
-            (!moved)
-                .then(|| format!("{country}'s divisions all finished but no club changed division"))
+    let renewed_whole = tables.iter().filter(|(country, tables)| {
+        !is_split_season_country(country)
+            && tables.len() >= 2
+            && tables.iter().all(|table| {
+                before
+                    .competitions
+                    .get(&table.id)
+                    .is_some_and(|was| table.season > was.season)
+            })
+    });
+    unmoved_ladders(renewed_whole.map(|(country, _)| *country), before, after)
+        .map(|country| {
+            format!("{country}'s divisions all started a new season but no club changed division")
         })
         .collect()
+}
+
+/// The `countries` in which every club is still in the division it was in `before`.
+fn unmoved_ladders<'a>(
+    countries: impl Iterator<Item = &'a str>,
+    before: &Before,
+    after: &Game,
+) -> impl Iterator<Item = &'a str> {
+    let tables = domestic_tables_by_country(after);
+    countries
+        .filter(move |country| {
+            tables.get(country).is_some_and(|tables| {
+                !tables.iter().any(|table| {
+                    table
+                        .participant_ids
+                        .iter()
+                        .any(|club| before.membership.get(club) != Some(&table.id))
+                })
+            })
+        })
+        .collect::<Vec<_>>()
+        .into_iter()
 }
 
 #[cfg(test)]
@@ -1567,5 +1742,151 @@ mod tests {
         let mut game = world();
         complete_a_club_fixture_without_report(&mut game, "2000-01-01");
         assert!(completed_club_fixtures_have_reports(&game).is_empty());
+    }
+
+    /// Given a league the rollover is not due to renew (nothing of it has been played),
+    /// When its season has changed across the rollover all the same,
+    /// Then that is reported: what the rollover leaves to a day of its own it leaves alone.
+    #[test]
+    fn a_competition_the_rollover_was_not_due_to_renew_must_keep_its_season() {
+        let game = world();
+        let was = before(&game);
+        let mut after = game.clone();
+        competition(&mut after, "eng-d1").season += 1;
+
+        assert!(mentions(
+            &completed_competitions_advance_one_season(&was, &after),
+            "eng-d1 was not due to be renewed in season 2033 and is now season 2034"
+        ));
+        assert!(
+            !mentions(
+                &completed_competitions_advance_one_season(&was, &game),
+                "eng-d1"
+            ),
+            "left as it was"
+        );
+    }
+
+    /// Given a competition renewed on a day of its own,
+    /// When it has moved on by two seasons at once,
+    /// Then that is reported; one season on is right.
+    #[test]
+    fn a_renewal_that_skips_a_season_is_noticed() {
+        let game = world();
+        let was = before(&game);
+        let mut skipped = game.clone();
+        competition(&mut skipped, "eng-cup").season += 2;
+        assert!(mentions(
+            &renewals_advance_one_season(&was, &skipped),
+            "eng-cup went from season 2033 to season 2035 in one day"
+        ));
+
+        let mut advanced = game.clone();
+        competition(&mut advanced, "eng-cup").season += 1;
+        assert_eq!(
+            renewals_advance_one_season(&was, &advanced),
+            Vec::<String>::new()
+        );
+    }
+
+    /// Given a country whose every division started its next season on one day,
+    /// When every club is still where it was,
+    /// Then that is reported; a club that changed division, or a division left behind, is not.
+    #[test]
+    fn a_ladder_renewed_on_its_own_day_that_moves_nobody_is_noticed() {
+        let game = world();
+        let was = before(&game);
+        let mut renewed = game.clone();
+        for id in ["eng-d1", "eng-d2"] {
+            competition(&mut renewed, id).season += 1;
+        }
+        assert!(mentions(
+            &renewed_ladders_move_clubs(&was, &renewed),
+            "ENG's divisions all started a new season but no club changed division"
+        ));
+
+        let mut moved = renewed.clone();
+        let up = competition(&mut moved, "eng-d2").participant_ids[0].clone();
+        let down = std::mem::replace(
+            &mut competition(&mut moved, "eng-d1").participant_ids[0],
+            up,
+        );
+        competition(&mut moved, "eng-d2").participant_ids[0] = down;
+        assert_eq!(
+            renewed_ladders_move_clubs(&was, &moved),
+            Vec::<String>::new()
+        );
+
+        let mut half = game.clone();
+        competition(&mut half, "eng-d1").season += 1;
+        assert_eq!(
+            renewed_ladders_move_clubs(&was, &half),
+            Vec::<String>::new(),
+            "one division alone is not the country's season ending"
+        );
+    }
+
+    /// Given a division that has played its season out,
+    /// When the day its next season was due to start comes and it has not been renewed,
+    /// Then that is reported from that day, and not before it.
+    #[test]
+    fn a_finished_league_still_waiting_on_the_day_it_was_due_to_start_is_noticed() {
+        use chrono::TimeZone;
+        let mut game = world();
+        for fixture in &mut competition(&mut game, "eng-d1").fixtures {
+            fixture.status = FixtureStatus::Completed;
+        }
+        let rule = finished_leagues_start_their_next_season;
+        assert_eq!(
+            rule(&game),
+            Vec::<String>::new(),
+            "the season has only just ended"
+        );
+
+        game.clock.current_date = chrono::Utc.with_ymd_and_hms(2034, 7, 31, 12, 0, 0).unwrap();
+        assert_eq!(
+            rule(&game),
+            Vec::<String>::new(),
+            "the day before it is due"
+        );
+
+        game.clock.current_date = chrono::Utc.with_ymd_and_hms(2034, 8, 1, 12, 0, 0).unwrap();
+        let faults = rule(&game);
+        assert!(
+            mentions(&faults, "eng-d1 played the last match of season 2033 on")
+                && mentions(&faults, "the season that was due on 2034-08-01"),
+            "{faults:?}"
+        );
+    }
+
+    /// Given a run in which a country's divisions are all renewed on one day and nobody moves,
+    /// When that day ends,
+    /// Then the renewal is held to the rules of a rollover, once: the next day compares with it.
+    #[test]
+    fn a_day_that_renews_a_competition_is_held_to_the_renewal_rules() {
+        let mut game = world();
+        let mut invariants = Invariants::new(&game);
+        assert!(invariants.is_clean(), "{}", invariants.report());
+        invariants.on_day_end(&game, 1, 1);
+        assert!(
+            invariants.is_clean(),
+            "a day that renews nothing: {}",
+            invariants.report()
+        );
+
+        for id in ["eng-d1", "eng-d2"] {
+            competition(&mut game, id).season += 1;
+        }
+        invariants.on_day_end(&game, 1, 2);
+        let reported = invariants.report_of("renewed-ladders-move-clubs");
+        assert!(
+            reported.contains("[season 1 day 2]") && reported.contains("ENG's divisions"),
+            "{}",
+            invariants.report()
+        );
+
+        let recorded = invariants.violations().len();
+        invariants.on_day_end(&game, 1, 3);
+        assert_eq!(invariants.violations().len(), recorded);
     }
 }

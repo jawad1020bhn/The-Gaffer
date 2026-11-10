@@ -10,18 +10,17 @@
 //!
 //! Only domestic and regional cups: their entrants never change at the rollover. A continental
 //! competition's field is worked out from the whole season's domestic results, and a league
-//! needs its whole pyramid finished before it can renew, so both wait for the rollover.
+//! needs its whole pyramid finished before it can renew: each has a day of its own too, by rules
+//! of its own, in `end_of_season::renewal`.
 
 use chrono::{DateTime, Days, NaiveDate, Utc};
 use domain::league::{CompetitionFormat, CompetitionScope, CompetitionType, League};
 use log::{debug, warn};
 
 use crate::edition_archive::archive_completed_edition;
+use crate::end_of_season::renewal::BREAK_BETWEEN_EDITIONS_DAYS;
 use crate::end_of_season::{is_cup_edition_finished, season_calendar::next_edition};
 use crate::game::Game;
-
-/// The shared break the rollover keeps between editions, in days.
-const BREAK_BETWEEN_EDITIONS_DAYS: u64 = 28;
 
 fn is_renewable_cup(competition: &League) -> bool {
     competition.kind == CompetitionType::Cup
@@ -47,20 +46,21 @@ fn next_edition_is_near(
     cup.season_start_month != 0 && next_edition(cup, clock, today_start).start <= earliest_start
 }
 
-/// Archives and renews every cup whose edition finished and whose next edition is near, and returns how many it renewed. A cup
-/// whose edition cannot be archived is left as it is: renewing it would lose the edition.
-pub(crate) fn renew_finished_cups(game: &mut Game, today: &str) -> usize {
+/// Archives and renews every cup whose edition finished and whose next edition is near, and
+/// returns the ids of the cups it renewed. A cup whose edition cannot be archived is left as it
+/// is: renewing it would lose the edition.
+pub(crate) fn renew_finished_cups(game: &mut Game, today: &str) -> Vec<String> {
     let Some(earliest_start) = NaiveDate::parse_from_str(today, "%Y-%m-%d")
         .ok()
         .and_then(|day| day.checked_add_days(Days::new(BREAK_BETWEEN_EDITIONS_DAYS)))
         .and_then(|day| day.and_hms_opt(0, 0, 0))
         .map(|day| DateTime::<Utc>::from_naive_utc_and_offset(day, Utc))
     else {
-        return 0;
+        return Vec::new();
     };
 
     let today_start = earliest_start - Days::new(BREAK_BETWEEN_EDITIONS_DAYS);
-    let mut renewed = 0;
+    let mut renewed = Vec::new();
     for index in 0..game.competitions.len() {
         let cup = &game.competitions[index];
         if !is_renewable_cup(cup)
@@ -91,7 +91,7 @@ pub(crate) fn renew_finished_cups(game: &mut Game, today: &str) -> usize {
             }
             CompetitionFormat::LeagueTable => continue,
         }
-        renewed += 1;
+        renewed.push(cup.id.clone());
     }
     renewed
 }
@@ -137,7 +137,7 @@ mod tests {
 
         let renewed = renew_finished_cups(&mut game, "2034-08-10");
 
-        assert_eq!(renewed, 1);
+        assert_eq!(renewed.len(), 1);
         let next = &game.competitions[0];
         assert!(next.season > 2033, "a new edition");
         assert!(!next.fixtures.is_empty());
@@ -161,7 +161,7 @@ mod tests {
     fn a_finished_cup_keeps_its_bracket_until_the_next_edition_is_near() {
         let mut game = game_with(vec![september_cup()]);
 
-        assert_eq!(renew_finished_cups(&mut game, "2034-05-20"), 0);
+        assert_eq!(renew_finished_cups(&mut game, "2034-05-20").len(), 0);
 
         assert_eq!(game.competitions[0].season, 2033);
         assert!(
@@ -180,7 +180,7 @@ mod tests {
         unscheduled.season_start_month = 0;
         let mut game = game_with(vec![unscheduled]);
 
-        assert_eq!(renew_finished_cups(&mut game, "2034-08-10"), 0);
+        assert_eq!(renew_finished_cups(&mut game, "2034-08-10").len(), 0);
     }
 
     /// Given a cup that has just been renewed, When the next day ends, Then it is not renewed (or
@@ -193,7 +193,7 @@ mod tests {
 
         let again = renew_finished_cups(&mut game, "2034-08-11");
 
-        assert_eq!(again, 0);
+        assert_eq!(again.len(), 0);
         assert_eq!(serde_json::to_string(&game.competitions).unwrap(), once);
         assert_eq!(game.edition_archive.len(), 1);
     }
@@ -206,7 +206,7 @@ mod tests {
         unfinished.fixtures[0].result = None;
         let mut game = game_with(vec![unfinished]);
 
-        assert_eq!(renew_finished_cups(&mut game, "2034-08-10"), 0);
+        assert_eq!(renew_finished_cups(&mut game, "2034-08-10").len(), 0);
         assert!(game.edition_archive.is_empty());
     }
 
@@ -220,7 +220,7 @@ mod tests {
         group.season_start_day = 1;
         let mut game = game_with(vec![group]);
 
-        assert_eq!(renew_finished_cups(&mut game, "2034-08-10"), 1);
+        assert_eq!(renew_finished_cups(&mut game, "2034-08-10").len(), 1);
         assert!(
             game.competitions[0]
                 .groups
@@ -242,7 +242,7 @@ mod tests {
         world_cup.scope = CompetitionScope::International;
         let mut game = game_with(vec![continental, world_cup]);
 
-        assert_eq!(renew_finished_cups(&mut game, "2034-08-10"), 0);
+        assert_eq!(renew_finished_cups(&mut game, "2034-08-10").len(), 0);
         assert!(game.edition_archive.is_empty());
     }
 
@@ -255,7 +255,7 @@ mod tests {
         tournament.scope = CompetitionScope::Domestic;
         let mut game = game_with(vec![tournament]);
 
-        assert_eq!(renew_finished_cups(&mut game, "2034-08-10"), 0);
+        assert_eq!(renew_finished_cups(&mut game, "2034-08-10").len(), 0);
     }
 
     /// Given a finished cup whose next edition starts on 1 September, When the day ends on 4 August
@@ -264,10 +264,10 @@ mod tests {
     #[test]
     fn a_cup_renews_on_the_exact_day_its_four_week_lead_begins() {
         let mut too_early = game_with(vec![september_cup()]);
-        assert_eq!(renew_finished_cups(&mut too_early, "2034-08-03"), 0);
+        assert_eq!(renew_finished_cups(&mut too_early, "2034-08-03").len(), 0);
 
         let mut on_time = game_with(vec![september_cup()]);
-        assert_eq!(renew_finished_cups(&mut on_time, "2034-08-04"), 1);
+        assert_eq!(renew_finished_cups(&mut on_time, "2034-08-04").len(), 1);
     }
 
     /// Given a finished cup whose next edition is near, When the world's day is processed,

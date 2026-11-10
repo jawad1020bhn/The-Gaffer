@@ -72,13 +72,12 @@ pub fn continental_qualified_entrants(game: &Game, competition: &League) -> Vec<
             .or_insert(competition);
     }
     for league in first_division.values() {
-        for entry in league
-            .sorted_standings()
+        for club in last_final_table(game, league)
             .into_iter()
             .take(CONTINENTAL_LEAGUE_SLOTS)
         {
-            if seen.insert(entry.team_id.clone()) {
-                qualified.push(entry.team_id);
+            if seen.insert(club.clone()) {
+                qualified.push(club);
             }
         }
     }
@@ -110,19 +109,23 @@ pub fn competition_has_incoming_berths(game: &Game, target_id: &str) -> bool {
         .any(|berth| berth.target == target_id || berth.fallback_to.as_deref() == Some(target_id))
 }
 
-/// Who won `cup`: its own bracket if it has been decided, otherwise, only if the cup has been
-/// renewed for its next edition, the champion of the edition it last finished.
+/// Who won `cup`: its own bracket if it has been decided, otherwise, only if the cup has moved on
+/// to a later edition, the champion of the edition it last finished.
 ///
-/// A cup is renewed before the rollover reads its winner, so by then its live bracket is the next,
-/// unplayed one and the finished edition is only in the archive. An undecided bracket is not by
-/// itself a renewed cup: a cup kept at the rollover because its final was postponed also has no
-/// winner yet, and its archived edition is last season's, already credited. So the archive is read
-/// only when the cup's season is past the season of its country's top division, which is the
-/// edition the rollover is settling.
+/// A cup is renewed on its own day, and what reads its winner (a continental field, drawn at the
+/// rollover or four weeks before its first match) is drawn on another. By then the cup's live
+/// bracket may be the next, unplayed one, with the finished edition only in the archive. An
+/// undecided bracket is not by itself a renewed cup: a cup whose final was postponed past the
+/// league's last round also has no winner yet, and its archived edition is the season before's,
+/// already credited. So the archive is read only when the cup's season is past the last season
+/// its country's top division finished, which is the season being rewarded. A cup with no top
+/// division to be compared with (a continental cup read by a super cup) is read from the archive
+/// whenever its own bracket is undecided.
 pub(crate) fn cup_champion(game: &Game, cup: &League) -> Option<String> {
     crate::world_cup::world_cup_champion(cup).or_else(|| {
-        let settling = top_division_season(game, cup)?;
-        if cup.season <= settling {
+        let rewarded =
+            top_division(game, cup).and_then(|league| last_finished_season(game, league));
+        if rewarded.is_some_and(|rewarded| cup.season <= rewarded) {
             return None;
         }
         crate::edition_archive::champion_of_latest_edition_before(
@@ -134,8 +137,8 @@ pub(crate) fn cup_champion(game: &Game, cup: &League) -> Option<String> {
     })
 }
 
-/// The season of the first division of the cup's country: the edition being settled.
-fn top_division_season(game: &Game, cup: &League) -> Option<u32> {
+/// The first division of the cup's country.
+fn top_division<'a>(game: &'a Game, cup: &League) -> Option<&'a League> {
     let country = cup.country_id.as_deref()?;
     game.competitions
         .iter()
@@ -145,22 +148,99 @@ fn top_division_season(game: &Game, cup: &League) -> Option<u32> {
                 && competition.country_id.as_deref() == Some(country)
         })
         .min_by_key(|competition| competition.priority)
-        .map(|competition| competition.season)
 }
 
-/// Teams a single berth rule selects from a competition's finished results.
+/// The places `league`'s clubs took in the last season its payout wrote into their histories,
+/// with that season: `(season, [(position, club)])`, positions ascending. `None` when no club
+/// has a season of this league on its record.
+fn last_recorded_places<'a>(game: &'a Game, league: &League) -> Option<(u32, Vec<(u32, &'a str)>)> {
+    let recorded = |team: &'a domain::team::Team| {
+        team.history
+            .iter()
+            .filter(|record| record.competition_id == league.id)
+            .max_by_key(|record| record.season)
+            .map(|record| (record.season, record.league_position, team.id.as_str()))
+    };
+    let last_season = game
+        .teams
+        .iter()
+        .filter_map(recorded)
+        .map(|(season, _, _)| season)
+        .max()?;
+    let mut places: Vec<(u32, &str)> = game
+        .teams
+        .iter()
+        .filter_map(recorded)
+        .filter(|(season, _, _)| *season == last_season)
+        .map(|(_, position, club)| (position, club))
+        .collect();
+    places.sort_unstable();
+    Some((last_season, places))
+}
+
+/// The last season `league` played out: the one its table shows, if that is finished; otherwise
+/// the latest it has in the archive, or on its clubs' records. `None` for a league that has never
+/// finished one.
+pub(super) fn last_finished_season(game: &Game, league: &League) -> Option<u32> {
+    if crate::end_of_season::is_league_season_ended(league) {
+        return Some(league.season);
+    }
+    game.edition_archive
+        .iter()
+        .filter(|edition| edition.competition_id == league.id)
+        .map(|edition| edition.season)
+        .max()
+        .or_else(|| last_recorded_places(game, league).map(|(season, _)| season))
+}
+
+/// The clubs of `league` in the order they finished its last completed season
+/// ([`last_finished_season`]).
+///
+/// The table as it stands, if the season it shows has been played out. Otherwise the league is
+/// between seasons or part-way through one, and what a berth rewards is the season before: its
+/// archived final table, or, for a league whose editions cannot be archived (a save from before
+/// tables kept their authored shape), the places written into its clubs' histories when it was
+/// paid out. A league that has never finished a season has only the table it has.
+pub(super) fn last_final_table(game: &Game, league: &League) -> Vec<String> {
+    if !crate::end_of_season::is_league_season_ended(league) {
+        if let Some(edition) = game
+            .edition_archive
+            .iter()
+            .filter(|edition| edition.competition_id == league.id)
+            .max_by_key(|edition| edition.season)
+        {
+            return edition
+                .standings
+                .iter()
+                .map(|entry| entry.team_id.clone())
+                .collect();
+        }
+        if let Some((_, places)) = last_recorded_places(game, league) {
+            return places
+                .into_iter()
+                .map(|(_, club)| club.to_string())
+                .collect();
+        }
+    }
+    league
+        .sorted_standings()
+        .into_iter()
+        .map(|entry| entry.team_id)
+        .collect()
+}
+
+/// Teams a single berth rule selects from a competition's last finished edition: a league's
+/// final table ([`last_final_table`]), a cup's holder ([`cup_champion`]).
 /// `PlayoffWinner` is scheduled and resolved separately (Phase C.3b).
 pub(super) fn evaluate_berth_rule(game: &Game, source: &League, rule: &BerthRule) -> Vec<String> {
     match rule {
         BerthRule::PositionRange { from, to } => {
             let start = (*from as usize).saturating_sub(1);
             let count = (*to).saturating_sub(*from).saturating_add(1) as usize;
-            source
-                .sorted_standings()
+            last_final_table(game, source)
                 .into_iter()
                 .skip(start)
                 .take(count)
-                .map(|entry| entry.team_id)
                 .collect()
         }
         BerthRule::CupWinner => cup_champion(game, source).into_iter().collect(),
@@ -390,3 +470,7 @@ fn seed_cap_and_fill(
 
     qualified
 }
+
+#[cfg(test)]
+#[path = "continental_tests.rs"]
+mod tests;

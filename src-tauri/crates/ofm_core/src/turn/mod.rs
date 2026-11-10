@@ -257,13 +257,24 @@ where
     crate::national_team::process_national_team_fixtures_due(game, today);
     crate::world_cup::process_world_cup_fixtures_due(game, today);
 
-    // A cup whose last tie was played today starts its next edition, so the sweep below settles
-    // the new ties too.
-    cup_renewal::renew_finished_cups(game, today);
+    // What has finished and is four weeks from its next first match starts its next edition: a
+    // country the rollover left playing, then the cups (which read the divisions as they now
+    // are), then the continental competitions (which read the leagues and the cups). The sweep
+    // below settles the new fixtures too.
+    let mut renewed = crate::end_of_season::renewal::renew_finished_ladders(game, today);
+    renewed.extend(cup_renewal::renew_finished_cups(game, today));
+    renewed.extend(crate::end_of_season::renewal::renew_due_continental_cups(
+        game, today,
+    ));
+    if !renewed.is_empty() {
+        // A draw can put the player's club in a competition it was not in: without this its
+        // matches there would be settled by scoreline, out of the scope the day loop plays.
+        crate::end_of_season::refresh_user_competition_scope(game);
+    }
 
     // Last, so a round drawn or a postponement caused by today's results is settled before the
     // next day's fixtures are looked up.
-    calendar_sweep::reconcile_calendar(game, today, &shown_fixtures);
+    calendar_sweep::reconcile_calendar(game, today, &shown_fixtures, &renewed);
 }
 
 /// Process a single day advance.
