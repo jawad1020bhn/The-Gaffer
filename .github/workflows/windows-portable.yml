@@ -100,6 +100,13 @@ jobs:
 
       - name: Assemble the folder
         shell: pwsh
+        # The READ ME inside the zip quotes the world's size. It read those numbers from the data
+        # to stop them drifting, then hardcoded them anyway and drifted back to 685/18,893 while
+        # the package held 684/18,875 — so they are passed in and interpolated now.
+        env:
+          CLUBS: ${{ steps.world.outputs.clubs }}
+          PLAYERS: ${{ steps.world.outputs.players }}
+          COMPETITIONS: ${{ steps.world.outputs.competitions }}
         run: |
           $out = "OpenfootManager-portable"
           $exe = "src-tauri/target/release/openfootmanager.exe"
@@ -118,7 +125,7 @@ jobs:
           Copy-Item src-tauri/crates/ofm_core/data/default_nations.json "$out/data/"
           Copy-Item eafc-fc27.ofm "$out/packages/"
 
-          @'
+          @"
           Openfoot Manager — portable Windows build
           =========================================
 
@@ -135,11 +142,13 @@ jobs:
           and 11 already. If the window stays blank, install it from
           https://developer.microsoft.com/microsoft-edge/webview2/
 
-          Real players: packages/eafc-fc27.ofm holds 685 clubs, 18,893 players and 38
-          competitions imported from EA FC 27. The game installs it the first time it lists
-          packages and pre-selects it, so a new career starts on that world — you should see
-          Arsenal, Real Madrid and the rest, not generated clubs. If you ever want the
-          generated world instead, untick the package on the new game screen.
+          Real players: packages/eafc-fc27.ofm holds $($env:CLUBS) clubs, $($env:PLAYERS)
+          players and $($env:COMPETITIONS) competitions imported from EA FC 27. The game
+          installs it the first time it lists packages and pre-selects it, so a new career
+          starts on that world — you should see Arsenal, Real Madrid and the rest, not
+          generated clubs. Most clubs carry their real crest; the handful EA's crest pack does
+          not cover keep a generated one. If you ever want the generated world instead, untick
+          the package on the new game screen.
 
           data/ holds the name and nation pools the game generates its procedurally created
           players from. They are optional — the same files are compiled into the executable —
@@ -148,7 +157,7 @@ jobs:
           This is a portable build of OpenFoot Manager: the same release binary the
           installer ships, in a folder instead of behind a setup wizard. It is not
           code-signed. Source: https://github.com/jawad1020bhn/the-gaffer-v0.4
-          '@ | Set-Content -Path "$out/READ ME FIRST.txt" -Encoding utf8
+          "@ | Set-Content -Path "$out/READ ME FIRST.txt" -Encoding utf8
 
           Compress-Archive -Path $out -DestinationPath "OpenfootManager-portable-windows-x64.zip" -Force
           Get-ChildItem "OpenfootManager-portable-windows-x64.zip" |
