@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 /**
- * Build a club-badge graphics pack from EA's crest folder, keyed by EA team id.
+ * Build a club-badge graphics pack from EA's 50×50 crest folder, keyed by EA team id.
  *
  * `import.mjs --badges <pack>` wants a folder of PNGs plus a `manifest.json`
  * recording the crosswalk (EA team id ↔ OFM club id) and each file's checksum.
- * EA ships crests only as `crest16x16/l<teamid>.dds` (plus a recoloured
- * `dark/` sibling), with no names anywhere in the pack — the ids are the whole
- * identifier. So a crosswalk has to come from the database the package was
- * built from, which is what `--kit` supplies: the same `teams` table the
- * importer reads, reduced to `teamid → teamname → slug`.
+ * EA ships crests only as `crest50x50/l<teamid>.dds` (64×64 DDS textures whose
+ * 50×50 artwork sits in the top-left corner), with no names anywhere in the
+ * pack — the ids are the whole identifier. So a crosswalk has to come from the
+ * database the package was built from, which is what `--kit` supplies: the same
+ * `teams` table the importer reads, reduced to `teamid → teamname → slug`.
  *
  * The output is a normal pack, so it goes through the importer's own
  * verification and provenance path rather than being wired into the package
  * behind its back:
  *
  *   node tools/eafc-import/badges-from-crest-pack.mjs \
- *     --kit ../eafc-db-kit --crest-pack crest16x16.zip \
+ *     --kit ../eafc-db-kit --crest-pack crest50x50.zip \
  *     --competition-logos tools/eafc-import/test/fixtures/competition-logos \
  *     --out ../eafc-fc27-badges
  *
@@ -36,7 +36,7 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 
 import { listCrests, planClubBadges } from "./lib/crestPack.mjs";
-import { ddsToPng } from "./lib/dds.mjs";
+import { CREST_SIZE, crestDdsToPng } from "./lib/dds.mjs";
 import { readZipEntries } from "./lib/zip.mjs";
 
 /**
@@ -49,20 +49,14 @@ const LICENCE = "PersonalUseOnly";
 const ATTRIBUTION = "EA Sports FC club crests";
 const SOURCE = "https://www.ea.com/games/ea-sports-fc";
 
-/** Width and height, in pixels, every crest is scaled up to (a whole multiple of 16). */
-const TARGET_PIXELS = 64;
-
 function parseArgs(argv) {
   const args = {
     world: "mods/eafc-fc27",
-    // The game has one presentation and it is dark (`ThemeProvider`), so the
-    // recoloured `dark/` sibling is the variant that stays legible on it.
-    variant: "dark",
     out: null,
     crestPack: null,
     kit: process.env.EAFCDB_KIT,
     version: "FC 27",
-    scale: TARGET_PIXELS,
+    darkAdapt: true,
     competitionLogos: null,
     writeCrosswalk: null,
   };
@@ -74,18 +68,11 @@ function parseArgs(argv) {
     else if (arg === "--out") args.out = next();
     else if (arg === "--world") args.world = next();
     else if (arg === "--version") args.version = next();
-    else if (arg === "--variant") args.variant = next();
-    else if (arg === "--scale") args.scale = Number(next());
+    else if (arg === "--no-dark-adapt") args.darkAdapt = false;
     else if (arg === "--competition-logos") args.competitionLogos = next();
     else if (arg === "--write-crosswalk") args.writeCrosswalk = next();
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new Error(`unknown argument: ${arg}`);
-  }
-  if (args.variant !== "light" && args.variant !== "dark") {
-    throw new Error(`--variant must be "light" or "dark", got "${args.variant}"`);
-  }
-  if (!Number.isInteger(args.scale) || args.scale < 16 || args.scale > 256) {
-    throw new Error("--scale must be an integer between 16 and 256");
   }
   return args;
 }
@@ -138,22 +125,19 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     console.log(
-      "usage: node tools/eafc-import/badges-from-crest-pack.mjs --kit <eafc-db-kit> --crest-pack <crest16x16.zip> --out <pack dir>\n" +
-        '       [--world mods/eafc-fc27] [--version "FC 27"] [--variant light|dark] [--scale 64]\n' +
+      "usage: node tools/eafc-import/badges-from-crest-pack.mjs --kit <eafc-db-kit> --crest-pack <crest50x50.zip> --out <pack dir>\n" +
+        '       [--world mods/eafc-fc27] [--version "FC 27"] [--no-dark-adapt]\n' +
         "       [--competition-logos <pack dir>] [--write-crosswalk <file>]",
     );
     return;
   }
   if (!args.kit) throw new Error("pass --kit <path to an eafc-db-kit checkout> or set EAFCDB_KIT");
-  if (!args.crestPack) throw new Error("pass --crest-pack <crest16x16.zip>");
+  if (!args.crestPack) throw new Error("pass --crest-pack <crest50x50.zip>");
   if (!args.out) throw new Error("pass --out <pack directory>");
 
   const zip = readZipEntries(await readFile(args.crestPack));
-  const crests = listCrests(
-    zip.map((entry) => entry.name),
-    args.variant,
-  );
-  console.log(`crest pack    ${crests.size} ${args.variant} crests`);
+  const crests = listCrests(zip.map((entry) => entry.name));
+  console.log(`crest pack    ${crests.size} crests (50×50)`);
 
   const eaTeams = await readEaTeams(args.kit, args.version);
   console.log(`database      ${eaTeams.length} EA teams`);
@@ -170,11 +154,13 @@ async function main() {
   const outDir = path.resolve(args.out);
   await mkdir(outDir, { recursive: true });
 
-  const scale = Math.max(1, Math.ceil(args.scale / 16));
   const entries = new Map(zip.map((entry) => [entry.name, entry.data]));
   const badges = [];
   for (const { clubId, teamId, crest } of planned) {
-    const png = ddsToPng(entries.get(crest), { scale });
+    const png = crestDdsToPng(entries.get(crest), {
+      size: CREST_SIZE,
+      darkBackground: args.darkAdapt,
+    });
     const file = `${teamId}.png`;
     await writeFile(path.join(outDir, file), png);
     badges.push({
@@ -198,9 +184,8 @@ async function main() {
     source: SOURCE,
     licence: LICENCE,
     attribution: ATTRIBUTION,
-    variant: args.variant,
-    scale,
-    note: "Club crests converted from EA's crest16x16 pack for local, personal use. Not a redistribution of EA artwork.",
+    size: CREST_SIZE,
+    note: "Club crests converted from EA's crest50x50 pack for local, personal use. Not a redistribution of EA artwork.",
     badges,
     competitionLogos: competitionLogos.map(({ bytes: _bytes, ...entry }) => entry),
   };
@@ -229,7 +214,7 @@ async function main() {
   }
 
   console.log(`wrote         ${path.relative(process.cwd(), outDir)}`);
-  console.log(`  badges      ${badges.length} club badges (${scale * 16}×${scale * 16} PNG)`);
+  console.log(`  badges      ${badges.length} club badges (${CREST_SIZE}×${CREST_SIZE} PNG)`);
   console.log(`  logos       ${competitionLogos.length} competition logos`);
   console.log(`  clubs left  ${missing.length}`);
   for (const [reason, list] of [...unmatchedByReason].sort((a, b) => b[1].length - a[1].length)) {

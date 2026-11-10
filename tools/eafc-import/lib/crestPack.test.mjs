@@ -1,5 +1,5 @@
 /**
- * The crosswalk from a package's club ids to EA's crest ids.
+ * The crosswalk from a package's club ids to EA's 50×50 crest ids.
  *
  * The failure that matters here is not "no badge" — a missing badge falls back
  * to a generated crest and looks deliberate. It is a *wrong* badge: pointing a
@@ -14,36 +14,32 @@ import { describe, it } from "node:test";
 import { listCrests, planClubBadges } from "./crestPack.mjs";
 
 const names = [
-  "crest16x16/l1.dds",
-  "crest16x16/l2.dds",
-  "crest16x16/l1943.dds",
-  "crest16x16/dark/l1.dds",
-  "crest16x16/dark/l2.dds",
-  "crest16x16/dark/l1943.dds",
-  "crest16x16/notes.txt",
+  "crest50x50/l1.dds",
+  "crest50x50/l2.dds",
+  "crest50x50/l1943.dds",
+  "crest50x50/notes.txt",
 ];
 
 describe("listCrests", () => {
-  it("selects one variant and ignores everything else", () => {
-    const light = listCrests(names, "light");
-    const dark = listCrests(names, "dark");
-    assert.deepEqual([...light.keys()], [1, 2, 1943]);
-    assert.deepEqual([...dark.keys()], [1, 2, 1943]);
-    // The variants are different files, which is the point of having two.
-    assert.equal(light.get(1), "crest16x16/l1.dds");
-    assert.equal(dark.get(1), "crest16x16/dark/l1.dds");
+  it("selects crest50x50/l<id>.dds entries keyed by EA team id", () => {
+    const crests = listCrests(names);
+    assert.deepEqual([...crests.keys()], [1, 2, 1943]);
+    assert.equal(crests.get(1), "crest50x50/l1.dds");
   });
 
-  it("ignores files that are not crest ids", () => {
-    assert.equal(listCrests(["crest16x16/readme.md", "crest16x16/1.dds"], "light").size, 0);
+  it("ignores files that are not crest50x50/l<id>.dds", () => {
+    assert.equal(
+      listCrests(["crest50x50/readme.md", "crest50x50/1.dds", "crest32x32/l1.dds"]).size,
+      0,
+    );
   });
 });
 
 describe("planClubBadges", () => {
   const crests = new Map([
-    [1, "crest16x16/l1.dds"],
-    [2, "crest16x16/l2.dds"],
-    [1943, "crest16x16/l1943.dds"],
+    [1, "crest50x50/l1.dds"],
+    [2, "crest50x50/l2.dds"],
+    [1943, "crest50x50/l1943.dds"],
   ]);
 
   it("maps a club to the crest of the EA team of the same name", () => {
@@ -56,8 +52,8 @@ describe("planClubBadges", () => {
       crests,
     );
     assert.deepEqual(badges, [
-      { clubId: "arsenal", teamId: 1, crest: "crest16x16/l1.dds" },
-      { clubId: "aston-villa", teamId: 2, crest: "crest16x16/l2.dds" },
+      { clubId: "arsenal", teamId: 1, crest: "crest50x50/l1.dds" },
+      { clubId: "aston-villa", teamId: 2, crest: "crest50x50/l2.dds" },
     ]);
     assert.deepEqual(missing, []);
   });
@@ -71,10 +67,10 @@ describe("planClubBadges", () => {
         { teamId: 1, name: "Arsenal" },
         { teamId: 116009, name: "Arsenal" },
       ],
-      new Map([[116009, "crest16x16/l116009.dds"]]),
+      new Map([[116009, "crest50x50/l116009.dds"]]),
     );
     assert.deepEqual(badges, [
-      { clubId: "arsenal", teamId: 116009, crest: "crest16x16/l116009.dds" },
+      { clubId: "arsenal", teamId: 116009, crest: "crest50x50/l116009.dds" },
     ]);
     assert.deepEqual(missing, []);
   });
@@ -88,8 +84,8 @@ describe("planClubBadges", () => {
         { teamId: 116009, name: "Arsenal" },
       ],
       new Map([
-        [1, "crest16x16/l1.dds"],
-        [116009, "crest16x16/l116009.dds"],
+        [1, "crest50x50/l1.dds"],
+        [116009, "crest50x50/l116009.dds"],
       ]),
     );
     assert.deepEqual(badges, []);
@@ -104,10 +100,10 @@ describe("planClubBadges", () => {
         { teamId: 1995, name: "Bucheon FC 1995" },
         { teamId: 2005, name: "Bucheon FC 1995" },
       ],
-      new Map([[1995, "crest16x16/l1995.dds"]]),
+      new Map([[1995, "crest50x50/l1995.dds"]]),
     );
     assert.deepEqual(badges, [
-      { clubId: "bucheon-fc-1995", teamId: 1995, crest: "crest16x16/l1995.dds" },
+      { clubId: "bucheon-fc-1995", teamId: 1995, crest: "crest50x50/l1995.dds" },
     ]);
   });
 
@@ -117,10 +113,10 @@ describe("planClubBadges", () => {
     const { badges } = planClubBadges(
       [{ id: "bucheon-fc-1995" }],
       [{ teamId: 111745, name: "Bucheon FC 1995" }],
-      new Map([[111745, "crest16x16/l111745.dds"]]),
+      new Map([[111745, "crest50x50/l111745.dds"]]),
     );
     assert.deepEqual(badges, [
-      { clubId: "bucheon-fc-1995", teamId: 111745, crest: "crest16x16/l111745.dds" },
+      { clubId: "bucheon-fc-1995", teamId: 111745, crest: "crest50x50/l111745.dds" },
     ]);
   });
 

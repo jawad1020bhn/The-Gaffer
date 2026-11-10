@@ -84,7 +84,7 @@ step from the crest folder, then imported as a normal graphics pack:
 
 ```bash
 node tools/eafc-import/badges-from-crest-pack.mjs \
-  --kit ../eafc-db-kit --crest-pack crest16x16.zip \
+  --kit ../eafc-db-kit --crest-pack crest50x50.zip \
   --competition-logos tools/eafc-import/test/fixtures/competition-logos \
   --out ../eafc-fc27-badges --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json
 
@@ -156,22 +156,22 @@ the paths live in the package rather than being stamped on by a build script.
 
 ```
 teams.json                     "logo": "assets/clubs/1.png"
-assets/clubs/1.png             64×64 PNG, Arsenal
+assets/clubs/1.png             50×50 PNG, Arsenal
 assets/clubs/manifest.json     eaTeamId ↔ club id, source, licence, checksum
 assets/competitions/*.svg      the two European cup badges
 ```
 
-**Where the images come from.** EA's `crest16x16.zip`: 16×16 `.dds` files named
-by EA team id, with no club names in them at all. The ids are resolved against
-the pinned FC 27 database to this package's club ids, and the result is recorded
-in [`tools/eafc-import/data/fc27-crest-crosswalk.json`](../../tools/eafc-import/data/fc27-crest-crosswalk.json)
+**Where the images come from.** EA's `crest50x50.zip`: `crest50x50/l<eaTeamId>.dds`
+64×64 textures whose 50×50 crest artwork sits in the top-left corner, with no
+club names in them at all. The ids are resolved against the pinned FC 27
+database to this package's club ids, and the result is recorded in
+[`tools/eafc-import/data/fc27-crest-crosswalk.json`](../../tools/eafc-import/data/fc27-crest-crosswalk.json)
 — a wrong badge is worse than no badge, so a name shared by two EA rows is
 resolved by whichever one has a crest and otherwise left out.
 
-The `dark/` variant is used: the game has one presentation and it is dark, and
-those are the recoloured crests that stay legible on it. They are upscaled to
-64×64 in whole pixel steps, so the browser is never left smoothing a 16 px
-image up to the 80 px the club page draws.
+Unlike the legacy 16×16 pack, `crest50x50` has no separate `dark/` sibling, so
+each crest is cropped cleanly to 50×50 and dark-ink or dark-bordered crests are
+automatically contrast-adapted so they stay legible on the game's dark surfaces.
 
 **Rebuild the images** (no EA database needed — only the crest zip and the
 committed crosswalk):

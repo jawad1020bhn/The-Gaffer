@@ -26,26 +26,26 @@ tests can also run without a kit checkout.
 
 ## Club badges from EA's crest folder
 
-EA ships crests as `crest16x16/l<eaTeamId>.dds` — 16×16 DDS, with a recoloured
-`dark/` sibling — and no club names anywhere in the pack. `badges-from-crest-pack.mjs`
-turns that into a normal graphics pack by resolving the ids against the database
-`import.mjs` reads:
+EA ships crests as `crest50x50/l<eaTeamId>.dds` — 64×64 DDS textures whose
+50×50 crest sits in the top-left corner — and no club names anywhere in the
+pack. `badges-from-crest-pack.mjs` turns that into a normal graphics pack by
+resolving the ids against the database `import.mjs` reads:
 
 ```bash
 node tools/eafc-import/badges-from-crest-pack.mjs \
-  --kit ../eafc-db-kit --crest-pack crest16x16.zip \
+  --kit ../eafc-db-kit --crest-pack crest50x50.zip \
   --competition-logos tools/eafc-import/test/fixtures/competition-logos \
   --out ../eafc-fc27-badges \
   --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json
 ```
 
 It decodes both formats the pack contains (uncompressed 32-bit BGRA and DXT5),
-encodes PNG with `node:zlib`, and upscales in whole pixel steps. `--variant dark`
-is the default because the game's one presentation is dark; `--scale` sets the
-output size (64 by default).
+crops to the 50×50 artwork box, adapts dark/low-contrast crests so they remain
+legible on the game's dark UI surfaces (`--no-dark-adapt` disables this), and
+encodes PNG with `node:zlib`.
 
 `--write-crosswalk` records `ofmClubId → eaTeamId` so the mapping is reviewable
-without the database — that file, plus `crest16x16.zip`, is all
+without the database — that file, plus `crest50x50.zip`, is all
 [`scripts/build-club-badges.mjs`](../../scripts/build-club-badges.mjs) needs to
 rebuild the bundled world's badges.
 

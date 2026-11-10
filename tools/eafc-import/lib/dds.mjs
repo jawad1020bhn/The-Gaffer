@@ -1,15 +1,17 @@
 /**
- * Decode the club-crest DDS files that EA ships as `crest16x16/`.
+ * Decode the club-crest DDS files that EA ships as `crest50x50/`.
  *
- * EA's crest pack is a folder of 16×16 `.dds` images named by EA team id
- * (`l<id>.dds`, with a `dark/` sibling that is recoloured for a dark
- * background). The importer's graphics packs take PNG, so a badge pack built
- * from that folder has to decode these first. Two formats appear in it:
+ * EA's 50×50 crest pack is a folder of 64×64 `.dds` images named by EA team id
+ * (`l<id>.dds`), with the 50×50 crest artwork placed in the top-left corner and
+ * transparent padding on the right and bottom edges. Unlike the legacy 16×16
+ * pack, there is no separate `dark/` sibling folder, so crests whose geometry
+ * or ink disappears against the game's dark surfaces are adapted deterministically
+ * here after cropping to 50×50.
  *
- * - uncompressed 32-bit BGRA (2,036 of 2,052 files in the pack this was written
- *   against): a 128-byte DDS header then 1,024 bytes of `B G R A` pixels.
- * - DXT5 / BC3 (the other 16): 8 bytes of interpolated alpha per 4×4 block
- *   followed by 8 bytes of interpolated colour.
+ * Two DDS pixel formats appear in the pack:
+ * - uncompressed 32-bit BGRA: a 128-byte DDS header followed by `B G R A` pixels.
+ * - DXT5 / BC3: 8 bytes of interpolated alpha per 4×4 block followed by 8 bytes
+ *   of interpolated colour.
  *
  * Nothing here guesses: an unsupported format is an error rather than a
  * blank crest, because a silently empty badge is indistinguishable in the UI
@@ -19,6 +21,9 @@
 import { deflateSync } from "node:zlib";
 
 const HEADER_BYTES = 128;
+
+/** Pixel width and height of EA's 50×50 crest region inside each 64×64 DDS. */
+export const CREST_SIZE = 50;
 
 /** Code points in the DDS pixel-format block. */
 const DDPF_FOURCC = 0x4;
@@ -207,6 +212,230 @@ export function decodeDds(data) {
   );
 }
 
+/* ── 50×50 cropping & dark-surface legibility ─────────────────────────────── */
+
+/**
+ * Crop an image to its top-left `width × height` region.
+ *
+ * EA packs 50×50 crests in the top-left of a 64×64 power-of-two DDS texture
+ * with transparent padding on the right and bottom; stripping that padding
+ * keeps crests centred when the UI renders them in circular or square frames.
+ *
+ * @param {{ width: number, height: number, pixels: Uint8Array }} image
+ * @param {number} width
+ * @param {number} height
+ */
+export function cropImage(image, width, height) {
+  if (!Number.isInteger(width) || width < 1 || !Number.isInteger(height) || height < 1) {
+    throw new Error(`invalid crop dimensions ${width}×${height}`);
+  }
+  if (image.width < width || image.height < height) {
+    throw new Error(`cannot crop ${image.width}×${image.height} image to ${width}×${height}`);
+  }
+  if (image.width === width && image.height === height) return image;
+  const pixels = new Uint8Array(width * height * 4);
+  const rowBytes = width * 4;
+  for (let y = 0; y < height; y += 1) {
+    const srcOffset = y * image.width * 4;
+    pixels.set(image.pixels.subarray(srcOffset, srcOffset + rowBytes), y * rowBytes);
+  }
+  return { width, height, pixels };
+}
+
+/** Whether a pixel sinks into the dark app background (`#151d24`, RGB 21/29/36). */
+function isNearDarkBackground(r, g, b) {
+  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  const distBg = Math.hypot(r - 21, g - 29, b - 36);
+  return luma < 44 && distBg < 60;
+}
+
+/**
+ * Ensure dark club crests stay legible on the app's dark surfaces (`#151d24`).
+ *
+ * Bright and well-contrasted crests (e.g. Arsenal, Barcelona, Real Madrid) are
+ * returned unchanged. Only crests whose ink or outer contour would sink into
+ * the dark background are adjusted:
+ * 1. Ultra-dark low-contrast crests with essentially no bright pixels (e.g. Derby
+ *    County, Swansea City, Napoli, Randers) are lifted to a crisp silver/ice-blue
+ *    while neutralizing DXT5 near-black compression chroma drift.
+ * 2. Deep dark-saturated ink (e.g. Metz crimson, Modena/Bolton/Falkirk navy) is
+ *    gently brightened so team hues remain distinct from the dark canvas.
+ * 3. Crests whose overall body and outer edge blend into `#151d24` (e.g. Dundee
+ *    FC, Levante, Palermo, Houston Dynamo) receive a subtle 1 px light edge along
+ *    dark perimeter pixels without touching internal contrast or bright crests.
+ *
+ * @param {{ width: number, height: number, pixels: Uint8Array }} image
+ */
+export function adaptForDarkBackground(image) {
+  const { width, height, pixels } = image;
+  let weightSum = 0;
+  let lumaSum = 0;
+  let chromaSum = 0;
+  let brightWeight = 0;
+  let darkSatWeight = 0;
+  let edgeCount = 0;
+  let darkEdgeCount = 0;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const i = (y * width + x) * 4;
+      const a = pixels[i + 3] / 255;
+      if (a < 0.08) continue;
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      const maxC = Math.max(r, g, b);
+      const chroma = maxC - Math.min(r, g, b);
+
+      weightSum += a;
+      lumaSum += luma * a;
+      chromaSum += chroma * a;
+      if (maxC >= 110) brightWeight += a;
+      if (luma < 55 && chroma > 32) darkSatWeight += a;
+
+      if (a >= 0.35) {
+        let isEdge = false;
+        for (const [dx, dy] of [
+          [-1, 0],
+          [1, 0],
+          [0, -1],
+          [0, 1],
+        ]) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (
+            nx < 0 ||
+            nx >= width ||
+            ny < 0 ||
+            ny >= height ||
+            pixels[(ny * width + nx) * 4 + 3] < 50
+          ) {
+            isEdge = true;
+            break;
+          }
+        }
+        if (isEdge) {
+          edgeCount += 1;
+          if (isNearDarkBackground(r, g, b)) darkEdgeCount += 1;
+        }
+      }
+    }
+  }
+
+  if (weightSum === 0) return image;
+  const avgLuma = lumaSum / weightSum;
+  const avgChroma = chromaSum / weightSum;
+  const brightFrac = brightWeight / weightSum;
+  const darkSatFrac = darkSatWeight / weightSum;
+  const darkEdgeFrac = edgeCount > 0 ? darkEdgeCount / edgeCount : 0;
+
+  const out = new Uint8Array(pixels);
+
+  // 1. Ultra-dark/monochrome crests with virtually no bright details.
+  if (avgLuma < 50 && brightFrac < 0.06 && (avgChroma < 65 || darkEdgeFrac > 0.6)) {
+    for (let i = 0; i < out.length; i += 4) {
+      if (out[i + 3] === 0) continue;
+      const r = out[i];
+      const g = out[i + 1];
+      const b = out[i + 2];
+      const maxC = Math.max(r, g, b);
+      const chroma = maxC - Math.min(r, g, b);
+      if (chroma < 26) {
+        const gray = Math.round(0.2126 * r + 0.7152 * g + 0.0722 * b);
+        const target = Math.min(242, Math.round(218 + (gray / 255) * 24));
+        out[i] = target;
+        out[i + 1] = target;
+        out[i + 2] = target;
+      } else {
+        const lift = Math.max(155, 222 - avgLuma);
+        const factor = (maxC + lift) / Math.max(1, maxC);
+        const nr = Math.min(255, Math.round(r * factor));
+        const ng = Math.min(255, Math.round(g * factor));
+        const nb = Math.min(255, Math.round(b * factor));
+        out[i] = Math.round(0.38 * 235 + 0.62 * nr);
+        out[i + 1] = Math.round(0.38 * 240 + 0.62 * ng);
+        out[i + 2] = Math.round(0.38 * 246 + 0.62 * nb);
+      }
+    }
+    return { width, height, pixels: out };
+  }
+
+  let modified = false;
+
+  // 2. Lift ultra-dark saturated hues (navy/crimson details that sink into #151d24).
+  if (avgLuma < 58 || darkEdgeFrac >= 0.4 || (avgLuma < 120 && darkSatFrac >= 0.22)) {
+    for (let i = 0; i < out.length; i += 4) {
+      if (out[i + 3] === 0) continue;
+      const r = out[i];
+      const g = out[i + 1];
+      const b = out[i + 2];
+      const maxC = Math.max(r, g, b);
+      const chroma = maxC - Math.min(r, g, b);
+      const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      if (maxC > 40 && luma < 52 && chroma > 32) {
+        const factor = Math.min(2.1, 70 / Math.max(12, luma));
+        out[i] = Math.min(255, Math.round(r * factor));
+        out[i + 1] = Math.min(255, Math.round(g * factor));
+        out[i + 2] = Math.min(255, Math.round(b * factor));
+        modified = true;
+      }
+    }
+  }
+
+  // 3. 1 px light rim around dark outer edges on overall-dark crests.
+  if (avgLuma < 88 && brightFrac < 0.56 && darkEdgeFrac >= 0.65) {
+    const base = new Uint8Array(out);
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const idx = (y * width + x) * 4;
+        const a = base[idx + 3];
+        if (a >= 200) continue;
+        let maxNeighborDark = 0;
+        for (let dy = -1; dy <= 1; dy += 1) {
+          for (let dx = -1; dx <= 1; dx += 1) {
+            if (dx === 0 && dy === 0) continue;
+            const nx = x + dx;
+            const ny = y + dy;
+            if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+            const nIdx = (ny * width + nx) * 4;
+            const na = base[nIdx + 3];
+            if (na < 110) continue;
+            const nr = base[nIdx];
+            const ng = base[nIdx + 1];
+            const nb = base[nIdx + 2];
+            if (isNearDarkBackground(nr, ng, nb)) {
+              const nl = 0.2126 * nr + 0.7152 * ng + 0.0722 * nb;
+              const weight = (dx === 0 || dy === 0 ? 1.0 : 0.7) * (na / 255) * ((48 - nl) / 48);
+              if (weight > maxNeighborDark) maxNeighborDark = weight;
+            }
+          }
+        }
+        if (maxNeighborDark > 0.14) {
+          modified = true;
+          const rimAlpha = Math.min(205, Math.round(maxNeighborDark * 240));
+          if (a === 0) {
+            out[idx] = 225;
+            out[idx + 1] = 232;
+            out[idx + 2] = 240;
+            out[idx + 3] = rimAlpha;
+          } else {
+            const fa = a / 255;
+            const ra = rimAlpha / 255;
+            const outA = fa + ra * (1 - fa);
+            out[idx] = Math.round((base[idx] * fa + 225 * ra * (1 - fa)) / outA);
+            out[idx + 1] = Math.round((base[idx + 1] * fa + 232 * ra * (1 - fa)) / outA);
+            out[idx + 2] = Math.round((base[idx + 2] * fa + 240 * ra * (1 - fa)) / outA);
+            out[idx + 3] = Math.round(outA * 255);
+          }
+        }
+      }
+    }
+  }
+
+  return modified ? { width, height, pixels: out } : image;
+}
+
 /* ── PNG encoding ────────────────────────────────────────────────────────── */
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
@@ -241,36 +470,24 @@ function chunk(type, body) {
  * Encode RGBA pixels as a PNG, using `node:zlib` for the deflate stream.
  *
  * @param {{ width: number, height: number, pixels: Uint8Array }} image
- * @param {{ scale?: number }} [options] integer nearest-neighbour upscale
  * @returns {Buffer}
  */
-export function encodePng({ width, height, pixels }, { scale = 1 } = {}) {
-  if (!Number.isInteger(scale) || scale < 1) throw new Error(`invalid PNG scale ${scale}`);
-  const outWidth = width * scale;
-  const outHeight = height * scale;
-
-  // Filter type 0 (None) on every row: a crest is 16 px of flat colour, so the
-  // extra filter passes cost more than they save.
-  const stride = outWidth * 4 + 1;
-  const raw = Buffer.alloc(stride * outHeight);
-  for (let y = 0; y < outHeight; y += 1) {
-    const sourceY = Math.floor(y / scale);
+export function encodePng({ width, height, pixels }) {
+  // Filter type 0 (None) on every row: a 50×50 crest is compact flat/antialiased
+  // artwork, so extra filter passes cost more than they save.
+  const rowBytes = width * 4;
+  const stride = rowBytes + 1;
+  const raw = Buffer.alloc(stride * height);
+  for (let y = 0; y < height; y += 1) {
     const rowStart = y * stride;
     raw[rowStart] = 0;
-    for (let x = 0; x < outWidth; x += 1) {
-      const sourceX = Math.floor(x / scale);
-      const from = (sourceY * width + sourceX) * 4;
-      const to = rowStart + 1 + x * 4;
-      raw[to] = pixels[from];
-      raw[to + 1] = pixels[from + 1];
-      raw[to + 2] = pixels[from + 2];
-      raw[to + 3] = pixels[from + 3];
-    }
+    const from = y * rowBytes;
+    raw.set(pixels.subarray(from, from + rowBytes), rowStart + 1);
   }
 
   const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(outWidth, 0);
-  ihdr.writeUInt32BE(outHeight, 4);
+  ihdr.writeUInt32BE(width, 0);
+  ihdr.writeUInt32BE(height, 4);
   ihdr[8] = 8; // bit depth
   ihdr[9] = 6; // colour type: truecolour with alpha
   ihdr[10] = 0; // deflate
@@ -286,20 +503,24 @@ export function encodePng({ width, height, pixels }, { scale = 1 } = {}) {
 }
 
 /** DDS bytes straight to PNG bytes. */
-export function ddsToPng(data, options) {
-  return encodePng(decodeDds(data), options);
+export function ddsToPng(data) {
+  return encodePng(decodeDds(data));
 }
 
 /**
- * Repeat a decoded image until it is at least `target` pixels on its shortest
- * side, keeping whole multiples of the source so no pixel is invented.
+ * Decode a `crest50x50/` DDS file, crop to its 50×50 crest region, apply dark-UI
+ * contrast adaptation, and encode as PNG.
  *
- * EA's crest pack is 16×16 and the team logo renders at up to 80 px, so an
- * unscaled crest is magnified by the browser with a smoothing filter and reads
- * as a smear. Scaling up in whole steps keeps the stripes and initials sharp
- * when the UI scales the rest of the way.
+ * Both `scripts/build-club-badges.mjs` and `tools/eafc-import/badges-from-crest-pack.mjs`
+ * call this so CI's byte-for-byte asset diff always matches.
+ *
+ * @param {Buffer} data
+ * @param {{ size?: number, darkBackground?: boolean }} [options]
+ * @returns {Buffer}
  */
-export function upscaleToAtLeast(image, target) {
-  const shortest = Math.min(image.width, image.height);
-  return Math.max(1, Math.ceil(target / shortest));
+export function crestDdsToPng(data, { size = CREST_SIZE, darkBackground = true } = {}) {
+  const decoded = decodeDds(data);
+  const cropped = cropImage(decoded, size, size);
+  const adapted = darkBackground ? adaptForDarkBackground(cropped) : cropped;
+  return encodePng(adapted);
 }

@@ -126,11 +126,11 @@ fn every_club_badge_the_package_names_is_a_real_png_it_ships() {
         let bytes = std::fs::read(dir.join(path))
             .unwrap_or_else(|_| panic!("{} names {path}, which is not in the package", team.id));
         assert_eq!(&bytes[..8], &png, "{} badge is not a PNG", team.id);
-        // 64×64, the size the crests are built at: a 16 px image is a smear at
-        // the 80 px the team page draws.
+        // 50×50, the size cropped cleanly from EA's crest50x50 DDS pack so it
+        // stays sharp up to the 80 px the team page draws.
         assert_eq!(
             u32::from_be_bytes([bytes[16], bytes[17], bytes[18], bytes[19]]),
-            64
+            50
         );
     }
 

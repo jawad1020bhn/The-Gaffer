@@ -98,14 +98,12 @@ beforeAll(async () => {
   await fs.mkdir(path.join(root, "mods/eafc-fc27"), { recursive: true });
   await fs.mkdir(path.join(root, "tools/eafc-import/data"), { recursive: true });
 
-  const crest = bgraDds(16, 16, [200, 30, 40, 255]);
+  const crest = bgraDds(64, 64, [200, 30, 40, 255]);
   await fs.writeFile(
-    path.join(root, "crest16x16.zip"),
+    path.join(root, "crest50x50.zip"),
     zip([
-      ["crest16x16/l1.dds", crest],
-      ["crest16x16/dark/l1.dds", crest],
-      ["crest16x16/l1943.dds", crest],
-      ["crest16x16/dark/l1943.dds", crest],
+      ["crest50x50/l1.dds", crest],
+      ["crest50x50/l1943.dds", crest],
     ]),
   );
 
@@ -151,7 +149,7 @@ afterAll(async () => {
 });
 
 describe("planBadges", () => {
-  it("builds one image per crosswalk entry, at package-relative paths", async () => {
+  it("builds one image per crosswalk entry, cropped to 50×50 at package-relative paths", async () => {
     const { files, badges } = await planBadges(root);
     expect(badges.map((badge) => badge.asset)).toEqual([
       "assets/clubs/1.png",
@@ -159,8 +157,9 @@ describe("planBadges", () => {
     ]);
     const png = files.get("assets/clubs/1.png");
     expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
-    // A 16 px crest upscaled by a whole number, not stretched by the browser.
-    expect(png.readUInt32BE(16)).toBe(64);
+    // 50×50 cropped cleanly from the 64×64 DDS texture.
+    expect(png.readUInt32BE(16)).toBe(50);
+    expect(png.readUInt32BE(20)).toBe(50);
   });
 
   it("records provenance and a checksum for every image", async () => {
