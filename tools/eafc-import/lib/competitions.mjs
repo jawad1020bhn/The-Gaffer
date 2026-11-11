@@ -41,10 +41,9 @@ export const PACING = {
 };
 
 /**
- * Days kept clear on either side of the end of a season: a final is played at
- * least this long before it, and a continental edition starts at least this
- * long after it. The engine moves a fixture a few days when two competitions
- * want one club in the same week, and this is the room for that.
+ * Days kept clear before the end of a season: a domestic cup's final is played
+ * at least this long before it. The engine moves a fixture a few days when two
+ * competitions want one club in the same week, and this is the room for that.
  */
 export const SEASON_END_MARGIN_DAYS = 14;
 
@@ -123,7 +122,11 @@ export function competitionDays(entrants, format) {
   if (format.kind !== "GroupAndKnockout") return knockoutDays(entrants);
   const groups = groupCount(entrants, format.groupSize ?? 4);
   const largest = Math.ceil(entrants / groups);
-  const matchdays = roundsPerLeg(largest) * (format.legs ?? 2);
+  // A league phase plays its `rounds` and no more; a group plays everyone `legs` times.
+  const matchdays =
+    format.rounds === undefined
+      ? roundsPerLeg(largest) * (format.legs ?? 2)
+      : Math.min(format.rounds, roundsPerLeg(largest));
   return (
     (matchdays - 1) * PACING.groupMatchdayGap +
     PACING.knockoutRoundGap +
@@ -178,53 +181,6 @@ export function domesticCupStartDay({ eaDay, days, leagueStartDay, leagueDays: s
 }
 
 /**
- * The start of a continental competition, as a day of the year.
- *
- * The engine renews the competition when the player's season ends, with the
- * field that season produced, and only if no match of it is still to play. So
- * an edition has to fit between two season ends for every country that sends
- * clubs to it: start after one, finish before the next. `seasonEndDays` are
- * those ends. The day nearest EA's that fits them all is returned; EA's own
- * day when none does.
- *
- * @param {{ eaDay: number, days: number, seasonEndDays: number[] }} input
- */
-export function continentalStartDay({ eaDay, days, seasonEndDays }) {
-  const wanted = mod365(eaDay);
-  const ends = [...new Set(seasonEndDays.map(mod365))].sort((a, b) => a - b);
-  if (ends.length === 0) return wanted;
-  let best = null;
-  for (const [index, end] of ends.entries()) {
-    const next = index + 1 < ends.length ? ends[index + 1] : ends[0] + 365;
-    const earliest = end + SEASON_END_MARGIN_DAYS;
-    const latest = next - SEASON_END_MARGIN_DAYS - days;
-    if (latest < earliest) continue;
-    // EA's day, seen from this window: the same day of the year, at or after its opening.
-    let seen = wanted;
-    while (seen < earliest) seen += 365;
-    let candidate;
-    let distance;
-    if (seen <= latest) {
-      candidate = seen;
-      distance = 0;
-    } else {
-      // Outside the window: the nearer of its two edges, going round the year.
-      const afterLatest = seen - latest;
-      const beforeEarliest = earliest + 365 - seen;
-      if (afterLatest <= beforeEarliest) {
-        candidate = latest;
-        distance = afterLatest;
-      } else {
-        candidate = earliest;
-        distance = beforeEarliest;
-      }
-    }
-    if (best === null || distance < best.distance) best = { day: mod365(candidate), distance };
-  }
-  return best === null ? wanted : best.day;
-}
-
-/**
  * A fixed shuffle of a cup's field.
  *
  * The engine pairs a knockout field in the order it is listed: first against
@@ -272,30 +228,76 @@ export function competitionName(recorded) {
  * The continental competitions this importer authors, most senior first within
  * a confederation.
  *
- * Which competitions exist and who qualifies is EA's. Their shape is not, and
- * cannot be: EA plays the three UEFA competitions as a 36-club league phase
- * behind three qualifying rounds, and two-legged ties throughout, and the
- * engine has groups and single ties. Each is authored as the nearest thing the
- * engine plays. Eight groups of four is the Libertadores' real format and the
- * one the UEFA competitions had until 2024; the AFC's sixteen clubs make four
- * groups; the Concacaf Champions Cup's eight are a straight knockout.
+ * Which competitions exist and who qualifies is EA's, and so is the league
+ * phase of the three UEFA competitions and of the AFC Champions League: one
+ * table of 36 (or 16) in which a club plays eight matches (or six), read from
+ * EA's stages by `leaguePhaseOf`. The rest of their shape is not: EA puts
+ * qualifying rounds in front and plays two-legged ties, and the engine has
+ * neither, so every tie is one match and the field is the league phase's.
+ * Eight groups of four is the Libertadores' real format, and the Sudamericana
+ * is given the same; the Concacaf Champions Cup's eight are a straight
+ * knockout.
  *
  * `size` is the whole field. A place no berth fills is topped up by the engine
  * from the clubs of `region`, which is where the clubs EA keeps outside any
  * league (Olympiacos, Flamengo) get in.
  */
 export const CONTINENTAL_COMPETITIONS = [
-  { eaLeagueId: 223, region: "europe", size: 32 },
-  { eaLeagueId: 224, region: "europe", size: 32 },
-  { eaLeagueId: 226, region: "europe", size: 32 },
+  { eaLeagueId: 223, region: "europe", size: 36 },
+  { eaLeagueId: 224, region: "europe", size: 36 },
+  { eaLeagueId: 226, region: "europe", size: 36 },
   { eaLeagueId: 1003, region: "south-america", size: 32 },
   { eaLeagueId: 1014, region: "south-america", size: 32 },
   { eaLeagueId: 3004, region: "north-america", size: 8 },
   { eaLeagueId: 3005, region: "asia", size: 16 },
 ];
 
-/** The format a continental field of `size` is played in. */
-function continentalFormat(size) {
+/**
+ * EA's league phase, when a competition's main stage is one: a single group in
+ * which a club plays fewer rounds than it has opponents. The three UEFA
+ * competitions (36 clubs; eight rounds, the Conference League six) and the AFC
+ * Champions League (16 clubs, six rounds) are.
+ *
+ * The clubs that go on are counted from the knockout stages behind it: the
+ * first one's ties, and whoever joins in the second without having played the
+ * first. In the UEFA competitions that is sixteen in the play-off and the eight
+ * the round of 16 has beyond its winners: the top 24, of whom the engine gives
+ * the best eight the bye EA gives them.
+ *
+ * @returns {{ clubs: number, rounds: number, qualifiers: number } | null}
+ */
+export function leaguePhaseOf(competition) {
+  const stages = competition.stages;
+  const index = stages.findIndex(
+    (stage) => stage.type === "LEAGUE" && stage.situations.includes("GROUP"),
+  );
+  if (index < 0 || stages[index].groups.length !== 1) return null;
+  const clubs = stages[index].groups[0].capacity ?? 0;
+  const rounds = leagueRounds({ stages: [stages[index]] });
+  if (rounds < 1 || rounds >= clubs - 1) return null;
+  const ties = stages
+    .slice(index + 1)
+    .filter((stage) => stage.type === "KO1LEG" || stage.type === "KO2LEGS")
+    .map((stage) => stage.groups.length);
+  if (ties.length === 0) return null;
+  const joining = ties.length > 1 ? Math.max(0, ties[1] * 2 - ties[0]) : 0;
+  return { clubs, rounds, qualifiers: ties[0] * 2 + joining };
+}
+
+/**
+ * The format a continental field of `size` is played in: EA's league phase
+ * where it has one of that size, and otherwise the nearest thing to its groups.
+ */
+function continentalFormat(competition, size) {
+  const phase = leaguePhaseOf(competition);
+  if (phase && phase.clubs === size && phase.qualifiers <= size) {
+    return {
+      kind: "GroupAndKnockout",
+      groupSize: size,
+      rounds: phase.rounds,
+      qualifiersPerGroup: phase.qualifiers,
+    };
+  }
   if (size < 16) return { kind: "Knockout" };
   return { kind: "GroupAndKnockout", legs: 2, groupSize: 4, qualifiersPerGroup: 2 };
 }
@@ -594,7 +596,6 @@ export function planCompetitions({
   holders = new Map(),
 }) {
   const index = leagueIndex(compdata, leagues);
-  const leagueById = new Map(leagues.map((league) => [league.id, league]));
 
   // --- how many times each division plays itself --------------------------
   const legs = new Map();
@@ -608,15 +609,8 @@ export function planCompetitions({
   const seasonStartDay = (league) => dayNumber(league.startMonth, 1);
   const seasonDays = (league) => leagueDays(league.table.length, legs.get(league.id));
 
-  // The day a country's season is over: when the last of its divisions is.
-  const seasonEndOfCountry = new Map();
   const topDivision = new Map();
   for (const league of leagues) {
-    const end = seasonStartDay(league) + seasonDays(league);
-    seasonEndOfCountry.set(
-      league.country,
-      Math.max(seasonEndOfCountry.get(league.country) ?? 0, end),
-    );
     const top = topDivision.get(league.country);
     if (!top || league.tier < top.tier) topDivision.set(league.country, league);
   }
@@ -867,23 +861,6 @@ export function planCompetitions({
     clubs: clubFacts,
   });
 
-  // The countries that send clubs to each confederation's competitions. The
-  // engine settles all of a confederation's fields in one go, so an edition
-  // must not straddle the end of any of their seasons.
-  const regionOfTarget = new Map(continental.map((entry) => [entry.id, entry.region]));
-  const feederCountries = new Map();
-  const feeds = (country, berths) => {
-    for (const berth of berths) {
-      const region = regionOfTarget.get(berth.target);
-      if (!region) continue;
-      const countries = feederCountries.get(region) ?? new Set();
-      countries.add(country);
-      feederCountries.set(region, countries);
-    }
-  };
-  for (const [league, berths] of leagueBerths) feeds(leagueById.get(league).country, berths);
-  for (const entity of competitions) feeds(entity.countryId, entity.berths);
-
   for (const entry of continental) {
     const field = fields.get(entry.id) ?? [];
     if (field.length < entry.size) {
@@ -894,16 +871,10 @@ export function planCompetitions({
       });
       continue;
     }
-    const format = continentalFormat(entry.size);
-    const start = dayOfYear(
-      continentalStartDay({
-        eaDay: mainStageDay(entry.competition) ?? 0,
-        days: competitionDays(entry.size, format),
-        seasonEndDays: [...(feederCountries.get(entry.region) ?? [])].map((country) =>
-          seasonEndOfCountry.get(country),
-        ),
-      }),
-    );
+    const format = continentalFormat(entry.competition, entry.size);
+    // EA's own day. The engine draws each edition four weeks before it, from the last
+    // season every league that feeds it has finished, so no season end has to be avoided.
+    const start = dayOfYear(mainStageDay(entry.competition) ?? 0);
     competitions.push({
       schema: "competition",
       id: entry.id,

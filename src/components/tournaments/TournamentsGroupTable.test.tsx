@@ -70,6 +70,19 @@ describe("TournamentsGroupTable", () => {
     }
   });
 
+  it("heads a group with its letter and a league phase with its name", () => {
+    // Given a group stage, each table is headed by its group's letter. A league
+    // phase is one table the whole field is in: it is named, and takes the width.
+    const { unmount } = renderGroup();
+    expect(screen.getByRole("heading")).toHaveTextContent("tournaments.group");
+    expect(screen.getByTestId("tournaments-group-group-a").className).not.toContain("col-span-2");
+    unmount();
+
+    renderGroup({ leaguePhase: true });
+    expect(screen.getByRole("heading")).toHaveTextContent("tournaments.leaguePhase");
+    expect(screen.getByTestId("tournaments-group-group-a").className).toContain("md:col-span-2");
+  });
+
   it("orders the group by table position, not by the order it arrived in", () => {
     renderGroup();
 

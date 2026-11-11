@@ -748,6 +748,8 @@ export interface LeagueData {
     group_best_third_qualifiers?: number;
     group_qualifiers_per_group?: number;
     group_stage_legs?: number;
+    /** When above zero the groups are a league phase: matches each club plays in its group. */
+    group_stage_rounds?: number;
     group_matchday_gap_days?: number;
     knockout_matches_per_day?: number;
     knockout_round_gap_days?: number;

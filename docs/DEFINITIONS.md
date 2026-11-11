@@ -286,6 +286,12 @@ list of problems. Nothing loads half-broken.
 | `groupSize` | GroupAndKnockout | `4` | Maximum clubs per group. Uneven fields are balanced across groups. |
 | `qualifiersPerGroup` | GroupAndKnockout | `2` | Clubs advancing from each group. |
 | `bestThirdQualifiers` | GroupAndKnockout | `0` | Extra best next-placed finishers that advance (the 2026 World Cup's "best thirds"). |
+| `rounds` | GroupAndKnockout | — | A league phase: the matches each club plays in its group, each against a different opponent, in place of `legs` round robins. Must be below `groupSize`; cannot be set with `legs` above 1. |
+
+To make a **league phase** (one table of 36, eight matches each, the top 24
+going on), use `{ "kind": "GroupAndKnockout", "groupSize": 36, "rounds": 8,
+"qualifiersPerGroup": 24 }`: the best eight then sit the first knockout round
+out and the other sixteen play off to join them.
 
 To make a continental cup **knockout-only**, use `{ "kind": "Knockout" }`. To
 make a 16-team World Cup, define an `InternationalNation` competition with a

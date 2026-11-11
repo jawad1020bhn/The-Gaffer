@@ -517,6 +517,28 @@ Competitions are the most complex entity. A competition defines a league, cup, o
 | `groupSize` | integer | `4` | _(GroupAndKnockout only)_ Maximum clubs per group. Uneven fields are balanced across groups. |
 | `qualifiersPerGroup` | integer | `2` | _(GroupAndKnockout only)_ Clubs advancing from each group. |
 | `bestThirdQualifiers` | integer | `0` | _(GroupAndKnockout only)_ Best third-placed teams that also advance (like the 2026 World Cup format). |
+| `rounds` | integer | — | _(GroupAndKnockout only)_ A league phase: the matches each club plays in its group, in place of `legs` round robins. See below. |
+
+**League phase.** With `rounds` set, a club does not meet everyone in its group.
+It plays `rounds` matches, each against a different club and half of them at
+home, and its opponents come from every part of the field as listed (strongest
+first for a seeded field). One group the size of the field is one table every
+club is in:
+
+```json
+"format": {
+  "kind": "GroupAndKnockout",
+  "groupSize": 36,
+  "rounds": 8,
+  "qualifiersPerGroup": 24
+}
+```
+
+The 24 that go on are not a power of two, so the best eight sit the first
+knockout round out; ninth plays 24th, tenth plays 23rd and so on, and each of
+the eight is then at home to one of the winners. `rounds` must be at least 1
+and below `groupSize`, and cannot be combined with `legs` above 1. A group with
+an odd number of clubs gives each of them one matchday off.
 
 ### Participants
 

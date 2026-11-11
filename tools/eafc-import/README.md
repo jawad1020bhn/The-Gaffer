@@ -294,29 +294,34 @@ the package authors from it. For FC 27:
 | | |
 |---|---|
 | Domestic cups | 22, each with every club of the divisions EA enters in it that the package has |
-| Continental | UEFA Champions League, Europa League and Conference League (32 clubs each); CONMEBOL Libertadores and Sudamericana (32 each); Concacaf Champions Cup (8); AFC Champions League Elite (16) |
+| Continental | UEFA Champions League, Europa League and Conference League (36 clubs each, a league phase); CONMEBOL Libertadores and Sudamericana (32 each, eight groups); Concacaf Champions Cup (8, a knockout); AFC Champions League Elite (16, a league phase) |
 | Berths from leagues | the positions EA fills each continental competition from, on every top division but India's |
-| Berths from cups | the winner's place: 12 cups into the Europa League, 7 into the Conference League; the Europa League's winner into the Champions League, the Conference League's into the Europa League, the Sudamericana's into the Libertadores |
+| Berths from cups | the winner's place: 18 cups into the Europa League, the EFL Cup into the Conference League; the Europa League's winner into the Champions League, the Conference League's into the Europa League, the Sudamericana's into the Libertadores |
 | League legs | how many times a division plays itself: 3 for the twelve-club leagues, 4 for Ireland's ten clubs, 1 for the thirty of MLS and Argentina, 2 elsewhere |
 
 **What is EA's.** Which competitions exist; which divisions enter a cup; the
 league positions and cup wins that earn a continental place, in EA's order;
 whether a cup has a group stage, with how many groups and how many go through;
-the first match day of each competition; the number of rounds a league plays.
+a continental competition's league phase, with its size, the matches each club
+plays and how many go on; the first match day of each competition; the number
+of rounds a league plays.
 
-**What is not, and why.** The engine plays three formats: a round robin, a
-single-tie knockout, and groups followed by a single-tie knockout. It plays a
+**What is not, and why.** The engine plays four formats: a round robin, a
+single-tie knockout, and groups or a league phase followed by a single-tie
+knockout. It plays a
 league round or a group matchday every seven days and a knockout round a
 fortnight after the one before, one tie a day. None of that can be authored, so:
 
-- **No two-legged ties, no league phase, no qualifying rounds.** The three UEFA
-  competitions are eight groups of four and a knockout, the format they had
-  until 2024, in place of a 36-club league phase behind three qualifying
-  rounds. EA's places are shared out to fit: each competition takes them in
-  EA's order until its 32 are full and the rest pass to the competition below,
-  which is where a club that loses a Champions League qualifier ends up in EA's
-  game too. Six of EA's league places find no room anywhere (third in Denmark,
-  Poland, Sweden, Romania and Ireland, fourth in Ireland) and are dropped.
+- **No two-legged ties, no qualifying rounds.** The three UEFA competitions
+  are EA's 36-club league phase without the qualifying rounds in front of it,
+  so a field is the 36 clubs of the league phase and nobody else. EA's places
+  are shared out to fit: each competition takes them in EA's order until its
+  36 are full and the rest pass to the competition below, which is where a
+  club that loses a Champions League qualifier ends up in EA's game too. At 36
+  every league place EA gives has room. `leaguePhaseOf` reads a league phase
+  from EA's stages: one group whose clubs play fewer rounds than they have
+  opponents, with the clubs that go on counted from the knockout rounds behind
+  it. The pairings are the engine's, not a draw from pots.
 - **No staged entry to a cup.** EA brings the lower divisions in first and the
   top division in a later round. The engine draws a whole field at once and
   gives the byes it needs, so a cup is one draw of every club in it. The order
@@ -331,8 +336,9 @@ fortnight after the one before, one tie a day. None of that can be authored, so:
   its size, so a final does not fall on EA's day. What is chosen is the start.
   A cup keeps EA's first match day when it is then over a fortnight before its
   country's top division is, and otherwise starts as late as still lets it; a
-  continental competition starts on the day nearest EA's on which it is not
-  under way when any league that sends clubs to it ends its season. The cups of
+  continental competition starts on EA's day for its league phase or groups.
+  The engine draws it four weeks earlier from the last season each league has
+  finished, so it need not avoid the end of anyone's season. The cups of
   Norway and Sweden move with their leagues, which this package plays from
   August rather than through the calendar year.
 - **The holder has no place of its own.** EA keeps one for the Champions League

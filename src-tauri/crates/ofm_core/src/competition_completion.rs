@@ -120,27 +120,30 @@ fn unique_teams(ids: &[String]) -> Option<BTreeSet<&str>> {
     (ids.len() >= 2 && unique.len() == ids.len() && !unique.contains("")).then_some(unique)
 }
 
-// Validate actual pair coverage, not just a total that a duplicate could satisfy.
-// The result writer owns points arithmetic; use that same writer to verify that
-// final results have reached the table before allowing an archive snapshot.
-fn validate_table(
-    team_ids: &[String],
+/// How often each home and away pairing was played, once the saved table has been checked
+/// against the results: the result writer owns points arithmetic, so the same writer is used to
+/// verify that final results have reached the table before allowing an archive snapshot.
+type PairCounts<'a> = BTreeMap<(&'a str, &'a str), usize>;
+
+fn tally_table<'a>(
+    team_ids: &'a [String],
     standings: &[StandingEntry],
-    fixtures: &[&Fixture],
-    legs: u8,
-) -> Result<(), ()> {
+    fixtures: &[&'a Fixture],
+) -> Result<(BTreeSet<&'a str>, PairCounts<'a>), ()> {
     let teams = unique_teams(team_ids).ok_or(())?;
-    if legs == 0 || standings.len() != teams.len() {
+    if standings.len() != teams.len() {
         return Err(());
     }
-    let mut pairs = BTreeMap::<(&str, &str), usize>::new();
+    let mut pairs = PairCounts::new();
     let mut computed: BTreeMap<_, _> = teams
         .iter()
         .map(|id| (*id, StandingEntry::new((*id).to_string())))
         .collect();
     for f in fixtures {
         let result = f.result.as_ref().ok_or(())?;
-        *pairs.entry((&f.home_team_id, &f.away_team_id)).or_default() += 1;
+        *pairs
+            .entry((f.home_team_id.as_str(), f.away_team_id.as_str()))
+            .or_default() += 1;
         computed
             .get_mut(f.home_team_id.as_str())
             .ok_or(())?
@@ -150,6 +153,30 @@ fn validate_table(
             .ok_or(())?
             .record_result(result.away_goals, result.home_goals);
     }
+    let mut seen = BTreeSet::new();
+    for saved in standings {
+        if !seen.insert(saved.team_id.as_str()) {
+            return Err(());
+        }
+        let expected = computed.get(saved.team_id.as_str()).ok_or(())?;
+        if standing_record(saved) != standing_record(expected) {
+            return Err(());
+        }
+    }
+    Ok((teams, pairs))
+}
+
+// Validate actual pair coverage, not just a total that a duplicate could satisfy.
+fn validate_table(
+    team_ids: &[String],
+    standings: &[StandingEntry],
+    fixtures: &[&Fixture],
+    legs: u8,
+) -> Result<(), ()> {
+    if legs == 0 {
+        return Err(());
+    }
+    let (teams, pairs) = tally_table(team_ids, standings, fixtures)?;
     for home in &teams {
         for away in &teams {
             if home >= away {
@@ -162,15 +189,34 @@ fn validate_table(
             }
         }
     }
-    let mut seen = BTreeSet::new();
-    for saved in standings {
-        if !seen.insert(saved.team_id.as_str()) {
+    Ok(())
+}
+
+/// A league phase: no two clubs meet twice, and every club has played `rounds` matches (one
+/// fewer is allowed in a group of odd size, where a club sits a matchday out).
+fn validate_league_phase(
+    team_ids: &[String],
+    standings: &[StandingEntry],
+    fixtures: &[&Fixture],
+    rounds: u32,
+) -> Result<(), ()> {
+    let (teams, pairs) = tally_table(team_ids, standings, fixtures)?;
+    let mut played = BTreeMap::<&str, usize>::new();
+    for ((home, away), count) in &pairs {
+        if *count != 1 || pairs.contains_key(&(*away, *home)) {
             return Err(());
         }
-        let expected = computed.get(saved.team_id.as_str()).ok_or(())?;
-        if standing_record(saved) != standing_record(expected) {
-            return Err(());
-        }
+        *played.entry(home).or_default() += 1;
+        *played.entry(away).or_default() += 1;
+    }
+    let slots = teams.len() + teams.len() % 2;
+    let expected = (rounds as usize).min(slots - 1);
+    let allowed = expected.saturating_sub(teams.len() % 2)..=expected;
+    if teams
+        .iter()
+        .any(|team| !allowed.contains(&played.get(team).copied().unwrap_or(0)))
+    {
+        return Err(());
     }
     Ok(())
 }
@@ -208,12 +254,21 @@ fn validate_groups(competition: &League, fixtures: &[&Fixture]) -> Result<(), Co
                     && teams.contains(f.away_team_id.as_str())
             })
             .collect();
-        validate_table(
-            &group.team_ids,
-            &group.standings,
-            &matches,
-            competition.rules.group_stage_legs,
-        )
+        if competition.rules.group_stage_rounds > 0 {
+            validate_league_phase(
+                &group.team_ids,
+                &group.standings,
+                &matches,
+                competition.rules.group_stage_rounds,
+            )
+        } else {
+            validate_table(
+                &group.team_ids,
+                &group.standings,
+                &matches,
+                competition.rules.group_stage_legs,
+            )
+        }
         .map_err(|()| fail)?;
         grouped_fixtures.extend(matches.into_iter().map(|f| f.id.as_str()));
     }
@@ -605,5 +660,60 @@ mod tests {
         let proof = verify_completed_edition(&loaded[0], Some(2)).unwrap();
         assert_eq!(verify_completed_edition(&loaded[0], Some(2)), Ok(proof));
         assert_eq!(serde_json::to_string(&loaded).unwrap(), before);
+    }
+
+    fn league_phase_cup() -> League {
+        let mut competition = crate::group_stage::generate_group_knockout_cup_with(
+            "League phase cup",
+            2033,
+            &crate::competition_test_support::teams(12),
+            crate::competition_test_support::start(),
+            domain::league::CompetitionType::ContinentalClub,
+            domain::league::CompetitionScope::Continental,
+            &crate::group_stage::GroupStageConfig {
+                group_size: 12,
+                rounds: 4,
+                qualifiers_per_group: 6,
+                ..Default::default()
+            },
+        );
+        crate::competition_test_support::finish(&mut competition);
+        competition
+    }
+
+    /// Given a finished competition whose group stage was a league phase,
+    /// When its edition is verified,
+    /// Then it is complete: four matches a club is the whole phase, not a round robin cut short.
+    #[test]
+    fn a_played_league_phase_is_a_complete_group_stage() {
+        let competition = league_phase_cup();
+
+        assert_eq!(competition.groups.len(), 1);
+        assert!(verify_completed_edition(&competition, None).is_ok());
+    }
+
+    /// Given a league phase with a match missing, or one whose rules ask for more matches than
+    /// were played,
+    /// When its edition is verified,
+    /// Then the groups are refused.
+    #[test]
+    fn a_league_phase_short_of_its_matches_is_not_complete() {
+        let mut short = league_phase_cup();
+        let removed = short
+            .fixtures
+            .iter()
+            .position(|fixture| !short.is_knockout_fixture(&fixture.id))
+            .unwrap();
+        short.fixtures.remove(removed);
+        blocked(&short, None, CompletionFailure::InvalidGroups);
+
+        let mut asked_for_more = league_phase_cup();
+        asked_for_more.rules.group_stage_rounds = 6;
+        blocked(&asked_for_more, None, CompletionFailure::InvalidGroups);
+
+        // Read as round robins, the same matches are not a group stage at all.
+        let mut as_round_robin = league_phase_cup();
+        as_round_robin.rules.group_stage_rounds = 0;
+        blocked(&as_round_robin, None, CompletionFailure::InvalidGroups);
     }
 }

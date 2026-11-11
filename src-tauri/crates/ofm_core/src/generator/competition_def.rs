@@ -98,6 +98,11 @@ pub struct FormatDef {
     /// Best next-placed finishers that also advance (GroupAndKnockout).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub best_third_qualifiers: Option<u32>,
+    /// A league phase (GroupAndKnockout): the matches each club plays in its group, each against
+    /// a different opponent and half of them at home, in place of `legs` round robins. With one
+    /// group the size of the field, that is one table every club is in.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rounds: Option<u32>,
 }
 
 impl FormatDef {
@@ -112,6 +117,7 @@ impl FormatDef {
         crate::group_stage::GroupStageConfig {
             group_size: self.group_size.unwrap_or(defaults.group_size),
             legs: self.legs.unwrap_or(defaults.legs),
+            rounds: self.rounds.unwrap_or(0),
             qualifiers_per_group: self
                 .qualifiers_per_group
                 .unwrap_or(defaults.qualifiers_per_group),
@@ -564,7 +570,8 @@ fn validate_format(competition: &CompetitionDefinition, errors: &mut Vec<Definit
     if format.kind != CompetitionFormat::GroupAndKnockout
         && (format.group_size.is_some()
             || format.qualifiers_per_group.is_some()
-            || format.best_third_qualifiers.is_some())
+            || format.best_third_qualifiers.is_some()
+            || format.rounds.is_some())
     {
         errors.push(DefinitionError::new(
             "be.error.competitionDef.groupConfigOnNonGroupFormat",
@@ -623,6 +630,21 @@ fn validate_format(competition: &CompetitionDefinition, errors: &mut Vec<Definit
             "be.error.competitionDef.zeroLegs",
             &competition.id,
         ));
+    }
+    // A league phase gives a club `rounds` different opponents from its own group, so a group
+    // has to have more clubs than that; and it is played in place of `legs` round robins, so
+    // the two are not set together.
+    if let Some(rounds) = format.rounds
+        && format.kind == CompetitionFormat::GroupAndKnockout
+    {
+        let group_size = format.group_stage_config().group_size;
+        if rounds == 0 || rounds >= group_size || format.legs.is_some_and(|legs| legs != 1) {
+            errors.push(
+                DefinitionError::new("be.error.competitionDef.invalidRounds", &competition.id)
+                    .with("rounds", rounds.to_string())
+                    .with("groupSize", group_size.to_string()),
+            );
+        }
     }
 }
 
@@ -1364,6 +1386,7 @@ mod tests {
                 group_size: None,
                 qualifiers_per_group: None,
                 best_third_qualifiers: None,
+                rounds: None,
             },
             participants: ParticipantSpec {
                 entrants_from: Vec::new(),
@@ -1632,6 +1655,91 @@ mod tests {
         );
     }
 
+    fn league_phase(rounds: u32, group_size: u32, legs: Option<u8>) -> CompetitionDefinition {
+        let mut cup = explicit("tr-cup", &["team-a", "team-b"]);
+        cup.r#type = CompetitionType::Cup;
+        cup.format = FormatDef {
+            kind: CompetitionFormat::GroupAndKnockout,
+            legs,
+            group_size: Some(group_size),
+            qualifiers_per_group: Some(2),
+            best_third_qualifiers: None,
+            rounds: Some(rounds),
+        };
+        cup
+    }
+
+    fn format_errors(cup: CompetitionDefinition) -> Vec<String> {
+        let file = CompetitionDefinitionFile {
+            format_version: 1,
+            competitions: vec![cup],
+        };
+        codes(&validate_definitions(&file, &ctx()))
+            .into_iter()
+            .map(str::to_string)
+            .collect()
+    }
+
+    /// Given a league phase of eight matches in a group of 36,
+    /// When the definition is validated and built,
+    /// Then it is accepted, and the competition is one table in which each club plays eight.
+    #[test]
+    fn a_league_phase_is_authored_as_rounds_in_one_group() {
+        let mut cup = league_phase(8, 36, None);
+        cup.format.qualifiers_per_group = Some(24);
+        let teams: Vec<String> = (0..36).map(|club| format!("club-{club:02}")).collect();
+        cup.participants.explicit = Some(teams.clone());
+
+        let reported = format_errors(cup.clone());
+        assert!(
+            reported
+                .iter()
+                .all(|code| code == "be.error.competitionDef.unknownTeam"),
+            "{reported:?}"
+        );
+        use chrono::TimeZone;
+        let start = Utc.with_ymd_and_hms(2026, 9, 19, 0, 0, 0).unwrap();
+        let built = build_competition(&cup, &teams, 2026, start).unwrap();
+        assert_eq!(built.rules.group_stage_rounds, 8);
+        assert_eq!(built.rules.group_qualifiers_per_group, 24);
+        assert_eq!(built.groups.len(), 1);
+        assert_eq!(built.fixtures.len(), 144);
+        let json = serde_json::to_value(&cup).unwrap();
+        assert_eq!(json["format"]["rounds"], serde_json::json!(8));
+    }
+
+    /// Given a league phase of no matches, of as many matches as the group has clubs, or set
+    /// beside two legs, and `rounds` on a format with no groups,
+    /// When each is validated,
+    /// Then each is refused; one leg beside `rounds` says the same thing twice and is accepted.
+    #[test]
+    fn a_league_phase_needs_more_clubs_than_matches_and_no_legs() {
+        let invalid = "be.error.competitionDef.invalidRounds".to_string();
+        for cup in [
+            league_phase(0, 4, None),
+            league_phase(4, 4, None),
+            league_phase(2, 4, Some(2)),
+        ] {
+            assert!(format_errors(cup).contains(&invalid));
+        }
+        assert!(!format_errors(league_phase(1, 2, None)).contains(&invalid));
+        assert!(!format_errors(league_phase(1, 2, Some(1))).contains(&invalid));
+
+        let mut knockout = league_phase(1, 2, None);
+        knockout.format = FormatDef {
+            kind: CompetitionFormat::Knockout,
+            legs: None,
+            group_size: None,
+            qualifiers_per_group: None,
+            best_third_qualifiers: None,
+            rounds: Some(1),
+        };
+        assert!(
+            format_errors(knockout)
+                .contains(&"be.error.competitionDef.groupConfigOnNonGroupFormat".to_string())
+        );
+    }
+
     #[test]
     fn berth_playoff_needs_at_least_two_contestants() {
         let mut league = explicit("tr-1", &["team-a", "team-b"]);
@@ -1874,6 +1982,7 @@ mod tests {
                 group_size: None,
                 qualifiers_per_group: None,
                 best_third_qualifiers: None,
+                rounds: None,
             },
             participants: ParticipantSpec {
                 entrants_from: Vec::new(),

@@ -54,6 +54,11 @@ pub struct CompetitionRules {
     pub group_best_third_qualifiers: u32,
     /// Round-robin legs played inside each group.
     pub group_stage_legs: u8,
+    /// Group-and-knockout only. When not zero the groups are a league phase: each club plays
+    /// this many matches, each against a different club of its group and half of them at home,
+    /// in place of whole round robins.
+    #[serde(default)]
+    pub group_stage_rounds: u32,
     /// Days between group-stage matchdays.
     pub group_matchday_gap_days: u32,
     /// Days between knockout rounds.
@@ -83,6 +88,7 @@ impl Default for CompetitionRules {
             group_qualifiers_per_group: 2,
             group_best_third_qualifiers: 0,
             group_stage_legs: 2,
+            group_stage_rounds: 0,
             group_matchday_gap_days: 7,
             knockout_round_gap_days: 14,
             knockout_matches_per_day: 1,

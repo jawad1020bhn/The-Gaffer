@@ -20,6 +20,12 @@ group_best_third_qualifiers: number,
  */
 group_stage_legs: number, 
 /**
+ * Group-and-knockout only. When not zero the groups are a league phase: each club plays
+ * this many matches, each against a different club of its group and half of them at home,
+ * in place of whole round robins.
+ */
+group_stage_rounds: number, 
+/**
  * Days between group-stage matchdays.
  */
 group_matchday_gap_days: number, 

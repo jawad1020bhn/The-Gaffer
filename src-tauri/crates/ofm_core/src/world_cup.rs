@@ -582,6 +582,7 @@ pub fn schedule_world_cup_with_field(
         &GroupStageConfig {
             group_size: domain::league::DEFAULT_GROUP_SIZE,
             legs: 1,
+            rounds: 0,
             matchday_gap_days: GROUP_MATCHDAY_GAP_DAYS,
             qualifiers_per_group: format.qualifiers_per_group,
             best_third_qualifiers: format.best_third_qualifiers,

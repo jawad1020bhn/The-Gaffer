@@ -149,6 +149,138 @@ pub fn build_round_robin_fixtures_with(
     fixtures
 }
 
+/// Build a league phase: every club plays `rounds` matches, each against a different opponent
+/// and as near as can be half of them at home.
+///
+/// The pairings are `rounds` matchdays of a single round robin (the circle method), taken at even
+/// intervals through it and not from its start. Clubs are listed strongest first, and consecutive
+/// matchdays of the circle give a club opponents that sit side by side in that list; spread out,
+/// a club meets opponents from across the field, as a draw from pots gives.
+///
+/// Who is at home is settled over the whole phase. A club's matches are walked as circuits, and
+/// each match is given to the club the walk leaves it from: a club is walked into as often as out
+/// of, so it is at home in half its matches (within one, when it plays an odd number).
+pub fn build_league_phase_fixtures(
+    competition_id: &str,
+    team_ids: &[String],
+    start_date: DateTime<Utc>,
+    fixture_competition: FixtureCompetition,
+    rounds: u32,
+    matchday_gap_days: i64,
+) -> Vec<Fixture> {
+    let n = team_ids.len();
+    if n < 2 || rounds == 0 {
+        return Vec::new();
+    }
+    let slots = if n.is_multiple_of(2) { n } else { n + 1 };
+    let full = slots - 1;
+    let rounds = (rounds as usize).min(full);
+    let chosen: Vec<usize> = (0..rounds).map(|round| round * full / rounds).collect();
+
+    // The pairings, as (matchday, one club, the other).
+    let mut pairings: Vec<(usize, usize, usize)> = Vec::new();
+    let mut indices: Vec<usize> = (0..slots).collect();
+    for turn in 0..full {
+        if let Some(matchday) = chosen.iter().position(|round| *round == turn) {
+            for i in 0..slots / 2 {
+                let (first, second) = (indices[i], indices[slots - 1 - i]);
+                if first < n && second < n {
+                    pairings.push((matchday, first, second));
+                }
+            }
+        }
+        let last = indices.pop().unwrap_or_default();
+        indices.insert(1, last);
+    }
+
+    let home_first = league_phase_home_sides(n, &pairings);
+    pairings
+        .iter()
+        .zip(home_first)
+        .map(|(&(round, first, second), first_is_home)| {
+            let (home, away) = if first_is_home {
+                (first, second)
+            } else {
+                (second, first)
+            };
+            let matchday = round as u32 + 1;
+            let date = (start_date + Duration::days(round as i64 * matchday_gap_days))
+                .format("%Y-%m-%d")
+                .to_string();
+            Fixture {
+                postponement: None,
+                id: crate::seed::derived_id(&[
+                    "fixture",
+                    competition_id,
+                    &matchday.to_string(),
+                    &date,
+                    &team_ids[home],
+                    &team_ids[away],
+                ]),
+                competition_id: competition_id.to_string(),
+                matchday,
+                date,
+                home_team_id: team_ids[home].clone(),
+                away_team_id: team_ids[away].clone(),
+                competition: fixture_competition.clone(),
+                status: FixtureStatus::Scheduled,
+                result: None,
+            }
+        })
+        .collect()
+}
+
+/// For each pairing of a league phase, whether the club listed first is at home.
+///
+/// The pairings are the edges of a graph of `clubs`. A club with an odd number of matches is
+/// joined to one extra, imaginary club, so that every club has an even number of edges; the edges
+/// then fall into closed walks, and an edge belongs to the club its walk leaves it from.
+fn league_phase_home_sides(clubs: usize, pairings: &[(usize, usize, usize)]) -> Vec<bool> {
+    // Edge `index` joins `ends[index]`; the edges after the pairings go to the imaginary club.
+    let mut ends: Vec<(usize, usize)> = pairings
+        .iter()
+        .map(|&(_, first, second)| (first, second))
+        .collect();
+    let mut matches = vec![0usize; clubs];
+    for &(first, second) in &ends {
+        matches[first] += 1;
+        matches[second] += 1;
+    }
+    for (club, played) in matches.iter().enumerate() {
+        if played % 2 == 1 {
+            ends.push((club, clubs));
+        }
+    }
+    let mut edges_of: Vec<Vec<usize>> = vec![Vec::new(); clubs + 1];
+    for (edge, &(first, second)) in ends.iter().enumerate() {
+        edges_of[first].push(edge);
+        edges_of[second].push(edge);
+    }
+
+    let mut walked = vec![false; ends.len()];
+    let mut left_from_first = vec![false; ends.len()];
+    let mut next_edge = vec![0usize; clubs + 1];
+    for start in 0..=clubs {
+        let mut path = vec![start];
+        while let Some(&club) = path.last() {
+            while next_edge[club] < edges_of[club].len() && walked[edges_of[club][next_edge[club]]]
+            {
+                next_edge[club] += 1;
+            }
+            let Some(&edge) = edges_of[club].get(next_edge[club]) else {
+                path.pop();
+                continue;
+            };
+            walked[edge] = true;
+            let (first, second) = ends[edge];
+            left_from_first[edge] = club == first;
+            path.push(if club == first { second } else { first });
+        }
+    }
+    left_from_first.truncate(pairings.len());
+    left_from_first
+}
+
 /// Redistribute fixture dates so that at most `max_per_day` fixtures fall on any
 /// single calendar day, spreading each matchday's fixtures across consecutive
 /// days. Matchdays are kept in order and separated by a one-day buffer so that
@@ -371,10 +503,21 @@ pub fn advance_knockout_competition_round(cup: &mut League) {
             format!("{}:{}", cup.season, cup.knockout_rounds.len()),
         )
     });
-    // Winners and byes advance together, in that order, until a champion.
     advance_knockout_round_with(cup, |winners, byes| {
-        let mut advancing = winners.to_vec();
-        advancing.extend(byes.iter().cloned());
+        // Any other competition is seeded. A round in which as many clubs sat out as came
+        // through puts each club that sat out, best first, at home to a winner, the winner of
+        // the tie listed last first: the best seed meets whoever came through the tie of the
+        // lowest seeds. That is the round of sixteen after a league phase, the top eight against
+        // the play-off winners. Otherwise winners and byes advance together, in that order.
+        let mut advancing: Vec<String> =
+            if draw.is_none() && !byes.is_empty() && byes.len() == winners.len() {
+                byes.iter()
+                    .zip(winners.iter().rev())
+                    .flat_map(|(seed, winner)| [seed.clone(), winner.clone()])
+                    .collect()
+            } else {
+                winners.iter().chain(byes).cloned().collect()
+            };
         if let Some((cup_id, round)) = &draw
             && advancing.len() > 2
         {
@@ -1402,6 +1545,179 @@ mod tests {
             unique_dates.len(),
             4,
             "16 matches at 4/day should use exactly 4 dates"
+        );
+    }
+
+    fn league_phase(clubs: usize, rounds: u32) -> (Vec<String>, Vec<Fixture>) {
+        let teams: Vec<String> = (0..clubs).map(|club| format!("club-{club:02}")).collect();
+        let start = Utc.with_ymd_and_hms(2033, 9, 19, 0, 0, 0).unwrap();
+        let fixtures = build_league_phase_fixtures(
+            "league-phase",
+            &teams,
+            start,
+            FixtureCompetition::ContinentalClub,
+            rounds,
+            7,
+        );
+        (teams, fixtures)
+    }
+
+    fn opponents_of<'a>(fixtures: &'a [Fixture], club: &str) -> Vec<&'a str> {
+        fixtures
+            .iter()
+            .filter_map(|fixture| {
+                if fixture.home_team_id == club {
+                    Some(fixture.away_team_id.as_str())
+                } else if fixture.away_team_id == club {
+                    Some(fixture.home_team_id.as_str())
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
+    /// Given 36 clubs and a league phase of eight matches,
+    /// When it is drawn,
+    /// Then there are eight weekly matchdays in which every club plays once, and each club has
+    ///      eight different opponents, four of them at home.
+    #[test]
+    fn a_league_phase_gives_each_club_its_matches_against_different_clubs_half_at_home() {
+        let (teams, fixtures) = league_phase(36, 8);
+
+        assert_eq!(fixtures.len(), 36 * 8 / 2);
+        for matchday in 1..=8u32 {
+            let playing: Vec<&str> = fixtures
+                .iter()
+                .filter(|fixture| fixture.matchday == matchday)
+                .flat_map(|fixture| [fixture.home_team_id.as_str(), fixture.away_team_id.as_str()])
+                .collect();
+            let unique: std::collections::BTreeSet<&str> = playing.iter().copied().collect();
+            assert_eq!(playing.len(), 36, "matchday {matchday}");
+            assert_eq!(unique.len(), 36, "matchday {matchday}: a club plays twice");
+        }
+        let dates: std::collections::BTreeSet<&str> = fixtures
+            .iter()
+            .map(|fixture| fixture.date.as_str())
+            .collect();
+        assert_eq!(dates.len(), 8);
+        assert_eq!(dates.first(), Some(&"2033-09-19"));
+        assert_eq!(dates.last(), Some(&"2033-11-07"));
+        for club in &teams {
+            let opponents = opponents_of(&fixtures, club);
+            let unique: std::collections::BTreeSet<&str> = opponents.iter().copied().collect();
+            assert_eq!(opponents.len(), 8, "{club}");
+            assert_eq!(unique.len(), 8, "{club} meets a club twice");
+            let at_home = fixtures
+                .iter()
+                .filter(|fixture| &fixture.home_team_id == club)
+                .count();
+            assert_eq!(at_home, 4, "{club}");
+        }
+        let ids: std::collections::BTreeSet<&str> =
+            fixtures.iter().map(|fixture| fixture.id.as_str()).collect();
+        assert_eq!(ids.len(), fixtures.len());
+    }
+
+    /// Given clubs listed strongest first,
+    /// When a league phase is drawn,
+    /// Then every club meets opponents from each quarter of the list, as a draw from four pots
+    ///      gives: the first eight matchdays of a round robin would give a club eight opponents
+    ///      that sit side by side in it.
+    #[test]
+    fn a_league_phase_gives_each_club_opponents_from_across_the_field() {
+        let (teams, fixtures) = league_phase(36, 8);
+        let rank = |club: &str| teams.iter().position(|id| id == club).unwrap();
+
+        for club in &teams {
+            let mut quarters = [0usize; 4];
+            for opponent in opponents_of(&fixtures, club) {
+                quarters[rank(opponent) / 9] += 1;
+            }
+            assert!(
+                quarters.iter().all(|count| (1..=3).contains(count)),
+                "{club} meets {quarters:?} of each quarter"
+            );
+        }
+    }
+
+    /// Given a field of odd size, and one asked for more matches than it has opponents,
+    /// When their league phases are drawn,
+    /// Then no club meets another twice, a club in the odd field sits out at most one matchday
+    ///      and is at home within one of half its matches, and the phase asked for too much is
+    ///      one round robin.
+    #[test]
+    fn a_league_phase_copes_with_an_odd_field_and_with_more_rounds_than_opponents() {
+        let (teams, fixtures) = league_phase(7, 4);
+        for club in &teams {
+            let opponents = opponents_of(&fixtures, club);
+            let unique: std::collections::BTreeSet<&str> = opponents.iter().copied().collect();
+            assert_eq!(unique.len(), opponents.len(), "{club}");
+            assert!((3..=4).contains(&opponents.len()), "{club}");
+            let at_home = fixtures
+                .iter()
+                .filter(|fixture| &fixture.home_team_id == club)
+                .count();
+            assert!(at_home.abs_diff(opponents.len() - at_home) <= 1, "{club}");
+        }
+
+        let (teams, fixtures) = league_phase(4, 9);
+        assert_eq!(fixtures.len(), 6);
+        for club in &teams {
+            assert_eq!(opponents_of(&fixtures, club).len(), 3);
+        }
+        assert!(league_phase(1, 8).1.is_empty());
+        assert!(league_phase(36, 0).1.is_empty());
+    }
+
+    /// Given a seeded knockout in which four clubs sat the first round out and four came through,
+    /// When the second round is made,
+    /// Then each club that sat out is at home to a winner, the best of them to the winner of the
+    ///      tie listed last, where the four used to be paired with each other.
+    #[test]
+    fn a_seeded_round_puts_the_clubs_that_sat_out_against_the_winners() {
+        let teams: Vec<String> = (0..12).map(|club| format!("club-{club:02}")).collect();
+        let start = Utc.with_ymd_and_hms(2033, 9, 19, 0, 0, 0).unwrap();
+        let mut cup = generate_knockout_cup(
+            "Continental",
+            2033,
+            &teams,
+            start,
+            CompetitionType::ContinentalClub,
+            domain::league::CompetitionScope::Continental,
+        );
+        assert_eq!(cup.knockout_rounds[0].bye_team_ids, teams[..4]);
+        for fixture in &mut cup.fixtures {
+            fixture.status = FixtureStatus::Completed;
+            fixture.result = Some(domain::league::MatchResult {
+                home_goals: 1,
+                away_goals: 0,
+                ..Default::default()
+            });
+        }
+
+        advance_knockout_competition_round(&mut cup);
+
+        let second: Vec<(&str, &str)> = cup.knockout_rounds[1]
+            .fixture_ids
+            .iter()
+            .map(|id| {
+                cup.fixtures
+                    .iter()
+                    .find(|fixture| &fixture.id == id)
+                    .unwrap()
+            })
+            .map(|fixture| (fixture.home_team_id.as_str(), fixture.away_team_id.as_str()))
+            .collect();
+        // The first round was 4 v 5, 6 v 7, 8 v 9, 10 v 11, each won at home.
+        assert_eq!(
+            second,
+            [
+                ("club-00", "club-10"),
+                ("club-01", "club-08"),
+                ("club-02", "club-06"),
+                ("club-03", "club-04"),
+            ]
         );
     }
 }

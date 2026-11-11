@@ -10,6 +10,12 @@ cup takes the clubs its divisions have each season and is drawn anew, and **5
 super cups** are played by the cup's holder and the league's top clubs. See
 [Cups and continental competitions](#cups-and-continental-competitions).
 
+**The league phase (0.6.0):** the three UEFA competitions are one table of 36
+clubs in which each plays eight matches (six in the Conference League) against
+eight different opponents. The top eight go to the round of 16 and the next
+sixteen play off for the other eight places. The AFC Champions League Elite is
+one table of 16.
+
 **Cups and continental competitions (0.4.0):** **22 domestic cups** and **7
 continental competitions**, with the league places and cup wins that qualify a
 club for them, read from EA's career-mode competition structure. Leagues now
@@ -183,19 +189,19 @@ and the EFL Trophy the 48 of League One and League Two.
 | Italy | Coppa Italia | 40 | knockout | 6 Sep | Europa League |
 | Austria | ÖFB-Cup | 12 | knockout | 1 Nov | Europa League |
 | Belgium | Belgian Cup | 18 | knockout | 6 Dec | Europa League |
-| Denmark | Danish Cup | 12 | knockout | 1 Nov | Conference League |
-| Norway | Norwegian Cup | 16 | knockout | 15 Dec | Conference League |
+| Denmark | Danish Cup | 12 | knockout | 1 Nov | Europa League |
+| Norway | Norwegian Cup | 16 | knockout | 15 Dec | Europa League |
 | Portugal | Taça de Portugal | 18 | knockout | 6 Dec | Europa League |
 | Scotland | Scottish Cup | 12 | knockout | 9 Jan | Europa League |
-| Sweden | Svenska Cupen | 16 | 4 groups of 4, top 2 through | 8 Dec | Conference League |
+| Sweden | Svenska Cupen | 16 | 4 groups of 4, top 2 through | 8 Dec | Europa League |
 | Switzerland | Schweizer Cup | 12 | knockout | 6 Dec | Europa League |
 | United States | U.S. Open Cup | 30 | knockout | 10 May | |
 | Türkiye | Türkiye Kupası | 18 | 2 groups of 9, top 4 through | 24 Nov | Europa League |
 | Netherlands | KNVB Beker | 18 | knockout | 28 Dec | Europa League |
-| Ireland | FAI Cup | 10 | knockout | 19 Aug | Conference League |
-| Poland | Puchar Polski | 18 | knockout | 1 Nov | Conference League |
+| Ireland | FAI Cup | 10 | knockout | 19 Aug | Europa League |
+| Poland | Puchar Polski | 18 | knockout | 1 Nov | Europa League |
 | Saudi Arabia | King's Cup | 18 | knockout | 27 Sep | |
-| Romania | Cupa României | 16 | 4 groups of 4, top 2 through | 1 Nov | Conference League |
+| Romania | Cupa României | 16 | 4 groups of 4, top 2 through | 1 Nov | Europa League |
 
 Group stages in a cup are one meeting per pair. Every tie is a single match.
 
@@ -227,19 +233,26 @@ to the next club down the league.
 
 | Competition | Clubs | Played as | First match |
 |---|---|---|---|
-| UEFA Champions League | 32 | 8 groups of 4, top 2 through, then a knockout | 19 Sep |
-| UEFA Europa League | 32 | the same | 27 Sep |
-| UEFA Conference League | 32 | the same | 5 Oct |
-| CONMEBOL Libertadores | 32 | the same | 22 Mar |
-| CONMEBOL Sudamericana | 32 | the same | 22 Mar |
+| UEFA Champions League | 36 | league phase: one table, 8 matches each; the top 8 to the round of 16, 9th to 24th play off | 19 Sep |
+| UEFA Europa League | 36 | the same | 27 Sep |
+| UEFA Conference League | 36 | the same, with 6 matches each | 5 Oct |
+| CONMEBOL Libertadores | 32 | 8 groups of 4, home and away, top 2 through, then a knockout | 4 Apr |
+| CONMEBOL Sudamericana | 32 | the same | 6 Apr |
 | Concacaf Champions Cup | 8 | knockout | 4 Apr |
-| AFC Champions League Elite | 16 | 4 groups of 4, top 2 through, then a knockout | 25 Oct |
+| AFC Champions League Elite | 16 | league phase: one table, 6 matches each; the top 8 to the quarter-finals | 19 Sep |
 
 The Europa League's winner qualifies for the Champions League, the Conference
 League's for the Europa League and the Sudamericana's for the Libertadores.
 
-**League places.** These are the positions EA fills each competition from,
-fitted to 32-club fields.
+**The league phase.** The sizes, the number of matches and how many clubs go on
+are EA's. A club meets each opponent once and is at home in half its matches.
+Its opponents come from every quarter of the field, strongest to weakest, as a
+draw from four pots gives; there are no pots here, and clubs of one country can
+meet. The table's top eight sit out the first knockout round. In it the ninth
+is at home to the 24th, the tenth to the 23rd and so on, and in the round of 16
+the first is at home to whoever comes through the tie of the 16th and 17th.
+
+**League places.** These are the positions EA fills each competition from.
 
 | League | Champions League | Europa League | Conference League |
 |---|---|---|---|
@@ -247,9 +260,13 @@ fitted to 32-club fields.
 | Italy | 1–5 | 6 | 7 |
 | Spain, Germany | 1–4 | 5 | 6 |
 | France | 1–3 | 4–5 | 6 |
-| Netherlands | 1–2 | 3 | 4–5 |
-| Portugal, Belgium, Türkiye, Scotland, Switzerland, Austria, Norway | 1 | 2 | 3–4 |
-| Denmark, Poland, Sweden, Romania, Ireland | | 1 | 2 |
+| Netherlands | 1–2 | 3–4 | 5 |
+| Portugal | 1 | 2–3 | 4 |
+| Belgium, Türkiye, Scotland, Switzerland, Austria | 1 | 2 | 3–4 |
+| Norway | 1–2 | | 3–4 |
+| Denmark, Poland, Sweden | 1 | | 2–3 |
+| Romania | | 1 | 2–3 |
+| Ireland | | 1 | 2–4 |
 
 Outside Europe: Argentina's top five enter the Libertadores and the next two
 the Sudamericana; the top four of MLS and of Liga MX enter the Concacaf
@@ -257,9 +274,9 @@ Champions Cup; the top four of Saudi Arabia, South Korea, China and Australia
 enter the AFC Champions League Elite. The Indian Super League and every lower
 division award nothing.
 
-**Places nobody earns.** The berths above come to 31 of the Champions League's
-32 places, all 32 of the other two UEFA competitions, 6 of the Libertadores' 32
-and 2 of the Sudamericana's. EA fills the rest from clubs it keeps outside any
+**Places nobody earns.** The berths above come to 35 of the Champions League's
+36 places, all 36 of the Europa League's, 30 of the Conference League's, 6 of
+the Libertadores' 32 and 2 of the Sudamericana's. EA fills the rest from clubs it keeps outside any
 league, which is why Olympiacos, Dinamo Zagreb or Flamengo are in its database
 at all. Here the engine tops a short field up from the clubs of the
 confederation that have no place yet: the ones that play in no league first,
@@ -268,12 +285,14 @@ open whenever one club earns two, as a cup winner that finished in the league
 places does.
 
 **The first season's fields** are last season's tables and cup holders run
-through those berths. That left 30 clubs in the Champions League, 23 in the
-Europa League and 24 in the Conference League. The open places went to the
+through those berths. That left 34 clubs in the Champions League, 23 in the
+Europa League and 26 in the Conference League. The open places went to the
 European clubs that play in no league here, by reputation: Olympiacos and AEK
-to the Champions League, nine more to the Europa League, the last six to the
-Conference League. Its final two places went to the best clubs still without
-one, Chelsea and Tottenham. In South America six Argentine clubs earned a
+to the Champions League, thirteen more to the Europa League, the last two to
+the Conference League. There are 17 such clubs and 27 open places, so the
+Conference League's final eight went to the best clubs still without one:
+Chelsea, Tottenham, Newcastle, Athletic Club, Brentford, Brighton, Everton and
+Nottingham Forest. In South America six Argentine clubs earned a
 Libertadores place and two a Sudamericana one. The rest of both fields is the
 54 South American clubs that play in no league here and the two best Argentine
 clubs still without a place. EA files 52 of the 54 under one of the two
@@ -308,8 +327,8 @@ for England, Germany, Italy and Spain, and 22 August for the three UEFA
 competitions. Those leagues used to wait for the same day a year on and went a
 year without football.
 
-**What a career does not have.** Two-legged ties, the 36-club league phase and
-qualifying rounds of the UEFA competitions, league splits and play-offs. A cup
+**What a career does not have.** Two-legged ties, the qualifying rounds of the
+UEFA competitions, league splits and play-offs. A cup
 has one draw that every club is in, where EA brings the divisions in round by
 round; the byes stand in for that. The UEFA Super Cup and the Recopa are left
 out, because the engine gives a club one continental competition and their
@@ -423,8 +442,8 @@ trademarks.
 
 ## Known gaps
 
-- **No two-legged ties, league phase, qualifying rounds, league splits or
-  play-offs**, and no UEFA Super Cup or Recopa. See
+- **No two-legged ties, qualifying rounds, league splits or play-offs**, and no
+  UEFA Super Cup or Recopa. See
   [what a career does not have](#cups-and-continental-competitions).
 - **A manager with no club has no season of his own.** Each competition starts
   its next season on its own date (see

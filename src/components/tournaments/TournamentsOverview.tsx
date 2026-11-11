@@ -15,6 +15,8 @@ type KnockoutRound = NonNullable<LeagueData["knockout_rounds"]>[number];
 interface TournamentsOverviewProps {
   standings: StandingData[];
   groups: Group[];
+  /** The groups are a league phase: see `rules.group_stage_rounds`. */
+  leaguePhase?: boolean;
   knockoutRounds: KnockoutRound[];
   isKnockout: boolean;
   isPreseason: boolean;
@@ -33,6 +35,7 @@ interface TournamentsOverviewProps {
 export default function TournamentsOverview({
   standings,
   groups,
+  leaguePhase = false,
   knockoutRounds,
   isKnockout,
   isPreseason,
@@ -45,7 +48,12 @@ export default function TournamentsOverview({
   const groupGrid = (
     <div className="grid grid-cols-1 md:grid-cols-2">
       {groups.map((group) => (
-        <TournamentsGroupTable key={group.id} group={group} teams={teams} />
+        <TournamentsGroupTable
+          key={group.id}
+          group={group}
+          teams={teams}
+          leaguePhase={leaguePhase}
+        />
       ))}
     </div>
   );

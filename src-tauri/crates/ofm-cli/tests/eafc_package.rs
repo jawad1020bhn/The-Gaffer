@@ -239,12 +239,8 @@ fn a_career_opens_with_the_cups_and_continental_competitions_the_package_authors
     // knockout rounds are drawn once the groups are played, so a new edition
     // holds its group fixtures and nothing else.
     let group_stages = [
-        ("uefa-champions-league", 32, 8, 4, 2),
-        ("uefa-europa-league", 32, 8, 4, 2),
-        ("uefa-conference-league", 32, 8, 4, 2),
         ("conmebol-libertadores", 32, 8, 4, 2),
         ("conmebol-sudamericana", 32, 8, 4, 2),
-        ("afc-champions-league-elite", 16, 4, 4, 2),
         ("eng-efl-trophy", 48, 8, 6, 1),
         ("tr-turkiye-kupasi", 18, 2, 9, 1),
         ("se-svenska-cupen", 16, 4, 4, 1),
@@ -267,6 +263,42 @@ fn a_career_opens_with_the_cups_and_continental_competitions_the_package_authors
             groups * (group_size * (group_size - 1) / 2) * legs,
             "{id} fixtures"
         );
+    }
+
+    // League phases: clubs, matches each plays, clubs that go on. One table the whole
+    // field is in, where a club meets a few of the others once, not all of them.
+    let league_phases = [
+        ("uefa-champions-league", 36, 8, 24),
+        ("uefa-europa-league", 36, 8, 24),
+        ("uefa-conference-league", 36, 6, 24),
+        ("afc-champions-league-elite", 16, 6, 8),
+    ];
+    for (id, clubs, rounds, qualifiers) in league_phases {
+        let competition = find(id);
+        assert_eq!(competition.participant_ids.len(), clubs, "{id} clubs");
+        assert_eq!(competition.groups.len(), 1, "{id} tables");
+        assert_eq!(competition.groups[0].team_ids.len(), clubs, "{id} table");
+        assert_eq!(
+            competition.rules.group_stage_rounds as usize, rounds,
+            "{id}"
+        );
+        assert_eq!(
+            competition.rules.group_qualifiers_per_group as usize, qualifiers,
+            "{id} qualifiers"
+        );
+        assert_eq!(
+            competition.fixtures.len(),
+            clubs * rounds / 2,
+            "{id} fixtures"
+        );
+        for club in &competition.participant_ids {
+            let matches = competition
+                .fixtures
+                .iter()
+                .filter(|fixture| &fixture.home_team_id == club || &fixture.away_team_id == club)
+                .count();
+            assert_eq!(matches, rounds, "{id}: {club}");
+        }
     }
 
     // Straight knockouts: every club is drawn, and no groups are made.

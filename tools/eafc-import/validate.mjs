@@ -48,7 +48,7 @@ const FORMAT_KINDS = new Set(["LeagueTable", "Knockout", "GroupAndKnockout"]);
 const MIN_GROUP_SIZE = 2;
 const DEFAULT_GROUP_SIZE = 4;
 const DEFAULT_GROUP_QUALIFIERS = 2;
-const GROUP_SETTINGS = ["groupSize", "qualifiersPerGroup", "bestThirdQualifiers"];
+const GROUP_SETTINGS = ["groupSize", "qualifiersPerGroup", "bestThirdQualifiers", "rounds"];
 const PACKAGE_TYPES = new Set(["database", "patch", "assets"]);
 
 const isPlainObject = (value) =>
@@ -331,6 +331,16 @@ export function validatePackage({ documents, countryCodes, regionIds }) {
     }
     if (format.legs != null && !(Number.isInteger(format.legs) && format.legs >= 1)) {
       error(where, `format.legs ${format.legs} must be at least 1`);
+    }
+    // A league phase: each club plays `rounds` different clubs of its group.
+    if (grouped && format.rounds != null) {
+      const groupSize = Math.max(MIN_GROUP_SIZE, format.groupSize ?? DEFAULT_GROUP_SIZE);
+      const rounds = format.rounds;
+      if (!(Number.isInteger(rounds) && rounds >= 1 && rounds < groupSize)) {
+        error(where, `format.rounds ${rounds} must be from 1 to ${groupSize - 1}, under groupSize`);
+      } else if (format.legs != null && format.legs !== 1) {
+        error(where, `format.rounds is a league phase and cannot be combined with legs`);
+      }
     }
     const month = competition.seasonStartMonth;
     const day = competition.seasonStartDay;

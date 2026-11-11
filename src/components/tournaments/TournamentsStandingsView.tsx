@@ -18,6 +18,8 @@ interface TournamentsStandingsViewProps {
   league: LeagueData;
   standings: StandingData[];
   groups: Group[];
+  /** The groups are a league phase: see `rules.group_stage_rounds`. */
+  leaguePhase?: boolean;
   knockoutRounds: KnockoutRound[];
   isKnockout: boolean;
   isPreseason: boolean;
@@ -35,6 +37,7 @@ export default function TournamentsStandingsView({
   league,
   standings,
   groups,
+  leaguePhase = false,
   knockoutRounds,
   isKnockout,
   isPreseason,
@@ -48,7 +51,12 @@ export default function TournamentsStandingsView({
       <CardBody className="p-0">
         <div className="grid grid-cols-1 md:grid-cols-2">
           {groups.map((group) => (
-            <TournamentsGroupTable key={group.id} group={group} teams={teams} />
+            <TournamentsGroupTable
+              key={group.id}
+              group={group}
+              teams={teams}
+              leaguePhase={leaguePhase}
+            />
           ))}
         </div>
       </CardBody>

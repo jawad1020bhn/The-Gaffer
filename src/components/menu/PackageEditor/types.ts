@@ -245,6 +245,8 @@ export interface FormatDef {
   groupSize?: number;
   qualifiersPerGroup?: number;
   bestThirdQualifiers?: number;
+  /** A league phase: matches each club plays in its group, in place of `legs` round robins. */
+  rounds?: number;
 }
 
 export interface SelectorSpec {

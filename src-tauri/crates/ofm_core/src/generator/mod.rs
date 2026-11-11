@@ -1164,6 +1164,7 @@ fn build_fallback_competition(
             group_size: None,
             qualifiers_per_group: None,
             best_third_qualifiers: None,
+            rounds: None,
         },
         participants: ParticipantSpec {
             entrants_from: Vec::new(),

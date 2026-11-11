@@ -75,6 +75,7 @@ export default function TournamentsTab({
   const isKnockout = isKnockoutCompetition(league);
   const knockoutRounds = league.knockout_rounds ?? [];
   const groups = league.groups ?? [];
+  const leaguePhase = (league.rules?.group_stage_rounds ?? 0) > 0;
   const zones = isKnockout
     ? { promotionSlots: 0, relegationSlots: 0 }
     : getPromotionRelegationZones(activeCompetitions, league);
@@ -157,6 +158,7 @@ export default function TournamentsTab({
         <TournamentsOverview
           standings={standings}
           groups={groups}
+          leaguePhase={leaguePhase}
           knockoutRounds={knockoutRounds}
           isKnockout={isKnockout}
           isPreseason={isPreseason}
@@ -181,6 +183,7 @@ export default function TournamentsTab({
           league={league}
           standings={standings}
           groups={groups}
+          leaguePhase={leaguePhase}
           knockoutRounds={knockoutRounds}
           isKnockout={isKnockout}
           isPreseason={isPreseason}

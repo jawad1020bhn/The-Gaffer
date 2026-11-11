@@ -1,7 +1,7 @@
 # FC 27 data corrections and remaining limitations
 
 Audited and rebuilt on 2026-11-08; competitions rebuilt on 2026-11-10 (0.4.0, and
-0.5.0 with the super cups).
+0.5.0 with the super cups) and on 2026-11-11 (0.6.0, the league phase).
 **Loadable does not mean complete or season-ready.** Source coverage, schema/reference validity and actual world
 building are separate checks.
 

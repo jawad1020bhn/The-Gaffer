@@ -240,6 +240,27 @@ describe("formats", () => {
     );
   });
 
+  it("accept a league phase of fewer matches than a group has clubs, and no legs", () => {
+    const phase = (extra) =>
+      continental({
+        format: { kind: "GroupAndKnockout", groupSize: 6, qualifiersPerGroup: 4, ...extra },
+      });
+    assert.deepEqual(problemsOf(phase({ rounds: 3 })), []);
+    assert.deepEqual(problemsOf(phase({ rounds: 3, legs: 1 })), []);
+    assert.deepEqual(problemsOf(phase({ rounds: 6 })), [
+      "competition:champions-cup: format.rounds 6 must be from 1 to 5, under groupSize",
+    ]);
+    assert.deepEqual(problemsOf(phase({ rounds: 0 })), [
+      "competition:champions-cup: format.rounds 0 must be from 1 to 5, under groupSize",
+    ]);
+    assert.deepEqual(problemsOf(phase({ rounds: 3, legs: 2 })), [
+      "competition:champions-cup: format.rounds is a league phase and cannot be combined with legs",
+    ]);
+    assert.deepEqual(problemsOf(continental({ format: { kind: "Knockout", rounds: 3 } })), [
+      "competition:champions-cup: format Knockout has no groups, but group settings are set",
+    ]);
+  });
+
   it("check only the shape when the field is a selector's", () => {
     const selected = { selector: { kind: "allInRegion", region: "europe" } };
     assert.deepEqual(

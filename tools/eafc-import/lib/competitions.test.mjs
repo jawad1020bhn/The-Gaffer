@@ -24,7 +24,6 @@ import {
   SEASON_END_MARGIN_DAYS,
   competitionDays,
   competitionName,
-  continentalStartDay,
   domesticCupStartDay,
   drawOrder,
   groupCount,
@@ -32,6 +31,7 @@ import {
   knockoutDays,
   leagueDays,
   leagueLegs,
+  leaguePhaseOf,
   placesOf,
   planCompetitions,
   resolveFields,
@@ -135,6 +135,18 @@ describe("the engine's calendar", () => {
       8 * 7 + 14 + 32,
     );
     assert.equal(competitionDays(16, { kind: "Knockout" }), 53);
+    // A league phase: its eight rounds, not the 35 of a round robin; then 24 clubs,
+    // of whom eight sit the first knockout round out.
+    const leaguePhase = { kind: "GroupAndKnockout", groupSize: 36, rounds: 8 };
+    assert.equal(
+      competitionDays(36, { ...leaguePhase, qualifiersPerGroup: 24 }),
+      7 * 7 + 14 + knockoutDays(24),
+    );
+    // More rounds than a small field has opponents is one round robin.
+    assert.equal(
+      competitionDays(4, { ...leaguePhase, qualifiersPerGroup: 2 }),
+      2 * 7 + 14 + knockoutDays(2),
+    );
   });
 
   it("splits a field into groups the way the engine does", () => {
@@ -182,6 +194,60 @@ describe("groupFormatFits", () => {
   });
 });
 
+describe("leaguePhaseOf", () => {
+  const group = (capacity) => ({ capacity, schedule: [] });
+  const league = (groups, rounds) => ({
+    type: "LEAGUE",
+    situations: ["GROUP"],
+    groups,
+    schedule: Array.from({ length: rounds }, (_, round) => ({ round, day: 260 + round * 14 })),
+  });
+  const knockout = (ties, type = "KO2LEGS") => ({
+    type,
+    situations: [],
+    groups: Array.from({ length: ties }, () => group(2)),
+    schedule: [],
+  });
+  const setup = { type: "SETUP", situations: [], groups: [], schedule: [] };
+
+  it("reads one table whose clubs play fewer rounds than they have opponents", () => {
+    // 36 clubs, eight rounds; a play-off of eight ties, then a round of 16 that
+    // has eight clubs beyond the play-off's winners: 16 + 8 go on.
+    const competition = {
+      stages: [
+        knockout(7),
+        setup,
+        league([group(36)], 8),
+        setup,
+        knockout(8),
+        setup,
+        knockout(8),
+        knockout(4),
+        knockout(2),
+        knockout(1, "KO1LEG"),
+      ],
+    };
+    assert.deepEqual(leaguePhaseOf(competition), { clubs: 36, rounds: 8, qualifiers: 24 });
+  });
+
+  it("counts only the first knockout round when nobody joins in the second", () => {
+    // 16 clubs, six rounds, then quarter-finals: the top eight.
+    const competition = {
+      stages: [league([group(16)], 6), setup, knockout(4), knockout(2), knockout(1)],
+    };
+    assert.deepEqual(leaguePhaseOf(competition), { clubs: 16, rounds: 6, qualifiers: 8 });
+  });
+
+  it("is not a league phase when there are several groups, or a full round robin", () => {
+    const groups = Array.from({ length: 8 }, () => group(4));
+    assert.equal(leaguePhaseOf({ stages: [league(groups, 6), knockout(8)] }), null);
+    // Four clubs playing three rounds meet everybody: that is a group.
+    assert.equal(leaguePhaseOf({ stages: [league([group(4)], 3), knockout(1)] }), null);
+    assert.equal(leaguePhaseOf({ stages: [league([group(36)], 8)] }), null, "no knockout");
+    assert.equal(leaguePhaseOf({ stages: [knockout(4), knockout(2)] }), null, "no league");
+  });
+});
+
 describe("domesticCupStartDay", () => {
   const august = dayNumber(8, 1);
   // A 20-club league from 1 August: its last round is 259 days later.
@@ -223,51 +289,6 @@ describe("domesticCupStartDay", () => {
   it("never starts a cup before the league", () => {
     const start = domesticCupStartDay({ ...season, eaDay: dayNumber(10, 1), days: 400 });
     assert.equal(start, august);
-  });
-});
-
-describe("continentalStartDay", () => {
-  it("keeps EA's day when the edition fits between two season ends", () => {
-    // Seasons ending between late February and mid June; a 102-day edition
-    // from 19 September is over in December.
-    const start = continentalStartDay({
-      eaDay: dayNumber(9, 19),
-      days: 102,
-      seasonEndDays: [dayNumber(2, 20), dayNumber(4, 17), dayNumber(6, 12)],
-    });
-    assert.equal(date(start), "9-19");
-  });
-
-  it("moves an edition that would still be running when a season ends", () => {
-    // One season, ending 16 July. EA's 2 April plus 102 days is 13 July: the
-    // final has to be a fortnight clear of the 16th, so the start moves back.
-    const end = dayNumber(7, 16);
-    const start = continentalStartDay({ eaDay: dayNumber(4, 2), days: 102, seasonEndDays: [end] });
-    assert.equal(start, end + 365 - SEASON_END_MARGIN_DAYS - 102 - 365);
-    assert.equal(date(start), "3-22");
-  });
-
-  it("finds the gap nearest EA's day when seasons end all year round", () => {
-    // Ends in February, March, September and October. An 81-day edition fits
-    // after the March one (to late June) or after the October one; EA's
-    // 19 September is nearest the second.
-    const start = continentalStartDay({
-      eaDay: dayNumber(9, 19),
-      days: 81,
-      seasonEndDays: [dayNumber(2, 25), dayNumber(3, 20), dayNumber(9, 20), dayNumber(10, 11)],
-    });
-    assert.equal(date(start), "10-25");
-  });
-
-  it("starts after a season end, not on it", () => {
-    const end = dayNumber(5, 1);
-    const start = continentalStartDay({ eaDay: end + 3, days: 30, seasonEndDays: [end] });
-    assert.equal(start, end + SEASON_END_MARGIN_DAYS);
-  });
-
-  it("returns EA's day when no league feeds the competition, or nothing fits", () => {
-    assert.equal(continentalStartDay({ eaDay: 100, days: 50, seasonEndDays: [] }), 100);
-    assert.equal(continentalStartDay({ eaDay: 100, days: 360, seasonEndDays: [10] }), 100);
   });
 });
 
@@ -1022,9 +1043,9 @@ describe("planCompetitions on the FC 27 structure", async () => {
         competition.participants.explicit.length,
       ]),
       [
-        ["uefa-champions-league", "UEFA Champions League", "europe", 0, 32],
-        ["uefa-europa-league", "UEFA Europa League", "europe", 1, 32],
-        ["uefa-conference-league", "UEFA Conference League", "europe", 2, 32],
+        ["uefa-champions-league", "UEFA Champions League", "europe", 0, 36],
+        ["uefa-europa-league", "UEFA Europa League", "europe", 1, 36],
+        ["uefa-conference-league", "UEFA Conference League", "europe", 2, 36],
         ["conmebol-libertadores", "CONMEBOL Libertadores", "south-america", 0, 32],
         ["conmebol-sudamericana", "CONMEBOL Sudamericana", "south-america", 1, 32],
         ["concacaf-champions-cup", "Concacaf Champions Cup", "north-america", 0, 8],
@@ -1038,11 +1059,28 @@ describe("planCompetitions on the FC 27 structure", async () => {
     assert.equal(CONTINENTAL_COMPETITIONS.length, 7);
   });
 
-  it("plays them as groups of four, or a knockout for eight clubs", () => {
+  it("plays EA's league phase where it has one, and otherwise groups of four or a knockout", () => {
+    // One table of 36: eight matches each (six in the Conference League), the
+    // top 24 going on, of whom the engine gives the best eight a bye.
+    const leaguePhase = (rounds) => ({
+      kind: "GroupAndKnockout",
+      groupSize: 36,
+      rounds,
+      qualifiersPerGroup: 24,
+    });
+    assert.deepEqual(byId.get("uefa-champions-league").format, leaguePhase(8));
+    assert.deepEqual(byId.get("uefa-europa-league").format, leaguePhase(8));
+    assert.deepEqual(byId.get("uefa-conference-league").format, leaguePhase(6));
+    // One table of 16, six matches each, the top eight into the quarter-finals.
+    assert.deepEqual(byId.get("afc-champions-league-elite").format, {
+      kind: "GroupAndKnockout",
+      groupSize: 16,
+      rounds: 6,
+      qualifiersPerGroup: 8,
+    });
     const groups = { kind: "GroupAndKnockout", legs: 2, groupSize: 4, qualifiersPerGroup: 2 };
-    assert.deepEqual(byId.get("uefa-champions-league").format, groups);
     assert.deepEqual(byId.get("conmebol-libertadores").format, groups);
-    assert.deepEqual(byId.get("afc-champions-league-elite").format, groups);
+    assert.deepEqual(byId.get("conmebol-sudamericana").format, groups);
     assert.deepEqual(byId.get("concacaf-champions-cup").format, { kind: "Knockout" });
   });
 
@@ -1052,14 +1090,17 @@ describe("planCompetitions on the FC 27 structure", async () => {
       "be-pro-league 1-1",
       "ch-super-league 1-1",
       "de-1-bundesliga 1-4",
+      "dk-superliga 1-1",
       "eng-premier-league 1-5",
       "es-primera-division 1-4",
       "fr-ligue-1 1-3",
       "it-serie-a 1-5",
       "nl-eredivisie 1-2",
-      "no-eliteserien 1-1",
+      "no-eliteserien 1-2",
+      "pl-ekstraklasa 1-1",
       "pt-primeira-liga 1-1",
       "sco-premiership 1-1",
+      "se-allsvenskan 1-1",
       "tr-super-lig 1-1",
       "uefa-europa-league winner",
     ]);
@@ -1075,26 +1116,28 @@ describe("planCompetitions on the FC 27 structure", async () => {
       "ch-super-league 2-2",
       "de-1-bundesliga 5-5",
       "de-dfb-pokal winner",
-      "dk-superliga 1-1",
+      "dk-danish-cup winner",
       "eng-fa-cup winner",
       "eng-premier-league 6-6",
       "es-copa-del-rey winner",
       "es-primera-division 5-5",
       "fr-coupe-de-france winner",
       "fr-ligue-1 4-5",
+      "ie-fai-cup winner",
       "ie-premier-division 1-1",
       "it-coppa-italia winner",
       "it-serie-a 6-6",
-      "nl-eredivisie 3-3",
+      "nl-eredivisie 3-4",
       "nl-knvb-beker winner",
-      "no-eliteserien 2-2",
-      "pl-ekstraklasa 1-1",
-      "pt-primeira-liga 2-2",
+      "no-norwegian-cup winner",
+      "pl-puchar-polski winner",
+      "pt-primeira-liga 2-3",
       "pt-taca-de-portugal winner",
+      "ro-cupa-romaniei winner",
       "ro-liga-i 1-1",
       "sco-premiership 2-2",
       "sco-scottish-cup winner",
-      "se-allsvenskan 1-1",
+      "se-svenska-cupen winner",
       "tr-super-lig 2-2",
       "tr-turkiye-kupasi winner",
       "uefa-conference-league winner",
@@ -1107,25 +1150,19 @@ describe("planCompetitions on the FC 27 structure", async () => {
       "be-pro-league 3-4",
       "ch-super-league 3-4",
       "de-1-bundesliga 6-6",
-      "dk-danish-cup winner",
-      "dk-superliga 2-2",
+      "dk-superliga 2-3",
       "eng-efl-cup winner",
       "es-primera-division 6-6",
       "fr-ligue-1 6-6",
-      "ie-fai-cup winner",
-      "ie-premier-division 2-2",
+      "ie-premier-division 2-4",
       "it-serie-a 7-7",
-      "nl-eredivisie 4-5",
+      "nl-eredivisie 5-5",
       "no-eliteserien 3-4",
-      "no-norwegian-cup winner",
-      "pl-ekstraklasa 2-2",
-      "pl-puchar-polski winner",
-      "pt-primeira-liga 3-4",
-      "ro-cupa-romaniei winner",
-      "ro-liga-i 2-2",
+      "pl-ekstraklasa 2-3",
+      "pt-primeira-liga 4-4",
+      "ro-liga-i 2-3",
       "sco-premiership 3-4",
-      "se-allsvenskan 2-2",
-      "se-svenska-cupen winner",
+      "se-allsvenskan 2-3",
       "tr-super-lig 3-4",
     ]);
   });
@@ -1159,38 +1196,29 @@ describe("planCompetitions on the FC 27 structure", async () => {
 
   it("reports how many places are earned and which of EA's it had no room for", () => {
     assert.deepEqual(plan.summary.continental, [
-      { id: "uefa-champions-league", size: 32, earned: 31 },
-      { id: "uefa-europa-league", size: 32, earned: 32 },
-      { id: "uefa-conference-league", size: 32, earned: 32 },
+      { id: "uefa-champions-league", size: 36, earned: 35 },
+      { id: "uefa-europa-league", size: 36, earned: 36 },
+      { id: "uefa-conference-league", size: 36, earned: 30 },
       { id: "conmebol-libertadores", size: 32, earned: 6 },
       { id: "conmebol-sudamericana", size: 32, earned: 2 },
       { id: "concacaf-champions-cup", size: 8, earned: 8 },
       { id: "afc-champions-league-elite", size: 16, earned: 16 },
     ]);
-    assert.deepEqual(
-      plan.summary.dropped.map((place) => `${place.league} ${place.position}`),
-      [
-        "dk-superliga 3",
-        "pl-ekstraklasa 3",
-        "se-allsvenskan 3",
-        "ro-liga-i 3",
-        "ie-premier-division 3",
-        "ie-premier-division 4",
-      ],
-    );
+    // With 36 places in each UEFA competition every place EA gives has room.
+    assert.deepEqual(plan.summary.dropped, []);
   });
 
-  it("starts each continental competition where no feeding season ends during it", () => {
-    // EA's own day for the main stage.
+  it("starts each continental competition on EA's day for its main stage", () => {
+    // The league phase or the groups, not the qualifying rounds in front of
+    // them. No season end is avoided: the engine draws an edition four weeks
+    // before this day from the last season each league has finished.
     assert.equal(start("uefa-champions-league"), "9-19");
     assert.equal(start("uefa-europa-league"), "9-27");
     assert.equal(start("uefa-conference-league"), "10-5");
     assert.equal(start("concacaf-champions-cup"), "4-4");
-    // Moved to finish a fortnight before Argentina's season does.
-    assert.equal(start("conmebol-libertadores"), "3-22");
-    assert.equal(start("conmebol-sudamericana"), "3-22");
-    // Moved to the gap between the Korean season's end and the Australian one's.
-    assert.equal(start("afc-champions-league-elite"), "10-25");
+    assert.equal(start("conmebol-libertadores"), "4-4");
+    assert.equal(start("conmebol-sudamericana"), "4-6");
+    assert.equal(start("afc-champions-league-elite"), "9-19");
   });
 
   it("fills the first Champions League from last season's tables", () => {
@@ -1201,14 +1229,14 @@ describe("planCompetitions on the FC 27 structure", async () => {
     assert.ok(!championsLeague.includes(clubAt("eng-premier-league", 6)));
     // The Europa League holder finished 12th and is in through that win.
     assert.ok(championsLeague.includes(clubAt("eng-premier-league", 12)));
-    // 31 clubs earn a place; the last goes to the best club outside any league.
+    // 35 clubs earn a place; the last goes to the best club outside any league.
     assert.equal(championsLeague.at(-1), "europe-outsider#01");
     assert.equal(championsLeague.filter((club) => club.includes("outsider")).length, 1);
   });
 
   it("seeds a continental field strongest first", () => {
     const reputation = (club) => input.clubs.get(club).reputation;
-    const earned = field("uefa-champions-league").slice(0, 31).map(reputation);
+    const earned = field("uefa-champions-league").slice(0, 35).map(reputation);
     assert.deepEqual(
       earned,
       [...earned].sort((a, b) => b - a),
