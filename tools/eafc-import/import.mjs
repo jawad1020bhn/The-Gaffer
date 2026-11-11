@@ -19,6 +19,7 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 
 import {
+  CONTINENTAL_LEAGUE,
   alternatePositions,
   attributesFor,
   cleanLeagueName,
@@ -29,6 +30,7 @@ import {
   footedness,
   hexColor,
   isSpecificPosition,
+  leagueCompetitionId,
   nationCode,
   playerId as buildPlayerId,
   playStyle,
@@ -50,6 +52,8 @@ import {
   selectPlayerClub,
 } from "./lib/corrections.mjs";
 import { verifySourceLock } from "./lib/source.mjs";
+import { readCompdata } from "./lib/compdata.mjs";
+import { planCompetitions } from "./lib/competitions.mjs";
 import {
   badgeAssetPath,
   competitionLogoAssetPath,
@@ -65,9 +69,6 @@ const PACKAGE_NAME = "EA FC 27 Clubs & Players";
 /** Leagues that are not competitions: EA's scratch, fantasy and placeholder rows. */
 const NON_COMPETITIONS =
   /^(international|international women|rest of world|rest of world women|otp generics|free agents league|create player league|creation zone league|youth squad league|fifa career saved teams|fifa twist|5v5 league)$/i;
-
-/** EA rows that are continental club competitions rather than domestic leagues. */
-const CONTINENTAL = /conmebol|libertadores|sudamericana|champions league|europa league/i;
 
 /**
  * City names for clubs whose name contains one. EA stores `cityid` only, and the
@@ -484,6 +485,7 @@ function parseArgs(argv) {
     else if (arg === "--badges") args.badges = next();
     else if (arg === "--competition-logos") args.competitionLogos = next();
     else if (arg === "--player-faces") args.playerFaces = next();
+    else if (arg === "--compdata") args.compdata = next();
     else if (arg === "--no-pack") args.pack = false;
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new Error(`unknown argument: ${arg}`);
@@ -493,6 +495,24 @@ function parseArgs(argv) {
 
 function tables(database, name) {
   return database.databases.flatMap((d) => d.tables).find((t) => t.name === name)?.records ?? [];
+}
+
+/**
+ * A division's clubs in the order they finished last season, best first.
+ *
+ * `leagueteamlinks` keeps, for each club, the league it played in last season
+ * and where it finished. The clubs that stayed are last season's table with the
+ * relegated ones taken out; the ones that came up or down are listed after
+ * them, in the order the database has them. Only the top of the list is read as
+ * a table (who qualified for Europe), and a newcomer is never there.
+ */
+function lastSeasonOrder(leagueId, links) {
+  const stayed = links
+    .filter((link) => link.prevleagueid === leagueId)
+    .sort(
+      (a, b) => a.previousyeartableposition - b.previousyeartableposition || a.teamid - b.teamid,
+    );
+  return [...stayed, ...links.filter((link) => link.prevleagueid !== leagueId)];
 }
 
 function countBy(records, keyFn) {
@@ -518,7 +538,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     console.log(
-      `usage: node tools/eafc-import/import.mjs --kit <eafc-db-kit> [--version "FC 27"] [--out mods/eafc-fc27]`,
+      `usage: node tools/eafc-import/import.mjs --kit <eafc-db-kit> [--version "FC 27"] [--out mods/eafc-fc27] [--compdata <career-mode compdata folder>]`,
     );
     return;
   }
@@ -536,6 +556,20 @@ async function main() {
     );
     corrections = supplement.clubs;
   }
+
+  // The cups and continental competitions are not in the database. EA describes
+  // them in its career-mode structure files, and FC 27's are committed next to
+  // this script; another version's can be passed in. Without them a package has
+  // its leagues and nothing else.
+  const compdataDir =
+    args.compdata ??
+    (args.version === "FC 27" ? path.join(import.meta.dirname, "data/fc27-compdata") : null);
+  const compdata = compdataDir ? await readCompdata(compdataDir) : null;
+  // What this package calls each of those competitions. An EA league id means
+  // the same competition in every version, so the one record serves them all.
+  const competitionNames = JSON.parse(
+    await readFile(new URL("./data/fc27-league-logo-crosswalk.json", import.meta.url), "utf8"),
+  ).authored;
 
   // A badge pack is optional and separate from the database: without it the
   // package is unchanged and every club falls back to a generated crest.
@@ -596,6 +630,7 @@ async function main() {
       "stadiums",
       "teamstadiumlinks",
       "formations",
+      "competition",
     ],
   });
   const localization = await kit.readTemplateDatabase({
@@ -615,6 +650,7 @@ async function main() {
   const stadiums = tables(main_, "stadiums");
   const formations = tables(main_, "formations");
   const teamStadiumLinks = tables(main_, "teamstadiumlinks");
+  const competitionRows = tables(main_, "competition");
   const strings = [
     ...tables(localization, "LanguageStrings1"),
     ...tables(localization, "LanguageStrings2"),
@@ -839,7 +875,10 @@ async function main() {
   // first link into an imported domestic league wins.
   const domesticTeamIds = new Set();
   for (const { league } of selectedLeagues) {
-    if (CONTINENTAL.test(String(league.leaguename ?? "")) || isRosterGroup(league.leaguename))
+    if (
+      CONTINENTAL_LEAGUE.test(String(league.leaguename ?? "")) ||
+      isRosterGroup(league.leaguename)
+    )
       continue;
     for (const link of leagueTeamLinks.filter((l) => l.leagueid === league.leagueid)) {
       domesticTeamIds.add(link.teamid);
@@ -908,38 +947,80 @@ async function main() {
     competitionEntities.push(entity);
   };
 
+  // The database's league rows: a country's divisions, and the rows EA files
+  // the clubs of a continental competition under.
+  const divisions = [];
+  const continentalRows = [];
   for (const { league, rawName } of selectedLeagues) {
-    const continental = CONTINENTAL.test(cleanLeagueName(rawName));
     const nation = nationById.get(league.countryid);
     const countryCode = nation ? nationCode(nation.isocountrycode, nation.nationname) : "";
-    const participants = leagueTeamLinks
-      .filter((l) => l.leagueid === league.leagueid)
-      .map((l) => teamIdOf.get(l.teamid))
-      .filter(Boolean);
-    if (participants.length < 2) continue;
+    const links = leagueTeamLinks.filter(
+      (l) => l.leagueid === league.leagueid && teamIdOf.has(l.teamid),
+    );
+    if (links.length < 2) continue;
     const leagueName = cleanLeagueName(rawName);
-    if (continental) {
-      const isSouthAmerica = /conmebol|libertadores|sudamericana/i.test(leagueName);
-      pushCompetition({
-        schema: "competition",
-        id: slugify(leagueName),
-        name: leagueName,
-        type: "ContinentalClub",
-        scope: "Continental",
-        regionId: regionFor(countryCode),
-        priority: /libertadores|champions/i.test(leagueName) ? 0 : 1,
-        format: { kind: "Knockout" },
-        participants: { explicit: participants },
-        seasonStartMonth: isSouthAmerica ? 2 : 8,
-      });
-      continue;
+    // The id comes from the one rule the league-logo crosswalk also uses, so a
+    // logo recorded for this EA league lands on this competition.
+    const id = leagueCompetitionId(rawName, nation);
+    const row = { league, id, leagueName, links };
+    if (CONTINENTAL_LEAGUE.test(leagueName)) continentalRows.push(row);
+    else if (countryCode) divisions.push({ ...row, nation, countryCode });
+  }
+
+  // Cups, continental competitions and who qualifies for them, from EA's
+  // career-mode structure files. See lib/competitions.mjs.
+  let plan = null;
+  if (compdata) {
+    const names = new Map(competitionNames.map((entry) => [entry.eaLeagueId, entry]));
+    for (const row of continentalRows) {
+      names.set(row.league.leagueid, { competitionId: row.id, name: row.leagueName });
     }
-    if (!countryCode) continue;
+    plan = planCompetitions({
+      compdata,
+      crosswalk: names,
+      leagues: divisions.map((division) => ({
+        id: division.id,
+        eaLeagueId: division.league.leagueid,
+        country: division.countryCode,
+        region: regionFor(division.countryCode),
+        tier: Math.max(0, (division.league.level ?? 1) - 1),
+        startMonth: seasonStartMonth(division.countryCode),
+        table: lastSeasonOrder(division.league.leagueid, division.links).map((link) =>
+          teamIdOf.get(link.teamid),
+        ),
+      })),
+      clubs: new Map(
+        teamEntities.map((team) => [
+          team.id,
+          {
+            region: regionFor(team.country),
+            // The engine ranks an authored club by the middle of its range,
+            // rounded down (`authored_reputations` in generator/package.rs).
+            reputation: Math.floor((team.reputationRange[0] + team.reputationRange[1]) / 2),
+          },
+        ]),
+      ),
+      pools: new Map(
+        continentalRows.map((row) => [
+          row.league.leagueid,
+          row.links.map((link) => teamIdOf.get(link.teamid)),
+        ]),
+      ),
+      holders: new Map(
+        competitionRows
+          .filter((row) => teamIdOf.has(row.competitionchampionid))
+          .map((row) => [row.competitionid, teamIdOf.get(row.competitionchampionid)]),
+      ),
+    });
+  }
+
+  for (const { league, id, leagueName, links, nation, countryCode } of divisions) {
     const label = countryLabelOf(leagueName, nation?.nationname);
     const stripped = label ? leagueName.slice(label.length).trim() : leagueName;
+    const berths = plan?.leagueBerths.get(id) ?? [];
     pushCompetition({
       schema: "competition",
-      id: `${countryCode.toLowerCase()}-${slugify(stripped || leagueName)}`,
+      id,
       name: stripped || leagueName,
       countryName: nation?.nationname ?? countryCode,
       type: "League",
@@ -947,62 +1028,16 @@ async function main() {
       countryId: countryCode,
       regionId: regionFor(countryCode),
       priority: Math.max(0, (league.level ?? 1) - 1),
-      format: { kind: "LeagueTable", legs: 2 },
-      participants: { explicit: participants },
+      format: { kind: "LeagueTable", legs: plan?.legs.get(id) ?? 2 },
+      participants: { explicit: links.map((link) => teamIdOf.get(link.teamid)) },
+      ...(berths.length > 0 ? { berths } : {}),
       seasonStartMonth: seasonStartMonth(countryCode),
     });
   }
-
-  // The two real European club competitions the EA database does not carry.
-  // Their fields are authored, not selected: `topByReputation` demands a
-  // single `country`, which a continent-wide cup cannot honestly give, so the
-  // strongest European clubs are named outright — ranked by the reputation
-  // this package gives them, which is the same midpoint the engine ranks
-  // authored reputations by.
-  const europeanClubs = teamEntities
-    .filter((team) => regionFor(team.country) === "europe")
-    .map((team) => ({
-      id: team.id,
-      reputation: Math.round((team.reputationRange[0] + team.reputationRange[1]) / 2),
-    }))
-    .sort((a, b) => b.reputation - a.reputation || a.id.localeCompare(b.id));
-  if (competitionIds.has("uefa-champions-league") === false && europeanClubs.length >= 64) {
-    pushCompetition({
-      schema: "competition",
-      id: "uefa-champions-league",
-      name: "UEFA Champions League",
-      type: "ContinentalClub",
-      scope: "Continental",
-      regionId: "europe",
-      priority: 0,
-      format: { kind: "Knockout" },
-      participants: { explicit: europeanClubs.slice(0, 32).map((club) => club.id) },
-      seasonStartMonth: 8,
-      logo: competitionLogosById.has("uefa-champions-league")
-        ? competitionLogoAssetPath(competitionLogosById.get("uefa-champions-league"))
-        : undefined,
-    });
-  }
-  if (competitionIds.has("uefa-europa-league") === false && europeanClubs.length >= 64) {
-    pushCompetition({
-      schema: "competition",
-      id: "uefa-europa-league",
-      name: "UEFA Europa League",
-      type: "ContinentalClub",
-      scope: "Continental",
-      regionId: "europe",
-      priority: 1,
-      format: { kind: "Knockout" },
-      participants: { explicit: europeanClubs.slice(32, 64).map((club) => club.id) },
-      seasonStartMonth: 8,
-      logo: competitionLogosById.has("uefa-europa-league")
-        ? competitionLogoAssetPath(competitionLogosById.get("uefa-europa-league"))
-        : undefined,
-    });
-  }
+  for (const competition of plan?.competitions ?? []) pushCompetition(competition);
 
   // Assign competition logos to every competition that has a matching entry
-  // in the logo pack (domestic leagues, CONMEBOL cups, and the two UEFA cups).
+  // in the logo pack.
   for (const competition of competitionEntities) {
     if (competition.logo === undefined && competitionLogosById.has(competition.id)) {
       competition.logo = competitionLogoAssetPath(competitionLogosById.get(competition.id));
@@ -1026,9 +1061,10 @@ async function main() {
     schema: "world",
     id: PACKAGE_ID,
     name: PACKAGE_NAME,
-    description:
-      "Clubs, players and leagues imported from the EA FC 27 database by tools/eafc-import. Unofficial; not affiliated with EA.",
-    version: "0.2.0",
+    description: `Clubs, players${
+      plan ? ", leagues, cups and continental competitions" : " and leagues"
+    } imported from the EA FC 27 database by tools/eafc-import. Unofficial; not affiliated with EA.`,
+    version: "0.6.0",
     author: "tools/eafc-import",
     license: "NOASSERTION",
     packageType: "database",
@@ -1127,6 +1163,30 @@ async function main() {
   );
   console.log(`  skipped leagues: ${skippedLeagues.length}`);
   for (const entry of skippedLeagues) console.log(`    - ${entry}`);
+  if (!plan) {
+    console.log(
+      "  no cups or continental competitions: they come from EA's career-mode structure files,\n" +
+        `  and none are recorded for ${args.version}. Pass the game's compdata folder with --compdata.`,
+    );
+    return;
+  }
+  const authored = (type) => plan.competitions.filter((entity) => entity.type === type);
+  console.log(`  domestic cups      ${authored("Cup").length}`);
+  console.log(`  continental        ${authored("ContinentalClub").length}`);
+  for (const { id, size, earned } of plan.summary.continental) {
+    const open = size - earned;
+    console.log(
+      `    - ${id}: ${earned} of ${size} places by league position or cup win` +
+        (open > 0 ? `, ${open} topped up` : ""),
+    );
+  }
+  if (plan.summary.dropped.length > 0) {
+    const places = plan.summary.dropped.map((place) => `${place.league} ${place.position}`);
+    console.log(`  EA league places with no room in a smaller field: ${places.join(", ")}`);
+  }
+  for (const entry of plan.summary.skipped) {
+    console.log(`  left out ${entry.code} (EA league ${entry.eaLeagueId}): ${entry.reason}`);
+  }
 }
 
 await main();

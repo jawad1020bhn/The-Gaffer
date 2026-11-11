@@ -13,6 +13,7 @@ import {
   formationName,
   hexColor,
   isSpecificPosition,
+  leagueCompetitionId,
   nationCode,
   parseNationRegions,
   playStyle,
@@ -170,6 +171,58 @@ describe("countryLabelOf", () => {
 
   it("returns null when the name carries no country", () => {
     assert.equal(countryLabelOf("CONMEBOL Libertadores", "Brazil"), null);
+  });
+});
+
+describe("leagueCompetitionId", () => {
+  const england = { isocountrycode: "GB", nationname: "England" };
+
+  it("gives a domestic league its country code and its name without the country", () => {
+    assert.equal(leagueCompetitionId("England Premier League (1)", england), "eng-premier-league");
+    assert.equal(
+      leagueCompetitionId("Germany 1. Bundesliga (1)", {
+        isocountrycode: "DE",
+        nationname: "Germany",
+      }),
+      "de-1-bundesliga",
+    );
+  });
+
+  it("takes off EA's own short label for a country", () => {
+    assert.equal(
+      leagueCompetitionId("USA Major League Soccer (1)", {
+        isocountrycode: "US",
+        nationname: "United States",
+      }),
+      "us-major-league-soccer",
+    );
+  });
+
+  it("keeps a word that only looks like the country", () => {
+    // "Saudi" is not the nation's name, so it stays part of the league's.
+    assert.equal(
+      leagueCompetitionId("Saudi Pro League (1)", {
+        isocountrycode: "SA",
+        nationname: "Saudi Arabia",
+      }),
+      "sa-saudi-pro-league",
+    );
+  });
+
+  it("names a continental cup by its own name alone", () => {
+    assert.equal(
+      leagueCompetitionId("CONMEBOL Libertadores", { isocountrycode: "", nationname: "CONMEBOL" }),
+      "conmebol-libertadores",
+    );
+    assert.equal(leagueCompetitionId("CONMEBOL Sudamericana", undefined), "conmebol-sudamericana");
+  });
+
+  it("has no id for a domestic league whose nation the database does not know", () => {
+    assert.equal(leagueCompetitionId("Somewhere League (1)", undefined), null);
+    assert.equal(
+      leagueCompetitionId("Somewhere League (1)", { isocountrycode: "", nationname: "Nowhere" }),
+      null,
+    );
   });
 });
 

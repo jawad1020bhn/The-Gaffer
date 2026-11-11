@@ -748,9 +748,13 @@ export interface LeagueData {
     group_best_third_qualifiers?: number;
     group_qualifiers_per_group?: number;
     group_stage_legs?: number;
+    /** When above zero the groups are a league phase: matches each club plays in its group. */
+    group_stage_rounds?: number;
     group_matchday_gap_days?: number;
     knockout_matches_per_day?: number;
     knockout_round_gap_days?: number;
+    /** Cups only: the competitions whose clubs make up the field each season. */
+    entrants_from?: string[];
   };
   fixtures: FixtureData[];
   standings: StandingData[];
@@ -771,6 +775,12 @@ export interface LeagueData {
   transfer_rumours?: TransferRumourData[];
   priority?: number;
   name_key?: string;
+  /**
+   * Where the competition's logo is, as its package names it (`<package id>/assets/...`).
+   * Absent for a competition with no logo of its own: one the game generated, or one in a
+   * career saved before logos were kept.
+   */
+  logo?: string | null;
 }
 
 export interface WorldCupChampionData {

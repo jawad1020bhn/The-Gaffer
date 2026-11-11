@@ -479,7 +479,7 @@ Competitions are the most complex entity. A competition defines a league, cup, o
 | `calendar.division.phase` | enum | `"annual"` | `"annual"`, `"opening"` or `"closing"`. Opening/closing declarations require `windowEnd`. |
 | `calendar.windowEnd` | object | absent | Optional valid `{ "month": 6, "day": 30 }` end date. An end before the opener belongs to the following year. |
 | `nameKey` | string or null | `null` | i18n key for a translated competition name. |
-| `logo` | string or null | `null` | Relative path to the competition's badge image inside the package. |
+| `logo` | string or null | `null` | Relative path to the competition's logo image inside the package. Example: `"assets/competitions/eng-premier-league.png"`. A career draws it beside the competition's name on the Tournaments and Schedule screens and in the competition list at team selection; a competition without one gets a trophy. The image is scaled to fit a square box whatever its shape, on a dark surface, so use a transparent background and artwork that reads on dark. A career records the path when it is created: a logo added to a package later shows in new careers only. |
 
 ### Competition Types
 
@@ -517,6 +517,28 @@ Competitions are the most complex entity. A competition defines a league, cup, o
 | `groupSize` | integer | `4` | _(GroupAndKnockout only)_ Maximum clubs per group. Uneven fields are balanced across groups. |
 | `qualifiersPerGroup` | integer | `2` | _(GroupAndKnockout only)_ Clubs advancing from each group. |
 | `bestThirdQualifiers` | integer | `0` | _(GroupAndKnockout only)_ Best third-placed teams that also advance (like the 2026 World Cup format). |
+| `rounds` | integer | — | _(GroupAndKnockout only)_ A league phase: the matches each club plays in its group, in place of `legs` round robins. See below. |
+
+**League phase.** With `rounds` set, a club does not meet everyone in its group.
+It plays `rounds` matches, each against a different club and half of them at
+home, and its opponents come from every part of the field as listed (strongest
+first for a seeded field). One group the size of the field is one table every
+club is in:
+
+```json
+"format": {
+  "kind": "GroupAndKnockout",
+  "groupSize": 36,
+  "rounds": 8,
+  "qualifiersPerGroup": 24
+}
+```
+
+The 24 that go on are not a power of two, so the best eight sit the first
+knockout round out; ninth plays 24th, tenth plays 23rd and so on, and each of
+the eight is then at home to one of the winners. `rounds` must be at least 1
+and below `groupSize`, and cannot be combined with `legs` above 1. A group with
+an odd number of clubs gives each of them one matchday off.
 
 ### Participants
 
@@ -554,6 +576,17 @@ Additional selector fields:
 |-------|-------------|
 | `excludeCompetitions` | Array of competition ids whose participants are excluded (e.g. to fill a second division without repeating first division clubs) |
 
+**A cup that follows its divisions:**
+```json
+"participants": {
+  "explicit": ["team-id-1", "team-id-2", "team-id-3", "team-id-4"],
+  "entrantsFrom": ["first-division", "second-division"]
+}
+```
+`entrantsFrom` is optional, for a `Knockout` or `GroupAndKnockout` cup of a country or region, and goes beside `explicit` or `selector`, which give the first season's field. It lists other competitions of the file, most senior first, each once. Each time the cup is renewed its field is rebuilt from the clubs those competitions then have, so it follows promotion and relegation: the first competition's clubs come first, each competition's in the order they last finished.
+
+A domestic or regional cup is drawn again each season, with or without `entrantsFrom`. In a `Knockout`, the byes a field that is not a power of two needs go to the clubs at the head of that order, the rest are paired by lot, and each later round is drawn by lot from the winners and the clubs that had a bye. A `GroupAndKnockout` cup seeds its groups from the order as it is. A continental competition keeps the bracket its seeding gives.
+
 ### Berths
 
 Berths define automatic qualification spots that a competition awards to other competitions. For example, a league's top two finishers qualify for a continental cup.
@@ -563,6 +596,10 @@ When the target is a domestic `LeagueTable`, a primary `positionRange` berth als
 The target is left out of the linear adjacent-tier swap so sibling regional groups do not promote into each other. When two or more leagues send `positionRange` berths to the same target they are treated as one sibling group and **all** of them leave the ladder — otherwise which group swapped with the tier below would depend on the order the competitions happen to be declared in. A tier below such a group therefore has no automatic promotion path: give it `positionRange` berths into the groups if its clubs should be able to go up. A league that is the *sole* `positionRange` feeder into a target keeps its ordinary ladder edge, so a plain two-tier pyramid can be written as data without losing promotion and relegation with the tier beneath it.
 
 `CupWinner`, `PlayoffWinner`, and `fallbackTo` targets do not take a league out of that ladder. `fallbackTo` is a continental cascade only — it never awards a domestic promotion place, because a club that misses its primary target simply stays in its own league.
+
+When the target is a domestic or regional cup, it is a super cup: each time it is renewed its field is the holders of the cups that award it a `cupWinner` berth, then the clubs in the league places that award it a `positionRange` berth, then the next clubs down those leagues' tables, each club once, up to the number of clubs it had. So a league's `positionRange` 1–1 and a cup's `cupWinner` into a cup of two make the champion against the cup's holder, and the league's runner-up when one club is both. A cup renewed this way, or one with `entrantsFrom`, is renewed after its country's clubs have gone up and down: at the rollover if the country's season ends there, otherwise four weeks before its own first match.
+
+When the target is a continental competition, its berths decide its field each time it is renewed: four weeks before its first match (`seasonStartMonth` and `seasonStartDay`), or at the rollover if that is nearer, if it has no start date, or if it has never been drawn. Competitions linked by berths (fed by the same competition, named by a `fallbackTo`, or one feeding the other) are renewed on the same day, once every one of them has finished. A league's places are those of the last season it finished, so a league that has started its next season by then is read from its final table and not from the one it is playing. A club takes the most senior competition (lowest `priority`) that any of its berths, or their `fallbackTo`, earns it, and no other. A field is its qualifiers ranked by reputation and cut to the size of the field it replaces (four at least). A field left short is topped up from the clubs of its regions (`requiredRegionIds`, or every region in the world when it names none) that have no continental place: the clubs that play in no league first, then the rest, each by reputation. Fields are filled most senior first, and a club that tops one up is not offered to the next. A world can therefore keep clubs for continental football alone, in no league: give the competition fewer berths than places and they take the rest.
 
 Regional groups feeding one Central League:
 

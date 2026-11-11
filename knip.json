@@ -8,7 +8,7 @@
   ],
   "project": ["src/**/*.{ts,tsx}", "scripts/**/*.mjs", ".github/scripts/**/*.mjs"],
   "ignore": ["src/store/generated/**"],
-  "ignoreDependencies": ["@fontsource/.*", "tailwindcss"],
+  "ignoreDependencies": ["@fontsource/.*", "tailwindcss", "puppeteer", "puppeteer-core"],
   "ignoreBinaries": ["google-chrome"],
   "ignoreExportsUsedInFile": true
 }

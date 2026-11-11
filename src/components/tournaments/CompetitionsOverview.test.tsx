@@ -1,7 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
-import type { FixtureData } from "../../store/gameStore";
-import { getCompetitionStatus } from "./CompetitionsOverview";
+import type { FixtureData, LeagueData } from "../../store/gameStore";
+import CompetitionsOverview, { getCompetitionStatus } from "./CompetitionsOverview";
+
+vi.mock("react-i18next", async () => {
+  const { useRef } = await import("react");
+  return {
+    useTranslation: () => {
+      useRef(null);
+      return { t: (key: string) => key };
+    },
+  };
+});
 
 function fixture(
   status: "Scheduled" | "Completed",
@@ -111,5 +122,39 @@ describe("getCompetitionStatus", () => {
         standings: [],
       } as never),
     ).toBe("notStarted");
+  });
+});
+
+describe("CompetitionsOverview", () => {
+  const competition = (id: string, name: string, logo?: string): LeagueData => ({
+    id,
+    name,
+    season: 2027,
+    fixtures: [],
+    standings: [],
+    logo,
+  });
+
+  it("draws each competition's logo in its row, and a trophy where it has none", () => {
+    render(
+      <CompetitionsOverview
+        competitions={[
+          competition("eng-premier-league", "Premier League", "/assets/competitions/premier.png"),
+          // The game generates this one itself, so no package gave it a logo.
+          competition("cup-1", "National Cup"),
+        ]}
+        userTeamId={null}
+        onSelect={vi.fn()}
+      />,
+    );
+
+    const league = screen.getByRole("button", { name: /Premier League/ });
+    expect(league.querySelector("img")).toHaveAttribute("src", "/assets/competitions/premier.png");
+    expect(league.querySelector("svg")).not.toBeInTheDocument();
+
+    // Still a mark, so the names in a mixed list start on one line.
+    const cup = screen.getByRole("button", { name: /National Cup/ });
+    expect(cup.querySelector("img")).not.toBeInTheDocument();
+    expect(cup.querySelector("svg")).toBeInTheDocument();
   });
 });

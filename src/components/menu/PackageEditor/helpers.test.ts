@@ -4,6 +4,7 @@ import { LOCALE_FILES, localeValue } from "../../../i18n/i18nTestHelpers";
 import {
   PLAY_STYLES,
   buildParticipantSpec,
+  keepEntrantsFrom,
   normalizePlayStyle,
   emptyCompetition,
   emptyConfederation,
@@ -164,6 +165,27 @@ describe("parsePoolText", () => {
 
   it("returns empty array for whitespace-only input", () => {
     expect(parsePoolText("   \n   ")).toEqual([]);
+  });
+});
+
+describe("keepEntrantsFrom", () => {
+  it("carries the divisions a cup's clubs come from onto the edited participants", () => {
+    // Given a cup that names its divisions, when its first-season field is edited,
+    // then the divisions are still on it: the form has no control that could drop them.
+    const current = { explicit: ["team-a", "team-b"], entrantsFrom: ["division-one"] };
+    expect(keepEntrantsFrom({ explicit: ["team-a"] }, current)).toEqual({
+      explicit: ["team-a"],
+      entrantsFrom: ["division-one"],
+    });
+  });
+
+  it("adds nothing to a competition that names no divisions", () => {
+    expect(keepEntrantsFrom({ explicit: ["team-a"] }, { explicit: [] })).toEqual({
+      explicit: ["team-a"],
+    });
+    expect(keepEntrantsFrom({ explicit: ["team-a"] }, { explicit: [], entrantsFrom: [] })).toEqual({
+      explicit: ["team-a"],
+    });
   });
 });
 

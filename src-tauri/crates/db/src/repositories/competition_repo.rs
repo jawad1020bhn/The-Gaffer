@@ -85,8 +85,8 @@ pub fn replace_competitions(
             .map_err(|_| GAME_PERSISTENCE_WRITE_ERROR.to_string())?;
 
         conn.execute(
-            "INSERT INTO competitions (id, name, kind, scope, season, region_id, country_id, required_region_ids_json, participant_ids_json, rules_json, fixtures_json, standings_json, groups_json, knockout_rounds_json, transfer_log_json, transfer_rumours_json, priority, berths_json, season_start_month, season_start_day, calendar_json, name_key)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22)",
+            "INSERT INTO competitions (id, name, kind, scope, season, region_id, country_id, required_region_ids_json, participant_ids_json, rules_json, fixtures_json, standings_json, groups_json, knockout_rounds_json, transfer_log_json, transfer_rumours_json, priority, berths_json, season_start_month, season_start_day, calendar_json, name_key, logo)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23)",
             params![
                 competition.id,
                 competition.name,
@@ -110,6 +110,7 @@ pub fn replace_competitions(
                 competition.season_start_day as i64,
                 calendar_json,
                 competition.name_key,
+                competition.logo,
             ],
         )
         .map_err(|_| GAME_PERSISTENCE_WRITE_ERROR.to_string())?;
@@ -120,7 +121,7 @@ pub fn replace_competitions(
 
 pub fn load_competitions(conn: &Connection) -> Result<Vec<CompetitionState>, String> {
     let mut stmt = match conn.prepare(
-        "SELECT id, name, kind, scope, season, region_id, country_id, required_region_ids_json, participant_ids_json, rules_json, fixtures_json, standings_json, groups_json, knockout_rounds_json, transfer_log_json, transfer_rumours_json, priority, berths_json, season_start_month, season_start_day, calendar_json, name_key
+        "SELECT id, name, kind, scope, season, region_id, country_id, required_region_ids_json, participant_ids_json, rules_json, fixtures_json, standings_json, groups_json, knockout_rounds_json, transfer_log_json, transfer_rumours_json, priority, berths_json, season_start_month, season_start_day, calendar_json, name_key, logo
          FROM competitions
          ORDER BY priority ASC, season DESC, name ASC",
     ) {
@@ -211,6 +212,7 @@ pub fn load_competitions(conn: &Connection) -> Result<Vec<CompetitionState>, Str
                 season_start_month: row.get::<_, i64>(18).unwrap_or(8) as u8,
                 season_start_day: row.get::<_, i64>(19).unwrap_or(1) as u8,
                 name_key: row.get(21)?,
+                logo: row.get(22)?,
             })
         })
         .map_err(|_| GAME_PERSISTENCE_LOAD_ERROR.to_string())?;
@@ -322,6 +324,39 @@ mod tests {
         replace_competitions(db.conn(), &[competition_named("pkg-league", None)]).unwrap();
         assert_eq!(stored_name_key(&db, "pkg-league"), None);
         assert_eq!(load_competitions(db.conn()).unwrap()[0].name_key, None);
+    }
+
+    fn stored_logo(db: &GameDatabase, id: &str) -> Option<String> {
+        db.conn()
+            .query_row("SELECT logo FROM competitions WHERE id = ?1", [id], |row| {
+                row.get(0)
+            })
+            .expect("the competitions table must have a logo column")
+    }
+
+    /// Given a package competition with a logo and a generated cup without one, when the
+    /// competitions are saved, then the .db holds the path, a reload returns it, and the cup
+    /// stays without.
+    #[test]
+    fn a_competition_keeps_its_logo_through_a_save_and_a_load() {
+        let db = GameDatabase::open_in_memory().unwrap();
+        let logo = "eafc-fc27/assets/competitions/pl.png";
+        let mut league = competition_named("pl", None);
+        league.logo = Some(logo.to_owned());
+        let cup = competition_named("cup-1", Some("tournaments.competitions.nationalCup"));
+        replace_competitions(db.conn(), &[league, cup]).unwrap();
+
+        assert_eq!(stored_logo(&db, "pl").as_deref(), Some(logo));
+        assert_eq!(stored_logo(&db, "cup-1"), None);
+        let loaded = load_competitions(db.conn()).unwrap();
+        let logo_of = |id: &str| {
+            loaded
+                .iter()
+                .find(|c| c.id == id)
+                .and_then(|c| c.logo.clone())
+        };
+        assert_eq!(logo_of("pl").as_deref(), Some(logo));
+        assert_eq!(logo_of("cup-1"), None);
     }
 
     /// Given World Cup competitions with their live keys, when saved and loaded, then each keeps its key.

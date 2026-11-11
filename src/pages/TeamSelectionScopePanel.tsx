@@ -4,7 +4,7 @@ import type { LeagueData, WorldRegionData } from "../store/gameStore";
 import { countryName } from "../lib/countries";
 import { competitionDisplayName } from "../lib/competitionName";
 import { buildRegionLabel } from "../lib/teamRegions";
-import { Badge, Card, CardBody, Checkbox, Select } from "../components/ui";
+import { Badge, Card, CardBody, Checkbox, CompetitionLogo, Select } from "../components/ui";
 import { ChevronRight, Globe, Trophy } from "lucide-react";
 import {
   competitionKindLabel,
@@ -205,7 +205,11 @@ export default function TeamSelectionScopePanel({
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="flex min-w-0 items-center gap-2">
-                        <Trophy className="h-4 w-4 shrink-0 text-warning" />
+                        <CompetitionLogo
+                          logo={competition.logo}
+                          className="h-6 w-6"
+                          fallback={<Trophy className="h-4 w-4 shrink-0 text-warning" />}
+                        />
                         <span className="truncate">{compName(competition)}</span>
                       </span>
                       <span

@@ -20,6 +20,12 @@ group_best_third_qualifiers: number,
  */
 group_stage_legs: number, 
 /**
+ * Group-and-knockout only. When not zero the groups are a league phase: each club plays
+ * this many matches, each against a different club of its group and half of them at home,
+ * in place of whole round robins.
+ */
+group_stage_rounds: number, 
+/**
  * Days between group-stage matchdays.
  */
 group_matchday_gap_days: number, 
@@ -32,4 +38,10 @@ knockout_round_gap_days: number,
  * Defaults to 1 (each match on its own day). Set higher for large tournaments
  * like the World Cup where multiple matches happen on the same day.
  */
-knockout_matches_per_day: number, };
+knockout_matches_per_day: number, 
+/**
+ * Cups only: the competitions whose clubs make up the field, most senior first. When it is
+ * not empty the field is rebuilt from their clubs each time the cup is renewed, so it
+ * follows promotion and relegation; empty keeps the field the cup had.
+ */
+entrants_from: Array<string>, };

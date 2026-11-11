@@ -73,6 +73,52 @@ function dxt5Dds(r, g, b, a) {
   return Buffer.concat([header, block]);
 }
 
+/**
+ * One DXT5 block from its parts: two alpha endpoints and sixteen 3-bit alpha
+ * indices, then two RGB565 endpoints and sixteen 2-bit colour indices. Texels
+ * run left to right, top to bottom, lowest bits first.
+ */
+function dxt5Block({ alpha, alphaIndices, colours, colourIndices }) {
+  const block = Buffer.alloc(16);
+  block[0] = alpha[0];
+  block[1] = alpha[1];
+  let alphaBits = 0n;
+  for (const [texel, index] of alphaIndices.entries()) {
+    alphaBits |= BigInt(index) << BigInt(texel * 3);
+  }
+  for (let byte = 0; byte < 6; byte += 1) {
+    block[2 + byte] = Number((alphaBits >> BigInt(byte * 8)) & 0xffn);
+  }
+  block.writeUInt16LE(colours[0], 8);
+  block.writeUInt16LE(colours[1], 10);
+  let colourBits = 0;
+  for (const [texel, index] of colourIndices.entries()) {
+    colourBits = (colourBits | (index << (texel * 2))) >>> 0;
+  }
+  block.writeUInt32LE(colourBits, 12);
+  return block;
+}
+
+/** A DXT5 image of any size from its blocks, in row-major block order. */
+function dxt5Image(width, height, blocks) {
+  const header = Buffer.alloc(128);
+  header.write("DDS ", 0, "latin1");
+  header.writeUInt32LE(124, 4);
+  header.writeUInt32LE(0x1 | 0x2 | 0x4 | 0x1000, 8);
+  header.writeUInt32LE(height, 12);
+  header.writeUInt32LE(width, 16);
+  header.writeUInt32LE(0x1, 76);
+  header.writeUInt32LE(0x4, 80); // pfFlags: FOURCC
+  header.write("DXT5", 84, "latin1");
+  return Buffer.concat([header, ...blocks]);
+}
+
+const every = (value) => Array.from({ length: 16 }, () => value);
+const RGB565_WHITE = 0xffff;
+const RGB565_BLACK = 0x0000;
+const RGB565_RED = 0xf800;
+const RGB565_BLUE = 0x001f;
+
 const pixelAt = (image, x, y) => {
   const offset = (y * image.width + x) * 4;
   return [...image.pixels.subarray(offset, offset + 4)];
@@ -109,6 +155,127 @@ describe("decodeDds", () => {
     assert.ok(g >= 96, `green ${g}`);
     assert.ok(b >= 48, `blue ${b}`);
     assert.equal(a, 255);
+  });
+
+  it("steps a DXT5 block's alpha through six shades between its endpoints", () => {
+    // The first endpoint being the larger selects the eight-value palette:
+    // both endpoints, then six evenly spaced shades from the first to the second.
+    const image = decodeDds(
+      dxt5Image(4, 4, [
+        dxt5Block({
+          alpha: [255, 0],
+          alphaIndices: [0, 1, 2, 3, 4, 5, 6, 7, ...Array.from({ length: 8 }, () => 0)],
+          colours: [RGB565_WHITE, RGB565_WHITE],
+          colourIndices: every(0),
+        }),
+      ]),
+    );
+    const alphas = Array.from(
+      { length: 8 },
+      (_, texel) => pixelAt(image, texel % 4, texel >> 2)[3],
+    );
+    assert.deepEqual(alphas, [255, 0, 219, 182, 146, 109, 73, 36]);
+  });
+
+  it("keeps a DXT5 block's fully clear and fully solid alpha steps", () => {
+    // The first endpoint not being the larger selects four shades between the
+    // endpoints plus explicit 0 and 255: how a block holds a hard edge and a
+    // soft one at once.
+    const image = decodeDds(
+      dxt5Image(4, 4, [
+        dxt5Block({
+          alpha: [0, 255],
+          alphaIndices: [0, 1, 2, 3, 4, 5, 6, 7, ...Array.from({ length: 8 }, () => 0)],
+          colours: [RGB565_WHITE, RGB565_WHITE],
+          colourIndices: every(0),
+        }),
+      ]),
+    );
+    const alphas = Array.from(
+      { length: 8 },
+      (_, texel) => pixelAt(image, texel % 4, texel >> 2)[3],
+    );
+    assert.deepEqual(alphas, [0, 255, 51, 102, 153, 204, 0, 255]);
+  });
+
+  it("blends a DXT5 block's two colours in thirds", () => {
+    const image = decodeDds(
+      dxt5Image(4, 4, [
+        dxt5Block({
+          alpha: [255, 255],
+          alphaIndices: every(0),
+          colours: [RGB565_WHITE, RGB565_BLACK],
+          colourIndices: [0, 1, 2, 3, ...Array.from({ length: 12 }, () => 0)],
+        }),
+      ]),
+    );
+    assert.deepEqual(pixelAt(image, 0, 0), [255, 255, 255, 255]);
+    assert.deepEqual(pixelAt(image, 1, 0), [0, 0, 0, 255]);
+    assert.deepEqual(pixelAt(image, 2, 0), [170, 170, 170, 255]);
+    assert.deepEqual(pixelAt(image, 3, 0), [85, 85, 85, 255]);
+  });
+
+  it("lays DXT5 blocks out four texels at a time, row by row", () => {
+    // Two rows of two blocks, each a flat colour and its own alpha, so a block
+    // landing in the wrong place or a texel in the wrong row shows up at once.
+    const flat = (colour, alpha) =>
+      dxt5Block({
+        alpha: [alpha, alpha],
+        alphaIndices: every(0),
+        colours: [colour, colour],
+        colourIndices: every(0),
+      });
+    const image = decodeDds(
+      dxt5Image(8, 8, [
+        flat(RGB565_RED, 255),
+        flat(RGB565_BLUE, 200),
+        flat(RGB565_WHITE, 100),
+        flat(RGB565_BLACK, 50),
+      ]),
+    );
+    assert.deepEqual(pixelAt(image, 3, 3), [255, 0, 0, 255]);
+    assert.deepEqual(pixelAt(image, 4, 3), [0, 0, 255, 200]);
+    assert.deepEqual(pixelAt(image, 3, 4), [255, 255, 255, 100]);
+    assert.deepEqual(pixelAt(image, 4, 4), [0, 0, 0, 50]);
+  });
+
+  it("drops the DXT5 texels that fall outside a size that is not a multiple of four", () => {
+    // A 6×5 image still stores 2×2 whole blocks; only the texels inside the
+    // image belong to it.
+    const flat = (colour) =>
+      dxt5Block({
+        alpha: [255, 255],
+        alphaIndices: every(0),
+        colours: [colour, colour],
+        colourIndices: every(0),
+      });
+    const image = decodeDds(
+      dxt5Image(6, 5, [
+        flat(RGB565_RED),
+        flat(RGB565_BLUE),
+        flat(RGB565_WHITE),
+        flat(RGB565_BLACK),
+      ]),
+    );
+    assert.equal(image.width, 6);
+    assert.equal(image.height, 5);
+    assert.equal(image.pixels.length, 6 * 5 * 4);
+    assert.deepEqual(pixelAt(image, 5, 3), [0, 0, 255, 255]);
+    assert.deepEqual(pixelAt(image, 0, 4), [255, 255, 255, 255]);
+    assert.deepEqual(pixelAt(image, 5, 4), [0, 0, 0, 255]);
+  });
+
+  it("refuses DXT5 data that stops short", () => {
+    const whole = dxt5Image(8, 4, [
+      dxt5Block({
+        alpha: [255, 255],
+        alphaIndices: every(0),
+        colours: [RGB565_RED, RGB565_RED],
+        colourIndices: every(0),
+      }),
+    ]);
+    // Eight texels wide needs two blocks; only one is there.
+    assert.throws(() => decodeDds(whole), /truncated/);
   });
 
   it("keeps transparency, which is what makes a crest a crest", () => {

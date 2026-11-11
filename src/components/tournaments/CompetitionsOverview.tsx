@@ -3,7 +3,7 @@ import { Trophy, Users } from "lucide-react";
 import type { LeagueData } from "../../store/types";
 import { getCompetitiveFixtures } from "../../lib/fixtures";
 import { competitionDisplayName } from "../../lib/competitionName";
-import { Card, CardHeader, CardBody, Badge } from "../ui";
+import { Card, CardHeader, CardBody, Badge, CompetitionLogo } from "../ui";
 
 interface Props {
   competitions: LeagueData[];
@@ -84,6 +84,7 @@ export default function CompetitionsOverview({ competitions, userTeamId, onSelec
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-hover text-left transition-colors"
                     data-testid={`competitions-overview-row-${comp.id}`}
                   >
+                    <CompetitionLogo logo={comp.logo} className="h-8 w-8" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-body font-semibold text-fg truncate">

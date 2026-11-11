@@ -9,9 +9,13 @@ use domain::league::{BerthRule, CompetitionFormat, League};
 
 use crate::world::ladder::is_ladder_table;
 
-/// Apply promotion/relegation within each domestic pyramid. A pyramid is the
-/// set of league-table competitions sharing a country, ordered by `priority`
+/// Apply promotion/relegation within each domestic pyramid of the countries `settles` names. A
+/// pyramid is the set of league-table competitions sharing a country, ordered by `priority`
 /// (lowest priority = highest division).
+///
+/// A country is settled when its season is: at the rollover, or on a day of its own if it was
+/// still playing then (see `end_of_season::renewal`). The berths that take a tier out of the
+/// ladder are read from every competition, whichever countries are settled.
 ///
 /// Competitions that are the *primary* `PositionRange` target of an incoming
 /// berth are excluded from the linear adjacent-tier swap — both as a source
@@ -27,7 +31,10 @@ use crate::world::ladder::is_ladder_table;
 /// first division carries one, so counting those would empty every ladder.
 /// `CupWinner`, `PlayoffWinner`, and `fallback_to` targets stay
 /// in the ladder (play-offs are Phase C.3b; fallbacks are continental).
-pub(crate) fn apply_pyramid_promotion_relegation(competitions: &mut [League]) {
+pub(crate) fn apply_pyramid_promotion_relegation_in(
+    competitions: &mut [League],
+    settles: impl Fn(&str) -> bool,
+) {
     use std::collections::{BTreeMap, HashMap, HashSet};
 
     let berth_targets: HashSet<&str> = competitions
@@ -92,7 +99,9 @@ pub(crate) fn apply_pyramid_promotion_relegation(competitions: &mut [League]) {
         if !is_ladder_table(competition) {
             continue;
         }
-        if let Some(country) = &competition.country_id {
+        if let Some(country) = &competition.country_id
+            && settles(country)
+        {
             tiers_by_country
                 .entry(country.clone())
                 .or_default()
@@ -233,6 +242,12 @@ fn apply_linear_chain(competitions: &mut [League], indices: &[usize]) {
     for (slot, &index) in indices.iter().enumerate() {
         competitions[index].participant_ids = divisions[slot].participant_ids.clone();
     }
+}
+
+/// Every country at once, as the tests of the ladder ask for it.
+#[cfg(test)]
+pub(crate) fn apply_pyramid_promotion_relegation(competitions: &mut [League]) {
+    apply_pyramid_promotion_relegation_in(competitions, |_| true);
 }
 
 #[cfg(test)]

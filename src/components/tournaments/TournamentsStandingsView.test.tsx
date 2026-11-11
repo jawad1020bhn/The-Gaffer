@@ -139,6 +139,22 @@ describe("TournamentsStandingsView", () => {
     expect(screen.queryByTestId("tournaments-standing-team-1")).toBeNull();
   });
 
+  it("heads a league's table with the competition's logo", () => {
+    renderView({ league: { ...league, logo: "/assets/competitions/premier.png" } });
+
+    const heading = screen.getByRole("heading", { name: /Premier/ });
+    expect(heading.querySelector("img")).toHaveAttribute("src", "/assets/competitions/premier.png");
+    expect(heading.querySelector("svg")).not.toBeInTheDocument();
+  });
+
+  it("heads the table of a competition without a logo with a trophy", () => {
+    renderView();
+
+    const heading = screen.getByRole("heading", { name: /Premier/ });
+    expect(heading.querySelector("img")).not.toBeInTheDocument();
+    expect(heading.querySelector("svg")).toBeInTheDocument();
+  });
+
   it("explains the promotion and relegation marks when a league has them", () => {
     renderView({ zones: { promotionSlots: 1, relegationSlots: 1 } });
 

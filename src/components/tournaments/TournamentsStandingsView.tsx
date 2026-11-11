@@ -8,7 +8,7 @@ import TournamentsPreseasonNote from "./TournamentsPreseasonNote";
 import { localizedRoundName } from "./TournamentsTab.helpers";
 import type { TournamentsTeamLookup } from "./teamLookup";
 import { competitionDisplayName } from "../../lib/competitionName";
-import { Card, CardBody } from "../ui";
+import { Card, CardBody, CompetitionLogo } from "../ui";
 import type { LeagueData, StandingData } from "../../store/gameStore";
 
 type Group = NonNullable<LeagueData["groups"]>[number];
@@ -18,6 +18,8 @@ interface TournamentsStandingsViewProps {
   league: LeagueData;
   standings: StandingData[];
   groups: Group[];
+  /** The groups are a league phase: see `rules.group_stage_rounds`. */
+  leaguePhase?: boolean;
   knockoutRounds: KnockoutRound[];
   isKnockout: boolean;
   isPreseason: boolean;
@@ -35,6 +37,7 @@ export default function TournamentsStandingsView({
   league,
   standings,
   groups,
+  leaguePhase = false,
   knockoutRounds,
   isKnockout,
   isPreseason,
@@ -48,7 +51,12 @@ export default function TournamentsStandingsView({
       <CardBody className="p-0">
         <div className="grid grid-cols-1 md:grid-cols-2">
           {groups.map((group) => (
-            <TournamentsGroupTable key={group.id} group={group} teams={teams} />
+            <TournamentsGroupTable
+              key={group.id}
+              group={group}
+              teams={teams}
+              leaguePhase={leaguePhase}
+            />
           ))}
         </div>
       </CardBody>
@@ -107,7 +115,11 @@ export default function TournamentsStandingsView({
     <Card>
       <div className="p-5 border-b border-line bg-panel rounded-t-xl">
         <h3 className="text-lead font-heading font-bold text-fg flex items-center gap-2 uppercase tracking-label">
-          <Trophy className="text-warning w-5 h-5" />
+          <CompetitionLogo
+            logo={league.logo}
+            className="h-7 w-7"
+            fallback={<Trophy className="text-warning w-5 h-5" />}
+          />
           {competitionDisplayName(league, t)} — {t("schedule.season", { number: league.season })}
         </h3>
       </div>

@@ -31,6 +31,12 @@ season_start_day: number,
  */
 name_key?: string | null, 
 /**
+ * Path of the competition's logo, as its package names it once the package is loaded
+ * (`<package id>/assets/...`). `None` when the package gave none, for a competition the
+ * game generates itself, and in a save written before logos were stored.
+ */
+logo?: string | null, 
+/**
  * Durable authoring identity and edition provenance. Absent in legacy saves.
  */
 calendar: CalendarMetadata | null, };

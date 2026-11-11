@@ -14,6 +14,10 @@ pub struct GroupStageConfig {
     pub group_size: u32,
     /// Round-robin legs within each group (2 = home and away).
     pub legs: u8,
+    /// When not zero, a league phase in place of round robins: the matches each club plays in
+    /// its group, each against a different opponent. Mirrors
+    /// `CompetitionRules::group_stage_rounds`.
+    pub rounds: u32,
     /// Days between group matchdays.
     pub matchday_gap_days: i64,
     /// Teams advancing from each group.
@@ -38,6 +42,7 @@ impl Default for GroupStageConfig {
         Self {
             group_size: rules.group_size,
             legs: rules.group_stage_legs,
+            rounds: rules.group_stage_rounds,
             matchday_gap_days: i64::from(rules.group_matchday_gap_days),
             qualifiers_per_group: rules.group_qualifiers_per_group,
             best_third_qualifiers: rules.group_best_third_qualifiers,
@@ -221,9 +226,11 @@ fn build_group_cup(
         group_qualifiers_per_group: config.qualifiers_per_group,
         group_best_third_qualifiers: config.best_third_qualifiers,
         group_stage_legs: config.legs,
+        group_stage_rounds: config.rounds,
         group_matchday_gap_days: config.matchday_gap_days.max(1) as u32,
         knockout_round_gap_days: config.knockout_round_gap_days,
         knockout_matches_per_day: config.knockout_matches_per_day,
+        entrants_from: Vec::new(),
     };
     cup.standings.clear();
     cup.groups = groups
@@ -242,13 +249,12 @@ fn build_group_cup(
 
     let fixture_competition = fixture_competition_for(&kind);
     for group in &cup.groups {
-        let fixtures = crate::schedule::build_round_robin_fixtures_with(
+        let fixtures = group_fixtures(
             &competition_id,
             &group.team_ids,
             start_date,
             fixture_competition.clone(),
-            config.legs,
-            config.matchday_gap_days,
+            &cup.rules,
         );
         cup.fixtures.extend(fixtures);
     }
@@ -258,6 +264,36 @@ fn build_group_cup(
     }
 
     cup
+}
+
+/// One group's matches: a league phase when the rules ask for one, whole round robins otherwise.
+fn group_fixtures(
+    competition_id: &str,
+    team_ids: &[String],
+    start_date: DateTime<Utc>,
+    fixture_competition: FixtureCompetition,
+    rules: &CompetitionRules,
+) -> Vec<domain::league::Fixture> {
+    let gap = i64::from(rules.group_matchday_gap_days.max(1));
+    if rules.group_stage_rounds > 0 {
+        crate::schedule::build_league_phase_fixtures(
+            competition_id,
+            team_ids,
+            start_date,
+            fixture_competition,
+            rules.group_stage_rounds,
+            gap,
+        )
+    } else {
+        crate::schedule::build_round_robin_fixtures_with(
+            competition_id,
+            team_ids,
+            start_date,
+            fixture_competition,
+            rules.group_stage_legs.max(1),
+            gap,
+        )
+    }
 }
 
 /// A group's table sorted by points, goal difference, then goals for.
@@ -508,7 +544,21 @@ const DRAW_SEARCH_BUDGET: u32 = 200_000;
 fn lowest_available_ties(ranked: &[String], group_of: impl Fn(&str) -> Option<usize>) -> Vec<Tie> {
     let groups: Vec<Option<usize>> = ranked.iter().map(|team| group_of(team.as_str())).collect();
     if ranked.len().is_multiple_of(2) {
-        for allowed_clashes in 0..=ranked.len() / 2 {
+        // A group that supplies more than half the field must meet itself that many times over,
+        // so the search starts there: a league phase is one group, and every tie is inside it.
+        let largest_group = groups
+            .iter()
+            .flatten()
+            .map(|group| {
+                groups
+                    .iter()
+                    .filter(|other| **other == Some(*group))
+                    .count()
+            })
+            .max()
+            .unwrap_or(0);
+        let unavoidable = largest_group.saturating_sub(ranked.len() / 2);
+        for allowed_clashes in unavoidable..=ranked.len() / 2 {
             let mut search = DrawSearch {
                 groups: &groups,
                 used: vec![false; ranked.len()],
@@ -649,13 +699,12 @@ pub fn regenerate_for_season(league: &mut League, season: u32, start_date: DateT
     let fixture_competition = fixture_competition_for(&league.kind.clone());
     let competition_id = league.id.clone();
     for group in league.groups.clone() {
-        let fixtures = crate::schedule::build_round_robin_fixtures_with(
+        let fixtures = group_fixtures(
             &competition_id,
             &group.team_ids,
             start_date,
             fixture_competition.clone(),
-            league.rules.group_stage_legs.max(1),
-            i64::from(league.rules.group_matchday_gap_days.max(1)),
+            &league.rules,
         );
         league.fixtures.extend(fixtures);
     }
@@ -1365,5 +1414,96 @@ mod tests {
         assert_eq!(cup.rules.group_stage_legs, 1);
         assert_eq!(cup.rules.group_matchday_gap_days, 7);
         assert_eq!(cup.fixtures.len(), 12);
+    }
+
+    /// A league phase of 36 clubs: one table, eight matches each, the top 24 going on.
+    fn league_phase_cup() -> League {
+        generate_group_knockout_cup_with(
+            "Champions League",
+            2033,
+            &clubs(36),
+            start(),
+            CompetitionType::ContinentalClub,
+            CompetitionScope::Continental,
+            &GroupStageConfig {
+                group_size: 36,
+                rounds: 8,
+                qualifiers_per_group: 24,
+                ..Default::default()
+            },
+        )
+    }
+
+    /// Given a field of 36 authored as one group that plays a league phase,
+    /// When the competition is built, and when it is renewed,
+    /// Then it is one table of 36 in which each club plays eight matches, not the 35 or 70 of
+    ///      a round robin.
+    #[test]
+    fn a_league_phase_is_one_table_with_eight_matches_a_club() {
+        let mut cup = league_phase_cup();
+
+        assert_eq!(cup.groups.len(), 1);
+        assert_eq!(cup.groups[0].team_ids.len(), 36);
+        assert_eq!(cup.rules.group_stage_rounds, 8);
+        assert_eq!(cup.fixtures.len(), 144);
+
+        regenerate_for_season(&mut cup, 2034, start() + Duration::days(365));
+
+        assert_eq!(cup.groups.len(), 1);
+        assert_eq!(cup.fixtures.len(), 144);
+        assert!(
+            cup.fixtures
+                .iter()
+                .all(|fixture| fixture.date.as_str() >= "2027-09-15")
+        );
+    }
+
+    /// Given a league phase that has been played,
+    /// When the knockout is drawn, and its first round played,
+    /// Then the top eight of the table sit the first round out, the next sixteen play off, the
+    ///      ninth at home to the twenty-fourth and so on, and in the round of sixteen each of the
+    ///      top eight is at home to a play-off winner, the first to whoever came through the tie
+    ///      of the sixteenth and seventeenth.
+    #[test]
+    fn a_league_phase_sends_eight_straight_through_and_sixteen_to_a_play_off() {
+        let mut cup = after_the_group_stage(league_phase_cup());
+        let table: Vec<String> = sorted_group_standings(&cup.groups[0])
+            .into_iter()
+            .map(|entry| entry.team_id)
+            .collect();
+
+        assert_eq!(cup.knockout_rounds.len(), 1);
+        assert_eq!(cup.knockout_rounds[0].bye_team_ids, table[..8]);
+        let play_off = first_round_ties(&cup);
+        let expected: Vec<(String, String)> = (0..8)
+            .map(|tie| (table[8 + tie].clone(), table[23 - tie].clone()))
+            .collect();
+        assert_eq!(play_off, expected);
+
+        // Each play-off tie is won at home, by the better placed club.
+        for index in 0..cup.fixtures.len() {
+            if cup.fixtures[index].status == FixtureStatus::Scheduled {
+                complete_fixture(&mut cup, index, 1, 0);
+            }
+        }
+        crate::schedule::advance_knockout_competition_round(&mut cup);
+
+        assert_eq!(cup.knockout_rounds.len(), 2);
+        assert!(cup.knockout_rounds[1].bye_team_ids.is_empty());
+        let round_of_sixteen: Vec<(String, String)> = cup.knockout_rounds[1]
+            .fixture_ids
+            .iter()
+            .map(|id| {
+                cup.fixtures
+                    .iter()
+                    .find(|fixture| &fixture.id == id)
+                    .unwrap()
+            })
+            .map(|fixture| (fixture.home_team_id.clone(), fixture.away_team_id.clone()))
+            .collect();
+        let expected: Vec<(String, String)> = (0..8)
+            .map(|seed| (table[seed].clone(), table[15 - seed].clone()))
+            .collect();
+        assert_eq!(round_of_sixteen, expected);
     }
 }

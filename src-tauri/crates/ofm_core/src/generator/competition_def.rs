@@ -98,6 +98,11 @@ pub struct FormatDef {
     /// Best next-placed finishers that also advance (GroupAndKnockout).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub best_third_qualifiers: Option<u32>,
+    /// A league phase (GroupAndKnockout): the matches each club plays in its group, each against
+    /// a different opponent and half of them at home, in place of `legs` round robins. With one
+    /// group the size of the field, that is one table every club is in.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rounds: Option<u32>,
 }
 
 impl FormatDef {
@@ -112,6 +117,7 @@ impl FormatDef {
         crate::group_stage::GroupStageConfig {
             group_size: self.group_size.unwrap_or(defaults.group_size),
             legs: self.legs.unwrap_or(defaults.legs),
+            rounds: self.rounds.unwrap_or(0),
             qualifiers_per_group: self
                 .qualifiers_per_group
                 .unwrap_or(defaults.qualifiers_per_group),
@@ -134,6 +140,12 @@ pub struct ParticipantSpec {
     /// A rule that resolves to team ids against the world.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub selector: Option<SelectorSpec>,
+    /// Cups only, and beside `explicit` or `selector`, which give the first season's field: the
+    /// competitions whose clubs make up the field, most senior first. Each time the cup is
+    /// renewed its field is rebuilt from the clubs they then have, so it follows promotion and
+    /// relegation, and the clubs of the first one are first in line for a bye.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub entrants_from: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -558,7 +570,8 @@ fn validate_format(competition: &CompetitionDefinition, errors: &mut Vec<Definit
     if format.kind != CompetitionFormat::GroupAndKnockout
         && (format.group_size.is_some()
             || format.qualifiers_per_group.is_some()
-            || format.best_third_qualifiers.is_some())
+            || format.best_third_qualifiers.is_some()
+            || format.rounds.is_some())
     {
         errors.push(DefinitionError::new(
             "be.error.competitionDef.groupConfigOnNonGroupFormat",
@@ -617,6 +630,21 @@ fn validate_format(competition: &CompetitionDefinition, errors: &mut Vec<Definit
             "be.error.competitionDef.zeroLegs",
             &competition.id,
         ));
+    }
+    // A league phase gives a club `rounds` different opponents from its own group, so a group
+    // has to have more clubs than that; and it is played in place of `legs` round robins, so
+    // the two are not set together.
+    if let Some(rounds) = format.rounds
+        && format.kind == CompetitionFormat::GroupAndKnockout
+    {
+        let group_size = format.group_stage_config().group_size;
+        if rounds == 0 || rounds >= group_size || format.legs.is_some_and(|legs| legs != 1) {
+            errors.push(
+                DefinitionError::new("be.error.competitionDef.invalidRounds", &competition.id)
+                    .with("rounds", rounds.to_string())
+                    .with("groupSize", group_size.to_string()),
+            );
+        }
     }
 }
 
@@ -744,6 +772,40 @@ fn validate_participants(
         }
         (None, Some(selector)) => {
             validate_selector(competition, selector, ctx, known_ids, errors);
+        }
+    }
+    validate_entrants_from(competition, known_ids, errors);
+}
+
+/// `entrantsFrom` is for a cup, and names other competitions of the file, each once.
+fn validate_entrants_from(
+    competition: &CompetitionDefinition,
+    known_ids: &HashSet<&str>,
+    errors: &mut Vec<DefinitionError>,
+) {
+    let sources = &competition.participants.entrants_from;
+    if sources.is_empty() {
+        return;
+    }
+    if competition.format.kind == CompetitionFormat::LeagueTable {
+        errors.push(DefinitionError::new(
+            "be.error.competitionDef.entrantsFromRequiresCup",
+            &competition.id,
+        ));
+    }
+    let mut seen = HashSet::new();
+    for source in sources {
+        if !known_ids.contains(source.as_str())
+            || source == &competition.id
+            || !seen.insert(source.as_str())
+        {
+            errors.push(
+                DefinitionError::new(
+                    "be.error.competitionDef.entrantsFromUnknown",
+                    &competition.id,
+                )
+                .with("target", source.clone()),
+            );
         }
     }
 }
@@ -1154,9 +1216,11 @@ fn build_competition(
     competition.participant_ids = team_ids.to_vec();
     competition.priority = def.priority;
     competition.berths = def.berths.clone();
+    competition.rules.entrants_from = def.participants.entrants_from.clone();
     competition.season_start_month = def.season_start_month.unwrap_or(8);
     competition.season_start_day = def.season_start_day.unwrap_or(1);
     competition.name_key = def.name_key.clone();
+    competition.logo = def.logo.clone();
     crate::calendar_identity::attach_definition_calendar(&mut competition, def, season_start);
     // Rebuild standings to match the resolved participants for table formats.
     if def.format.kind == CompetitionFormat::LeagueTable {
@@ -1322,8 +1386,10 @@ mod tests {
                 group_size: None,
                 qualifiers_per_group: None,
                 best_third_qualifiers: None,
+                rounds: None,
             },
             participants: ParticipantSpec {
+                entrants_from: Vec::new(),
                 explicit: Some(teams.iter().map(|t| t.to_string()).collect()),
                 selector: None,
             },
@@ -1518,6 +1584,162 @@ mod tests {
         assert!(reported.contains(&"be.error.competitionDef.berthRequiresLeague"));
     }
 
+    /// Given a cup that names the divisions its clubs come from,
+    /// When the file is validated and the cup is built,
+    /// Then it is accepted, and the cup carries the names for the day it is renewed.
+    #[test]
+    fn a_cup_can_name_the_competitions_its_clubs_come_from() {
+        let league = explicit("tr-1", &["team-a", "team-b"]);
+        let mut cup = explicit("tr-cup", &["team-a", "team-b"]);
+        cup.format.kind = CompetitionFormat::Knockout;
+        cup.participants.entrants_from = vec!["tr-1".to_string()];
+        let file = CompetitionDefinitionFile {
+            format_version: 1,
+            competitions: vec![league, cup.clone()],
+        };
+
+        assert_eq!(
+            codes(&validate_definitions(&file, &ctx())),
+            Vec::<&str>::new()
+        );
+        use chrono::TimeZone;
+        let start = Utc.with_ymd_and_hms(2026, 8, 1, 0, 0, 0).unwrap();
+        let teams = ["team-a".to_string(), "team-b".to_string()];
+        let built = build_competition(&cup, &teams, 2026, start).unwrap();
+        assert_eq!(built.rules.entrants_from, ["tr-1"]);
+        let json = serde_json::to_value(&cup).unwrap();
+        assert_eq!(
+            json["participants"]["entrantsFrom"],
+            serde_json::json!(["tr-1"])
+        );
+    }
+
+    /// Given `entrantsFrom` on a league table, or naming a competition the file does not have,
+    /// the cup itself, or one competition twice,
+    /// When the file is validated,
+    /// Then each is reported.
+    #[test]
+    fn entrants_from_is_for_a_cup_and_names_other_competitions_once() {
+        let mut league = explicit("tr-1", &["team-a", "team-b"]);
+        league.participants.entrants_from = vec!["tr-cup".to_string()];
+        let mut cup = explicit("tr-cup", &["team-a", "team-b"]);
+        cup.format.kind = CompetitionFormat::Knockout;
+        cup.participants.entrants_from = vec![
+            "ghost".to_string(),
+            "tr-cup".to_string(),
+            "tr-1".to_string(),
+            "tr-1".to_string(),
+        ];
+        let file = CompetitionDefinitionFile {
+            format_version: 1,
+            competitions: vec![league, cup],
+        };
+
+        let errors = validate_definitions(&file, &ctx());
+        let reported = codes(&errors);
+
+        assert_eq!(
+            reported
+                .iter()
+                .filter(|code| **code == "be.error.competitionDef.entrantsFromRequiresCup")
+                .count(),
+            1
+        );
+        assert_eq!(
+            reported
+                .iter()
+                .filter(|code| **code == "be.error.competitionDef.entrantsFromUnknown")
+                .count(),
+            3,
+            "the unknown one, the cup itself and the repeat"
+        );
+    }
+
+    fn league_phase(rounds: u32, group_size: u32, legs: Option<u8>) -> CompetitionDefinition {
+        let mut cup = explicit("tr-cup", &["team-a", "team-b"]);
+        cup.r#type = CompetitionType::Cup;
+        cup.format = FormatDef {
+            kind: CompetitionFormat::GroupAndKnockout,
+            legs,
+            group_size: Some(group_size),
+            qualifiers_per_group: Some(2),
+            best_third_qualifiers: None,
+            rounds: Some(rounds),
+        };
+        cup
+    }
+
+    fn format_errors(cup: CompetitionDefinition) -> Vec<String> {
+        let file = CompetitionDefinitionFile {
+            format_version: 1,
+            competitions: vec![cup],
+        };
+        codes(&validate_definitions(&file, &ctx()))
+            .into_iter()
+            .map(str::to_string)
+            .collect()
+    }
+
+    /// Given a league phase of eight matches in a group of 36,
+    /// When the definition is validated and built,
+    /// Then it is accepted, and the competition is one table in which each club plays eight.
+    #[test]
+    fn a_league_phase_is_authored_as_rounds_in_one_group() {
+        let mut cup = league_phase(8, 36, None);
+        cup.format.qualifiers_per_group = Some(24);
+        let teams: Vec<String> = (0..36).map(|club| format!("club-{club:02}")).collect();
+        cup.participants.explicit = Some(teams.clone());
+
+        let reported = format_errors(cup.clone());
+        assert!(
+            reported
+                .iter()
+                .all(|code| code == "be.error.competitionDef.unknownTeam"),
+            "{reported:?}"
+        );
+        use chrono::TimeZone;
+        let start = Utc.with_ymd_and_hms(2026, 9, 19, 0, 0, 0).unwrap();
+        let built = build_competition(&cup, &teams, 2026, start).unwrap();
+        assert_eq!(built.rules.group_stage_rounds, 8);
+        assert_eq!(built.rules.group_qualifiers_per_group, 24);
+        assert_eq!(built.groups.len(), 1);
+        assert_eq!(built.fixtures.len(), 144);
+        let json = serde_json::to_value(&cup).unwrap();
+        assert_eq!(json["format"]["rounds"], serde_json::json!(8));
+    }
+
+    /// Given a league phase of no matches, of as many matches as the group has clubs, or set
+    /// beside two legs, and `rounds` on a format with no groups,
+    /// When each is validated,
+    /// Then each is refused; one leg beside `rounds` says the same thing twice and is accepted.
+    #[test]
+    fn a_league_phase_needs_more_clubs_than_matches_and_no_legs() {
+        let invalid = "be.error.competitionDef.invalidRounds".to_string();
+        for cup in [
+            league_phase(0, 4, None),
+            league_phase(4, 4, None),
+            league_phase(2, 4, Some(2)),
+        ] {
+            assert!(format_errors(cup).contains(&invalid));
+        }
+        assert!(!format_errors(league_phase(1, 2, None)).contains(&invalid));
+        assert!(!format_errors(league_phase(1, 2, Some(1))).contains(&invalid));
+
+        let mut knockout = league_phase(1, 2, None);
+        knockout.format = FormatDef {
+            kind: CompetitionFormat::Knockout,
+            legs: None,
+            group_size: None,
+            qualifiers_per_group: None,
+            best_third_qualifiers: None,
+            rounds: Some(1),
+        };
+        assert!(
+            format_errors(knockout)
+                .contains(&"be.error.competitionDef.groupConfigOnNonGroupFormat".to_string())
+        );
+    }
+
     #[test]
     fn berth_playoff_needs_at_least_two_contestants() {
         let mut league = explicit("tr-1", &["team-a", "team-b"]);
@@ -1614,6 +1836,7 @@ mod tests {
     fn top_by_reputation_needs_a_known_country_and_count() {
         let mut def = explicit("tr-1", &[]);
         def.participants = ParticipantSpec {
+            entrants_from: Vec::new(),
             explicit: None,
             selector: Some(SelectorSpec {
                 kind: SelectorKind::TopByReputation,
@@ -1638,6 +1861,7 @@ mod tests {
     fn champions_of_must_reference_a_known_competition_and_not_cycle() {
         let mut a = explicit("a", &[]);
         a.participants = ParticipantSpec {
+            entrants_from: Vec::new(),
             explicit: None,
             selector: Some(SelectorSpec {
                 kind: SelectorKind::ChampionsOf,
@@ -1650,6 +1874,7 @@ mod tests {
         };
         let mut b = explicit("b", &[]);
         b.participants = ParticipantSpec {
+            entrants_from: Vec::new(),
             explicit: None,
             selector: Some(SelectorSpec {
                 kind: SelectorKind::ChampionsOf,
@@ -1670,6 +1895,7 @@ mod tests {
         // An unknown source is reported too.
         let mut lonely = explicit("c", &[]);
         lonely.participants = ParticipantSpec {
+            entrants_from: Vec::new(),
             explicit: None,
             selector: Some(SelectorSpec {
                 kind: SelectorKind::ChampionsOf,
@@ -1756,8 +1982,10 @@ mod tests {
                 group_size: None,
                 qualifiers_per_group: None,
                 best_third_qualifiers: None,
+                rounds: None,
             },
             participants: ParticipantSpec {
+                entrants_from: Vec::new(),
                 explicit: None,
                 selector: Some(selector),
             },
@@ -1861,6 +2089,33 @@ mod tests {
         // The generated id was rewritten to the stable definition id everywhere.
         assert!(afc.fixtures.iter().all(|f| f.competition_id == "afc"));
         assert!(afc.groups.iter().all(|g| g.id.starts_with("afc-group-")));
+    }
+
+    /// Given a definition that names a logo, in each of the three formats
+    /// When the competition is built
+    /// Then the competition carries the logo, so a career can draw it; and a definition without
+    ///      one builds a competition without one.
+    #[test]
+    fn a_built_competition_carries_its_definitions_logo() {
+        let clubs = ["team-a", "team-b", "team-c", "team-d"];
+        let logo = "pack/assets/competitions/tr-cup.png";
+        for format in [
+            CompetitionFormat::LeagueTable,
+            CompetitionFormat::Knockout,
+            CompetitionFormat::GroupAndKnockout,
+        ] {
+            let mut def = explicit("tr-cup", &clubs);
+            def.format.kind = format.clone();
+            def.logo = Some(logo.to_string());
+
+            let built = build_explicit_competition(&def, 2026, start()).unwrap();
+
+            assert_eq!(built.logo.as_deref(), Some(logo), "{format:?}");
+        }
+
+        let plain = explicit("tr-1", &clubs);
+        let built = build_explicit_competition(&plain, 2026, start()).unwrap();
+        assert_eq!(built.logo, None);
     }
 
     #[test]

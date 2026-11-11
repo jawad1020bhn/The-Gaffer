@@ -245,6 +245,8 @@ export interface FormatDef {
   groupSize?: number;
   qualifiersPerGroup?: number;
   bestThirdQualifiers?: number;
+  /** A league phase: matches each club plays in its group, in place of `legs` round robins. */
+  rounds?: number;
 }
 
 export interface SelectorSpec {
@@ -259,6 +261,8 @@ export interface SelectorSpec {
 export interface ParticipantSpec {
   explicit?: string[];
   selector?: SelectorSpec;
+  /** Cups only: the competitions whose clubs make up the field each season. */
+  entrantsFrom?: string[];
 }
 
 export interface CompetitionDef {

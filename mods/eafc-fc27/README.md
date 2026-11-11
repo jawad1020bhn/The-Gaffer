@@ -1,17 +1,38 @@
 # EA FC 27 — Clubs & Players
 
 An unofficial Openfoot Manager database of **684 clubs**, **18,875 player
-rows** and **38 competitions**, imported from the EA FC 27 database by
+rows** and **68 competitions**, imported from the EA FC 27 database by
 [`tools/eafc-import`](../../tools/eafc-import/README.md).
+
+**Seasons and cups (0.5.0):** every competition starts its next season on its
+own date, so no league waits a year for the player's season to end. A domestic
+cup takes the clubs its divisions have each season and is drawn anew, and **5
+super cups** are played by the cup's holder and the league's top clubs. See
+[Cups and continental competitions](#cups-and-continental-competitions).
+
+**The league phase (0.6.0):** the three UEFA competitions are one table of 36
+clubs in which each plays eight matches (six in the Conference League) against
+eight different opponents. The top eight go to the round of 16 and the next
+sixteen play off for the other eight places. The AFC Champions League Elite is
+one table of 16.
+
+**Cups and continental competitions (0.4.0):** **22 domestic cups** and **7
+continental competitions**, with the league places and cup wins that qualify a
+club for them, read from EA's career-mode competition structure. Leagues now
+play the number of rounds EA schedules. See
+[Cups and continental competitions](#cups-and-continental-competitions).
+
+**Competition logos (0.3.0):** every competition carries its logo, converted
+from EA's league-logo pack. See [Competition logos](#competition-logos).
 
 **Real club badges (0.2.0):** every club EA ships a crest for now carries one —
 **588 of 684**. The 96 without are clubs EA's crest pack has no entry for, and
 they keep the generated crest. See [Club badges](#club-badges).
 
 **Data cleanup (0.1.1):** removed a placeholder club and 18 fake players; added
-95 source-backed historical ground names. Still, 20 clubs have no competition
-membership, 1,877 contracts end before the 2027 base year, and wages and
-goalkeeper weak-foot values are incomplete. No national-team or real staff
+95 source-backed historical ground names. Still, 2 clubs have no competition
+membership (20 before 0.4.0), 1,877 contracts end before the 2027 base year, and
+wages and goalkeeper weak-foot values are incomplete. No national-team or real staff
 records are included. Read the [corrections and remaining limitations](DATA_QUALITY.md)
 before treating this as a season-ready real-world database.
 
@@ -79,14 +100,16 @@ node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" --out m
 ```
 
 The importer itself still writes no artwork — a database holds ids into EA's
-own CDN, not images. The badges in this directory are produced by a separate
-step from the crest folder, then imported as a normal graphics pack:
+own CDN, not images. The badges and competition logos in this directory are
+produced by a separate step from the crest and league-logo folders, then
+imported as a normal graphics pack:
 
 ```bash
 node tools/eafc-import/badges-from-crest-pack.mjs \
-  --kit ../eafc-db-kit --crest-pack crest50x50.zip \
-  --competition-logos tools/eafc-import/test/fixtures/competition-logos \
-  --out ../eafc-fc27-badges --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json
+  --kit ../eafc-db-kit --crest-pack crest50x50.zip --league-logos leagues.zip \
+  --out ../eafc-fc27-badges \
+  --write-crosswalk tools/eafc-import/data/fc27-crest-crosswalk.json \
+  --write-league-crosswalk tools/eafc-import/data/fc27-league-logo-crosswalk.json
 
 node tools/eafc-import/import.mjs --kit ../eafc-db-kit --version "FC 27" \
   --out mods/eafc-fc27 --badges ../eafc-fc27-badges
@@ -101,18 +124,13 @@ the Saudi Pro League, the A-League, the K League, the Chinese Super League, the
 Indian Super League and the Argentine Primera División. Divisions are ordered as
 tiers, so promotion and relegation chain through each national pyramid.
 
-**4 continental competitions.** CONMEBOL Libertadores and Sudamericana keep their
-real fields from the database (which is also how Brazilian clubs get in — EA
-carries no Brazilian league). The two European club competitions the database
-does not carry are authored from club reputation: the **UEFA Champions League**
-(the 32 best European clubs) and the **UEFA Europa League** (the next 32). Their
-fields are written out club by club, because the engine's reputation selector
-requires a single country and a continent-wide cup has not got one.
+**22 domestic cups and 7 continental competitions**, with qualification between
+them. They have a section of their own:
+[Cups and continental competitions](#cups-and-continental-competitions).
 
-The two authored European cups carry a competition logo, taken from the
-checked-in fixture pack under `tools/eafc-import/test/fixtures/`. Per-asset
-source, licence, attribution and checksum travel inside the `.ofm` at
-`assets/clubs/manifest.json`. The other competitions render with no badge.
+Every competition carries a logo, converted from EA's league-logo pack (see
+[Competition logos](#competition-logos)). Per-asset source, licence, attribution
+and checksum travel inside the `.ofm` at `assets/clubs/manifest.json`.
 
 Every club has at least 18 source players, the median is 27, and the engine's
 floor is 15. The game tops up squads below 22 (its `SQUAD_SLOTS`); 36 clubs here
@@ -146,6 +164,178 @@ The package writes **no `defaultActiveRegions`**. The engine fills the active
 regions from the competitions themselves, so every league and cup below is in
 scope — including the South American ones.
 
+## Cups and continental competitions
+
+EA's database lists leagues and their clubs. The cups, the continental
+competitions and what qualifies a club for them come from the `compdata` folder
+career mode builds its calendar from, committed at
+[`tools/eafc-import/data/fc27-compdata/`](../../tools/eafc-import/data/README.md#competition-structure).
+The importer's README says
+[what is EA's and what had to be simplified](../../tools/eafc-import/README.md#cups-continental-competitions-and-qualification);
+this is what a career gets.
+
+**Domestic cups.** Each holds every club of the divisions EA enters in it that
+this package has, so the FA Cup is the 92 clubs of the top four English tiers
+and the EFL Trophy the 48 of League One and League Two.
+
+| Country | Cup | Clubs | Played as | First match | Winner qualifies for |
+|---|---|---|---|---|---|
+| England | FA Cup | 92 | knockout | 17 Oct | Europa League |
+| England | EFL Cup | 92 | knockout | 7 Aug | Conference League |
+| England | EFL Trophy | 48 | 8 groups of 6, top 2 through | 12 Sep | |
+| France | Coupe de France | 36 | knockout | 27 Nov | Europa League |
+| Germany | DFB-Pokal | 56 | knockout | 18 Aug | Europa League |
+| Spain | Copa del Rey | 42 | knockout | 6 Dec | Europa League |
+| Italy | Coppa Italia | 40 | knockout | 6 Sep | Europa League |
+| Austria | ÖFB-Cup | 12 | knockout | 1 Nov | Europa League |
+| Belgium | Belgian Cup | 18 | knockout | 6 Dec | Europa League |
+| Denmark | Danish Cup | 12 | knockout | 1 Nov | Europa League |
+| Norway | Norwegian Cup | 16 | knockout | 15 Dec | Europa League |
+| Portugal | Taça de Portugal | 18 | knockout | 6 Dec | Europa League |
+| Scotland | Scottish Cup | 12 | knockout | 9 Jan | Europa League |
+| Sweden | Svenska Cupen | 16 | 4 groups of 4, top 2 through | 8 Dec | Europa League |
+| Switzerland | Schweizer Cup | 12 | knockout | 6 Dec | Europa League |
+| United States | U.S. Open Cup | 30 | knockout | 10 May | |
+| Türkiye | Türkiye Kupası | 18 | 2 groups of 9, top 4 through | 24 Nov | Europa League |
+| Netherlands | KNVB Beker | 18 | knockout | 28 Dec | Europa League |
+| Ireland | FAI Cup | 10 | knockout | 19 Aug | Europa League |
+| Poland | Puchar Polski | 18 | knockout | 1 Nov | Europa League |
+| Saudi Arabia | King's Cup | 18 | knockout | 27 Sep | |
+| Romania | Cupa României | 16 | 4 groups of 4, top 2 through | 1 Nov | Europa League |
+
+Group stages in a cup are one meeting per pair. Every tie is a single match.
+
+A cup's field is made again each season from the clubs its divisions then
+have, so a club that goes down out of them leaves the cup and one that comes up
+joins it: the EFL Trophy is always the clubs of League One and League Two. A
+knockout is drawn by lot each season and again each round. The byes a field
+that is not a power of two needs go to the highest-placed clubs of the most
+senior division, so the 36 byes of the FA Cup are the Premier League's twenty
+and the Championship's top sixteen.
+
+**Super cups.** One match, or two semi-finals and a final, between the holder
+of the cup and the top of the league. A club that won both is replaced by the
+next club down the league.
+
+| Country | Super cup | Clubs | First match | Played by |
+|---|---|---|---|---|
+| England | FA Community Shield | 2 | 13 Aug | FA Cup holder, Premier League champion |
+| France | Trophée des Champions | 2 | 6 Aug | Coupe de France holder, Ligue 1 champion |
+| Germany | DFL-Supercup | 2 | 19 Aug | DFB-Pokal holder, Bundesliga champion |
+| Italy | Supercoppa Italiana | 4 | 21 Dec | Coppa Italia holder, Serie A's top two, then the next down |
+| Spain | Supercopa de España | 4 | 10 Jan | Copa del Rey holder, La Liga's top two, then the next down |
+
+EA gives the Italian and Spanish super cups the cup's two finalists. The engine
+knows who won a cup and nobody else in it, so the losing finalist's place goes
+to the next club down the league.
+
+**Continental competitions.**
+
+| Competition | Clubs | Played as | First match |
+|---|---|---|---|
+| UEFA Champions League | 36 | league phase: one table, 8 matches each; the top 8 to the round of 16, 9th to 24th play off | 19 Sep |
+| UEFA Europa League | 36 | the same | 27 Sep |
+| UEFA Conference League | 36 | the same, with 6 matches each | 5 Oct |
+| CONMEBOL Libertadores | 32 | 8 groups of 4, home and away, top 2 through, then a knockout | 4 Apr |
+| CONMEBOL Sudamericana | 32 | the same | 6 Apr |
+| Concacaf Champions Cup | 8 | knockout | 4 Apr |
+| AFC Champions League Elite | 16 | league phase: one table, 6 matches each; the top 8 to the quarter-finals | 19 Sep |
+
+The Europa League's winner qualifies for the Champions League, the Conference
+League's for the Europa League and the Sudamericana's for the Libertadores.
+
+**The league phase.** The sizes, the number of matches and how many clubs go on
+are EA's. A club meets each opponent once and is at home in half its matches.
+Its opponents come from every quarter of the field, strongest to weakest, as a
+draw from four pots gives; there are no pots here, and clubs of one country can
+meet. The table's top eight sit out the first knockout round. In it the ninth
+is at home to the 24th, the tenth to the 23rd and so on, and in the round of 16
+the first is at home to whoever comes through the tie of the 16th and 17th.
+
+**League places.** These are the positions EA fills each competition from.
+
+| League | Champions League | Europa League | Conference League |
+|---|---|---|---|
+| England | 1–5 | 6 | |
+| Italy | 1–5 | 6 | 7 |
+| Spain, Germany | 1–4 | 5 | 6 |
+| France | 1–3 | 4–5 | 6 |
+| Netherlands | 1–2 | 3–4 | 5 |
+| Portugal | 1 | 2–3 | 4 |
+| Belgium, Türkiye, Scotland, Switzerland, Austria | 1 | 2 | 3–4 |
+| Norway | 1–2 | | 3–4 |
+| Denmark, Poland, Sweden | 1 | | 2–3 |
+| Romania | | 1 | 2–3 |
+| Ireland | | 1 | 2–4 |
+
+Outside Europe: Argentina's top five enter the Libertadores and the next two
+the Sudamericana; the top four of MLS and of Liga MX enter the Concacaf
+Champions Cup; the top four of Saudi Arabia, South Korea, China and Australia
+enter the AFC Champions League Elite. The Indian Super League and every lower
+division award nothing.
+
+**Places nobody earns.** The berths above come to 35 of the Champions League's
+36 places, all 36 of the Europa League's, 30 of the Conference League's, 6 of
+the Libertadores' 32 and 2 of the Sudamericana's. EA fills the rest from clubs it keeps outside any
+league, which is why Olympiacos, Dinamo Zagreb or Flamengo are in its database
+at all. Here the engine tops a short field up from the clubs of the
+confederation that have no place yet: the ones that play in no league first,
+by reputation, then the others, and no club in two fields. A place also falls
+open whenever one club earns two, as a cup winner that finished in the league
+places does.
+
+**The first season's fields** are last season's tables and cup holders run
+through those berths. That left 34 clubs in the Champions League, 23 in the
+Europa League and 26 in the Conference League. The open places went to the
+European clubs that play in no league here, by reputation: Olympiacos and AEK
+to the Champions League, thirteen more to the Europa League, the last two to
+the Conference League. There are 17 such clubs and 27 open places, so the
+Conference League's final eight went to the best clubs still without one:
+Chelsea, Tottenham, Newcastle, Athletic Club, Brentford, Brighton, Everton and
+Nottingham Forest. In South America six Argentine clubs earned a
+Libertadores place and two a Sudamericana one. The rest of both fields is the
+54 South American clubs that play in no league here and the two best Argentine
+clubs still without a place. EA files 52 of the 54 under one of the two
+competitions, and each plays that one. Bahia and Atlético Nacional are filed
+under neither and take open Sudamericana places. Which club tops up which
+competition is this package's choice, not a record of who qualified.
+
+**Later seasons** are the engine's sum, and it does not have EA's lists. The
+senior competition of a confederation is served first, so the 26 strongest of
+the league-less South American clubs play the Libertadores and the others the
+Sudamericana, and a league-less European club plays the most senior UEFA
+competition with a place left when its turn comes. In a season with fewer open
+places than such clubs, the weakest of them play nothing.
+
+**League seasons.** A division plays the nearest whole number of round robins
+to the rounds EA schedules: three for the twelve-club leagues of Austria,
+Denmark, Scotland, Switzerland and South Korea, four for Ireland's ten clubs,
+one for the thirty clubs of MLS and of Argentina, two for everyone else. MLS
+and Argentina played 58 rounds before, which ran past the end of the year they
+started in.
+
+**When a season starts.** Each competition starts its next season on its own
+date. The day the player's season ends renews his own country and every
+country that has already finished. A country still playing that day is renewed
+later, four weeks before its first match, once all its divisions have finished:
+that is the day its clubs are paid, go up and go down. A continental
+competition is drawn four weeks before its first match, from the last season
+each league finished and the holder of each cup, together with the other
+competitions of its confederation so that no club is in two. In a French
+career that is 20 March for France and the leagues that end with it, 4 July
+for England, Germany, Italy and Spain, and 22 August for the three UEFA
+competitions. Those leagues used to wait for the same day a year on and went a
+year without football.
+
+**What a career does not have.** Two-legged ties, the qualifying rounds of the
+UEFA competitions, league splits and play-offs. A cup
+has one draw that every club is in, where EA brings the divisions in round by
+round; the byes stand in for that. The UEFA Super Cup and the Recopa are left
+out, because the engine gives a club one continental competition and their
+clubs are in another. The competitions keep EA's first match day where they
+can; how long each then takes is the engine's pace, so finals do not fall on
+their real dates.
+
 ## Club badges
 
 `teams.json` names `assets/clubs/<eaTeamId>.png` on each club, and those PNGs
@@ -158,7 +348,7 @@ the paths live in the package rather than being stamped on by a build script.
 teams.json                     "logo": "assets/clubs/1.png"
 assets/clubs/1.png             50×50 PNG, Arsenal
 assets/clubs/manifest.json     eaTeamId ↔ club id, source, licence, checksum
-assets/competitions/*.svg      the two European cup badges
+assets/competitions/*.png      competition logos, see below
 ```
 
 **Where the images come from.** EA's `crest50x50.zip`: `crest50x50/l<eaTeamId>.dds`
@@ -186,8 +376,86 @@ like the rest of this package. The manifest says `PersonalUseOnly` rather than
 inventing a licence the art does not carry. Read `VISION.md` before
 redistributing a build.
 
+## Competition logos
+
+`competitions.json` names `assets/competitions/<competitionId>.png` on each
+competition, and those PNGs are committed beside it, the same arrangement as the
+club badges.
+
+```
+competitions.json                              "logo": "assets/competitions/eng-premier-league.png"
+assets/competitions/eng-premier-league.png     the Premier League's logo
+assets/clubs/manifest.json                     competitionLogos: source, licence, checksum
+```
+
+**Where the game shows them.** A career draws a competition's logo beside its
+name: in the header of the Tournaments screen and in its list of competitions,
+above the league table on the Tournaments and Schedule screens, and in the list
+of competitions on the team-selection screen. A competition with no logo gets a
+trophy instead.
+
+**Earlier careers keep their trophies.** A career records each competition's
+logo when it is created, and its save stores it from then on. A career begun
+before the game kept logos, or on a version of this package older than 0.3.0,
+has nothing recorded, so it goes on drawing trophies even though the images are
+installed. A new career gets all 68.
+
+**Where the images come from.** EA's `leagues.zip`: `leagues/l<eaLeagueId>.dds`,
+137 textures with no names in them. Most are 1024×1024 with the artwork centred
+in a transparent margin, and most are wrapped in EA's `chunkzip` container. Each
+one used is unwrapped, cropped to its artwork and scaled to fit 160×160. They
+are not recoloured: EA draws them for a dark interface, as this game's is.
+
+**87 logos are shipped**, and they are matched to competitions in two ways,
+recorded apart in
+[`tools/eafc-import/data/fc27-league-logo-crosswalk.json`](../../tools/eafc-import/data/fc27-league-logo-crosswalk.json):
+
+- **36 through the database.** Each league and the two CONMEBOL cups was
+  imported from a row of EA's `leagues` table, and that row's id names its logo.
+  CI regenerates these pairs from the pinned database and compares them.
+- **51 by looking at the artwork.** EA's table has no rows for cups, super cups
+  or UEFA competitions, so nothing in the data says what `l201.dds` is. **32 of
+  these are competitions this package has**: its 22 domestic cups, its 5 super
+  cups, the three UEFA competitions, the Concacaf Champions Cup and the AFC
+  Champions League Elite. The other **19 belong to competitions it does not
+  have**: the UEFA Super Cup and the Recopa,
+  the EFL play-offs, cups of countries with no league here, earlier versions of
+  a logo, and world competitions such as the Club World Cup. Their images are
+  packed under the id each competition is expected to get
+  (`uefa-super-cup`), so they appear once it is added, and nothing draws
+  them until then.
+
+The remaining 50 textures in the zip are not used: national-team tournaments,
+leagues of countries this package has no clubs from, alternate versions, and
+EA's generic emblems.
+
+The Champions League and Europa League logos replace the SVGs this package
+carried before 0.3.0. Those were drawn in navy and black for a light page and
+were close to invisible on the game's dark surfaces.
+
+**Rebuild the images** with the same script as the club badges; it needs only
+`leagues.zip` and the committed crosswalk.
+
+**Licensing.** As for the crests: EA's artwork, converted for personal use, and
+marked `PersonalUseOnly`. Competition logos are also their organisers'
+trademarks.
+
 ## Known gaps
 
+- **No two-legged ties, qualifying rounds, league splits or play-offs**, and no
+  UEFA Super Cup or Recopa. See
+  [what a career does not have](#cups-and-continental-competitions).
+- **A manager with no club has no season of his own.** Each competition starts
+  its next season on its own date (see
+  [when a season starts](#cups-and-continental-competitions)), but the day the
+  player's season ends is taken from his club's league. Out of work, or at one
+  of the clubs that play in no league, he has none: every league then waits for
+  the day they have all finished, and a league that ends early starts its next
+  season late.
+- **73 clubs play in no league.** 71 of them play a continental competition and
+  nothing else, in the seasons a place is open for them; Al Ain and Buriram
+  United play nothing. See
+  [Clubs with no league](DATA_QUALITY.md#clubs-with-no-league).
 - **453 clubs have no stadium name.** Unresolved grounds retain the city-based
   fallback; generic EA placeholder names are not presented as real grounds.
 - **96 clubs have no badge**, because EA's crest pack has no entry for them

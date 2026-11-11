@@ -11,15 +11,20 @@ use domain::staff::{Staff, StaffAttributes, StaffRole};
 use domain::team::{FinancialTransaction, FinancialTransactionKind, TeamSeasonRecord};
 
 mod berths;
+pub(crate) mod cup_fields;
+pub(crate) mod renewal;
 pub(crate) mod season_calendar;
+#[cfg(test)]
+pub(crate) mod test_world;
 use berths::{
-    apply_domestic_berth_promotion_relegation, apply_pyramid_promotion_relegation,
+    apply_domestic_berth_promotion_relegation, apply_pyramid_promotion_relegation_in,
     resolve_domestic_berth_fields,
 };
 pub use berths::{
     berth_qualified_entrants, competition_has_incoming_berths, continental_qualified_entrants,
     resolve_continental_fields,
 };
+pub use renewal::competitions_renewed_at_rollover;
 
 /// The league fixtures a season of `team_count` clubs over `legs` legs holds: every club meets
 /// every other once per leg. Odd-sized leagues reach the same total via byes.
@@ -79,12 +84,17 @@ pub fn is_league_complete(league: &League) -> bool {
             .all(|fixture| fixture.status == FixtureStatus::Completed)
 }
 
-/// Whether the rollover regenerates this competition. League tables that are mid-season (started
-/// but not finished) return false so their fixtures are not wiped during a hemisphere-foreign
-/// rollover. A cup is regenerated once its edition is finished, or when it has no fixtures yet
-/// (freshly-seeded cups must receive new participants each season). A cup with a tie still to
-/// play, a final the calendar postponed past the league's last round, say, is kept: the sweep
-/// plays or moves it, and it is never dropped unplayed.
+/// Whether this competition has played its edition out, which is what a rollover asks before it
+/// regenerates one. League tables that are mid-season (started but not finished) return false so
+/// their fixtures are not wiped during a hemisphere-foreign rollover. A cup is regenerated once
+/// its edition is finished, or when it has no fixtures yet (freshly-seeded cups must receive new
+/// participants each season). A cup with a tie still to play, a final the calendar postponed
+/// past the league's last round, say, is kept: the sweep plays or moves it, and it is never
+/// dropped unplayed.
+///
+/// Finished is necessary and not sufficient: a finished division of a country that is still
+/// playing, and a continental competition whose next edition is months away, are renewed on a
+/// day of their own. [`competitions_renewed_at_rollover`] is what a rollover would renew.
 pub fn is_regenerated_at_rollover(competition: &League) -> bool {
     match competition.rules.format {
         CompetitionFormat::LeagueTable => is_league_season_ended(competition),
@@ -322,8 +332,19 @@ struct FinishedDivision {
     season: u32,
 }
 
-/// Final standings for every league-table competition that has finished,
-/// falling back to the legacy single league.
+impl FinishedDivision {
+    fn of(league: &League, tier: u32) -> Self {
+        Self {
+            competition_id: league.id.clone(),
+            standings: league.sorted_standings(),
+            tier,
+            season: league.season,
+        }
+    }
+}
+
+/// Final standings for every league-table competition that has finished and that `settles`
+/// (the divisions being paid out now: see [`renewal`]), falling back to the legacy single league.
 ///
 /// Tier is the rank by `priority` among *all* the leagues sharing a country,
 /// not just the finished ones. Ranking the finished ones alone made a second
@@ -334,42 +355,27 @@ struct FinishedDivision {
 /// Each division also carries its own season. The caller used to stamp every
 /// record with the *user's* season, which mislabels a foreign league running on
 /// another calendar: its 2034 results were recorded as 2035.
-fn division_standings_with_tiers(game: &Game) -> Vec<FinishedDivision> {
+fn finished_divisions(game: &Game, settles: impl Fn(&League) -> bool) -> Vec<FinishedDivision> {
     if game.competitions.is_empty() {
         return game
             .league
             .iter()
-            .map(|league| FinishedDivision {
-                competition_id: league.id.clone(),
-                standings: league.sorted_standings(),
-                tier: 0,
-                season: league.season,
-            })
+            .map(|league| FinishedDivision::of(league, 0))
             .collect();
     }
 
     let mut divisions: Vec<FinishedDivision> = ladder_rungs(game)
         .into_iter()
-        .filter(|(_, league)| is_league_season_ended(league)) // ranked, but nothing to pay out or record yet
-        .map(|(tier, league)| FinishedDivision {
-            competition_id: league.id.clone(),
-            standings: league.sorted_standings(),
-            tier,
-            season: league.season,
-        })
+        // Ranked, but nothing to pay out or record yet.
+        .filter(|(_, league)| is_league_season_ended(league) && settles(league))
+        .map(|(tier, league)| FinishedDivision::of(league, tier))
         .collect();
-    let standalone = standalone_leagues(game);
-    for league in standalone {
-        if !is_league_season_ended(league) {
-            continue;
-        }
-        divisions.push(FinishedDivision {
-            competition_id: league.id.clone(),
-            standings: league.sorted_standings(),
-            tier: 0,
-            season: league.season,
-        });
-    }
+    divisions.extend(
+        standalone_leagues(game)
+            .into_iter()
+            .filter(|league| is_league_season_ended(league) && settles(league))
+            .map(|league| FinishedDivision::of(league, 0)),
+    );
     divisions
 }
 
@@ -541,7 +547,26 @@ fn regenerate_competitions_for_new_season(
         })
         .collect();
 
-    apply_pyramid_promotion_relegation(&mut game.competitions);
+    // Clubs move only in the countries this rollover settles. A country that is still playing
+    // moves its own on the day it is renewed, from the same final tables: moved here as well,
+    // its clubs would go up or down twice.
+    let plan = renewal::RolloverPlan::at(game);
+    let domestic_berth_fields: std::collections::HashMap<String, Vec<String>> =
+        domestic_berth_fields
+            .into_iter()
+            .filter(|(target, _)| {
+                game.competitions
+                    .iter()
+                    .find(|competition| &competition.id == target)
+                    .is_some_and(|competition| match competition.country_id.as_deref() {
+                        Some(country) => plan.settles_country(country),
+                        None => true,
+                    })
+            })
+            .collect();
+    apply_pyramid_promotion_relegation_in(&mut game.competitions, |country| {
+        plan.settles_country(country)
+    });
     apply_domestic_berth_promotion_relegation(game, &domestic_berth_fields);
 
     // Re-seed continental competitions with this season's qualified entrants
@@ -553,12 +578,33 @@ fn regenerate_competitions_for_new_season(
     // alone: it keeps its own fixtures and standings, so handing it next
     // season's field leaves a table scoring clubs that are no longer in it and
     // fixtures between clubs it no longer lists.
+    //
+    // So is one this rollover does not renew: a continental competition whose next edition is
+    // months away keeps the field, and the finished bracket, of the edition it has played.
     for competition in game.competitions.iter_mut() {
         if let Some(entrants) = continental_entrants.get(&competition.id)
             && entrants.len() >= 2
-            && (competition.fixtures.is_empty() || is_regenerated_at_rollover(competition))
+            && (competition.fixtures.is_empty() || plan.renews(competition))
         {
             competition.participant_ids = entrants.clone();
+        }
+    }
+
+    // The domestic cups this rollover renews are drawn now: the divisions have their new clubs
+    // and still show the tables they finished with, and no cup has been reset.
+    let cup_fields: std::collections::HashMap<String, Vec<String>> = game
+        .competitions
+        .iter()
+        .filter(|competition| plan.renews(competition))
+        .filter_map(|competition| {
+            let next = season_calendar::next_edition(competition, &game.clock, rollover_anchor);
+            cup_fields::renewed_cup_field(game, competition, next.season)
+                .map(|field| (competition.id.clone(), field))
+        })
+        .collect();
+    for competition in game.competitions.iter_mut() {
+        if let Some(field) = cup_fields.get(&competition.id) {
+            competition.participant_ids = field.clone();
         }
     }
 
@@ -567,7 +613,7 @@ fn regenerate_competitions_for_new_season(
     let retained: std::collections::HashSet<String> = game
         .competitions
         .iter()
-        .filter(|competition| !is_regenerated_at_rollover(competition))
+        .filter(|competition| !plan.renews(competition))
         .map(|competition| competition.id.clone())
         .collect();
     for competition in game.competitions.iter_mut() {
@@ -577,13 +623,9 @@ fn regenerate_competitions_for_new_season(
         if crate::world_cup::is_world_cup_competition(competition) {
             continue;
         }
-        if !is_regenerated_at_rollover(competition) {
-            // TODO(hemisphere-stall): Mid-season foreign leagues are correctly
-            // skipped here to prevent their fixtures from being wiped. However,
-            // they will also miss regeneration when *they* finish, because
-            // rollover is driven by the user's league rather than by each
-            // competition finishing independently. Fix requires a per-competition
-            // completion hook separate from the global rollover trigger.
+        if !plan.renews(competition) {
+            // Mid-season, or finished and waiting for the rest of its country or for its own
+            // first match to come near: renewed on a day of its own (see [`renewal`]).
             continue;
         }
 
@@ -914,6 +956,90 @@ pub fn backfill_last_season_rollover(game: &mut Game) -> bool {
     game.last_season_rollover_on.is_some()
 }
 
+/// Records a finished division on its clubs: the season in each club's history, the prize for
+/// its place, the transfer budget for the season to come, and what the table does to each
+/// club's reputation. `paid_on` dates the prize. True when `watched` was paid one.
+fn pay_out_division(
+    game: &mut Game,
+    division: &FinishedDivision,
+    paid_on: &str,
+    watched: &str,
+) -> bool {
+    let (tier, season) = (division.tier, division.season);
+    let mut watched_was_paid = false;
+    for (idx, standing) in division.standings.iter().enumerate() {
+        let position = (idx + 1) as u32;
+        let prize_money = division_prize_money(position, tier);
+        let team_id = standing.team_id.clone();
+        let prize_posted = if prize_money > 0 {
+            let date = chrono::NaiveDate::parse_from_str(paid_on, "%Y-%m-%d")
+                .unwrap_or_else(|_| game.clock.current_date.date_naive());
+            match crate::finances::post(
+                game,
+                &team_id,
+                prize_money,
+                crate::finances::CashKind::PrizeMoney,
+                date,
+            ) {
+                Ok(_) => true,
+                Err(err) => {
+                    log::error!("end-of-season prize post failed for {team_id}: {err}");
+                    false
+                }
+            }
+        } else {
+            false
+        };
+        if prize_posted && team_id == watched {
+            watched_was_paid = true;
+        }
+        if let Some(team) = game.teams.iter_mut().find(|t| t.id == team_id) {
+            team.history.push(TeamSeasonRecord {
+                season,
+                league_position: position,
+                played: standing.played,
+                won: standing.won,
+                drawn: standing.drawn,
+                lost: standing.lost,
+                goals_for: standing.goals_for,
+                goals_against: standing.goals_against,
+                competition_id: division.competition_id.clone(),
+            });
+            team.form.clear();
+
+            if prize_posted {
+                team.financial_ledger.push(FinancialTransaction {
+                    date: paid_on.to_string(),
+                    description: prize_money_ledger_description(
+                        season,
+                        position,
+                        position_suffix(position),
+                    ),
+                    amount: prize_money,
+                    kind: FinancialTransactionKind::PrizeMoney,
+                });
+            }
+
+            // Refresh the transfer envelope for the new season. Formula
+            // matches worldgen (generator/mod.rs:543): 15% of finance.
+            // Since `execute_transfer` debits the budget on every buy and
+            // no other path adds to it, without this refill the market
+            // would freeze after 2-3 seasons as every club drained to
+            // zero.
+            // Clamp at zero — unlike worldgen (which only ever sees fresh
+            // positive finance), end-of-season runs on live state where a
+            // heavily indebted club can have negative `finance`. A
+            // negative envelope would still be rejected by
+            // `make_transfer_bid`, but showing "€-1.2M transfer budget"
+            // in the UI reads worse than a hard zero.
+            team.transfer_budget = ((team.finance as f64 * 0.15) as i64).max(0);
+        }
+    }
+
+    crate::reputation::update_team_reputation(game, &division.standings);
+    watched_was_paid
+}
+
 pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     // Before any competition is regenerated: a home fixture played since the last Monday is paid
     // now, while it is still in the calendar, and the Monday after the rollover pays nothing twice.
@@ -1009,7 +1135,11 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     // 4. Record team season history, pay prize money, and update reputation for
     //    every league division — not just the user's competition — so the whole
     //    pyramid crowns champions and keeps records.
-    let divisions = division_standings_with_tiers(game);
+    //
+    //    Only the divisions this rollover settles: a foreign country that is still playing is
+    //    paid, and moves its clubs, on its own day (see [`renewal`]).
+    let plan = renewal::RolloverPlan::at(game);
+    let divisions = finished_divisions(game, |league| plan.renews(league));
     let user_division_tier = divisions
         .iter()
         .find(|division| {
@@ -1022,82 +1152,7 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
         .unwrap_or(0);
     let mut user_prize_posted = false;
     for division in divisions {
-        let (division_standings, tier, season, competition_id) = (
-            division.standings,
-            division.tier,
-            division.season,
-            division.competition_id,
-        );
-        for (idx, standing) in division_standings.iter().enumerate() {
-            let position = (idx + 1) as u32;
-            let prize_money = division_prize_money(position, tier);
-            let team_id = standing.team_id.clone();
-            let prize_posted = if prize_money > 0 {
-                let date = chrono::NaiveDate::parse_from_str(&last_fixture_date, "%Y-%m-%d")
-                    .unwrap_or_else(|_| game.clock.current_date.date_naive());
-                match crate::finances::post(
-                    game,
-                    &team_id,
-                    prize_money,
-                    crate::finances::CashKind::PrizeMoney,
-                    date,
-                ) {
-                    Ok(_) => true,
-                    Err(err) => {
-                        log::error!("end-of-season prize post failed for {team_id}: {err}");
-                        false
-                    }
-                }
-            } else {
-                false
-            };
-            if prize_posted && team_id == user_team_id {
-                user_prize_posted = true;
-            }
-            if let Some(team) = game.teams.iter_mut().find(|t| t.id == team_id) {
-                team.history.push(TeamSeasonRecord {
-                    season,
-                    league_position: position,
-                    played: standing.played,
-                    won: standing.won,
-                    drawn: standing.drawn,
-                    lost: standing.lost,
-                    goals_for: standing.goals_for,
-                    goals_against: standing.goals_against,
-                    competition_id: competition_id.clone(),
-                });
-                team.form.clear();
-
-                if prize_posted {
-                    team.financial_ledger.push(FinancialTransaction {
-                        date: last_fixture_date.clone(),
-                        description: prize_money_ledger_description(
-                            season,
-                            position,
-                            position_suffix(position),
-                        ),
-                        amount: prize_money,
-                        kind: FinancialTransactionKind::PrizeMoney,
-                    });
-                }
-
-                // Refresh the transfer envelope for the new season. Formula
-                // matches worldgen (generator/mod.rs:543): 15% of finance.
-                // Since `execute_transfer` debits the budget on every buy and
-                // no other path adds to it, without this refill the market
-                // would freeze after 2-3 seasons as every club drained to
-                // zero.
-                // Clamp at zero — unlike worldgen (which only ever sees fresh
-                // positive finance), end-of-season runs on live state where a
-                // heavily indebted club can have negative `finance`. A
-                // negative envelope would still be rejected by
-                // `make_transfer_bid`, but showing "€-1.2M transfer budget"
-                // in the UI reads worse than a hard zero.
-                team.transfer_budget = ((team.finance as f64 * 0.15) as i64).max(0);
-            }
-        }
-
-        crate::reputation::update_team_reputation(game, &division_standings);
+        user_prize_posted |= pay_out_division(game, &division, &last_fixture_date, &user_team_id);
     }
 
     // 5. Record player career entries and reset stats
@@ -1183,7 +1238,8 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     //    Each competition computes its own next-season start from its stored
     //    season_start_month; `rollover_anchor` is just the global trigger point.
     let next_season = season + 1;
-    let rollover_anchor = game.clock.current_date + Duration::days(28);
+    let rollover_anchor =
+        game.clock.current_date + Duration::days(renewal::BREAK_BETWEEN_EDITIONS_DAYS as i64);
     let user_division_before =
         user_division(game, &user_team_id).map(|division| (division.id.clone(), division.priority));
     regenerate_competitions_for_new_season(game, next_season, rollover_anchor);
@@ -1880,7 +1936,7 @@ mod tests {
         game.competitions.push(finished);
 
         assert_eq!(
-            crate::turn::cup_renewal::renew_finished_cups(&mut game, "2034-07-01"),
+            crate::turn::cup_renewal::renew_finished_cups(&mut game, "2034-07-01").len(),
             1
         );
         let renewed = serde_json::to_string(&game.competitions[0]).unwrap();
@@ -1930,7 +1986,7 @@ mod tests {
         }
         crate::schedule::advance_knockout_competition_round(cup);
         assert_eq!(
-            crate::turn::cup_renewal::renew_finished_cups(&mut game, "2034-07-02"),
+            crate::turn::cup_renewal::renew_finished_cups(&mut game, "2034-07-02").len(),
             1
         );
 
@@ -1967,7 +2023,7 @@ mod tests {
         game.competitions = vec![league, cup, continental];
 
         assert_eq!(
-            crate::turn::cup_renewal::renew_finished_cups(&mut game, "2034-07-01"),
+            crate::turn::cup_renewal::renew_finished_cups(&mut game, "2034-07-01").len(),
             1
         );
         let europe = game

@@ -9,6 +9,8 @@ type Group = NonNullable<LeagueData["groups"]>[number];
 interface TournamentsGroupTableProps {
   group: Group;
   teams: TournamentsTeamLookup;
+  /** The group is a league phase: one table the whole field is in, with no letter to show. */
+  leaguePhase?: boolean;
 }
 
 /**
@@ -18,16 +20,25 @@ interface TournamentsGroupTableProps {
  * context menu, and rows that only open when the team is a club — a World Cup
  * group is national teams, which have no page to go to.
  */
-export default function TournamentsGroupTable({ group, teams }: TournamentsGroupTableProps) {
+export default function TournamentsGroupTable({
+  group,
+  teams,
+  leaguePhase = false,
+}: TournamentsGroupTableProps) {
   const { t } = useTranslation();
   const { userTeamId, isClubTeam, resolveTeamName, onSelectTeam } = teams;
   const groupStandings = [...group.standings].sort(byTablePosition);
 
   return (
-    <div data-testid={`tournaments-group-${group.id}`}>
+    <div
+      data-testid={`tournaments-group-${group.id}`}
+      className={leaguePhase ? "md:col-span-2" : undefined}
+    >
       <div className="px-4 py-2 border-b border-line bg-sunken">
         <h5 className="font-heading font-bold text-caption uppercase tracking-label text-fg-muted">
-          {t("tournaments.group", { name: group.name })}
+          {leaguePhase
+            ? t("tournaments.leaguePhase")
+            : t("tournaments.group", { name: group.name })}
         </h5>
       </div>
       <table className="w-full text-left border-collapse">

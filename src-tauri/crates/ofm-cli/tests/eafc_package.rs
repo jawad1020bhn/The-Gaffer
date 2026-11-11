@@ -94,7 +94,8 @@ fn the_package_builds_the_world_it_promises() {
         .as_ref()
         .map_or(0, |file| file.competitions.len());
     let counted = world.competitions.len() + defined;
-    assert_eq!(counted, 38, "competitions");
+    // 34 leagues, 22 domestic cups, 5 super cups and 7 continental competitions.
+    assert_eq!(counted, 68, "competitions");
 }
 
 #[test]
@@ -141,6 +142,263 @@ fn every_club_badge_the_package_names_is_a_real_png_it_ships() {
         "the package is expected to leave some clubs without a badge"
     );
     let _ = package;
+}
+
+#[test]
+fn every_competition_starts_a_career_with_a_logo_the_package_ships() {
+    // The user-visible failure this guards: the package named a logo for every
+    // competition and a career drew none, because the path stopped at the
+    // definition and never reached the competition a career plays. So this
+    // follows it the whole way: definition, built competition, file on disk.
+    let Some((_, world)) = built_world() else {
+        return;
+    };
+    let definitions = world
+        .competition_definitions
+        .as_ref()
+        .expect("the package's competitions reach the world as definitions");
+
+    // What a new career does with them, on the day a 2027 career opens.
+    let opening = ofm_core::world::start_date_for_year(2027).expect("a valid start year");
+    let built = ofm_core::generator::resolve_definitions(definitions, &world, 2027, opening);
+    assert_eq!(
+        built.len(),
+        definitions.competitions.len(),
+        "every authored competition is built"
+    );
+
+    let png = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    let dir = package_dir().expect("the package directory");
+    for comp in &built {
+        let Some(path) = comp.logo.as_deref() else {
+            panic!("{} starts a career without a logo", comp.id);
+        };
+        let bytes = std::fs::read(dir.join(path))
+            .unwrap_or_else(|_| panic!("{} names {path}, which is not in the package", comp.id));
+        assert_eq!(&bytes[..8], &png, "{} logo is not a PNG", comp.id);
+        // 160 px on its longer side: EA's league logos are trimmed and scaled
+        // down to that, which stays sharp on the 56 px tile the game draws.
+        let width = u32::from_be_bytes([bytes[16], bytes[17], bytes[18], bytes[19]]);
+        let height = u32::from_be_bytes([bytes[20], bytes[21], bytes[22], bytes[23]]);
+        assert_eq!(width.max(height), 160, "{} logo size", comp.id);
+    }
+}
+
+#[test]
+fn a_career_opens_with_the_cups_and_continental_competitions_the_package_authors() {
+    // The package authors more than leagues: each country's cups and each
+    // confederation's competitions, in the formats EA's career mode plays them
+    // in. This builds them the way a new career does and checks the shapes the
+    // importer meant, because a format the engine reads differently still loads.
+    let Some((_, world)) = built_world() else {
+        return;
+    };
+    let definitions = world
+        .competition_definitions
+        .as_ref()
+        .expect("the package's competitions reach the world as definitions");
+    let opening = ofm_core::world::start_date_for_year(2027).expect("a valid start year");
+    let built = ofm_core::generator::resolve_definitions(definitions, &world, 2027, opening);
+
+    let mut kinds: HashMap<String, usize> = HashMap::new();
+    for competition in &built {
+        *kinds.entry(format!("{:?}", competition.kind)).or_default() += 1;
+    }
+    assert_eq!(kinds.get("League"), Some(&34), "leagues");
+    assert_eq!(kinds.get("Cup"), Some(&27), "domestic cups and super cups");
+    assert_eq!(kinds.get("ContinentalClub"), Some(&7), "continental");
+
+    let find = |id: &str| {
+        built
+            .iter()
+            .find(|competition| competition.id == id)
+            .unwrap_or_else(|| panic!("{id} is not built"))
+    };
+
+    // A league plays itself as often as EA's schedule comes nearest to: three
+    // times round for Scotland's twelve clubs, four for Ireland's ten, once for
+    // the thirty of MLS, twice for everyone else.
+    let league_fixtures = [
+        ("eng-premier-league", 20, 2),
+        ("sco-premiership", 12, 3),
+        ("ie-premier-division", 10, 4),
+        ("us-major-league-soccer", 30, 1),
+        ("ar-primera-division", 30, 1),
+    ];
+    for (id, clubs, legs) in league_fixtures {
+        let league = find(id);
+        assert_eq!(league.participant_ids.len(), clubs, "{id} clubs");
+        assert_eq!(
+            league.fixtures.len(),
+            clubs * (clubs - 1) / 2 * legs,
+            "{id} fixtures"
+        );
+    }
+
+    // Group stages: clubs, groups, clubs per group, meetings per pair. The
+    // knockout rounds are drawn once the groups are played, so a new edition
+    // holds its group fixtures and nothing else.
+    let group_stages = [
+        ("conmebol-libertadores", 32, 8, 4, 2),
+        ("conmebol-sudamericana", 32, 8, 4, 2),
+        ("eng-efl-trophy", 48, 8, 6, 1),
+        ("tr-turkiye-kupasi", 18, 2, 9, 1),
+        ("se-svenska-cupen", 16, 4, 4, 1),
+        ("ro-cupa-romaniei", 16, 4, 4, 1),
+    ];
+    for (id, clubs, groups, group_size, legs) in group_stages {
+        let competition = find(id);
+        assert_eq!(competition.participant_ids.len(), clubs, "{id} clubs");
+        assert_eq!(competition.groups.len(), groups, "{id} groups");
+        for group in &competition.groups {
+            assert_eq!(
+                group.team_ids.len(),
+                group_size,
+                "{id} group {}",
+                group.name
+            );
+        }
+        assert_eq!(
+            competition.fixtures.len(),
+            groups * (group_size * (group_size - 1) / 2) * legs,
+            "{id} fixtures"
+        );
+    }
+
+    // League phases: clubs, matches each plays, clubs that go on. One table the whole
+    // field is in, where a club meets a few of the others once, not all of them.
+    let league_phases = [
+        ("uefa-champions-league", 36, 8, 24),
+        ("uefa-europa-league", 36, 8, 24),
+        ("uefa-conference-league", 36, 6, 24),
+        ("afc-champions-league-elite", 16, 6, 8),
+    ];
+    for (id, clubs, rounds, qualifiers) in league_phases {
+        let competition = find(id);
+        assert_eq!(competition.participant_ids.len(), clubs, "{id} clubs");
+        assert_eq!(competition.groups.len(), 1, "{id} tables");
+        assert_eq!(competition.groups[0].team_ids.len(), clubs, "{id} table");
+        assert_eq!(
+            competition.rules.group_stage_rounds as usize, rounds,
+            "{id}"
+        );
+        assert_eq!(
+            competition.rules.group_qualifiers_per_group as usize, qualifiers,
+            "{id} qualifiers"
+        );
+        assert_eq!(
+            competition.fixtures.len(),
+            clubs * rounds / 2,
+            "{id} fixtures"
+        );
+        for club in &competition.participant_ids {
+            let matches = competition
+                .fixtures
+                .iter()
+                .filter(|fixture| &fixture.home_team_id == club || &fixture.away_team_id == club)
+                .count();
+            assert_eq!(matches, rounds, "{id}: {club}");
+        }
+    }
+
+    // Straight knockouts: every club is drawn, and no groups are made.
+    let knockouts = [
+        ("eng-fa-cup", 92),
+        ("eng-efl-cup", 92),
+        ("de-dfb-pokal", 56),
+        ("es-copa-del-rey", 42),
+        ("concacaf-champions-cup", 8),
+    ];
+    for (id, clubs) in knockouts {
+        let cup = find(id);
+        assert_eq!(cup.participant_ids.len(), clubs, "{id} clubs");
+        assert!(cup.groups.is_empty(), "{id} has groups");
+        assert!(!cup.fixtures.is_empty(), "{id} has no first round");
+    }
+
+    // A domestic cup names the divisions its clubs come from, so its field follows
+    // promotion and relegation; a super cup names none, and is filled by berths.
+    assert_eq!(
+        find("eng-efl-trophy").rules.entrants_from,
+        ["eng-league-one", "eng-league-two"]
+    );
+    assert_eq!(find("eng-fa-cup").rules.entrants_from.len(), 4);
+    let super_cups = [
+        ("eng-community-shield", 2),
+        ("fr-trophee-des-champions", 2),
+        ("de-supercup", 2),
+        ("it-supercoppa-italiana", 4),
+        ("es-supercopa-de-espana", 4),
+    ];
+    for (id, clubs) in super_cups {
+        let cup = find(id);
+        assert_eq!(cup.participant_ids.len(), clubs, "{id} clubs");
+        assert!(cup.rules.entrants_from.is_empty(), "{id}");
+        assert!(cup.berths.is_empty(), "{id} is not a way into Europe");
+        assert!(
+            built
+                .iter()
+                .any(|source| source.berths.iter().any(|berth| berth.target == id)),
+            "{id} has no berth into it"
+        );
+    }
+
+    // Qualification is authored, not left to the engine's guess: a top division
+    // names the continental places its table earns, and a cup the one its
+    // winner does.
+    let berth_targets = |id: &str| -> Vec<String> {
+        find(id)
+            .berths
+            .iter()
+            .map(|berth| berth.target.clone())
+            .collect()
+    };
+    assert_eq!(
+        berth_targets("eng-premier-league"),
+        [
+            "eng-community-shield",
+            "uefa-champions-league",
+            "uefa-europa-league"
+        ]
+    );
+    assert_eq!(
+        berth_targets("pt-primeira-liga"),
+        [
+            "uefa-champions-league",
+            "uefa-europa-league",
+            "uefa-conference-league"
+        ]
+    );
+    assert_eq!(
+        berth_targets("eng-fa-cup"),
+        ["eng-community-shield", "uefa-europa-league"]
+    );
+    assert_eq!(berth_targets("eng-efl-cup"), ["uefa-conference-league"]);
+    assert_eq!(
+        berth_targets("uefa-europa-league"),
+        ["uefa-champions-league"]
+    );
+    assert_eq!(
+        berth_targets("ar-primera-division"),
+        ["conmebol-libertadores", "conmebol-sudamericana"]
+    );
+    assert_eq!(berth_targets("au-a-league"), ["afc-champions-league-elite"]);
+    assert!(berth_targets("eng-championship").is_empty());
+    assert!(berth_targets("uefa-champions-league").is_empty());
+
+    // No club starts in two competitions of one confederation: the engine would
+    // have it play two group stages at once.
+    let mut placed: HashMap<(Option<&str>, &str), &str> = HashMap::new();
+    for competition in &built {
+        if format!("{:?}", competition.kind) != "ContinentalClub" {
+            continue;
+        }
+        for club in &competition.participant_ids {
+            let key = (competition.region_id.as_deref(), club.as_str());
+            let already = placed.insert(key, competition.id.as_str());
+            assert_eq!(already, None, "{club} is also in {}", competition.id);
+        }
+    }
 }
 
 #[test]
