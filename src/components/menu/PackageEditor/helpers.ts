@@ -379,6 +379,15 @@ export function buildParticipantSpec(
 }
 
 /**
+ * `spec` with the competitions a cup's clubs come from carried over from
+ * `current`. The form edits who is in the first season's field and has no
+ * control for `entrantsFrom`, so replacing the participants must not drop it.
+ */
+export function keepEntrantsFrom(spec: ParticipantSpec, current: ParticipantSpec): ParticipantSpec {
+  return current.entrantsFrom?.length ? { ...spec, entrantsFrom: current.entrantsFrom } : spec;
+}
+
+/**
  * Apply a patch to the optional fallback-league config, collapsing back to
  * `null` once every field is blank. Each field is an override of an engine
  * default, so a config with nothing set carries no meaning — dropping it keeps

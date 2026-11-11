@@ -12,11 +12,13 @@ import {
   COMPETITION_TYPES,
   SELECTOR_KINDS,
   buildParticipantSpec,
+  keepEntrantsFrom,
   toSlug,
 } from "./helpers";
 import type {
   CompetitionDef,
   ConfederationDef,
+  ParticipantSpec,
   SelectorKind,
   SelectorSpec,
   TeamDef,
@@ -121,29 +123,33 @@ export function CompetitionForm({
     if (idAutoMode) updateField("id", toSlug(v));
   }
 
+  function updateParticipants(spec: ParticipantSpec) {
+    updateField("participants", keepEntrantsFrom(spec, editing.participants));
+  }
+
   function switchMode(mode: "explicit" | "selector") {
     setParticipantMode(mode);
-    updateField("participants", buildParticipantSpec(mode, explicitTeams.join("\n"), selector));
+    updateParticipants(buildParticipantSpec(mode, explicitTeams.join("\n"), selector));
   }
 
   function addExplicitTeam(teamId: string) {
     if (!teamId || explicitTeams.includes(teamId)) return;
     const updated = [...explicitTeams, teamId];
     setExplicitTeams(updated);
-    updateField("participants", { explicit: updated });
+    updateParticipants({ explicit: updated });
   }
 
   function removeExplicitTeam(teamId: string) {
     const updated = explicitTeams.filter((t) => t !== teamId);
     setExplicitTeams(updated);
-    updateField("participants", { explicit: updated });
+    updateParticipants({ explicit: updated });
   }
 
   function updateSelector(patch: Partial<SelectorSpec>) {
     const updated = { ...selector, ...patch };
     setSelector(updated);
     if (participantMode === "selector") {
-      updateField("participants", { selector: updated });
+      updateParticipants({ selector: updated });
     }
   }
 

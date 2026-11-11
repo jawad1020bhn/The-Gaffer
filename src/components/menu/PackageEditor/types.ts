@@ -259,6 +259,8 @@ export interface SelectorSpec {
 export interface ParticipantSpec {
   explicit?: string[];
   selector?: SelectorSpec;
+  /** Cups only: the competitions whose clubs make up the field each season. */
+  entrantsFrom?: string[];
 }
 
 export interface CompetitionDef {
