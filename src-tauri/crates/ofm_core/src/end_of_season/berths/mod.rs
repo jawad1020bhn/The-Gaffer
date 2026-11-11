@@ -12,6 +12,7 @@ mod pyramid;
 #[cfg(test)]
 mod test_support;
 
+pub(super) use continental::{cup_champion, last_final_table};
 pub(super) use domestic::{
     apply_domestic_berth_promotion_relegation, resolve_domestic_berth_fields,
 };

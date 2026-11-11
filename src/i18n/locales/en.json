@@ -2987,6 +2987,8 @@
         "berthInvalidRange": "Invalid berth position range {{from}}–{{to}}.",
         "berthRequiresLeague": "Position and playoff berths can only be awarded by a league table.",
         "berthRequiresCup": "A cup-winner berth can only be awarded by a knockout competition.",
+        "entrantsFromRequiresCup": "Only a cup can take its clubs from other competitions (entrantsFrom).",
+        "entrantsFromUnknown": "entrantsFrom names \"{{target}}\", which is not another competition of this file or is listed twice.",
         "berthPlayoffTooSmall": "A playoff berth needs at least two contestants.",
         "emptyId": "A competition is missing its id.",
         "duplicateId": "Duplicate competition id \"{{id}}\".",

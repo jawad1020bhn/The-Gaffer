@@ -11,8 +11,11 @@ use domain::staff::{Staff, StaffAttributes, StaffRole};
 use domain::team::{FinancialTransaction, FinancialTransactionKind, TeamSeasonRecord};
 
 mod berths;
+pub(crate) mod cup_fields;
 pub(crate) mod renewal;
 pub(crate) mod season_calendar;
+#[cfg(test)]
+pub(crate) mod test_world;
 use berths::{
     apply_domestic_berth_promotion_relegation, apply_pyramid_promotion_relegation_in,
     resolve_domestic_berth_fields,
@@ -584,6 +587,24 @@ fn regenerate_competitions_for_new_season(
             && (competition.fixtures.is_empty() || plan.renews(competition))
         {
             competition.participant_ids = entrants.clone();
+        }
+    }
+
+    // The domestic cups this rollover renews are drawn now: the divisions have their new clubs
+    // and still show the tables they finished with, and no cup has been reset.
+    let cup_fields: std::collections::HashMap<String, Vec<String>> = game
+        .competitions
+        .iter()
+        .filter(|competition| plan.renews(competition))
+        .filter_map(|competition| {
+            let next = season_calendar::next_edition(competition, &game.clock, rollover_anchor);
+            cup_fields::renewed_cup_field(game, competition, next.season)
+                .map(|field| (competition.id.clone(), field))
+        })
+        .collect();
+    for competition in game.competitions.iter_mut() {
+        if let Some(field) = cup_fields.get(&competition.id) {
+            competition.participant_ids = field.clone();
         }
     }
 

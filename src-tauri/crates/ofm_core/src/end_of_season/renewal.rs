@@ -126,6 +126,16 @@ pub(crate) fn ladder_units(game: &Game, today: &str) -> BTreeMap<LadderUnit, Uni
     units
 }
 
+/// The countries with a division that has played its season out and not been renewed: their
+/// clubs have still to go up and down.
+pub(crate) fn countries_with_a_season_to_settle(game: &Game, today: &str) -> BTreeSet<String> {
+    ladder_units(game, today)
+        .into_iter()
+        .filter(|(_, progress)| progress.ended > 0)
+        .filter_map(|(unit, _)| unit.country().map(str::to_string))
+        .collect()
+}
+
 /// The units the player's own club plays its league football in. Empty for a manager out of
 /// work, and for one whose club plays in no league.
 pub(crate) fn home_units(game: &Game) -> BTreeSet<LadderUnit> {
@@ -251,6 +261,28 @@ fn continental_group_renews_at_rollover(
         })
 }
 
+/// Whether a finished domestic cup is left by this rollover for a day of its own: its field is
+/// read from its country's divisions or cups (`cup_fields`), that country's ladder is not
+/// settled by this rollover, and a day of its own will come (it has a configured start and an
+/// edition played). Drawn now, it would take the clubs of a season that is still being played.
+fn waits_for_its_country(
+    game: &Game,
+    cup: &League,
+    settles: impl Fn(&LadderUnit) -> bool,
+    units: &BTreeMap<LadderUnit, UnitProgress>,
+) -> bool {
+    if cup.season_start_month == 0 || cup.fixtures.is_empty() {
+        return false;
+    }
+    let Some(country) = cup.country_id.as_deref() else {
+        return false;
+    };
+    let unit = LadderUnit::Country(country.to_string());
+    units.contains_key(&unit)
+        && !settles(&unit)
+        && super::cup_fields::follows_other_competitions(game, cup)
+}
+
 /// What one rollover renews, decided once, before it moves anything.
 pub(crate) struct RolloverPlan {
     renewed: HashSet<String>,
@@ -297,6 +329,8 @@ impl RolloverPlan {
                 is_league_season_ended(competition) && settles(unit)
             } else if is_continental_cup(competition) {
                 continental.contains(&index)
+            } else if waits_for_its_country(game, competition, settles, &units) {
+                false
             } else {
                 is_regenerated_at_rollover(competition)
             };

@@ -361,10 +361,27 @@ pub fn seed_knockout_round(
 }
 
 pub fn advance_knockout_competition_round(cup: &mut League) {
+    // A domestic cup draws each round by lot from the winners and the clubs that had a bye.
+    // Paired in order, the clubs with a bye, the strongest, would all meet each other in the
+    // round they come in at. The lot is the cup's own: its id, its season, the round and who is
+    // left, so a replayed save draws the same ties.
+    let draw = (cup.kind == CompetitionType::Cup).then(|| {
+        (
+            cup.id.clone(),
+            format!("{}:{}", cup.season, cup.knockout_rounds.len()),
+        )
+    });
     // Winners and byes advance together, in that order, until a champion.
     advance_knockout_round_with(cup, |winners, byes| {
         let mut advancing = winners.to_vec();
         advancing.extend(byes.iter().cloned());
+        if let Some((cup_id, round)) = &draw
+            && advancing.len() > 2
+        {
+            use rand::seq::SliceRandom;
+            let key = format!("{round}:{}", advancing.join(","));
+            advancing.shuffle(&mut crate::seed::rng_for_seed(0, cup_id, &key));
+        }
         (advancing.len() >= 2).then_some(advancing)
     });
 }

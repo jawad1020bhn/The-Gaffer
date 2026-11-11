@@ -63,6 +63,11 @@ pub struct CompetitionRules {
     /// like the World Cup where multiple matches happen on the same day.
     #[serde(default = "default_knockout_matches_per_day")]
     pub knockout_matches_per_day: u32,
+    /// Cups only: the competitions whose clubs make up the field, most senior first. When it is
+    /// not empty the field is rebuilt from their clubs each time the cup is renewed, so it
+    /// follows promotion and relegation; empty keeps the field the cup had.
+    #[serde(default)]
+    pub entrants_from: Vec<String>,
 }
 
 fn default_knockout_matches_per_day() -> u32 {
@@ -81,6 +86,7 @@ impl Default for CompetitionRules {
             group_matchday_gap_days: 7,
             knockout_round_gap_days: 14,
             knockout_matches_per_day: 1,
+            entrants_from: Vec::new(),
         }
     }
 }

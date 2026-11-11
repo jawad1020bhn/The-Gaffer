@@ -377,6 +377,23 @@ export function validatePackage({ documents, countryCodes, regionIds }) {
     const participants = competition.participants ?? {};
     const hasExplicit = Array.isArray(participants.explicit);
     const hasSelector = isPlainObject(participants.selector);
+    // Mirrors `validate_entrants_from` in competition_def.rs.
+    const entrantsFrom = participants.entrantsFrom ?? [];
+    if (!Array.isArray(entrantsFrom)) {
+      error(where, "entrantsFrom must be a list of competition ids");
+    } else if (entrantsFrom.length > 0) {
+      if (format.kind === "LeagueTable") error(where, "only a cup can set entrantsFrom");
+      const named = new Set();
+      for (const source of entrantsFrom) {
+        if (!knownCompetitionIds.has(source) || source === competition.id || named.has(source)) {
+          error(
+            where,
+            `entrantsFrom names "${source}", which is not another competition or is listed twice`,
+          );
+        }
+        named.add(source);
+      }
+    }
     if (hasExplicit === hasSelector)
       error(where, "participants must set exactly one of explicit or selector");
     if (hasExplicit) {

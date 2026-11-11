@@ -241,6 +241,24 @@ export function drawOrder(competitionId, clubIds) {
     .map((entry) => entry.clubId);
 }
 
+/**
+ * A cup's first field, in the order the engine draws it in.
+ *
+ * `field` is the divisions' clubs, most senior division first and each as it
+ * last finished. A knockout pairs the list two by two after giving the byes a
+ * field that is not a power of two needs to the clubs at its head, so those
+ * stay where they are and the rest are put in `drawOrder`. A cup that opens
+ * with groups seeds them from the whole list, which is drawn. From the second
+ * season on the engine does the same from `entrantsFrom`.
+ */
+export function firstDraw(competitionId, field, format) {
+  if (format.kind !== "Knockout") return drawOrder(competitionId, field);
+  let bracket = 1;
+  while (bracket < field.length) bracket *= 2;
+  const byes = bracket - field.length;
+  return [...field.slice(0, byes), ...drawOrder(competitionId, field.slice(byes))];
+}
+
 /** "EFL Cup (Carabao Cup)" is recorded with its sponsor; the competition is "EFL Cup". */
 export function competitionName(recorded) {
   return (
@@ -623,7 +641,12 @@ export function planCompetitions({
     if (feederIds.length === 0) continue;
     const eaLeagueId = competition.assetIds[0];
     const recorded = crosswalk.get(eaLeagueId);
-    const feeders = [...new Set(feederIds)].map((id) => index.byEaLeagueId.get(id)).filter(Boolean);
+    // Most senior division first: that is the order the engine rebuilds the
+    // field in each season, and the clubs at the head of it take the byes.
+    const feeders = [...new Set(feederIds)]
+      .map((id) => index.byEaLeagueId.get(id))
+      .filter(Boolean)
+      .sort((a, b) => a.tier - b.tier || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
     const field = [...new Set(feeders.flatMap((league) => league.table))];
     if (!recorded || field.length < 2) {
       skipped.push({
@@ -633,12 +656,12 @@ export function planCompetitions({
       });
       continue;
     }
-    cups.push({ competition, eaLeagueId, recorded, country: feeders[0].country, field });
+    cups.push({ competition, eaLeagueId, recorded, country: feeders[0].country, field, feeders });
   }
   cups.sort((a, b) => a.eaLeagueId - b.eaLeagueId);
 
   const cupsOfCountry = new Map();
-  for (const { competition, eaLeagueId, recorded, country, field } of cups) {
+  for (const { competition, eaLeagueId, recorded, country, field, feeders } of cups) {
     const top = topDivision.get(country);
     const format = domesticCupFormat(competition, field.length);
     const start = dayOfYear(
@@ -663,7 +686,10 @@ export function planCompetitions({
       // before the EFL Cup before the EFL Trophy.
       priority: tiersOfCountry.get(country) + placed,
       format,
-      participants: { explicit: drawOrder(recorded.competitionId, field) },
+      participants: {
+        explicit: firstDraw(recorded.competitionId, field, format),
+        entrantsFrom: feeders.map((league) => league.id),
+      },
       berths: [],
       seasonStartMonth: start.month,
       seasonStartDay: start.day,
@@ -671,6 +697,83 @@ export function planCompetitions({
     competitions.push(entity);
     cupByObjectId.set(competition.objectId, entity.id);
     cupEaLeagueId.set(entity.id, eaLeagueId);
+  }
+
+  // --- super cups ---------------------------------------------------------
+  // A super cup EA fills from one league's table and one cup's: the champion
+  // and the cup's holder, or the top two of each. The engine knows a cup's
+  // winner and nobody else in it, so a cup gives one club whatever EA asks of
+  // it, and the league's table makes up the number: the engine reads the
+  // holder, then the league's places, then the next clubs down that table.
+  // The two that take the winners of two continental competitions are left
+  // out: the engine gives a club one continental competition and no other.
+  const superCupBerths = { league: new Map(), cup: new Map() };
+  for (const competition of compdata.competitions) {
+    if (competition.type !== "SUPERCUP") continue;
+    const eaLeagueId = competition.assetIds[0];
+    const recorded = crosswalk.get(eaLeagueId);
+    const asked = competition.tasks
+      .filter((task) => task.when === "start" && task.action === "FillFromCompTable")
+      .map((task) => ({
+        league: index.byObjectId.get(task.args[1]),
+        cup: cupByObjectId.get(task.args[1]),
+        count: task.args[2],
+      }));
+    const fromLeague = asked.find((source) => source.league);
+    const fromCup = asked.find((source) => source.cup);
+    const skip = (reason) => skipped.push({ code: competition.code, eaLeagueId, reason });
+    if (!recorded) {
+      skip("no competition id recorded");
+      continue;
+    }
+    if (asked.length !== 2 || !fromLeague || !fromCup) {
+      skip("not one league and one cup of the package");
+      continue;
+    }
+    const league = fromLeague.league;
+    const size = fromLeague.count + fromCup.count;
+    const holder = holders.get(cupEaLeagueId.get(fromCup.cup)) ?? null;
+    const field = [...new Set([...(holder ? [holder] : []), ...league.table])].slice(0, size);
+    if (field.length < size) {
+      skip(`only ${field.length} of ${size} clubs`);
+      continue;
+    }
+    const top = topDivision.get(league.country);
+    const format = { kind: "Knockout" };
+    const start = dayOfYear(
+      domesticCupStartDay({
+        eaDay: firstMatchDay(competition) ?? seasonStartDay(top),
+        days: competitionDays(size, format),
+        leagueStartDay: seasonStartDay(top),
+        leagueDays: seasonDays(top),
+      }),
+    );
+    const placed = cupsOfCountry.get(league.country) ?? 0;
+    cupsOfCountry.set(league.country, placed + 1);
+    competitions.push({
+      schema: "competition",
+      id: recorded.competitionId,
+      name: competitionName(recorded.name ?? recorded.competitionId),
+      type: "Cup",
+      scope: "Domestic",
+      countryId: league.country,
+      regionId: top.region,
+      priority: tiersOfCountry.get(league.country) + placed,
+      format,
+      participants: { explicit: field },
+      berths: [],
+      seasonStartMonth: start.month,
+      seasonStartDay: start.day,
+    });
+    superCupBerths.league.set(league.id, [
+      {
+        target: recorded.competitionId,
+        rule: { kind: "positionRange", from: 1, to: fromLeague.count },
+      },
+    ]);
+    superCupBerths.cup.set(fromCup.cup, [
+      { target: recorded.competitionId, rule: { kind: "cupWinner" } },
+    ]);
   }
 
   // --- continental competitions and the berths into them ------------------
@@ -687,8 +790,8 @@ export function planCompetitions({
     cupEaLeagueId.set(recorded.competitionId, authored.eaLeagueId);
   }
 
-  const leagueBerths = new Map();
-  const berthsOfCup = new Map();
+  const leagueBerths = new Map(superCupBerths.league);
+  const berthsOfCup = new Map(superCupBerths.cup);
   const earned = new Map();
   const dropped = [];
   const positions = new Map();

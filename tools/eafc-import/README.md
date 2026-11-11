@@ -88,7 +88,7 @@ they are known in different ways:
   its id and its name: the importer authors a cup or a continental competition
   under the `competitionId` recorded for its EA league id (see
   [Cups, continental competitions and qualification](#cups-continental-competitions-and-qualification)).
-  27 of the 51 entries are competitions the FC 27 package has. The other 24 are
+  32 of the 51 entries are competitions the FC 27 package has. The other 19 are
   logos for competitions it does not have: they are packed under the id that
   competition is expected to get, and the importer sets `logo` on its own the
   day a competition with that id exists. Those ids are a naming convention, not
@@ -250,7 +250,7 @@ From the bundled **FC 27** database:
 |---|---|
 | Clubs | 684 |
 | Players | 18,875 |
-| Competitions | 63 (34 leagues, 22 domestic cups, 7 continental) |
+| Competitions | 68 (34 leagues, 22 domestic cups, 5 super cups, 7 continental) |
 | Countries | 46 |
 
 The FC 25 and FC 26 databases work too (`--version "FC 26"`); the encodings below
@@ -354,8 +354,25 @@ the competition's own league id (the two CONMEBOL competitions have such a
 list), then clubs that play in no league, by reputation, then any other club of
 the confederation. The run prints how many places of each field were earned.
 
-**Left out.** The seven super cups: the engine renews a domestic cup with the
-field it already has, and a super cup's field is new every season. The Russian
+**A cup's field, season after season.** A cup EA fills from whole divisions
+names them (`participants.entrantsFrom`, most senior first), and the engine
+rebuilds its field from the clubs they have each time the cup is renewed.
+`explicit` is the first season's field in the order the engine draws it: the
+byes a knockout needs go to the head of the list, the divisions' clubs as they
+last finished, and the rest are in a fixed pseudo-random order (`firstDraw`).
+
+**Super cups.** A `SUPERCUP` EA fills from one league and one cup of the
+package becomes a domestic knockout of two or four clubs with no field of its
+own to renew: the league carries a `positionRange` berth into it and the cup a
+`cupWinner` berth, and the engine reads the cup's holder, then those league
+places, then the next clubs down the table. EA asks the Italian and Spanish
+cups for their two finalists; a cup gives its winner, so the league makes up
+the four. The first season's field is the same sum on last season's table and
+holder.
+
+**Left out.** The UEFA Super Cup and the Recopa, which take the winners of two
+continental competitions: the engine gives a club one continental competition
+and no other. The Russian
 Cup and the Copa do Brasil, because the database has no Russian or Brazilian
 league to fill them. And the competitions the logo list reserves an id for that
 career mode has no structure for at all, such as the Greek Cup, the Copa

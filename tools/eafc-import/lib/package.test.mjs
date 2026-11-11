@@ -81,9 +81,15 @@ it("ships the competitions EA's structure files describe", () => {
   // every division has its cup and every confederation its competitions.
   const competitions = entities.get("competition");
   const count = (type) => competitions.filter((competition) => competition.type === type).length;
-  assert.equal(competitions.length, 63);
+  assert.equal(competitions.length, 68);
   assert.equal(count("League"), 34);
-  assert.equal(count("Cup"), 22);
+  // 22 domestic cups, each taking its clubs from divisions, and 5 super cups.
+  assert.equal(count("Cup"), 27);
+  const fromDivisions = competitions.filter(
+    (competition) => (competition.participants.entrantsFrom ?? []).length > 0,
+  );
+  assert.equal(fromDivisions.length, 22);
+  assert.ok(fromDivisions.every((competition) => competition.type === "Cup"));
   assert.equal(count("ContinentalClub"), 7);
   // A logo for each, so none falls back to a generated tile.
   assert.deepEqual(

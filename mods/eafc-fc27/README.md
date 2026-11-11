@@ -1,8 +1,14 @@
 # EA FC 27 — Clubs & Players
 
 An unofficial Openfoot Manager database of **684 clubs**, **18,875 player
-rows** and **63 competitions**, imported from the EA FC 27 database by
+rows** and **68 competitions**, imported from the EA FC 27 database by
 [`tools/eafc-import`](../../tools/eafc-import/README.md).
+
+**Seasons and cups (0.5.0):** every competition starts its next season on its
+own date, so no league waits a year for the player's season to end. A domestic
+cup takes the clubs its divisions have each season and is drawn anew, and **5
+super cups** are played by the cup's holder and the league's top clubs. See
+[Cups and continental competitions](#cups-and-continental-competitions).
 
 **Cups and continental competitions (0.4.0):** **22 domestic cups** and **7
 continental competitions**, with the league places and cup wins that qualify a
@@ -193,6 +199,30 @@ and the EFL Trophy the 48 of League One and League Two.
 
 Group stages in a cup are one meeting per pair. Every tie is a single match.
 
+A cup's field is made again each season from the clubs its divisions then
+have, so a club that goes down out of them leaves the cup and one that comes up
+joins it: the EFL Trophy is always the clubs of League One and League Two. A
+knockout is drawn by lot each season and again each round. The byes a field
+that is not a power of two needs go to the highest-placed clubs of the most
+senior division, so the 36 byes of the FA Cup are the Premier League's twenty
+and the Championship's top sixteen.
+
+**Super cups.** One match, or two semi-finals and a final, between the holder
+of the cup and the top of the league. A club that won both is replaced by the
+next club down the league.
+
+| Country | Super cup | Clubs | First match | Played by |
+|---|---|---|---|---|
+| England | FA Community Shield | 2 | 13 Aug | FA Cup holder, Premier League champion |
+| France | Trophée des Champions | 2 | 6 Aug | Coupe de France holder, Ligue 1 champion |
+| Germany | DFL-Supercup | 2 | 19 Aug | DFB-Pokal holder, Bundesliga champion |
+| Italy | Supercoppa Italiana | 4 | 21 Dec | Coppa Italia holder, Serie A's top two, then the next down |
+| Spain | Supercopa de España | 4 | 10 Jan | Copa del Rey holder, La Liga's top two, then the next down |
+
+EA gives the Italian and Spanish super cups the cup's two finalists. The engine
+knows who won a cup and nobody else in it, so the losing finalist's place goes
+to the next club down the league.
+
 **Continental competitions.**
 
 | Competition | Clubs | Played as | First match |
@@ -279,12 +309,13 @@ competitions. Those leagues used to wait for the same day a year on and went a
 year without football.
 
 **What a career does not have.** Two-legged ties, the 36-club league phase and
-qualifying rounds of the UEFA competitions, league splits and play-offs, a
-staged cup draw, and super cups. The competitions keep EA's first match day
-where they can; how long each then takes is the engine's pace, so finals do not
-fall on their real dates. The engine also renews a domestic cup with the field
-and the draw it had, so promotion and relegation do not change who is in the
-EFL Trophy and a cup's first round repeats from one season to the next.
+qualifying rounds of the UEFA competitions, league splits and play-offs. A cup
+has one draw that every club is in, where EA brings the divisions in round by
+round; the byes stand in for that. The UEFA Super Cup and the Recopa are left
+out, because the engine gives a club one continental competition and their
+clubs are in another. The competitions keep EA's first match day where they
+can; how long each then takes is the engine's pace, so finals do not fall on
+their real dates.
 
 ## Club badges
 
@@ -348,7 +379,7 @@ trophy instead.
 logo when it is created, and its save stores it from then on. A career begun
 before the game kept logos, or on a version of this package older than 0.3.0,
 has nothing recorded, so it goes on drawing trophies even though the images are
-installed. A new career gets all 63.
+installed. A new career gets all 68.
 
 **Where the images come from.** EA's `leagues.zip`: `leagues/l<eaLeagueId>.dds`,
 137 textures with no names in them. Most are 1024×1024 with the artwork centred
@@ -364,14 +395,15 @@ recorded apart in
   imported from a row of EA's `leagues` table, and that row's id names its logo.
   CI regenerates these pairs from the pinned database and compares them.
 - **51 by looking at the artwork.** EA's table has no rows for cups, super cups
-  or UEFA competitions, so nothing in the data says what `l201.dds` is. **27 of
-  these are competitions this package has**: its 22 domestic cups, the three
-  UEFA competitions, the Concacaf Champions Cup and the AFC Champions League
-  Elite. The other **24 belong to competitions it does not have**: super cups,
+  or UEFA competitions, so nothing in the data says what `l201.dds` is. **32 of
+  these are competitions this package has**: its 22 domestic cups, its 5 super
+  cups, the three UEFA competitions, the Concacaf Champions Cup and the AFC
+  Champions League Elite. The other **19 belong to competitions it does not
+  have**: the UEFA Super Cup and the Recopa,
   the EFL play-offs, cups of countries with no league here, earlier versions of
   a logo, and world competitions such as the Club World Cup. Their images are
   packed under the id each competition is expected to get
-  (`eng-community-shield`), so they appear once it is added, and nothing draws
+  (`uefa-super-cup`), so they appear once it is added, and nothing draws
   them until then.
 
 The remaining 50 textures in the zip are not used: national-team tournaments,
@@ -391,9 +423,8 @@ trademarks.
 
 ## Known gaps
 
-- **No super cups, two-legged ties, league phase, qualifying rounds or
-  play-offs**, and a domestic cup keeps its field and its draw from one season
-  to the next. See
+- **No two-legged ties, league phase, qualifying rounds, league splits or
+  play-offs**, and no UEFA Super Cup or Recopa. See
   [what a career does not have](#cups-and-continental-competitions).
 - **A manager with no club has no season of his own.** Each competition starts
   its next season on its own date (see

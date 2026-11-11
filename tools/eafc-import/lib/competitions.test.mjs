@@ -774,7 +774,7 @@ describe("planCompetitions on the FC 27 structure", async () => {
     assert.deepEqual(legs, expected);
   });
 
-  it("authors the 22 domestic cups whose divisions the package has", () => {
+  it("authors the 22 domestic cups whose divisions the package has, then five super cups", () => {
     const cups = plan.competitions.filter((competition) => competition.type === "Cup");
     assert.deepEqual(
       cups.map((cup) => cup.id),
@@ -801,6 +801,11 @@ describe("planCompetitions on the FC 27 structure", async () => {
         "pl-puchar-polski",
         "sa-kings-cup",
         "ro-cupa-romaniei",
+        "eng-community-shield",
+        "fr-trophee-des-champions",
+        "de-supercup",
+        "it-supercoppa-italiana",
+        "es-supercopa-de-espana",
       ],
     );
     for (const cup of cups) {
@@ -809,10 +814,66 @@ describe("planCompetitions on the FC 27 structure", async () => {
     }
   });
 
+  it("names the divisions a cup's clubs come from, most senior first", () => {
+    const from = (id) => byId.get(id).participants.entrantsFrom;
+    assert.deepEqual(from("eng-fa-cup"), [
+      "eng-premier-league",
+      "eng-championship",
+      "eng-league-one",
+      "eng-league-two",
+    ]);
+    assert.deepEqual(from("eng-efl-trophy"), ["eng-league-one", "eng-league-two"]);
+    assert.deepEqual(from("fr-coupe-de-france"), ["fr-ligue-1", "fr-ligue-2"]);
+    // A super cup's clubs come from berths, and a continental competition's too.
+    assert.equal(from("eng-community-shield"), undefined);
+    assert.equal(from("uefa-champions-league"), undefined);
+  });
+
+  it("makes a super cup of the cup's holder and the league's top clubs", () => {
+    const sizes = Object.fromEntries(
+      ["eng-community-shield", "fr-trophee-des-champions", "de-supercup"]
+        .concat(["it-supercoppa-italiana", "es-supercopa-de-espana"])
+        .map((id) => [id, field(id).length]),
+    );
+    assert.deepEqual(sizes, {
+      "eng-community-shield": 2,
+      "fr-trophee-des-champions": 2,
+      "de-supercup": 2,
+      // EA plays these two as semi-finals and a final.
+      "it-supercoppa-italiana": 4,
+      "es-supercopa-de-espana": 4,
+    });
+    // The FA Cup's holder finished second, so the champion is the other club.
+    assert.deepEqual(field("eng-community-shield"), [
+      clubAt("eng-premier-league", 2),
+      clubAt("eng-premier-league", 1),
+    ]);
+    // Nobody is recorded as holding the Coupe de France: the league's top two.
+    assert.deepEqual(field("fr-trophee-des-champions"), [
+      clubAt("fr-ligue-1", 1),
+      clubAt("fr-ligue-1", 2),
+    ]);
+    assert.deepEqual(byId.get("eng-community-shield").format, { kind: "Knockout" });
+    assert.deepEqual(berthsInto(plan, "eng-community-shield"), [
+      "eng-fa-cup winner",
+      "eng-premier-league 1-1",
+    ]);
+    // A cup gives its winner and no one else, so the league makes up the four.
+    assert.deepEqual(berthsInto(plan, "es-supercopa-de-espana"), [
+      "es-copa-del-rey winner",
+      "es-primera-division 1-2",
+    ]);
+    // A super cup is not a way into Europe.
+    assert.equal(byId.get("eng-community-shield").berths, undefined);
+  });
+
   it("says which of EA's cups it left out, and why", () => {
     assert.deepEqual(plan.summary.skipped, [
       { code: "C8", eaLeagueId: 8, reason: "none of its divisions is in the package" },
       { code: "C229", eaLeagueId: 229, reason: "none of its divisions is in the package" },
+      // The UEFA Super Cup and the Recopa: the winners of two continental competitions.
+      { code: "C232", eaLeagueId: 232, reason: "not one league and one cup of the package" },
+      { code: "C1015", eaLeagueId: 1015, reason: "not one league and one cup of the package" },
     ]);
   });
 
@@ -843,12 +904,25 @@ describe("planCompetitions on the FC 27 structure", async () => {
     assert.ok(field("eng-efl-trophy").every((club) => /^eng-league-(one|two)#/.test(club)));
   });
 
-  it("does not list a cup's field division by division", () => {
-    // Listed in order, the Premier League would fill the first twenty places
-    // and be drawn against itself.
-    const firstTwenty = field("eng-fa-cup").slice(0, 20);
-    assert.ok(firstTwenty.some((club) => !club.startsWith("eng-premier-league#")));
-    assert.ok(new Set(firstTwenty.map((club) => club.split("#")[0])).size >= 3);
+  it("gives a cup's byes to its most senior clubs and draws the rest", () => {
+    // 92 clubs in a bracket of 128: 36 byes. They go to the head of the list,
+    // which is the Premier League's twenty and the Championship's top sixteen,
+    // each as it finished. Nobody with a bye is drawn against anybody.
+    const order = field("eng-fa-cup");
+    const seeded = order.slice(0, 36);
+    assert.deepEqual(seeded, [
+      ...Array.from({ length: 20 }, (_, index) => clubAt("eng-premier-league", index + 1)),
+      ...Array.from({ length: 16 }, (_, index) => clubAt("eng-championship", index + 1)),
+    ]);
+    // The other 56 are paired two by two, so they are not listed division by
+    // division: a division would be drawn against itself.
+    const drawn = order.slice(36);
+    assert.equal(drawn.length, 56);
+    assert.ok(new Set(drawn.slice(0, 20).map((club) => club.split("#")[0])).size >= 2);
+    assert.notDeepEqual(drawn, [...drawn].sort());
+    // A cup that opens with groups seeds them from the whole list, which is drawn.
+    const trophy = field("eng-efl-trophy");
+    assert.ok(new Set(trophy.slice(0, 12).map((club) => club.split("#")[0])).size === 2);
   });
 
   it("gives a cup with a group stage in EA's files a group stage", () => {

@@ -1,6 +1,7 @@
 # FC 27 data corrections and remaining limitations
 
-Audited and rebuilt on 2026-11-08; competitions rebuilt on 2026-11-10 (0.4.0).
+Audited and rebuilt on 2026-11-08; competitions rebuilt on 2026-11-10 (0.4.0, and
+0.5.0 with the super cups).
 **Loadable does not mean complete or season-ready.** Source coverage, schema/reference validity and actual world
 building are separate checks.
 
@@ -25,7 +26,8 @@ node tools/eafc-import/audit.mjs mods/eafc-fc27.ofm --json
 | Missing weak-foot values | 2,079 | 2,074; all remaining omissions are goalkeepers |
 | Authored staff / national tournaments | 0 / 0 | 0 / 0 |
 
-The table is the 0.1.1 cleanup. Since 0.4.0 the package has 63 competitions and
+The table is the 0.1.1 cleanup. Since 0.5.0 the package has 68 competitions (63
+in 0.4.0, before the five super cups) and
 2 clubs in none; see [Clubs with no league](#clubs-with-no-league).
 
 The stale-contract count drops by one only because a fake player was removed;

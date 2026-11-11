@@ -134,6 +134,12 @@ pub struct ParticipantSpec {
     /// A rule that resolves to team ids against the world.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub selector: Option<SelectorSpec>,
+    /// Cups only, and beside `explicit` or `selector`, which give the first season's field: the
+    /// competitions whose clubs make up the field, most senior first. Each time the cup is
+    /// renewed its field is rebuilt from the clubs they then have, so it follows promotion and
+    /// relegation, and the clubs of the first one are first in line for a bye.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub entrants_from: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -746,6 +752,40 @@ fn validate_participants(
             validate_selector(competition, selector, ctx, known_ids, errors);
         }
     }
+    validate_entrants_from(competition, known_ids, errors);
+}
+
+/// `entrantsFrom` is for a cup, and names other competitions of the file, each once.
+fn validate_entrants_from(
+    competition: &CompetitionDefinition,
+    known_ids: &HashSet<&str>,
+    errors: &mut Vec<DefinitionError>,
+) {
+    let sources = &competition.participants.entrants_from;
+    if sources.is_empty() {
+        return;
+    }
+    if competition.format.kind == CompetitionFormat::LeagueTable {
+        errors.push(DefinitionError::new(
+            "be.error.competitionDef.entrantsFromRequiresCup",
+            &competition.id,
+        ));
+    }
+    let mut seen = HashSet::new();
+    for source in sources {
+        if !known_ids.contains(source.as_str())
+            || source == &competition.id
+            || !seen.insert(source.as_str())
+        {
+            errors.push(
+                DefinitionError::new(
+                    "be.error.competitionDef.entrantsFromUnknown",
+                    &competition.id,
+                )
+                .with("target", source.clone()),
+            );
+        }
+    }
 }
 
 fn validate_explicit_participants(
@@ -1154,6 +1194,7 @@ fn build_competition(
     competition.participant_ids = team_ids.to_vec();
     competition.priority = def.priority;
     competition.berths = def.berths.clone();
+    competition.rules.entrants_from = def.participants.entrants_from.clone();
     competition.season_start_month = def.season_start_month.unwrap_or(8);
     competition.season_start_day = def.season_start_day.unwrap_or(1);
     competition.name_key = def.name_key.clone();
@@ -1325,6 +1366,7 @@ mod tests {
                 best_third_qualifiers: None,
             },
             participants: ParticipantSpec {
+                entrants_from: Vec::new(),
                 explicit: Some(teams.iter().map(|t| t.to_string()).collect()),
                 selector: None,
             },
@@ -1519,6 +1561,77 @@ mod tests {
         assert!(reported.contains(&"be.error.competitionDef.berthRequiresLeague"));
     }
 
+    /// Given a cup that names the divisions its clubs come from,
+    /// When the file is validated and the cup is built,
+    /// Then it is accepted, and the cup carries the names for the day it is renewed.
+    #[test]
+    fn a_cup_can_name_the_competitions_its_clubs_come_from() {
+        let league = explicit("tr-1", &["team-a", "team-b"]);
+        let mut cup = explicit("tr-cup", &["team-a", "team-b"]);
+        cup.format.kind = CompetitionFormat::Knockout;
+        cup.participants.entrants_from = vec!["tr-1".to_string()];
+        let file = CompetitionDefinitionFile {
+            format_version: 1,
+            competitions: vec![league, cup.clone()],
+        };
+
+        assert_eq!(
+            codes(&validate_definitions(&file, &ctx())),
+            Vec::<&str>::new()
+        );
+        use chrono::TimeZone;
+        let start = Utc.with_ymd_and_hms(2026, 8, 1, 0, 0, 0).unwrap();
+        let teams = ["team-a".to_string(), "team-b".to_string()];
+        let built = build_competition(&cup, &teams, 2026, start).unwrap();
+        assert_eq!(built.rules.entrants_from, ["tr-1"]);
+        let json = serde_json::to_value(&cup).unwrap();
+        assert_eq!(
+            json["participants"]["entrantsFrom"],
+            serde_json::json!(["tr-1"])
+        );
+    }
+
+    /// Given `entrantsFrom` on a league table, or naming a competition the file does not have,
+    /// the cup itself, or one competition twice,
+    /// When the file is validated,
+    /// Then each is reported.
+    #[test]
+    fn entrants_from_is_for_a_cup_and_names_other_competitions_once() {
+        let mut league = explicit("tr-1", &["team-a", "team-b"]);
+        league.participants.entrants_from = vec!["tr-cup".to_string()];
+        let mut cup = explicit("tr-cup", &["team-a", "team-b"]);
+        cup.format.kind = CompetitionFormat::Knockout;
+        cup.participants.entrants_from = vec![
+            "ghost".to_string(),
+            "tr-cup".to_string(),
+            "tr-1".to_string(),
+            "tr-1".to_string(),
+        ];
+        let file = CompetitionDefinitionFile {
+            format_version: 1,
+            competitions: vec![league, cup],
+        };
+
+        let errors = validate_definitions(&file, &ctx());
+        let reported = codes(&errors);
+
+        assert_eq!(
+            reported
+                .iter()
+                .filter(|code| **code == "be.error.competitionDef.entrantsFromRequiresCup")
+                .count(),
+            1
+        );
+        assert_eq!(
+            reported
+                .iter()
+                .filter(|code| **code == "be.error.competitionDef.entrantsFromUnknown")
+                .count(),
+            3,
+            "the unknown one, the cup itself and the repeat"
+        );
+    }
+
     #[test]
     fn berth_playoff_needs_at_least_two_contestants() {
         let mut league = explicit("tr-1", &["team-a", "team-b"]);
@@ -1615,6 +1728,7 @@ mod tests {
     fn top_by_reputation_needs_a_known_country_and_count() {
         let mut def = explicit("tr-1", &[]);
         def.participants = ParticipantSpec {
+            entrants_from: Vec::new(),
             explicit: None,
             selector: Some(SelectorSpec {
                 kind: SelectorKind::TopByReputation,
@@ -1639,6 +1753,7 @@ mod tests {
     fn champions_of_must_reference_a_known_competition_and_not_cycle() {
         let mut a = explicit("a", &[]);
         a.participants = ParticipantSpec {
+            entrants_from: Vec::new(),
             explicit: None,
             selector: Some(SelectorSpec {
                 kind: SelectorKind::ChampionsOf,
@@ -1651,6 +1766,7 @@ mod tests {
         };
         let mut b = explicit("b", &[]);
         b.participants = ParticipantSpec {
+            entrants_from: Vec::new(),
             explicit: None,
             selector: Some(SelectorSpec {
                 kind: SelectorKind::ChampionsOf,
@@ -1671,6 +1787,7 @@ mod tests {
         // An unknown source is reported too.
         let mut lonely = explicit("c", &[]);
         lonely.participants = ParticipantSpec {
+            entrants_from: Vec::new(),
             explicit: None,
             selector: Some(SelectorSpec {
                 kind: SelectorKind::ChampionsOf,
@@ -1759,6 +1876,7 @@ mod tests {
                 best_third_qualifiers: None,
             },
             participants: ParticipantSpec {
+                entrants_from: Vec::new(),
                 explicit: None,
                 selector: Some(selector),
             },

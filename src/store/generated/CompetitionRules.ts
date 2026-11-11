@@ -32,4 +32,10 @@ knockout_round_gap_days: number,
  * Defaults to 1 (each match on its own day). Set higher for large tournaments
  * like the World Cup where multiple matches happen on the same day.
  */
-knockout_matches_per_day: number, };
+knockout_matches_per_day: number, 
+/**
+ * Cups only: the competitions whose clubs make up the field, most senior first. When it is
+ * not empty the field is rebuilt from their clubs each time the cup is renewed, so it
+ * follows promotion and relegation; empty keeps the field the cup had.
+ */
+entrants_from: Array<string>, };

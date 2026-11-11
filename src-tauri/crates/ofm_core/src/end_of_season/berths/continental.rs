@@ -201,7 +201,7 @@ pub(super) fn last_finished_season(game: &Game, league: &League) -> Option<u32> 
 /// archived final table, or, for a league whose editions cannot be archived (a save from before
 /// tables kept their authored shape), the places written into its clubs' histories when it was
 /// paid out. A league that has never finished a season has only the table it has.
-pub(super) fn last_final_table(game: &Game, league: &League) -> Vec<String> {
+pub(crate) fn last_final_table(game: &Game, league: &League) -> Vec<String> {
     if !crate::end_of_season::is_league_season_ended(league) {
         if let Some(edition) = game
             .edition_archive

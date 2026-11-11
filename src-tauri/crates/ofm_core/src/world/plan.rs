@@ -180,6 +180,7 @@ pub(super) fn build_foundation_competition_plan(
                         priority: p,
                         format: make_format(CompetitionFormat::LeagueTable),
                         participants: ParticipantSpec {
+                            entrants_from: Vec::new(),
                             explicit: Some(division_ids.clone()),
                             selector: None,
                         },
@@ -263,6 +264,7 @@ pub(super) fn build_foundation_competition_plan(
                         priority,
                         format: make_format(CompetitionFormat::LeagueTable),
                         participants: ParticipantSpec {
+                            entrants_from: Vec::new(),
                             explicit: Some(division_ids.clone()),
                             selector: None,
                         },
@@ -319,6 +321,7 @@ pub(super) fn build_foundation_competition_plan(
                 priority,
                 format: make_format(CompetitionFormat::Knockout),
                 participants: ParticipantSpec {
+                    entrants_from: Vec::new(),
                     explicit: Some(team_ids.clone()),
                     selector: None,
                 },
@@ -405,6 +408,7 @@ pub(super) fn build_foundation_competition_plan(
                             best_third_qualifiers: None,
                         },
                         participants: ParticipantSpec {
+                            entrants_from: Vec::new(),
                             explicit: Some(participants),
                             selector: None,
                         },
@@ -455,6 +459,7 @@ pub(super) fn build_foundation_competition_plan(
                 priority,
                 format: make_format(format_kind),
                 participants: ParticipantSpec {
+                    entrants_from: Vec::new(),
                     explicit: Some(continental_team_ids),
                     selector: None,
                 },

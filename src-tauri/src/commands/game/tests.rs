@@ -423,6 +423,7 @@ fn embedded_competition_definitions_replace_the_auto_built_competitions() {
                 best_third_qualifiers: None,
             },
             participants: ParticipantSpec {
+                entrants_from: Vec::new(),
                 explicit: Some(team_ids.clone()),
                 selector: None,
             },

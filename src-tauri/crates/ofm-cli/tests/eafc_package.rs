@@ -94,8 +94,8 @@ fn the_package_builds_the_world_it_promises() {
         .as_ref()
         .map_or(0, |file| file.competitions.len());
     let counted = world.competitions.len() + defined;
-    // 34 leagues, 22 domestic cups and 7 continental competitions.
-    assert_eq!(counted, 63, "competitions");
+    // 34 leagues, 22 domestic cups, 5 super cups and 7 continental competitions.
+    assert_eq!(counted, 68, "competitions");
 }
 
 #[test]
@@ -205,7 +205,7 @@ fn a_career_opens_with_the_cups_and_continental_competitions_the_package_authors
         *kinds.entry(format!("{:?}", competition.kind)).or_default() += 1;
     }
     assert_eq!(kinds.get("League"), Some(&34), "leagues");
-    assert_eq!(kinds.get("Cup"), Some(&22), "domestic cups");
+    assert_eq!(kinds.get("Cup"), Some(&27), "domestic cups and super cups");
     assert_eq!(kinds.get("ContinentalClub"), Some(&7), "continental");
 
     let find = |id: &str| {
@@ -284,6 +284,33 @@ fn a_career_opens_with_the_cups_and_continental_competitions_the_package_authors
         assert!(!cup.fixtures.is_empty(), "{id} has no first round");
     }
 
+    // A domestic cup names the divisions its clubs come from, so its field follows
+    // promotion and relegation; a super cup names none, and is filled by berths.
+    assert_eq!(
+        find("eng-efl-trophy").rules.entrants_from,
+        ["eng-league-one", "eng-league-two"]
+    );
+    assert_eq!(find("eng-fa-cup").rules.entrants_from.len(), 4);
+    let super_cups = [
+        ("eng-community-shield", 2),
+        ("fr-trophee-des-champions", 2),
+        ("de-supercup", 2),
+        ("it-supercoppa-italiana", 4),
+        ("es-supercopa-de-espana", 4),
+    ];
+    for (id, clubs) in super_cups {
+        let cup = find(id);
+        assert_eq!(cup.participant_ids.len(), clubs, "{id} clubs");
+        assert!(cup.rules.entrants_from.is_empty(), "{id}");
+        assert!(cup.berths.is_empty(), "{id} is not a way into Europe");
+        assert!(
+            built
+                .iter()
+                .any(|source| source.berths.iter().any(|berth| berth.target == id)),
+            "{id} has no berth into it"
+        );
+    }
+
     // Qualification is authored, not left to the engine's guess: a top division
     // names the continental places its table earns, and a cup the one its
     // winner does.
@@ -296,7 +323,11 @@ fn a_career_opens_with_the_cups_and_continental_competitions_the_package_authors
     };
     assert_eq!(
         berth_targets("eng-premier-league"),
-        ["uefa-champions-league", "uefa-europa-league"]
+        [
+            "eng-community-shield",
+            "uefa-champions-league",
+            "uefa-europa-league"
+        ]
     );
     assert_eq!(
         berth_targets("pt-primeira-liga"),
@@ -306,7 +337,10 @@ fn a_career_opens_with_the_cups_and_continental_competitions_the_package_authors
             "uefa-conference-league"
         ]
     );
-    assert_eq!(berth_targets("eng-fa-cup"), ["uefa-europa-league"]);
+    assert_eq!(
+        berth_targets("eng-fa-cup"),
+        ["eng-community-shield", "uefa-europa-league"]
+    );
     assert_eq!(berth_targets("eng-efl-cup"), ["uefa-conference-league"]);
     assert_eq!(
         berth_targets("uefa-europa-league"),

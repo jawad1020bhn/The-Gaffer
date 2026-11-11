@@ -1064,7 +1064,7 @@ async function main() {
     description: `Clubs, players${
       plan ? ", leagues, cups and continental competitions" : " and leagues"
     } imported from the EA FC 27 database by tools/eafc-import. Unofficial; not affiliated with EA.`,
-    version: "0.4.0",
+    version: "0.5.0",
     author: "tools/eafc-import",
     license: "NOASSERTION",
     packageType: "database",

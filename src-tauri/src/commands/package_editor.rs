@@ -1157,6 +1157,7 @@ mod tests {
                 best_third_qualifiers: None,
             },
             participants: ParticipantSpec {
+                entrants_from: Vec::new(),
                 explicit: None,
                 selector: Some(SelectorSpec {
                     kind: SelectorKind::AllInCountry,

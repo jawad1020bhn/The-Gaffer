@@ -60,12 +60,25 @@ pub(crate) fn renew_finished_cups(game: &mut Game, today: &str) -> Vec<String> {
     };
 
     let today_start = earliest_start - Days::new(BREAK_BETWEEN_EDITIONS_DAYS);
+    let unsettled = crate::end_of_season::renewal::countries_with_a_season_to_settle(game, today);
     let mut renewed = Vec::new();
     for index in 0..game.competitions.len() {
         let cup = &game.competitions[index];
         if !is_renewable_cup(cup)
             || !is_cup_edition_finished(cup)
             || !next_edition_is_near(cup, &game.clock, today_start, earliest_start)
+        {
+            continue;
+        }
+        // A cup whose field is read from its country's divisions waits for a season they have
+        // finished to be settled, so that it takes the clubs that have gone up and down. The
+        // ladder is settled first on a day both are due, and by the rollover in the player's
+        // own country.
+        if cup
+            .country_id
+            .as_ref()
+            .is_some_and(|country| unsettled.contains(country))
+            && crate::end_of_season::cup_fields::follows_other_competitions(game, cup)
         {
             continue;
         }
@@ -77,7 +90,11 @@ pub(crate) fn renew_finished_cups(game: &mut Game, today: &str) -> Vec<String> {
             continue;
         }
         let edition = next_edition(cup, &game.clock, earliest_start);
+        let field = crate::end_of_season::cup_fields::renewed_cup_field(game, cup, edition.season);
         let cup = &mut game.competitions[index];
+        if let Some(field) = field {
+            cup.participant_ids = field;
+        }
         debug!(
             "[cup-renewal] {} season {} finished on {today}; renewing as season {}",
             cup.id, cup.season, edition.season
